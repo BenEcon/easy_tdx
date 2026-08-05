@@ -2,6 +2,22 @@
 
 本文件记录 easy-tdx 的版本变更。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## [1.20.5] — 2026-08-05
+
+**资金流空数据故障转移**（Issue #41）—— 用户反馈 `get_history_fund_flow(SH, "600519")` 返回空 DataFrame，日志显示"K线响应为空（声称 800 条但首条即解析失败...）"。排查定位：当前 host 对常见标的也返回 `ret_count` 撒谎的空 body，但资金流这条兼容回退路径（直连空 → 拉 K 线 + 历史逐笔重算）**未接入 v1.20.4 的空数据故障转移**，"服务器回包正常但内容是假的空"既非 `TdxConnectionError` 也不触发换台，用户卡在坏服务器上拿不到数据。本次将资金流路径接入与 K 线同源的空数据故障转移。
+
+### 修复
+
+- **资金流空数据故障转移**（`src/easy_tdx/client.py`）—— `get_history_fund_flow`（sync+async）当前 host 直连（Category 22）与 K 线回退均空时，按延迟顺序逐台实测找首台返回有效数据的服务器（与 `get_security_bars`/`get_index_bars` 同源逻辑）。因资金流获取涉及多命令（直连 / K 线 + 逐笔），无法用单 cmd 复用泛化版 `_find_host_returning_data`，故内联 `_fund_flow_failover`：每台候选上跑完整 `_fetch_fund_flow_records`，返回首台非空结果。全空返回空 DataFrame（不 raise，区分"真无历史数据"与"服务器缺数据"）。`auto_reconnect=False` 时不触发。
+
+### 重构
+
+- **提取 `_fetch_fund_flow_records`**（`src/easy_tdx/client.py`）—— 将"直连 + K 线回退"逻辑从 `get_history_fund_flow` 抽出为独立方法（sync+async 对称），便于故障转移在内联 `_try` 中复用。行为不变。
+
+### 测试
+
+- 新增 6 个测试：`test_failover.py` 的 `TestFundFlowEmptyFailover`（4 个 sync：空数据切台命中 / 全空返回空 df / 首次非空不触发 / `auto_reconnect=False` 不触发）+ `TestAsyncFundFlowEmptyFailover`（2 个 async：空数据切台命中 / 首次非空不触发）。全套 989 passed；ruff/mypy 改动文件零错误。
+
 ## [1.20.4] — 2026-07-13
 
 **引入服务器健康分引擎 + K线空数据故障转移**（PR #37）—— 彻底解决用户反馈的通达信服务器"跳来跳去"且指数 K 线取不到数据问题。此前代码库零服务器健康记忆（失败的服务器下次又会被低延迟选中），且指数 K 线空数据不触发故障转移（直接返回空 DataFrame）。本次新增进程级健康分引擎 + 泛化空数据转移 + 8 个 client 统一健康分联动。

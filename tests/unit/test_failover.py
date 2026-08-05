@@ -11,6 +11,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -27,6 +28,7 @@ from easy_tdx.commands.security_count import GetSecurityCountCmd
 from easy_tdx.exceptions import TdxConnectionError
 from easy_tdx.models.bar import SecurityBar
 from easy_tdx.models.enums import KlineCategory, Market
+from easy_tdx.models.stats import HistoricalFundFlow
 
 
 @pytest.fixture(autouse=True)
@@ -588,3 +590,190 @@ class TestBarsEmptyFailover:
 
         assert mock_exec.call_count == 4
         assert len(df) == 1
+
+
+# --------------------------------------------------------------------------- #
+# get_history_fund_flow 空数据故障转移（Issue #41）
+# 部分服务器对常见标的（如 600519）也返回 ret_count 撒谎的空 body，此前直接返回
+# 空 DataFrame；v1.20.5 接入与 K 线同源的空数据故障转移，逐台实测找有效 host。
+# --------------------------------------------------------------------------- #
+
+
+class TestFundFlowEmptyFailover:
+    """资金流空数据故障转移——验证 get_history_fund_flow 空时逐台实测切 host。"""
+
+    def _make_flow(self) -> HistoricalFundFlow:
+        """构造一条字段合法的历史资金流，让 _to_df 下游处理走通。"""
+        return HistoricalFundFlow(
+            year=2026,
+            month=7,
+            day=10,
+            super_in=1.0,
+            super_out=0.0,
+            large_in=2.0,
+            large_out=0.0,
+            medium_in=3.0,
+            medium_out=0.0,
+            small_in=4.0,
+            small_out=0.0,
+        )
+
+    def test_empty_fund_flow_finds_working_host_and_returns_data(self) -> None:
+        """当前 host 空 → 逐台实测 → hostB 返回数据，停在该 host。"""
+        flow = self._make_flow()
+        client = TdxClient("bad-host", 7709, 1.0, auto_reconnect=True, heartbeat_interval=0)
+
+        # _fetch_fund_flow_records 调用序列：
+        #   1. 首次（bad-host）→ 空
+        #   2. 验证 hostA → 空
+        #   3. 验证 hostB → 非空（命中）
+        #   4. 最终再取一次（停在 hostB）→ 非空
+        with (
+            patch.object(
+                client,
+                "_fetch_fund_flow_records",
+                side_effect=[[], [], [flow], [flow]],
+            ) as mock_fetch,
+            patch.object(client, "_reconnect") as mock_reconnect,
+            patch(
+                "easy_tdx.client.ping_all",
+                return_value=[("hostA", 0.01), ("hostB", 0.02)],
+            ),
+        ):
+            df = client.get_history_fund_flow(Market.SH, "600519", 0, 10)
+
+        assert mock_fetch.call_count == 4
+        # _reconnect 切换到 hostA、hostB（逐台实测），最终停在 hostB
+        reconnect_hosts = [c.args[0] for c in mock_reconnect.call_args_list]
+        assert reconnect_hosts == ["hostA", "hostB"]
+        assert len(df) == 1
+
+    def test_empty_fund_flow_all_candidates_empty_returns_empty_df(self) -> None:
+        """所有候选都返回空时，返回空 DataFrame（不抛异常）。
+
+        与 get_index_bars / get_security_bars 同源逻辑：真·无数据时换台仍为空，
+        返回空而非 raise。``_reconnect`` 被 mock 不更新 ``self._host``，故不会
+        再切回 bad-host（与 K 线测试断言一致）。
+        """
+        client = TdxClient("bad-host", 7709, 1.0, auto_reconnect=True, heartbeat_interval=0)
+
+        with (
+            patch.object(client, "_fetch_fund_flow_records", return_value=[]),
+            patch.object(client, "_reconnect") as mock_reconnect,
+            patch(
+                "easy_tdx.client.ping_all",
+                return_value=[("hostA", 0.01), ("hostB", 0.02)],
+            ),
+        ):
+            df = client.get_history_fund_flow(Market.SH, "600519", 0, 10)
+
+        # find_working_host 逐台实测了 hostA、hostB（_reconnect 被各调一次）
+        reconnect_hosts = [c.args[0] for c in mock_reconnect.call_args_list]
+        assert reconnect_hosts == ["hostA", "hostB"]
+        assert df.empty
+
+    def test_non_empty_fund_flow_does_not_trigger_failover(self) -> None:
+        """首次即返回数据时，不触发空数据故障转移。"""
+        flow = self._make_flow()
+        client = TdxClient("good-host", 7709, 1.0, auto_reconnect=True, heartbeat_interval=0)
+
+        with (
+            patch.object(client, "_fetch_fund_flow_records", return_value=[flow]) as mock_fetch,
+            patch.object(client, "_fund_flow_failover") as mock_failover,
+        ):
+            df = client.get_history_fund_flow(Market.SH, "600519", 0, 10)
+
+        assert mock_fetch.call_count == 1
+        mock_failover.assert_not_called()
+        assert len(df) == 1
+
+    def test_failover_disabled_when_auto_reconnect_off(self) -> None:
+        """auto_reconnect=False 时空数据不触发故障转移。"""
+        client = TdxClient("bad-host", 7709, 1.0, auto_reconnect=False, heartbeat_interval=0)
+
+        with (
+            patch.object(client, "_fetch_fund_flow_records", return_value=[]) as mock_fetch,
+            patch.object(client, "_fund_flow_failover") as mock_failover,
+        ):
+            df = client.get_history_fund_flow(Market.SH, "600519", 0, 10)
+
+        assert mock_fetch.call_count == 1
+        mock_failover.assert_not_called()
+        assert df.empty
+
+
+# --------------------------------------------------------------------------- #
+# AsyncTdxClient.get_history_fund_flow 空数据故障转移（Issue #41，async 对称）
+# --------------------------------------------------------------------------- #
+
+
+class TestAsyncFundFlowEmptyFailover:
+    """资金流空数据故障转移——async 版与 sync 语义对称。"""
+
+    def _make_flow(self) -> HistoricalFundFlow:
+        return HistoricalFundFlow(
+            year=2026,
+            month=7,
+            day=10,
+            super_in=1.0,
+            super_out=0.0,
+            large_in=2.0,
+            large_out=0.0,
+            medium_in=3.0,
+            medium_out=0.0,
+            small_in=4.0,
+            small_out=0.0,
+        )
+
+    def test_async_empty_fund_flow_finds_working_host(self) -> None:
+        """当前 host 空 → 逐台实测 → hostB 返回数据。"""
+        from easy_tdx.client import AsyncTdxClient
+
+        flow = self._make_flow()
+
+        async def main() -> int:
+            client = AsyncTdxClient(
+                "bad-host", 7709, 1.0, auto_reconnect=True, heartbeat_interval=0
+            )
+            with (
+                patch.object(
+                    client,
+                    "_fetch_fund_flow_records",
+                    side_effect=[[], [], [flow], [flow]],
+                ) as mock_fetch,
+                patch.object(client, "_areconnect") as mock_reconnect,
+                patch(
+                    "easy_tdx.client.ping_all",
+                    return_value=[("hostA", 0.01), ("hostB", 0.02)],
+                ),
+            ):
+                df = await client.get_history_fund_flow(Market.SH, "600519", 0, 10)
+
+            assert mock_fetch.call_count == 4
+            reconnect_hosts = [c.args[0] for c in mock_reconnect.call_args_list]
+            assert reconnect_hosts == ["hostA", "hostB"]
+            return len(df)
+
+        assert asyncio.run(main()) == 1
+
+    def test_async_non_empty_fund_flow_does_not_trigger_failover(self) -> None:
+        """首次即返回数据时，不触发空数据故障转移。"""
+        from easy_tdx.client import AsyncTdxClient
+
+        flow = self._make_flow()
+
+        async def main() -> int:
+            client = AsyncTdxClient(
+                "good-host", 7709, 1.0, auto_reconnect=True, heartbeat_interval=0
+            )
+            with (
+                patch.object(client, "_fetch_fund_flow_records", return_value=[flow]) as mock_fetch,
+                patch.object(client, "_fund_flow_failover") as mock_failover,
+            ):
+                df = await client.get_history_fund_flow(Market.SH, "600519", 0, 10)
+
+            assert mock_fetch.call_count == 1
+            mock_failover.assert_not_called()
+            return len(df)
+
+        assert asyncio.run(main()) == 1
