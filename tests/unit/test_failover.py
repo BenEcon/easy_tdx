@@ -767,9 +767,7 @@ class TestAsyncFundFlowEmptyFailover:
                 "good-host", 7709, 1.0, auto_reconnect=True, heartbeat_interval=0
             )
             with (
-                patch.object(
-                    client, "_fetch_fund_flow_records", return_value=[flow]
-                ) as mock_fetch,
+                patch.object(client, "_fetch_fund_flow_records", return_value=[flow]) as mock_fetch,
                 patch.object(client, "_fund_flow_failover") as mock_failover,
             ):
                 df = await client.get_history_fund_flow(Market.SH, "600519", 0, 10)
