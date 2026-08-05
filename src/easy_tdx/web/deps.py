@@ -25,6 +25,15 @@ def get_mac_client(request: Request) -> Any:
     return client
 
 
+def get_mac_client_optional(request: Request) -> Any | None:
+    """从 app.state 获取 AsyncMacClient 实例，未连接时返回 None（不抛异常）。
+
+    供需要"MAC 不可用时自动回退标准 TdxClient"的端点使用（如 ``/bars``）。
+    其他强制依赖 MAC 的端点（``/mac/*``）仍用 :func:`get_mac_client`。
+    """
+    return request.app.state.mac_client
+
+
 def get_ex_client(request: Request) -> Any:
     """从 app.state 获取共享的 AsyncExTdxClient 实例（可选）。"""
     client: Any | None = request.app.state.ex_client

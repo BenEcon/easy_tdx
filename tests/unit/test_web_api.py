@@ -255,6 +255,136 @@ def test_convert_category_invalid_raises_valueerror():
         category_from_str("INVALID_PERIOD")
 
 
+# ---------------------------------------------------------------------------
+# /bars 迁移到 MacClient：KlineCategory→(Period,times) 映射 + adjust 转换
+# (Issue #43)
+# ---------------------------------------------------------------------------
+
+
+def test_period_times_from_category_mapping():
+    """KlineCategory → (Period, times) 完整映射，重点 YEAR/SEASON 值不同。"""
+    pytest.importorskip("fastapi")
+    from easy_tdx.mac.enums import Period
+    from easy_tdx.models.enums import KlineCategory
+    from easy_tdx.web.convert import period_times_from_category
+
+    expected = {
+        KlineCategory.MIN_5: (Period.MIN_5, 1),
+        KlineCategory.MIN_15: (Period.MIN_15, 1),
+        KlineCategory.MIN_30: (Period.MIN_30, 1),
+        KlineCategory.MIN_60: (Period.MIN_60, 1),
+        KlineCategory.DAY: (Period.DAILY, 1),
+        KlineCategory.WEEK: (Period.WEEKLY, 1),
+        KlineCategory.MONTH: (Period.MONTHLY, 1),
+        KlineCategory.MIN_1: (Period.MIN_1, 1),
+        KlineCategory.YEAR: (Period.YEARLY, 1),  # 值 9 → Period.YEARLY 值 11
+        KlineCategory.SEASON: (Period.QUARTERLY, 1),  # SEASON → QUARTERLY
+    }
+    for cat, want in expected.items():
+        assert period_times_from_category(cat) == want, f"{cat} 应映射到 {want}"
+
+
+def test_period_times_from_category_rejects_unmappable():
+    """无法映射的 KlineCategory 值（如 MIN_3=8）应抛 ValueError。"""
+    pytest.importorskip("fastapi")
+    from easy_tdx.web.convert import period_times_from_category
+
+    with pytest.raises(ValueError, match="无法映射"):
+        period_times_from_category(8)  # MIN_3 不在 /bars 支持范围
+
+
+def test_adjust_from_str_accepts_name_case_and_int():
+    """adjust_from_str 支持 NONE/QFQ/HFQ 名称（大小写）和数字字符串。"""
+    pytest.importorskip("fastapi")
+    from easy_tdx.mac.enums import Adjust
+    from easy_tdx.web.convert import adjust_from_str
+
+    assert adjust_from_str("QFQ") == Adjust.QFQ
+    assert adjust_from_str("qfq") == Adjust.QFQ
+    assert adjust_from_str("1") == Adjust.QFQ  # 数字字符串
+    assert adjust_from_str("NONE") == Adjust.NONE
+    assert adjust_from_str("none") == Adjust.NONE
+    assert adjust_from_str("0") == Adjust.NONE
+    assert adjust_from_str("HFQ") == Adjust.HFQ
+    assert adjust_from_str("2") == Adjust.HFQ
+
+
+def test_adjust_from_str_invalid_raises():
+    """非法复权类型应抛 ValueError。"""
+    pytest.importorskip("fastapi")
+    from easy_tdx.web.convert import adjust_from_str
+
+    with pytest.raises(ValueError, match="无效复权类型"):
+        adjust_from_str("XXX")
+
+
+def test_normalize_mac_df_daily_plus():
+    """日线规整：datetime→date（截断时分）、drop float_shares、OHLC 顺序 open/close/high/low。"""
+    pytest.importorskip("fastapi")
+    import pandas as pd
+
+    from easy_tdx.web.routers.bars import _normalize_mac_df
+
+    df = pd.DataFrame(
+        {
+            "datetime": [pd.Timestamp("2026-07-10 15:00:00"), pd.Timestamp("2026-07-11 15:00:00")],
+            "open": [10.0, 10.5],
+            "high": [10.8, 10.9],
+            "low": [9.9, 10.3],
+            "close": [10.5, 10.6],
+            "vol": [1000.0, 1100.0],
+            "amount": [10500.0, 11600.0],
+            "float_shares": [0.0, 0.0],
+        }
+    )
+    out = _normalize_mac_df(df, daily_plus=True)
+    # 时间列：datetime → date，且截断为 00:00:00
+    assert "date" in out.columns
+    assert "datetime" not in out.columns
+    assert out["date"].iloc[0] == pd.Timestamp("2026-07-11 00:00:00") - pd.Timedelta(days=1)
+    # drop float_shares
+    assert "float_shares" not in out.columns
+    # 列顺序：date 在前，OHLC 顺序 open/close/high/low
+    assert list(out.columns) == ["date", "open", "close", "high", "low", "vol", "amount"]
+
+
+def test_normalize_mac_df_intraday_keeps_datetime():
+    """分钟线规整：保留 datetime 列（含时分）。"""
+    pytest.importorskip("fastapi")
+    import pandas as pd
+
+    from easy_tdx.web.routers.bars import _normalize_mac_df
+
+    df = pd.DataFrame(
+        {
+            "datetime": [pd.Timestamp("2026-07-10 09:35:00")],
+            "open": [10.0],
+            "high": [10.8],
+            "low": [9.9],
+            "close": [10.5],
+            "vol": [1000.0],
+            "amount": [10500.0],
+        }
+    )
+    out = _normalize_mac_df(df, daily_plus=False)
+    assert "datetime" in out.columns
+    assert "date" not in out.columns
+    # 时分保留
+    assert out["datetime"].iloc[0] == pd.Timestamp("2026-07-10 09:35:00")
+    assert list(out.columns) == ["datetime", "open", "close", "high", "low", "vol", "amount"]
+
+
+def test_normalize_mac_df_empty_noop():
+    """空 DataFrame 规整不报错。"""
+    pytest.importorskip("fastapi")
+    import pandas as pd
+
+    from easy_tdx.web.routers.bars import _normalize_mac_df
+
+    out = _normalize_mac_df(pd.DataFrame(), daily_plus=True)
+    assert out.empty
+
+
 def test_full_app_routes_registered():
     """All routers should be mounted and accessible."""
     pytest.importorskip("fastapi")

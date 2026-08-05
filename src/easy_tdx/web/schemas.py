@@ -35,6 +35,14 @@ class KlineCategoryEnum(IntEnum):
     SEASON = 10
 
 
+class AdjustEnum(IntEnum):
+    """Adjustment type (前复权/后复权)."""
+
+    NONE = 0
+    QFQ = 1  # 前复权
+    HFQ = 2  # 后复权
+
+
 # ---------------------------------------------------------------------------
 # Request models
 # ---------------------------------------------------------------------------

@@ -102,6 +102,68 @@ def sort_order_from_str(s: str) -> Any:
     raise ValueError(f"无效排序方向 '{s}'，可选值: {valid}") from None
 
 
+def period_times_from_category(category: Any) -> tuple[Any, int]:
+    """将标准 KlineCategory 映射到 MAC 的 (Period, times)。
+
+    标准协议的 KlineCategory 与 MAC 协议的 Period 枚举值并非一一对应
+    （如 YEAR=9 而 YEARLY=11），且 MAC 用 Period+times 表达多周期。这里做
+    显式查表，times 一律为 1（KlineCategory 无多周期概念）。
+
+    Args:
+        category: ``KlineCategory`` 枚举值（或其 int）。
+
+    Returns:
+        ``(Period, times)`` 元组。
+
+    Raises:
+        ValueError: 无法映射的 KlineCategory 值。
+    """
+    from easy_tdx.mac.enums import Period
+
+    # 显式查表：标准 KlineCategory 值 → (Period, times)
+    # 注意 YEAR(9)→YEARLY(11)、SEASON(10)→QUARTERLY(10) 值/名不同
+    mapping = {
+        0: (Period.MIN_5, 1),  # KlineCategory.MIN_5
+        1: (Period.MIN_15, 1),  # KlineCategory.MIN_15
+        2: (Period.MIN_30, 1),  # KlineCategory.MIN_30
+        3: (Period.MIN_60, 1),  # KlineCategory.MIN_60
+        4: (Period.DAILY, 1),  # KlineCategory.DAY
+        5: (Period.WEEKLY, 1),  # KlineCategory.WEEK
+        6: (Period.MONTHLY, 1),  # KlineCategory.MONTH
+        7: (Period.MIN_1, 1),  # KlineCategory.MIN_1
+        9: (Period.YEARLY, 1),  # KlineCategory.YEAR（值 9→Period.YEARLY 值 11）
+        10: (Period.QUARTERLY, 1),  # KlineCategory.SEASON → Period.QUARTERLY
+    }
+    key = int(category)
+    if key not in mapping:
+        valid = "MIN_1/5/15/30/60, DAY, WEEK, MONTH, SEASON, YEAR"
+        raise ValueError(f"无法映射的 K线周期值 {key}，/bars 仅支持 {valid}")
+    return mapping[key]
+
+
+def adjust_from_str(s: str) -> Any:
+    """将字符串转为 Adjust 枚举（NONE/QFQ/HFQ），支持大小写和数字字符串。
+
+    >>> adjust_from_str("QFQ")   # 前复权
+    >>> adjust_from_str("qfq")   # 也正常（自动转大写）
+    >>> adjust_from_str("1")     # 数字字符串也行（= QFQ）
+    >>> adjust_from_str("XXX")   # ValueError
+    """
+    from easy_tdx.mac.enums import Adjust
+
+    key = s.upper()
+    try:
+        return Adjust[key]
+    except KeyError:
+        pass
+    try:
+        return Adjust(int(key))
+    except (ValueError, TypeError):
+        pass
+    valid = ", ".join(a.name for a in Adjust)
+    raise ValueError(f"无效复权类型 '{s}'，可选值: {valid}") from None
+
+
 def category_mac_from_str(s: str) -> Any:
     """将字符串转为 MAC Category 枚举（A/SH/SZ/KCB/BJ/CYB/...）。"""
     from easy_tdx.mac.enums import Category
