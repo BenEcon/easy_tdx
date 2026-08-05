@@ -2,6 +2,32 @@
 
 本文件记录 easy-tdx 的版本变更。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## [1.20.6] — 2026-08-05
+
+**Web `/bars` 端点迁移到 MacClient + 支持复权**（Issue #43）—— 用户反馈 Web 获取 K 线用的还是标准 TdxClient（标准协议本身不支持复权），导致 REST API 无法取前复权/后复权数据。本次将 `/bars`（个股 K 线）迁移到 `AsyncMacClient.get_stock_kline`（MAC 协议，支持 NONE/QFQ/HFQ + QFQ 负价兜底），**保持旧输出契约不变**（日线 `date` 列、分钟线 `datetime` 列、OHLC 顺序、无 `float_shares`），新增 `adjust` 参数（默认 QFQ），MAC 主机不可用时自动回退标准 TdxClient。
+
+### ⚠️ 半破坏性变更
+
+- **`/bars` 默认复权方式从"不复权"改为 QFQ（前复权）**。此前 `/bars` 透传 `AsyncTdxClient.get_security_bars`（无复权参数），默认返回原始价格。迁移后默认 `adjust=QFQ`，符合大多数看盘/回测场景。**老调用方若需不复权，请显式传 `?adjust=NONE`**。输出 DataFrame 的列名/顺序/字段与旧版完全一致（已规整），仅价格数值因复权变化。
+
+### 新增
+
+- **`/bars` 支持复权**（`src/easy_tdx/web/routers/bars.py`）—— 优先走 `AsyncMacClient.get_stock_kline(adjust=...)`（支持 NONE/QFQ/HFQ，QFQ 对深层历史负价有本地重算兜底）；MAC 主机未连接时自动回退 `AsyncTdxClient.get_security_bars`（无复权，adjust 参数忽略并 warning）。新增查询参数 `adjust`（默认 QFQ）。
+- **`_normalize_mac_df`**（`src/easy_tdx/web/routers/bars.py`）—— 规整 MacClient 输出以匹配旧 `/bars` 契约：日线及以上 `datetime`→`date`（截断时分秒）、drop `float_shares`、OHLC 列顺序对齐 `open/close/high/low`。迁移后调用方输出契约零变化。
+- **`period_times_from_category`**（`src/easy_tdx/web/convert.py`）—— 标准 `KlineCategory` → MAC `(Period, times)` 映射查表（显式处理 YEAR 9→YEARLY 11、SEASON→QUARTERLY 值/名差异）。
+- **`adjust_from_str`**（`src/easy_tdx/web/convert.py`）—— 字符串 → `Adjust` 枚举（NONE/QFQ/HFQ，支持大小写和数字字符串）。
+- **`get_mac_client_optional`**（`src/easy_tdx/web/deps.py`）—— MAC client 依赖注入的可选版（未连接返回 None 而非抛 503），供 `/bars` 回退判断；原 `get_mac_client`（强制版）不动，其他 `/mac/*` 端点继续用。
+- **`AdjustEnum`**（`src/easy_tdx/web/schemas.py`）—— OpenAPI 文档展示用。
+
+### 测试
+
+- 新增 7 个测试（`tests/unit/test_web_api.py`）：`period_times_from_category` 完整映射（10 个 KlineCategory，重点 YEAR/SEASON）+ 不可映射值抛错；`adjust_from_str` 名称/大小写/数字/非法值；`_normalize_mac_df` 日线（datetime→date）/分钟线（保留 datetime）/空 df 三场景。全套 27 web 测试通过。
+
+### 不在本次范围
+
+- `/bars/index`（指数 K 线）：MAC 指数 K 线是另一套接口，需单独评估。
+- `/minute`、`/transaction*`（分时/逐笔）：MacClient 的 `get_tick_chart` 语义与标准分时不同，暂不迁移。
+
 ## [1.20.5] — 2026-08-05
 
 **资金流空数据故障转移**（Issue #41）—— 用户反馈 `get_history_fund_flow(SH, "600519")` 返回空 DataFrame，日志显示"K线响应为空（声称 800 条但首条即解析失败...）"。排查定位：当前 host 对常见标的也返回 `ret_count` 撒谎的空 body，但资金流这条兼容回退路径（直连空 → 拉 K 线 + 历史逐笔重算）**未接入 v1.20.4 的空数据故障转移**，"服务器回包正常但内容是假的空"既非 `TdxConnectionError` 也不触发换台，用户卡在坏服务器上拿不到数据。本次将资金流路径接入与 K 线同源的空数据故障转移。
