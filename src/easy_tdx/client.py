@@ -880,20 +880,20 @@ class TdxClient:
         )
         return _to_df(_classify_fund_flow(records))
 
-    def get_history_fund_flow(
+    def _fetch_fund_flow_records(
         self, market: Market, code: str, start: int, count: int
-    ) -> pd.DataFrame:
-        """获取个股历史日线资金流向序列。
+    ) -> list[HistoricalFundFlow]:
+        """在当前 host 上获取资金流记录（直连 + K 线回退）。
 
-        优先走 Category 22 直连接口；若服务器返回空列表，则自动回退为
-        "日 K 线取日期 + 历史逐笔成交重算资金流"的兼容实现。
+        优先走 Category 22 直连接口；空则回退为"日 K 线取日期 + 历史逐笔成交重算"。
+        返回空列表代表该 host 既无直连数据也无 K 线数据（或解析失败）。
         """
         try:
             direct = self._execute(GetHistoryFundFlowCmd(market, code, start, count))
         except Exception:
             direct = []
         if direct:
-            return _to_df(direct)
+            return list(direct)
 
         bars = self._execute(GetSecurityBarsCmd(market, code, KlineCategory.DAY, start, count))
         results: list[HistoricalFundFlow] = []
@@ -910,7 +910,53 @@ class TdxClient:
 
             records = self._collect_transaction_records(_fetch_page, 800)
             results.append(_historical_fund_flow_from_records(date, records))
+        return results
+
+    def get_history_fund_flow(
+        self, market: Market, code: str, start: int, count: int
+    ) -> pd.DataFrame:
+        """获取个股历史日线资金流向序列。
+
+        优先走 Category 22 直连接口；若服务器返回空列表，则自动回退为
+        "日 K 线取日期 + 历史逐笔成交重算资金流"的兼容实现。
+
+        空数据故障转移（v1.20.5，Issue #41）：当前 host 直连与 K 线回退均空时，
+        按延迟顺序逐台实测找首台返回有效数据的服务器。部分服务器对常见标的也会
+        返回 ret_count 撒谎的空 body（日志"K线响应为空（声称 800 条...）"），
+        此前直接返回空 DataFrame，用户拿不到数据；现复用 K 线故障转移的同源逻辑。
+        注意：真·无历史数据（如新股）所有服务器都返回空，此时换台仍为空，直接
+        返回空 DataFrame 而非 raise——避免把"该股票本就没数据"误报为故障。
+        """
+        results = self._fetch_fund_flow_records(market, code, start, count)
+        # 空数据故障转移：与 get_security_bars / get_index_bars 同源逻辑。
+        if not results and self._auto_reconnect:
+            results = self._fund_flow_failover(market, code, start, count)
         return _to_df(results)
+
+    def _fund_flow_failover(
+        self, market: Market, code: str, start: int, count: int
+    ) -> list[HistoricalFundFlow]:
+        """资金流空数据故障转移：逐台实测找首台返回有效数据的服务器。
+
+        与 ``_find_host_returning_data`` 区别：资金流获取涉及多命令（直连 / K 线 +
+        逐笔），无法用单个 cmd 复用泛化版；这里以内联 ``_try`` 在每台候选上跑完
+        整 ``_fetch_fund_flow_records``，返回首台非空结果。全失败返回空列表。
+        """
+        bad_host = self._host
+        ranked = ping_all(get_known_hosts(), self._port, 5.0)
+
+        def _try(host: str) -> bool:
+            self._reconnect(host)
+            return bool(self._fetch_fund_flow_records(market, code, start, count))
+
+        new_host = find_working_host_sync(ranked, _try, save_best_host, bad_host)
+        if new_host is None:
+            # 全部候选都不可用，回退到原 host（保持状态可预测）
+            if self._host != bad_host:
+                self._reconnect(bad_host)
+            return []
+        # _try 已切到 new_host 并跑过一次，重新取一次拿结果
+        return self._fetch_fund_flow_records(market, code, start, count)
 
 
 # ============================================================
@@ -1499,20 +1545,20 @@ class AsyncTdxClient(AsyncHeartbeatMixin):
         )
         return _to_df(_classify_fund_flow(records))
 
-    async def get_history_fund_flow(
+    async def _fetch_fund_flow_records(
         self, market: Market, code: str, start: int, count: int
-    ) -> pd.DataFrame:
-        """获取个股历史日线资金流向序列。
+    ) -> list[HistoricalFundFlow]:
+        """在当前 host 上获取资金流记录（直连 + K 线回退，async）。
 
-        优先走 Category 22 直连接口；若服务器返回空列表，则自动回退为
-        "日 K 线取日期 + 历史逐笔成交重算资金流"的兼容实现。
+        优先走 Category 22 直连接口；空则回退为"日 K 线取日期 + 历史逐笔成交重算"。
+        返回空列表代表该 host 既无直连数据也无 K 线数据（或解析失败）。
         """
         try:
             direct = await self._execute(GetHistoryFundFlowCmd(market, code, start, count))
         except Exception:
             direct = []
         if direct:
-            return _to_df(direct)
+            return list(direct)
 
         bars = await self._execute(
             GetSecurityBarsCmd(market, code, KlineCategory.DAY, start, count)
@@ -1531,4 +1577,42 @@ class AsyncTdxClient(AsyncHeartbeatMixin):
 
             records = await self._collect_transaction_records(_fetch_page, 800)
             results.append(_historical_fund_flow_from_records(date, records))
+        return results
+
+    async def get_history_fund_flow(
+        self, market: Market, code: str, start: int, count: int
+    ) -> pd.DataFrame:
+        """获取个股历史日线资金流向序列。
+
+        优先走 Category 22 直连接口；若服务器返回空列表，则自动回退为
+        "日 K 线取日期 + 历史逐笔成交重算资金流"的兼容实现。
+
+        空数据故障转移（v1.20.5，Issue #41）：当前 host 直连与 K 线回退均空时，
+        按延迟顺序逐台实测找首台返回有效数据的服务器。
+        """
+        results = await self._fetch_fund_flow_records(market, code, start, count)
+        if not results and self._auto_reconnect:
+            results = await self._fund_flow_failover(market, code, start, count)
         return _to_df(results)
+
+    async def _fund_flow_failover(
+        self, market: Market, code: str, start: int, count: int
+    ) -> list[HistoricalFundFlow]:
+        """资金流空数据故障转移（async）：逐台实测找首台返回有效数据的服务器。
+
+        与 ``_find_host_returning_data`` 区别：资金流获取涉及多命令，无法用单个
+        cmd 复用泛化版；这里以内联 ``_try`` 在每台候选上跑完整 ``_fetch_fund_flow_records``。
+        """
+        bad_host = self._host
+        ranked = await asyncio.to_thread(ping_all, get_known_hosts(), self._port, 5.0)
+
+        async def _try(host: str) -> bool:
+            await self._areconnect(host)
+            return bool(await self._fetch_fund_flow_records(market, code, start, count))
+
+        new_host = await find_working_host_async(ranked, _try, save_best_host, bad_host)
+        if new_host is None:
+            if self._host != bad_host:
+                await self._areconnect(bad_host)
+            return []
+        return await self._fetch_fund_flow_records(market, code, start, count)
