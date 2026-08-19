@@ -147,9 +147,7 @@ def test_skip_bounds_still_allows_out_of_range_values():
     """skip_bounds 仍应放行超范围取值（只是不放过语义倒挂）。"""
     from easy_tdx.backtest.strategies import get_registry
 
-    inst = get_registry().get("ma_cross").build(
-        {"fast": 100, "slow": 200}, skip_bounds=True
-    )
+    inst = get_registry().get("ma_cross").build({"fast": 100, "slow": 200}, skip_bounds=True)
     assert inst.p["fast"] == 100
     assert inst.p["slow"] == 200
 
