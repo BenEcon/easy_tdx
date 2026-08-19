@@ -8,7 +8,7 @@ from typing import Any
 import pandas as pd
 from fastapi import APIRouter, Depends, Query
 
-from easy_tdx.models.enums import KlineCategory
+from easy_tdx._df import _category_to_minutes
 from easy_tdx.web.convert import (
     adjust_from_str,
     category_from_str,
@@ -29,6 +29,16 @@ _NORMAL_COLS = ["open", "close", "high", "low", "vol", "amount"]
 
 def _df_resp(df: Any) -> DataFrameResponse:
     return DataFrameResponse.from_dataframe(df)
+
+
+def _is_daily_plus(cat: Any) -> bool:
+    """判断 KlineCategory 是否日线及以上周期（datetime 应归一为 date）。
+
+    KlineCategory 的枚举值不按周期长短排序（MIN_1=7、MIN_3=8 均大于 DAY=4），
+    不能用整数大小判断"日线及以上"；与 client.py 的 get_security_bars 路径保持
+    同一判定源：_CATEGORY_MINUTES 查得到=分钟级，查不到=日线及以上。
+    """
+    return _category_to_minutes(int(cat)) is None
 
 
 def _normalize_mac_df(df: pd.DataFrame, daily_plus: bool) -> pd.DataFrame:
@@ -99,8 +109,8 @@ async def security_bars(
             adjust=adjust_from_str(adjust),
             bar_time=bar_time,
         )
-        # daily_plus：日线及以上周期（DAY=4 及以上）datetime→date
-        df = _normalize_mac_df(df, daily_plus=int(cat) >= int(KlineCategory.DAY))
+        # daily_plus：日线及以上周期 datetime→date（枚举值无序，显式查表判定）
+        df = _normalize_mac_df(df, daily_plus=_is_daily_plus(cat))
     else:
         # MAC 不可用：回退标准 TdxClient（无复权），adjust 参数忽略
         _logger.warning(
