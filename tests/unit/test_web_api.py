@@ -385,6 +385,118 @@ def test_normalize_mac_df_empty_noop():
     assert out.empty
 
 
+def test_is_daily_plus_covers_all_categories():
+    """daily_plus 判定必须按显式周期表，不能按枚举整数大小（issue #49）。
+
+    KlineCategory 值无序（MIN_1=7、MIN_3=8 > DAY=4），整数比较会把 1/3 分钟线
+    误判成日线，导致 datetime 被截断为 00:00:00 且列名变 date。
+    """
+    pytest.importorskip("fastapi")
+    from easy_tdx.models.enums import KlineCategory
+    from easy_tdx.web.routers.bars import _is_daily_plus
+
+    intraday = {
+        KlineCategory.MIN_1,
+        KlineCategory.MIN_3,
+        KlineCategory.MIN_5,
+        KlineCategory.MIN_15,
+        KlineCategory.MIN_30,
+        KlineCategory.MIN_60,
+    }
+    for cat in KlineCategory:
+        assert _is_daily_plus(cat) == (cat not in intraday), f"{cat.name} 判定错误"
+
+
+class _FakeMacClient:
+    """替身 AsyncMacClient：固定返回 MacClient 风格的 K 线 DataFrame。"""
+
+    def __init__(self, df):
+        import pandas as pd
+
+        self._df = df if isinstance(df, pd.DataFrame) else pd.DataFrame(df)
+        self.calls: list[dict] = []
+
+    async def get_stock_kline(self, market, code, period, start, count, times, **kwargs):
+        self.calls.append({"period": period, "adjust": kwargs.get("adjust")})
+        return self._df
+
+
+def _bars_app(mac_client):
+    """构造只挂 bars 路由的最小 app（无 lifespan，不触发真实行情连接）。"""
+    from fastapi import FastAPI
+
+    from easy_tdx.web.routers import bars
+
+    app = FastAPI()
+    app.include_router(bars.router, prefix="/api/v1")
+    app.state.tdx_client = object()  # mac_client 非 None 时不会被用到
+    app.state.mac_client = mac_client
+    return app
+
+
+def test_bars_min1_endpoint_keeps_datetime():
+    """端到端回归（issue #49）：/bars MIN_1 必须返回 datetime 列且保留时分。"""
+    pytest.importorskip("fastapi")
+    import pandas as pd
+    from fastapi.testclient import TestClient
+
+    mac_df = pd.DataFrame(
+        {
+            "datetime": [pd.Timestamp("2026-08-14 09:31:00"), pd.Timestamp("2026-08-14 09:32:00")],
+            "open": [10.0, 10.1],
+            "high": [10.2, 10.3],
+            "low": [9.9, 10.0],
+            "close": [10.1, 10.2],
+            "vol": [1000.0, 1100.0],
+            "amount": [10100.0, 11220.0],
+            "float_shares": [0.0, 0.0],
+        }
+    )
+    fake = _FakeMacClient(mac_df)
+    with TestClient(_bars_app(fake)) as client:
+        resp = client.get(
+            "/api/v1/bars",
+            params={"market": "SH", "code": "603179", "category": "MIN_1", "count": 2},
+        )
+    assert resp.status_code == 200
+    rows = resp.json()["data"]
+    assert len(rows) == 2
+    for row in rows:
+        assert "datetime" in row and "date" not in row
+    assert rows[0]["datetime"] == "2026-08-14T09:31:00"
+    assert rows[1]["datetime"] == "2026-08-14T09:32:00"
+
+
+def test_bars_day_endpoint_returns_date():
+    """端到端对照：/bars DAY 仍返回 date 列（00:00:00），确认修复无回归。"""
+    pytest.importorskip("fastapi")
+    import pandas as pd
+    from fastapi.testclient import TestClient
+
+    mac_df = pd.DataFrame(
+        {
+            "datetime": [pd.Timestamp("2026-08-14 15:00:00")],
+            "open": [10.0],
+            "high": [10.2],
+            "low": [9.9],
+            "close": [10.1],
+            "vol": [1000.0],
+            "amount": [10100.0],
+            "float_shares": [0.0],
+        }
+    )
+    fake = _FakeMacClient(mac_df)
+    with TestClient(_bars_app(fake)) as client:
+        resp = client.get(
+            "/api/v1/bars", params={"market": "SH", "code": "603179", "category": "DAY", "count": 1}
+        )
+    assert resp.status_code == 200
+    rows = resp.json()["data"]
+    assert len(rows) == 1
+    assert "date" in rows[0] and "datetime" not in rows[0]
+    assert rows[0]["date"] == "2026-08-14T00:00:00"
+
+
 def test_full_app_routes_registered():
     """All routers should be mounted and accessible."""
     pytest.importorskip("fastapi")
