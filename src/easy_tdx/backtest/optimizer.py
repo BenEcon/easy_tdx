@@ -181,8 +181,14 @@ class ParamGridOptimizer:
         for combo in itertools.product(*value_lists):
             params = dict(zip(param_names, combo, strict=True))
             try:
-                # 寻优时跳过参数范围检查——探索超范围值是寻优的目的
+                # 寻优时跳过参数范围检查——探索超范围值是寻优的目的；
+                # 但跨参数语义约束（如 fast<slow）仍生效，倒挂组合在此被跳过
                 strategy = entry.build(params, skip_bounds=True)
+            except ValueError:
+                # 预期内的无效组合（语义倒挂/相等），info 级即可，无需堆栈
+                logger.info("网格点 %s 语义无效，跳过", params)
+                continue
+            try:
                 engine = BacktestEngine(
                     strategy=strategy,
                     cash=self._cash,

@@ -151,7 +151,8 @@ class Param:
             ) from exc
 
         # skip_bounds=True 时跳过范围/取值集合检查（供寻优器探索超范围值），
-        # 仍保留类型转换 + NaN/Inf 拦截。
+        # 仍保留类型转换 + NaN/Inf 拦截。跨参数语义约束在
+        # ParametrizedStrategy.__init__ 里另行校验，同样不受 skip_bounds 影响。
         if not skip_bounds:
             if self.choices is not None and self.type is str and converted not in self.choices:
                 raise ValueError(
@@ -188,6 +189,11 @@ class ParametrizedStrategy(Strategy):
 
     # 类属性：参数 schema（子类覆盖）。ClassVar 表明这是类级配置而非实例字段。
     params: ClassVar[list[Param]] = []
+    # 类属性：跨参数语义约束 (a, b) 列表，要求 a < b（如 ("fast", "slow")）。
+    # 与单参数边界不同，这是语义级校验：skip_bounds（寻优探索超范围值）也不
+    # 跳过——否则网格寻优会把"快线30慢线20"这类倒挂组合跑完还可能当选最优
+    # （issue #39）。
+    param_constraints: ClassVar[list[tuple[str, str]]] = []
     # 实例属性：已校验的参数值字典（init/next 中通过 self.p[name] 访问）。
     p: dict[str, Any]
 
@@ -195,7 +201,8 @@ class ParametrizedStrategy(Strategy):
         """从 kwargs 构造策略参数。
 
         多余的未知参数抛 ValueError；缺失参数取默认值。
-        skip_bounds=True 时跳过参数范围检查（供寻优器探索超范围值）。
+        skip_bounds=True 时跳过单参数范围检查（供寻优器探索超范围值），
+        但跨参数语义约束（``param_constraints``）仍然生效。
         """
         super().__init__()
         declared = {param.name: param for param in self.params}
@@ -207,6 +214,16 @@ class ParametrizedStrategy(Strategy):
         for name, param in declared.items():
             raw = kwargs.get(name, param.default)
             resolved[name] = param.validate(raw, skip_bounds=skip_bounds)
+
+        labels = {param.name: param.label or param.name for param in self.params}
+        for smaller, larger in self.param_constraints:
+            a, b = resolved[smaller], resolved[larger]
+            if not a < b:
+                raise ValueError(
+                    f"参数 '{labels[smaller]}'({smaller})={a} 必须小于 "
+                    f"'{labels[larger]}'({larger})={b}，周期/阈值倒挂在语义上无效"
+                )
+
         self.p = resolved
 
 
@@ -244,7 +261,8 @@ class RegisteredStrategy:
     ) -> ParametrizedStrategy:
         """用给定参数构造策略实例，缺失参数取默认值。
 
-        skip_bounds=True 时跳过参数范围检查（供寻优器探索超范围值）。
+        skip_bounds=True 时跳过单参数范围检查（供寻优器探索超范围值），
+        跨参数语义约束（``param_constraints``）不受影响仍然生效。
         """
         return self.strategy_cls(**(params or {}), skip_bounds=skip_bounds)
 

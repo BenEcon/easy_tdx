@@ -79,7 +79,8 @@ class TestParamGridOptimizer:
         assert result.heatmap["y_name"] == "slow"
         assert len(result.heatmap["x"]) == 3
         assert len(result.heatmap["y"]) == 3
-        assert len(result.heatmap["data"]) == 9  # 3×3
+        # 3×3=9 中 fast=20×slow=15（倒挂）与 20×20（相等）被语义约束跳过（issue #39）
+        assert len(result.heatmap["data"]) == 7
 
     def test_no_heatmap_for_single_param(self) -> None:
         """1 参数时 heatmap 应为 None。"""
@@ -91,6 +92,20 @@ class TestParamGridOptimizer:
         result = opt.run()
         assert result.heatmap is None
         assert len(result.results) == 3
+
+    def test_inverted_combos_skipped(self) -> None:
+        """网格含倒挂组合（fast≥slow）时应全部跳过，best 不可能是倒挂（issue #39）。"""
+        opt = ParamGridOptimizer(
+            strategy_name="ma_cross",
+            param_grid={"fast": [5, 20, 30], "slow": [10, 20]},
+            df=_make_df(),
+        )
+        result = opt.run()
+        # 6 组合中仅 (5,10) 与 (5,20) 语义有效
+        assert len(result.results) == 2
+        assert all(r.params["fast"] < r.params["slow"] for r in result.results)
+        assert result.best is not None
+        assert result.best.params["fast"] < result.best.params["slow"]
 
     def test_grid_size_limit_exceeded(self) -> None:
         """超过 MAX_GRID_POINTS 应抛 ValueError。"""
