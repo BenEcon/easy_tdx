@@ -2,6 +2,16 @@
 
 本文件记录 easy-tdx 的版本变更。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## [1.20.7] — 2026-08-19
+
+两项用户反馈修复 + 前端依赖安全升级：**Web `/bars` 的 MIN_1 时间被归一化为 00:00:00**（Issue #49）与**参数寻优选出快慢倒挂的"最优参数"**（Issue #39）。
+
+### 修复
+
+- **`/bars` MIN_1 误判为日线**（`src/easy_tdx/web/routers/bars.py`，Issue #49）—— `KlineCategory` 枚举值不按周期长短排序（`MIN_1=7`、`MIN_3=8` 均大于 `DAY=4`），MAC 路径用 `int(cat) >= int(KlineCategory.DAY)` 判定"日线及以上"会把 1 分钟线误判为日线，`_normalize_mac_df` 因此将 `datetime` 截断为 `00:00:00` 并把列名改为 `date`。改为 `_is_daily_plus()` 查表判定（复用 `_df._CATEGORY_MINUTES`，与回退 TdxClient 路径同一判定源），保证两条路径 `date`/`datetime` 语义一致。新增表驱动单测 + 端点级回归测试（假 MAC 客户端，无网络依赖）。
+- **策略参数寻优选出语义倒挂组合**（`src/easy_tdx/backtest/strategies/`、`optimizer.py`，Issue #39）—— 寻优网格的笛卡尔积包含 `{"fast":30,"slow":20}` 这类倒挂组合，倒挂的双均线交叉本质是反向策略，回测成绩可能反而突出从而被选为"最优参数"展示。`ParametrizedStrategy` 新增 `param_constraints` 跨参数语义约束（要求 a<b，报错带中文标签），且**不受 `skip_bounds` 影响**（寻优跳过的只是单参数数值边界）；7 个策略声明约束（ma_cross/ema_cross 的 fast<slow、macd 的 short<long、triple_ma 的 short<mid<long、RSI/CCI/WR 的 oversold<overbought）；寻优器自动跳过倒挂组合（预设网格 36 组合 → 有效 25 个），build 阶段的无效组合降为 info 级日志。新增 10 个回归测试（旧代码全失败、新代码全通过）。
+- **Web 前端依赖安全升级**（`web-ui/`，PR #48）—— 升级 postcss/nanoid 修复 Dependabot 安全告警（alerts #2 #3 #5）。
+
 ## [1.20.6] — 2026-08-05
 
 **Web `/bars` 端点迁移到 MacClient + 支持复权**（Issue #43）—— 用户反馈 Web 获取 K 线用的还是标准 TdxClient（标准协议本身不支持复权），导致 REST API 无法取前复权/后复权数据。本次将 `/bars`（个股 K 线）迁移到 `AsyncMacClient.get_stock_kline`（MAC 协议，支持 NONE/QFQ/HFQ + QFQ 负价兜底），**保持旧输出契约不变**（日线 `date` 列、分钟线 `datetime` 列、OHLC 顺序、无 `float_shares`），新增 `adjust` 参数（默认 QFQ），MAC 主机不可用时自动回退标准 TdxClient。
