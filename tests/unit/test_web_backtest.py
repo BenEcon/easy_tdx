@@ -111,6 +111,49 @@ def test_strategy_rejects_out_of_range_param():
         get_registry().get("ma_cross").build({"fast": 999})
 
 
+def test_strategy_rejects_inverted_period_params():
+    """快/慢周期倒挂（fast≥slow）应抛 ValueError（issue #39）。"""
+    from easy_tdx.backtest.strategies import get_registry
+
+    with pytest.raises(ValueError, match="必须小于"):
+        get_registry().get("ma_cross").build({"fast": 30, "slow": 20})
+    # 相等同样无效：两线重合，交叉永不触发
+    with pytest.raises(ValueError, match="必须小于"):
+        get_registry().get("ma_cross").build({"fast": 20, "slow": 20})
+
+
+@pytest.mark.parametrize(
+    "name,params",
+    [
+        ("ma_cross", {"fast": 30, "slow": 20}),
+        ("ema_cross", {"fast": 30, "slow": 20}),
+        ("macd", {"short": 30, "long": 20}),
+        ("triple_ma", {"short": 30, "mid": 20}),
+        ("triple_ma", {"short": 5, "mid": 80, "long": 60}),
+        ("rsi_reversal", {"oversold": 60, "overbought": 50}),
+        ("cci", {"oversold": 50, "overbought": -50}),
+        ("wr_reversal", {"oversold": -50, "overbought": -60}),
+    ],
+)
+def test_param_constraints_enforced_despite_skip_bounds(name, params):
+    """跨参数语义约束不受 skip_bounds 影响（寻优防倒挂组合，issue #39）。"""
+    from easy_tdx.backtest.strategies import get_registry
+
+    with pytest.raises(ValueError, match="必须小于"):
+        get_registry().get(name).build(params, skip_bounds=True)
+
+
+def test_skip_bounds_still_allows_out_of_range_values():
+    """skip_bounds 仍应放行超范围取值（只是不放过语义倒挂）。"""
+    from easy_tdx.backtest.strategies import get_registry
+
+    inst = get_registry().get("ma_cross").build(
+        {"fast": 100, "slow": 200}, skip_bounds=True
+    )
+    assert inst.p["fast"] == 100
+    assert inst.p["slow"] == 200
+
+
 def test_strategy_rejects_unknown_name():
     """未知策略名应抛 KeyError。"""
     from easy_tdx.backtest.strategies import get_registry

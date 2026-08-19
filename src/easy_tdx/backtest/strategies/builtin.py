@@ -54,6 +54,7 @@ class MaCrossStrategy(ParametrizedStrategy):
         Param("fast", int, default=5, min_value=1, max_value=60, label="快线周期"),
         Param("slow", int, default=20, min_value=5, max_value=250, label="慢线周期"),
     ]
+    param_constraints = [("fast", "slow")]
 
     def init(self) -> None:
         self.ma_fast = self.I(MA, self.data.close, self.p["fast"])
@@ -85,6 +86,7 @@ class MacdStrategy(ParametrizedStrategy):
         Param("long", int, default=26, min_value=5, max_value=100, label="长期EMA"),
         Param("signal", int, default=9, min_value=2, max_value=50, label="信号周期"),
     ]
+    param_constraints = [("short", "long")]
 
     def init(self) -> None:
         self.dif, self.dea, self._hist = self.I(
@@ -150,6 +152,7 @@ class RsiReversalStrategy(ParametrizedStrategy):
         Param("oversold", int, default=30, min_value=5, max_value=45, label="超卖线"),
         Param("overbought", int, default=70, min_value=55, max_value=95, label="超买线"),
     ]
+    param_constraints = [("oversold", "overbought")]
 
     def init(self) -> None:
         self.rsi = self.I(RSI, self.data.close, self.p["n"])
@@ -210,6 +213,7 @@ class EmaCrossStrategy(ParametrizedStrategy):
         Param("fast", int, default=12, min_value=2, max_value=60, label="快线周期"),
         Param("slow", int, default=26, min_value=5, max_value=120, label="慢线周期"),
     ]
+    param_constraints = [("fast", "slow")]
 
     def init(self) -> None:
         self.ema_fast = self.I(EMA, self.data.close, self.p["fast"])
@@ -239,6 +243,7 @@ class TripleMaStrategy(ParametrizedStrategy):
         Param("mid", int, default=20, min_value=5, max_value=60, label="中期"),
         Param("long", int, default=60, min_value=20, max_value=250, label="长期"),
     ]
+    param_constraints = [("short", "mid"), ("mid", "long")]
 
     def init(self) -> None:
         self.ma_s = self.I(MA, self.data.close, self.p["short"])
@@ -350,6 +355,7 @@ class CciStrategy(ParametrizedStrategy):
         Param("oversold", int, default=-100, min_value=-200, max_value=0, label="超卖线"),
         Param("overbought", int, default=100, min_value=0, max_value=200, label="超买线"),
     ]
+    param_constraints = [("oversold", "overbought")]
 
     def init(self) -> None:
         self.cci = self.I(CCI, self.data.close, self.data.high, self.data.low, self.p["n"])
@@ -377,6 +383,7 @@ class WrReversalStrategy(ParametrizedStrategy):
         Param("oversold", int, default=-80, min_value=-100, max_value=-40, label="超卖线"),
         Param("overbought", int, default=-20, min_value=-60, max_value=0, label="超买线"),
     ]
+    param_constraints = [("oversold", "overbought")]
 
     def init(self) -> None:
         self.wr, self._wr1 = self.I(WR, self.data.close, self.data.high, self.data.low, self.p["n"])
