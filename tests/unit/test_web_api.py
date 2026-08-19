@@ -455,7 +455,8 @@ def test_bars_min1_endpoint_keeps_datetime():
     fake = _FakeMacClient(mac_df)
     with TestClient(_bars_app(fake)) as client:
         resp = client.get(
-            "/api/v1/bars", params={"market": "SH", "code": "603179", "category": "MIN_1", "count": 2}
+            "/api/v1/bars",
+            params={"market": "SH", "code": "603179", "category": "MIN_1", "count": 2},
         )
     assert resp.status_code == 200
     rows = resp.json()["data"]
