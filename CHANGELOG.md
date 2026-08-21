@@ -2,6 +2,21 @@
 
 本文件记录 easy-tdx 的版本变更。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## [1.20.8] — 2026-08-21
+
+**新增「信号雷达」页：一键扫描全部已保存策略的最近买卖信号**——用户希望能每天一键把策略库里保存的单策略与组合策略都算一遍，列出哪些有买入/卖出信号，方便跟踪。本次新增顶部导航页 `/signals`，一次点击即扫描策略库全部策略（single/portfolio/multi 三种 kind 统一展开成"策略×标的"子任务），汇总列出最近 N 根 K 线（窗口可选 1/3/5/10，默认 5）内出现信号的策略。实测 26 条策略展开 36 个子任务，取行情 + 计算共约 7 秒。
+
+### 新增
+
+- **信号扫描核心**（`src/easy_tdx/web/signal_scan.py`，新文件）—— `expand_targets` 把已保存策略统一展开（single→1 条、portfolio→每只标的一条、multi→每个子策略一条，数据损坏的条目展开为 error 行不中断整批）；`fetch_scan_bars` 按 (symbol, category) 去重取最近 800 根 K 线（同标的多个策略只取一次，单标的失败记 None 不中断）；`evaluate_signals` 单遍跑策略 bar-by-bar 信号流程（复用 `combo._update_position` 跟踪仓位，与回测引擎同口径），返回窗口内信号序列、结束仓位（持仓/空仓）与最新收盘；`normalize_symbol` 按代码段重判市场前缀，纠正历史保存的错标 symbol（如 SZ:515080→SH:515080，规则与前端 `detectMarket` 一致）。
+- **信号扫描端点**（`src/easy_tdx/web/routers/backtest.py`）—— `POST /api/v1/backtest/signal-scan/run/async`：读策略库 → 展开 → 去重取行情（async 上下文内完成）→ 后台线程逐条算信号，结果走现有任务轮询机制（`GET /backtest/tasks/{id}`）。只扫信号、不重跑完整回测、不改写策略库保存的业绩快照。策略库为空返回 400。请求/响应模型 `SignalScanRequest/Row/Result` 见 `backtest_schemas.py`（`window_bars` 1~30）。
+- **信号雷达页**（`web-ui/src/views/SignalRadarView.vue`，新文件 + 路由 `/signals` + 导航入口）—— 「⚡ 一键扫描」按钮 + 窗口选择；汇总卡片（子任务数/买入/卖出/失败）；筛选 tab（有信号/买入/卖出/失败/全部，默认只看有信号）；明细表含策略名、类型徽章、子策略+参数、标的、买入红/卖出绿信号徽章（A股配色习惯）、窗口内信号序列（如 `S 08-20 · B 08-21`）、最新收盘、策略当前持仓/空仓、「载入」跳回测页回填。上次扫描结果缓存 localStorage，重进页面直接展示（标注扫描时间与耗时）。盘中提示：最后一根 K 线未收盘，信号为盘中即时值。
+- **前端 API 封装**（`web-ui/src/api.ts`、`types.ts`）—— `submitSignalScanTask`/`runSignalScanWithPolling`（取行情在提交请求内完成，默认 300s 超时）/`asSignalScanResult`；`SignalScanResult` 加入 `TaskState.result` 联合类型。
+
+### 测试
+
+- 新增 20 个测试（`tests/unit/test_signal_scan.py`）：`normalize_symbol` 参数化纠错（7 例）；三种 kind 展开 + 数据损坏容错；取数去重/失败容错/date→datetime 列归一化（fake async client）；`evaluate_signals` 金叉买入、死叉卖出、窗口过滤与仓位跟踪（金叉位置用 MyTT 独立计算互验）、与真实回测引擎成交方向序列一致性对照；`run_scan` 汇总计数 + 三类失败行；端到端（TestClient + fake store/取数：提交→轮询 done→结果结构、空库 400、窗口越界 422）。全套 1030 个单测通过。
+
 ## [1.20.7] — 2026-08-19
 
 两项用户反馈修复 + 前端依赖安全升级：**Web `/bars` 的 MIN_1 时间被归一化为 00:00:00**（Issue #49）与**参数寻优选出快慢倒挂的"最优参数"**（Issue #39）。
