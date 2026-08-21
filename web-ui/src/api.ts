@@ -17,6 +17,8 @@ import type {
   ServerHostInfo,
   ServerHostListResponse,
   ServerSwitchResult,
+  SignalScanRequest,
+  SignalScanResult,
   StrategiesResponse,
   TaskListResponse,
   TaskState,
@@ -236,6 +238,55 @@ export async function runBacktestWithPolling(
 }
 
 // ── 策略库（已保存策略）──────────────────────────────────────────────────────
+
+/** 提交「信号雷达」一键扫描后台任务，返回 task_id。 */
+export async function submitSignalScanTask(
+  req: SignalScanRequest = {},
+): Promise<TaskSubmitResponse> {
+  const resp = await fetch(`${BASE}/backtest/signal-scan/run/async`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(req),
+  })
+  if (!resp.ok) await throwError(resp)
+  return (await resp.json()) as TaskSubmitResponse
+}
+
+/**
+ * 提交信号扫描并轮询直到 done/failed。
+ *
+ * 与 runBacktestWithPolling 的区别：扫描要在请求内逐标的取行情（提交本身
+ * 就可能耗时数十秒），且标的较多时总时长可能超过 2 分钟，故默认 300s 超时。
+ */
+export async function runSignalScanWithPolling(
+  req: SignalScanRequest = {},
+  onPoll?: (state: TaskState) => void,
+  intervalMs = 500,
+  timeoutMs = 300_000,
+): Promise<TaskState> {
+  const { task_id } = await submitSignalScanTask(req)
+  const start = Date.now()
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const state = await fetchTask(task_id)
+    onPoll?.(state)
+    if (state.status === 'done' || state.status === 'failed') return state
+    if (Date.now() - start > timeoutMs) {
+      throw new Error(`信号扫描超时（${timeoutMs / 1000}s），可稍后重试或减小窗口`)
+    }
+    await new Promise((r) => setTimeout(r, intervalMs))
+  }
+}
+
+/** 断言任务结果为信号扫描结果（类型收窄用）。 */
+export function asSignalScanResult(state: TaskState): SignalScanResult {
+  if (state.status === 'failed') throw new Error(state.error || '信号扫描失败')
+  const result = state.result as SignalScanResult | null
+  if (!result || !Array.isArray(result.rows)) {
+    throw new Error('信号扫描结果格式异常（缺少 rows）')
+  }
+  return result
+}
 
 /** 列出全部已保存策略（按创建时间倒序）。 */
 export async function fetchSavedStrategies(): Promise<SavedStrategyListResponse> {

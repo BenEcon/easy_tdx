@@ -25,6 +25,10 @@ __all__ = [
     "SavedStrategyListResponse",
     "MultiStrategyItem",
     "MultiStrategyBacktestRequest",
+    "SignalScanRequest",
+    "SignalScanRecentSignal",
+    "SignalScanRow",
+    "SignalScanResult",
     "serialize_result",
 ]
 
@@ -370,6 +374,59 @@ class MultiStrategyBacktestRequest(BaseModel):
     stamp_tax: float = Field(default=0.001, ge=0, le=0.01)
     slippage: float = Field(default=0.0, ge=0, le=0.05)
     execution: Literal["next_open", "next_close"] = Field(default="next_open")
+
+
+# ── 信号雷达（一键扫描已保存策略的最近买卖信号）────────────────────────────────
+
+
+class SignalScanRequest(BaseModel):
+    """信号扫描请求：扫描策略库全部已保存策略，只看最近 N 根 K 线内的信号。"""
+
+    window_bars: int = Field(
+        default=5, ge=1, le=30, description="检查最近 N 根 K 线内的信号（日线即 N 个交易日）"
+    )
+
+
+class SignalScanRecentSignal(BaseModel):
+    """窗口内单根 K 线的信号。"""
+
+    date: str
+    direction: Literal["BUY", "SELL"]
+
+
+class SignalScanRow(BaseModel):
+    """扫描结果单行：一个"策略×标的"子任务的信号摘要。
+
+    single 策略 1 行；portfolio 每只标的 1 行；multi 每个子策略 1 行
+    （行内 ``strategy_name`` 是所属已保存策略的名字）。
+    """
+
+    strategy_id: str
+    strategy_name: str
+    kind: Literal["single", "portfolio", "multi"]
+    strategy: str
+    strategy_label: str = ""
+    params: dict[str, Any] = {}
+    symbol: str
+    category: str = "DAY"
+    latest_signal: Literal["BUY", "SELL"] | None = None  # 窗口内最后一根有信号的 K 线
+    signal_date: str | None = None  # 该信号所在 K 线日期
+    recent_signals: list[SignalScanRecentSignal] = []  # 窗口内全部信号（按时间正序）
+    position: Literal["holding", "flat"] | None = None  # 扫描结束时策略仓位
+    last_close: float | None = None
+    last_bar_date: str | None = None
+    error: str | None = None
+
+
+class SignalScanResult(BaseModel):
+    """信号扫描结果：全部子任务行 + 汇总计数。"""
+
+    rows: list[SignalScanRow]
+    total: int = 0
+    buy_count: int = 0  # 窗口内有买入信号的行数
+    sell_count: int = 0  # 窗口内有卖出信号的行数
+    error_count: int = 0
+    elapsed: float = 0.0
 
 
 # ── 结果序列化 ─────────────────────────────────────────────────────────────────

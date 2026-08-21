@@ -25,6 +25,7 @@ from easy_tdx.web.backtest_schemas import (
     OptimizeAllResult,
     OptimizeBacktestRequest,
     PortfolioBacktestRequest,
+    SignalScanRequest,
     StrategySchemaResponse,
     TaskListResponse,
     TaskStateResponse,
@@ -290,6 +291,44 @@ async def run_optimize_all_async(
     runner = get_runner()
     task_id = runner.submit(
         lambda: _run_optimize_all(df, snapshot),
+        description=description,
+    )
+    state = runner.get(task_id)
+    status: Any = state.status if state.status in ("pending", "running") else "running"
+    return TaskSubmitResponse(task_id=task_id, status=status)
+
+
+# ── 信号雷达（一键扫描已保存策略）────────────────────────────────────────────
+
+
+@router.post("/backtest/signal-scan/run/async", response_model=TaskSubmitResponse, status_code=202)
+async def run_signal_scan_async(
+    req: SignalScanRequest,
+    client: Any = Depends(get_client),
+) -> TaskSubmitResponse:
+    """提交「信号雷达」后台任务：扫描策略库全部已保存策略的最近买卖信号。
+
+    single/portfolio/multi 统一展开成"策略×标的"子任务，按 (symbol, category)
+    去重取最近 800 根 K 线（async 上下文内完成），后台线程内逐条跑信号流程
+    （与回测引擎同口径，含仓位跟踪）。只扫信号、不重跑回测、不改业绩快照。
+    结果为 SignalScanResult，通过 GET /backtest/tasks/{task_id} 轮询。
+    """
+    from easy_tdx.web.signal_scan import expand_targets, fetch_scan_bars, run_scan
+    from easy_tdx.web.strategy_store import get_store
+
+    records = get_store().list_all()
+    if not records:
+        raise ValueError("策略库为空，请先在回测页保存策略")
+
+    targets = expand_targets(records)
+    bars = await fetch_scan_bars(client, targets)
+    description = (
+        f"信号扫描 | {len(records)}条策略 · {len(targets)}个子任务 · 窗口{req.window_bars}根"
+    )
+
+    runner = get_runner()
+    task_id = runner.submit(
+        lambda: run_scan(bars, targets, req.window_bars),
         description=description,
     )
     state = runner.get(task_id)

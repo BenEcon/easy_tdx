@@ -5,15 +5,18 @@ import CompareView from './views/CompareView.vue'
 import OptimizeView from './views/OptimizeView.vue'
 import PortfolioView from './views/PortfolioView.vue'
 import ServerSettingsView from './views/ServerSettingsView.vue'
+import SignalRadarView from './views/SignalRadarView.vue'
 import StrategiesView from './views/StrategiesView.vue'
 
-// 单标的回测（/）+ 组合回测（/portfolio）+ 参数寻优（/optimize）+ 结果对比（/compare）+ 策略库（/strategies）+ 服务器设置（/settings）。
+// 单标的回测（/）+ 组合回测（/portfolio）+ 参数寻优（/optimize）+ 结果对比（/compare）
+// + 策略库（/strategies）+ 信号雷达（/signals）+ 服务器设置（/settings）。
 const routes = [
   { path: '/', name: 'backtest', component: BacktestView },
   { path: '/portfolio', name: 'portfolio', component: PortfolioView },
   { path: '/optimize', name: 'optimize', component: OptimizeView },
   { path: '/compare', name: 'compare', component: CompareView },
   { path: '/strategies', name: 'strategies', component: StrategiesView },
+  { path: '/signals', name: 'signals', component: SignalRadarView },
   { path: '/settings', name: 'settings', component: ServerSettingsView },
 ]
 

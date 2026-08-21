@@ -131,7 +131,13 @@ export type TaskStatus = 'pending' | 'running' | 'done' | 'failed'
 export interface TaskState {
   task_id: string
   status: TaskStatus
-  result: BacktestResult | PortfolioResult | OptimizeResult | OptimizeAllResult | null
+  result:
+    | BacktestResult
+    | PortfolioResult
+    | OptimizeResult
+    | OptimizeAllResult
+    | SignalScanResult
+    | null
   error: string | null
   description: string
   elapsed: number
@@ -305,6 +311,48 @@ export interface SavedStrategy {
 export interface SavedStrategyListResponse {
   strategies: SavedStrategy[]
   count: number
+}
+
+// ── 信号雷达（POST /api/v1/backtest/signal-scan/run/async） ──────────────────
+
+/** 信号扫描请求：window_bars = 检查最近 N 根 K 线内的信号。 */
+export interface SignalScanRequest {
+  window_bars?: number
+}
+
+/** 窗口内单根 K 线的信号。 */
+export interface SignalScanRecentSignal {
+  date: string
+  direction: 'BUY' | 'SELL'
+}
+
+/** 扫描结果单行：一个"策略×标的"子任务的信号摘要。 */
+export interface SignalScanRow {
+  strategy_id: string
+  strategy_name: string
+  kind: 'single' | 'portfolio' | 'multi'
+  strategy: string
+  strategy_label: string
+  params: Record<string, number | string | boolean>
+  symbol: string
+  category: string
+  latest_signal: 'BUY' | 'SELL' | null
+  signal_date: string | null
+  recent_signals: SignalScanRecentSignal[]
+  position: 'holding' | 'flat' | null
+  last_close: number | null
+  last_bar_date: string | null
+  error: string | null
+}
+
+/** 信号扫描结果：全部子任务行 + 汇总计数。 */
+export interface SignalScanResult {
+  rows: SignalScanRow[]
+  total: number
+  buy_count: number
+  sell_count: number
+  error_count: number
+  elapsed: number
 }
 
 // ── 多策略组合回测（资金分仓，POST /api/v1/backtest/multi-strategy/run/async） ──

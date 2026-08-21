@@ -12,6 +12,7 @@
         <RouterLink to="/optimize" active-class="active">参数寻优</RouterLink>
         <RouterLink to="/compare" active-class="active">结果对比</RouterLink>
         <RouterLink to="/strategies" active-class="active">策略库</RouterLink>
+        <RouterLink to="/signals" active-class="active">信号雷达</RouterLink>
         <RouterLink to="/settings" active-class="active">服务器设置</RouterLink>
       </nav>
     </header>
