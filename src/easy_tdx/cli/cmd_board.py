@@ -4,15 +4,37 @@ from __future__ import annotations
 
 import click
 
+_SORT_CHOICES = [
+    "CHANGE_PCT",
+    "SPEED",
+    "CHANGE_3D",
+    "CHANGE_5D",
+    "CHANGE_10D",
+    "CHANGE_20D",
+    "CHANGE_60D",
+    "YTD",
+]
+
 
 @click.command("board-list")
 @click.option("--type", "board_type", default="ALL", help="板块类型: ALL/HY/GN/FG/DQ/OTHER")
 @click.option("--count", default=10000, type=int, help="请求数量")
+@click.option(
+    "--sort",
+    "sort_column",
+    default="CHANGE_PCT",
+    type=click.Choice(_SORT_CHOICES),
+    help=(
+        "排序键，sort_value 列即该指标值；要取涨速传 SPEED"
+        "（CHANGE_PCT 时该列恒 0，涨跌幅=price/pre_close-1）"
+    ),
+)
 @click.option("--table", "use_table", is_flag=True, help="表格输出")
 @click.option("--output", "output_fmt", type=click.Choice(["json", "table", "csv"]), default="json")
 def board_list(
     board_type: str,
     count: int,
+    sort_column: str,
     use_table: bool,
     output_fmt: str,
 ) -> None:
@@ -25,15 +47,20 @@ def board_list(
       easy-tdx board-list --type GN --count 200
 
       easy-tdx board-list --type HY
+
+      easy-tdx board-list --sort SPEED --table  # 按涨速排序，sort_value 即涨速%
     """
+    from easy_tdx.mac.enums import BoardSortColumn
+
     from .conn import get_mac_client
     from .output import print_output
     from .parsers import parse_board_type
 
     fmt = "table" if use_table else output_fmt
     bt = parse_board_type(board_type)
+    sc = BoardSortColumn[sort_column]
     with get_mac_client() as client:
-        df = client.get_board_list(board_type=bt, count=count)
+        df = client.get_board_list(board_type=bt, count=count, sort_column=sc)
     print_output(df, fmt)
 
 

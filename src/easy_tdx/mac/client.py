@@ -51,7 +51,16 @@ from .commands import (
 from .commands.chart_sampling import ChartSamplingCmd
 from .commands.file_query import FileDownloadCmd, FileListCmd
 from .commands.goods_list import GoodsListCmd
-from .enums import Adjust, BoardType, Category, FilterType, Period, SortOrder, SortType
+from .enums import (
+    Adjust,
+    BoardSortColumn,
+    BoardType,
+    Category,
+    FilterType,
+    Period,
+    SortOrder,
+    SortType,
+)
 from .models import (
     MacBar,
     MacMultiTickChart,
@@ -704,20 +713,29 @@ class MacClient:
         self,
         board_type: BoardType = BoardType.ALL,
         count: int = 10000,
+        sort_column: BoardSortColumn = BoardSortColumn.CHANGE_PCT,
     ) -> pd.DataFrame:
-        """获取板块列表（自动分页）。
+        """获取板块列表（自动分页，默认按涨跌幅降序）。
 
         Args:
             board_type: 板块类型。
             count: 请求总数。
+            sort_column: 排序键（决定返回顺序与 ``sort_value`` 列的语义）。
+                可选：涨跌幅(默认)/涨速/3日/5日/10日/20日/60日/年初至今涨幅。
+                注意 ``sort_value`` 是"当前排序列的值"——要取涨速需传
+                ``BoardSortColumn.SPEED``，此时按涨速降序返回；默认按涨跌幅
+                排序时该列恒 0（涨跌幅可由 price/pre_close 计算）。
+
+        Issue #53：此前该列被误标为"涨速"且恒为 0，根因即 sort_column
+        语义未实现。
         """
-        all_items = self._execute(BoardListCmd(board_type, 0, min(count, 150)))
+        all_items = self._execute(BoardListCmd(board_type, 0, min(count, 150), sort_column))
         fetched = len(all_items)
         offset = fetched
 
         while fetched < count:
             page_size = min(count - fetched, 150)
-            batch = self._execute(BoardListCmd(board_type, offset, page_size))
+            batch = self._execute(BoardListCmd(board_type, offset, page_size, sort_column))
             if not batch:
                 break
             all_items.extend(batch)
@@ -1690,14 +1708,19 @@ class AsyncMacClient(AsyncHeartbeatMixin):
         self,
         board_type: BoardType = BoardType.ALL,
         count: int = 10000,
+        sort_column: BoardSortColumn = BoardSortColumn.CHANGE_PCT,
     ) -> pd.DataFrame:
-        all_items = await self._execute(BoardListCmd(board_type, 0, min(count, 150)))
+        """获取板块列表（async，自动分页，默认按涨跌幅降序）。
+
+        ``sort_column`` 语义与同步版一致（Issue #53）。
+        """
+        all_items = await self._execute(BoardListCmd(board_type, 0, min(count, 150), sort_column))
         fetched = len(all_items)
         offset = fetched
 
         while fetched < count:
             page_size = min(count - fetched, 150)
-            batch = await self._execute(BoardListCmd(board_type, offset, page_size))
+            batch = await self._execute(BoardListCmd(board_type, offset, page_size, sort_column))
             if not batch:
                 break
             all_items.extend(batch)

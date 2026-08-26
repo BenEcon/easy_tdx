@@ -68,6 +68,23 @@ def board_type_from_str(s: str) -> Any:
     raise ValueError(f"无效板块类型 '{s}'，可选值: {valid}") from None
 
 
+def board_sort_from_str(s: str) -> Any:
+    """将字符串转为 BoardSortColumn 枚举（CHANGE_PCT/SPEED/CHANGE_3D/...）。"""
+    from easy_tdx.mac.enums import BoardSortColumn
+
+    key = s.upper()
+    try:
+        return BoardSortColumn[key]
+    except KeyError:
+        pass
+    try:
+        return BoardSortColumn(int(key))
+    except (ValueError, TypeError):
+        pass
+    valid = ", ".join(m.name for m in BoardSortColumn)
+    raise ValueError(f"无效板块排序键 '{s}'，可选值: {valid}") from None
+
+
 def sort_type_from_str(s: str) -> Any:
     """将字符串转为 SortType 枚举（CHANGE_PCT/VOLUME/... 或 hex 数字）。"""
     from easy_tdx.mac.enums import SortType

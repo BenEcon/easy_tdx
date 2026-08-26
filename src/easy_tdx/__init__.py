@@ -29,6 +29,7 @@ from .exceptions import TdxCommandError, TdxConnectionError, TdxDecodeError, Tdx
 from .mac.client import AsyncMacClient, MacClient
 from .mac.enums import (
     Adjust,
+    BoardSortColumn,
     BoardType,
     Category,
     ExMarket,
@@ -73,6 +74,7 @@ __all__ = [
     "Market",
     "KlineCategory",
     "Adjust",
+    "BoardSortColumn",
     "BoardType",
     "Category",
     "ExMarket",

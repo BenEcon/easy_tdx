@@ -1348,10 +1348,11 @@ with MacClient.from_best_host() as c:
 #### 板块
 
 ```python
-from easy_tdx import BoardType
+from easy_tdx import BoardSortColumn, BoardType
 
 with MacClient.from_best_host() as c:
     df = c.get_board_list(BoardType.GN)                       # 概念板块
+    df = c.get_board_list(sort_column=BoardSortColumn.SPEED)  # 按涨速排序取涨速%
     df = c.get_board_members("881001", sort_type=SortType.CHANGE_PCT)
     df = c.get_belong_board(Market.SZ, "000001")              # 个股所属板块
 
@@ -1773,7 +1774,7 @@ with MacClient.from_best_host() as client:
 | `get_chart_sampling(market, code)` | 分时缩略采样 |
 | `get_transactions(market, code, ...)` | 逐笔成交 |
 | `get_symbol_info(market, code)` | 个股特征快照 |
-| `get_board_list(board_type, ...)` | 板块列表 |
+| `get_board_list(board_type, ..., sort_column)` | 板块列表（sort_value 列=排序键指标值） |
 | `get_board_members(board_symbol, ...)` | 板块成分股报价 |
 | `get_board_summary(board_symbol, ...)` | 板块汇总（成交额、主力净流入、涨跌家数） |
 | `get_board_ranking(board_type, top_n, sort_by, ...)` | 板块涨跌幅排行榜（行业/概念排行） |

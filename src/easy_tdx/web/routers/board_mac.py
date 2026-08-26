@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, Query
 
 from easy_tdx.web.convert import (
+    board_sort_from_str,
     board_type_from_str,
     market_value_from_str,
     sort_order_from_str,
@@ -26,10 +27,22 @@ def _df_resp(df: Any) -> DataFrameResponse:
 async def board_list(
     board_type: str = Query("ALL", description="板块类型: ALL/HY/HY2/GN/FG/DQ"),
     count: int = Query(500, ge=1, le=50000),
+    sort_column: str = Query(
+        "CHANGE_PCT",
+        description=(
+            "排序键: CHANGE_PCT/SPEED/CHANGE_3D/CHANGE_5D/CHANGE_10D/"
+            "CHANGE_20D/CHANGE_60D/YTD；sort_value 列即该指标值"
+            "（CHANGE_PCT 时恒 0，涨跌幅=price/pre_close-1）"
+        ),
+    ),
     client: Any = Depends(get_mac_client),
 ) -> DataFrameResponse:
-    """获取板块列表。"""
-    df = await client.get_board_list(board_type=board_type_from_str(board_type), count=count)
+    """获取板块列表（默认按涨跌幅降序；要取涨速传 sort_column=SPEED）。"""
+    df = await client.get_board_list(
+        board_type=board_type_from_str(board_type),
+        count=count,
+        sort_column=board_sort_from_str(sort_column),
+    )
     return _df_resp(df)
 
 

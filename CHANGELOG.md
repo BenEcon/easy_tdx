@@ -2,6 +2,21 @@
 
 本文件记录 easy-tdx 的版本变更。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## [1.20.10] — 2026-08-26
+
+**`get_board_list` 板块涨速列恒为 0**（Issue #53）——用户反馈板块列表的涨速列存在但全是 0。逆向核实（0x1231 抓包 + 与 `SymbolQuotesCmd` 字段逐一对值锚定）发现根因：响应中 price 与 pre_close 之间的那个 float **不是固定的"涨速"，而是"当前排序列的值"**（板块与领涨股各一份）——请求里的 sort_column 此前硬编码为 0（涨跌幅），而涨跌幅列仅作排序键、值槽恒 0（客户端可由 price/pre_close 计算），所以永远拿到 0。实测锚定排序列映射：**0=涨跌幅（值槽恒 0）、1=涨速%、2=3日涨幅、3=20日涨幅、4=60日涨幅、5=年初至今、6=5日涨幅、7=10日涨幅**。
+
+### 修复
+
+- **`get_board_list` 暴露 `sort_column` 参数**（`MacClient` / `AsyncMacClient`）—— 新增 `BoardSortColumn` 枚举（公开导出），取涨速传 `BoardSortColumn.SPEED`，此时按涨速降序返回、`sort_value` 列即涨速%；默认仍按涨跌幅降序（行为不变）。分页请求全程透传同一排序键。
+- **字段更名（破坏性）**：`BoardInfo.rise_speed → sort_value`、`symbol_rise_speed → symbol_sort_value`（`src/easy_tdx/mac/models.py`、`commands/board_list.py`）—— 旧名在语义上是错的（该值槽只有按涨速排序时才是涨速），且从未返回过正确数据（恒 0），更名比留着一个撒谎的列名更安全。
+- **Web 端点 `/board-mac/list` 新增 `sort_column` 查询参数**（`web/convert.py` 新增 `board_sort_from_str`）—— 如 `?sort_column=SPEED`；CLI `easy-tdx board-list` 新增 `--sort` 选项（`CHANGE_PCT/SPEED/CHANGE_3D/CHANGE_5D/CHANGE_10D/CHANGE_20D/CHANGE_60D/YTD`）。
+- README 板块示例补 `sort_column=BoardSortColumn.SPEED` 用法。
+
+### 测试
+
+- 新增 `tests/unit/test_board_list.py`（9 例）：sort_column 请求字节打包位置断言（帧偏移 16）；排序列枚举值锚定；合成 160 字节记录解析（sort_value/symbol_sort_value）；sync/async 客户端透传；`board_sort_from_str` 转换器；Web 端点 `?sort_column=SPEED` 端到端透传；记录长度 160 字节不变式；`_EXPECTED_KIND` 公共 API 契约补 `BoardSortColumn`。实测：涨速降序 top10（近期复牌 0.234%、教育培训 0.138%…）、3日/60日/年初至今等排序键数值与 `SymbolQuotesCmd` 同名字段逐一相等。全套 1035 个单测通过（`test_web_api.py` 2 个失败为基线已存在的环境问题）。
+
 ## [1.20.9] — 2026-08-26
 
 **`get_history_fund_flow` 取不到历史主力净额**（Issue #52）——用户反馈拿不到历史主力净额数据。排查发现三层根因（全部经 52 台已知服务器实测核实）：其一，文档声称的"Category 22 直连资金流接口"是**虚构协议**——46 台可达服务器对该请求全部仅回 2 字节空包（0 条或 ret_count 撒谎），从未成功返回过数据，所谓"9 字节头 + 36 字节/条"响应格式系臆造（单测里的格式是 mock）；其二，实际数据一直来自"日 K 线取日期 + 历史逐笔成交重算"，但历史逐笔接口**当日数据要收盘清算后才有**，而日 K 盘中已包含当日 bar，导致 `start=0` 的最新一行（今天）恒为全 0；其三，`main_net_inflow`（主力净额）此前仅为 dataclass property，`_to_df` 的 `asdict()` 静默丢弃，返回 DataFrame 里根本没有主力净额列。

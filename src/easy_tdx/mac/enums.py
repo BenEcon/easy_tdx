@@ -46,6 +46,24 @@ class BoardType(IntEnum):
     ALL = 255  # 全部
 
 
+class BoardSortColumn(IntEnum):
+    """板块列表（0x1231）排序键；响应中 price 与 pre_close 之间的值槽
+    返回的就是当前排序列的值（Issue #53：原实现误标为固定"涨速"且
+    硬编码 sort_column=0，该值恒为 0）。
+
+    实测锚定（2026-08-26，与 SymbolQuotesCmd 字段逐一对值）：
+    """
+
+    CHANGE_PCT = 0  # 涨跌幅%（仅排序键，值槽恒 0，可由 price/pre_close 计算）
+    SPEED = 1  # 涨速%
+    CHANGE_3D = 2  # 3日涨幅%
+    CHANGE_20D = 3  # 20日涨幅%
+    CHANGE_60D = 4  # 60日涨幅%
+    YTD = 5  # 年初至今%
+    CHANGE_5D = 6  # 5日涨幅%
+    CHANGE_10D = 7  # 10日涨幅%
+
+
 class ExBoardType(IntEnum):
     """扩展市场板块类型。"""
 

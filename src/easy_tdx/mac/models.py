@@ -125,19 +125,25 @@ class MacTransaction:
 
 @dataclass(frozen=True)
 class BoardInfo:
-    """板块信息。"""
+    """板块信息。
+
+    ``sort_value`` / ``symbol_sort_value`` 是"当前排序列的值"（板块与其领涨股
+    各一份），语义由请求的 ``BoardSortColumn`` 决定——如按涨速排序则为涨速%，
+    按 3 日涨幅排序则为 3 日涨幅%。默认按涨跌幅排序时值槽恒 0（涨跌幅可由
+    price/pre_close 计算；Issue #53：此前误标为固定"涨速"且恒为 0）。
+    """
 
     market: int
     code: str
     name: str
     price: float
-    rise_speed: float
+    sort_value: float
     pre_close: float
     symbol_market: int
     symbol_code: str
     symbol_name: str
     symbol_price: float
-    symbol_rise_speed: float
+    symbol_sort_value: float
     symbol_pre_close: float
 
 

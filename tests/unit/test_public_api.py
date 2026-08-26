@@ -33,6 +33,7 @@ _EXPECTED_KIND: dict[str, str] = {
     "Market": "class",
     "KlineCategory": "class",
     "Adjust": "class",
+    "BoardSortColumn": "class",
     "BoardType": "class",
     "Category": "class",
     "ExMarket": "class",
