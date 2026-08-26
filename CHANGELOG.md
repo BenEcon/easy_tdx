@@ -2,6 +2,21 @@
 
 本文件记录 easy-tdx 的版本变更。格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## [1.20.9] — 2026-08-26
+
+**`get_history_fund_flow` 取不到历史主力净额**（Issue #52）——用户反馈拿不到历史主力净额数据。排查发现三层根因（全部经 52 台已知服务器实测核实）：其一，文档声称的"Category 22 直连资金流接口"是**虚构协议**——46 台可达服务器对该请求全部仅回 2 字节空包（0 条或 ret_count 撒谎），从未成功返回过数据，所谓"9 字节头 + 36 字节/条"响应格式系臆造（单测里的格式是 mock）；其二，实际数据一直来自"日 K 线取日期 + 历史逐笔成交重算"，但历史逐笔接口**当日数据要收盘清算后才有**，而日 K 盘中已包含当日 bar，导致 `start=0` 的最新一行（今天）恒为全 0；其三，`main_net_inflow`（主力净额）此前仅为 dataclass property，`_to_df` 的 `asdict()` 静默丢弃，返回 DataFrame 里根本没有主力净额列。
+
+### 修复
+
+- **移除虚构的 Category 22 死代码**（删除 `src/easy_tdx/commands/fund_flow.py`）—— `GetHistoryFundFlowCmd` 的请求复用 K 线格式（category=22），实测所有服务器均回空包；响应解析格式（9 字节头 + 36 字节/条）无真实样本支撑。`_fetch_fund_flow_records`（sync/async）不再先试注定失败的直连，直接走"日 K + 逐笔重算"，每次调用省一次无效往返。`docs/protocol-unknown-fields.md` 中"fund_flow 9 字节头部（已确认）"的错误结论改为"已证伪并移除"的实测记录（46 台全空，2026-08-26）。
+- **当日行盘中改走当日实时逐笔**（`src/easy_tdx/client.py`，Issue #52）—— bar 日期（上海时区）等于今天时用 `GetTransactionDataCmd`（当日实时逐笔），其余日期仍走 `GetHistoryTransactionDataCmd`（历史逐笔）。盘中调用 `get_history_fund_flow(..., 0, N)` 最新一行即为当日实时主力净额（实测茅台 13:30 盘中 +3.87 亿元），收盘清算后自动切回历史逐笔，无需调用方感知。空数据故障转移（v1.20.5）逻辑不变，撒谎服务器换台实测依然生效。
+- **物化 `main_net_inflow` 主力净额列**（`_fund_flow_df_with_net`）—— `get_history_fund_flow` 返回列紧随 `date` 之后、`get_fund_flow`（当日快照）放首列；单位元，正=净流入，=（超大单+大单）流入 − 流出，无需用户手工计算。`get_fund_flow`/`get_history_fund_flow`（sync/async 共 4 处）统一接入。
+- **文档同步**（`docs/api_reference.md`、`docs/field_mapping.md`、`examples/08_fund_flow/history_fund_flow.py`）—— 更新返回类型与列说明，移除"优先走 Category 22 直连"的误导描述，补充口径说明（按单笔成交金额分级：>100 万超大 / 20~100 万大 / 4~20 万中 / ≤4 万小，与第三方平台划分标准可能略有差异）。
+
+### 测试
+
+- 重写 `test_get_history_fund_flow_fallback`（去掉虚构直连分支，补 `main_net_inflow` 列存在性与数值断言）；新增 `test_get_history_fund_flow_today_uses_realtime_ticks`（当日 bar 走实时逐笔、历史日期走历史逐笔的路径回归）；`test_get_fund_flow_logic` 补当日主力净额断言；删除 2 个针对已移除命令的虚构协议测试（`test_protocol_fixes.py`）。全套 1026 个单测通过（`test_web_api.py` 2 个失败为基线已存在的环境问题，与本变更无关）。
+
 ## [1.20.8] — 2026-08-21
 
 **新增「信号雷达」页：一键扫描全部已保存策略的最近买卖信号**——用户希望能每天一键把策略库里保存的单策略与组合策略都算一遍，列出哪些有买入/卖出信号，方便跟踪。本次新增顶部导航页 `/signals`，一次点击即扫描策略库全部策略（single/portfolio/multi 三种 kind 统一展开成"策略×标的"子任务），汇总列出最近 N 根 K 线（窗口可选 1/3/5/10，默认 5）内出现信号的策略。实测 26 条策略展开 36 个子任务，取行情 + 计算共约 7 秒。
