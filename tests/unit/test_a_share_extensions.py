@@ -1,8 +1,9 @@
 """针对本轮 A 股增强功能的单元测试。"""
 
 import asyncio
-import struct
+from datetime import datetime, timedelta
 from unittest.mock import patch
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -46,6 +47,8 @@ def test_get_fund_flow_logic(_mock_conn_cls):
         assert flow["super_in"].iloc[0] == 1010000.0
         assert flow["large_out"].iloc[0] == 250000.0
         assert flow["small_in"].iloc[0] == 10000.0
+        # 当日资金流同样物化主力净额列（Issue #52）
+        assert flow["main_net_inflow"].iloc[0] == 1010000.0 - 250000.0
 
 
 def test_classify_fund_flow_exact_thresholds_use_lower_bucket():
@@ -194,31 +197,9 @@ def test_get_market_stat_mapping(_mock_conn_cls):
         assert stat["total_market_cap"].iloc[0] == 1186.579 * 1e10
 
 
-def test_get_history_fund_flow_parsing():
-    """测试历史资金流序列解析逻辑。"""
-    from easy_tdx.commands.fund_flow import GetHistoryFundFlowCmd
-
-    body = bytearray(9)
-    body.extend(struct.pack("<H", 1))
-
-    date = 20250108
-    record = struct.pack("<IIIIIIIII", date, 100, 200, 300, 400, 500, 600, 700, 800)
-    body.extend(record)
-
-    cmd = GetHistoryFundFlowCmd(Market.SH, "600000", 0, 1)
-    res = cmd.parse_response(bytes(body))
-
-    assert len(res) == 1
-    assert res[0].year == 2025
-    assert res[0].month == 1
-    assert res[0].day == 8
-
-
 @patch("easy_tdx.client.TdxConnection")
 def test_get_history_fund_flow_fallback(_mock_conn_cls):
-    """Category 22 空回包时，自动回退到历史逐笔重算。"""
-    from easy_tdx.commands.fund_flow import GetHistoryFundFlowCmd
-
+    """资金流由日K取日期 + 历史逐笔重算；返回含 main_net_inflow 列。"""
     client = TdxClient("127.0.0.1")
 
     bars = [
@@ -236,8 +217,6 @@ def test_get_history_fund_flow_fallback(_mock_conn_cls):
     }
 
     def mock_execute(cmd):
-        if isinstance(cmd, GetHistoryFundFlowCmd):
-            return []
         if isinstance(cmd, GetSecurityBarsCmd):
             return bars
         if isinstance(cmd, GetHistoryTransactionDataCmd):
@@ -251,11 +230,65 @@ def test_get_history_fund_flow_fallback(_mock_conn_cls):
 
     assert isinstance(flows, pd.DataFrame)
     assert len(flows) == 2
+    # 主力净额列必须存在（Issue #52：asdict 丢弃 property 导致此前无此列）
+    assert "main_net_inflow" in flows.columns
+    assert flows.columns[1] == "main_net_inflow"
     row0 = flows.iloc[0]
     assert row0["super_in"] == 1010000.0
     assert row0["large_out"] == 250000.0
+    assert row0["main_net_inflow"] == (1010000.0 + 0.0) - (0.0 + 250000.0)
     row1 = flows.iloc[1]
     assert row1["small_in"] == 10000.0
+    # 仅小单流入，不计入主力净额
+    assert row1["main_net_inflow"] == 0.0
+
+
+@patch("easy_tdx.client.TdxConnection")
+def test_get_history_fund_flow_today_uses_realtime_ticks(_mock_conn_cls):
+    """当日 bar 盘中取当日实时逐笔（Issue #52：历史逐笔当日恒空致整行为 0）。"""
+    now = datetime.now(ZoneInfo("Asia/Shanghai"))
+
+    client = TdxClient("127.0.0.1")
+    yesterday = now - timedelta(days=1)
+    bars = [
+        # 顺序与服务器一致：旧 → 新，最新一根是今天
+        SecurityBar(10, 10, 10, 10, 0, 0, yesterday.year, yesterday.month, yesterday.day, 15, 0),
+        SecurityBar(10, 10, 10, 10, 0, 0, now.year, now.month, now.day, 15, 0),
+    ]
+    history_txn = {
+        yesterday.year * 10000 + yesterday.month * 100 + yesterday.day: [
+            TransactionRecord(10, 0, 10.0, 10, 0, 0)
+        ]
+    }
+    realtime_txn = [TransactionRecord(13, 0, 100.0, 101, 0, 0)]
+
+    seen_cmds = []
+
+    def mock_execute(cmd):
+        seen_cmds.append(type(cmd).__name__)
+        if isinstance(cmd, GetSecurityBarsCmd):
+            return bars
+        if isinstance(cmd, GetTransactionDataCmd):
+            if cmd.start > 0:
+                return []
+            return realtime_txn
+        if isinstance(cmd, GetHistoryTransactionDataCmd):
+            if cmd.start > 0:
+                return []
+            return history_txn.get(cmd.date, [])
+        return []
+
+    with patch.object(TdxClient, "_execute", side_effect=mock_execute):
+        flows = client.get_history_fund_flow(Market.SH, "600000", 0, 2)
+
+    assert len(flows) == 2
+    assert "GetTransactionDataCmd" in seen_cmds
+    today_row = flows.iloc[-1]
+    # 今日行来自实时逐笔：100 元 × 101 手 × 100 = 超大单流入 1010000
+    assert today_row["super_in"] == 1010000.0
+    assert today_row["main_net_inflow"] == 1010000.0
+    # 昨日行来自历史逐笔：小单流入 10000
+    assert flows.iloc[0]["small_in"] == 10000.0
 
 
 @patch("easy_tdx.client.TdxConnection")

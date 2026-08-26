@@ -1,10 +1,8 @@
 """协议底层修复验证（针对 2026-04-15 审查结论）。"""
 
 import struct
-from unittest.mock import patch
 
 from easy_tdx.codec.price_rules import compute_price_limits
-from easy_tdx.commands.fund_flow import GetHistoryFundFlowCmd
 from easy_tdx.commands.security_bars import GetSecurityBarsCmd
 from easy_tdx.commands.security_list import GetSecurityListCmd
 from easy_tdx.commands.security_quotes import GetSecurityQuotesCmd
@@ -27,33 +25,6 @@ def test_security_bars_exact_layout():
         1,
         b"600000",
         4,
-        1,
-        0,
-        10,
-        0,
-        0,
-        0,
-    )
-    assert req == expected
-    assert len(req) == 38
-
-
-def test_history_fund_flow_exact_layout():
-    """验证历史资金流请求包布局与 K 线一致，只差 category=22。"""
-    cmd = GetHistoryFundFlowCmd(Market.SH, "600000", 0, 10)
-    req = cmd.build_request()
-    # Header: 0x010C, 0x01016408, 0x1C, 0x1C
-    # Payload: 0x052D, 1 (Market.SH), "600000", 22, 1, 0, 10, 0, 0, 0
-    expected = struct.pack(
-        "<HIHHHH6sHHHHIIH",
-        0x010C,
-        0x01016408,
-        0x001C,
-        0x001C,
-        0x052D,
-        1,
-        b"600000",
-        22,
         1,
         0,
         10,
@@ -157,32 +128,3 @@ def test_compute_price_limits_for_newly_listed_stocks():
         109.67,
         59.05,
     )
-
-
-def test_history_fund_flow_uses_uint32_volume_words():
-    """历史资金流金额字段必须按 uint32 传给 _decode_volume。"""
-    raw_words = [
-        0x80000001,
-        0xFFFFFFFF,
-        0x7FFFFFFF,
-        0x90000000,
-        0xA0000000,
-        0xB0000000,
-        0xC0000000,
-        0xD0000000,
-    ]
-    body = bytearray(9)
-    body.extend(struct.pack("<H", 1))
-    body.extend(struct.pack("<IIIIIIIII", 20250108, *raw_words))
-
-    seen: list[int] = []
-
-    def fake_decode(raw: int) -> float:
-        seen.append(raw)
-        return float(raw)
-
-    with patch("easy_tdx.commands.fund_flow._decode_volume", side_effect=fake_decode):
-        records = GetHistoryFundFlowCmd(Market.SH, "600000", 0, 1).parse_response(bytes(body))
-
-    assert seen == raw_words
-    assert records[0].small_out == float(raw_words[-1])

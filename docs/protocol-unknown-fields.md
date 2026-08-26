@@ -231,12 +231,15 @@ gotdx 同样命名为 `Unknown`，pytdx 直接 `pos += 9`。
 fixture 中 87 条记录全部为 0x00（87/87）。无其他可能值样本，推测为保留/对齐字节。
 gotdx 命名为 `Unknown`，pytdx 注释 `# noused`。
 
-### 4.3 fund_flow 9字节响应头部（已确认：同 xdxr_info 格式）
+### 4.3 fund_flow（Category 22）——已证伪并移除（Issue #52）
 
-**位置**：`commands/fund_flow.py:45`
+**位置**：`commands/fund_flow.py`（已删除）
 
-与 xdxr_info 相同的 9 字节头部格式：prefix(2) + market(1) + code(6)。
-后接 uint16 num（记录数量），然后是 36 字节/条的固定记录。
+曾有实现假设 0x052D + category=22 为"历史资金流向"指令，并按
+"9 字节头 + uint16 num + 36 字节/条"解析。**2026-08-26 实测**（Issue #52）：
+全部 46 台可达标准行情服务器对该请求仅回 2 字节 body（`0000` 或 `2003`），
+即 0 条记录 / ret_count 撒谎空包，从未在任何环境返回过有效数据。
+响应格式属臆造，该命令已删除；资金流改为"日K取日期 + 逐笔成交重算"。
 
 gotdx 未实现此命令。
 
@@ -374,7 +377,7 @@ xdxr_info 9字节头部（fixture 验证）：
 xdxr_info 每条1字节 padding：
 - 87 条记录全部为 0x00，保留/对齐字节
 
-fund_flow 9字节头部：同 xdxr_info 格式（prefix + market + code）
+fund_flow 9字节头部：~~同 xdxr_info 格式~~ 2026-08-26 证伪（见 4.3，命令已删除）
 
 block 384字节头部：gotdx 命名"头信息, 忽略"，所有实现跳过
 

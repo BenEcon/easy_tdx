@@ -329,10 +329,10 @@ c.get_block_info(filename: str) -> list[TdxBlock]
 ### get_fund_flow
 
 ```python
-c.get_fund_flow(market: Market, code: str) -> FundFlow
+c.get_fund_flow(market: Market, code: str) -> pd.DataFrame
 ```
 
-获取个股当日资金流向（基于 L1 逐笔数据统计）。
+获取个股当日资金流向（基于 L1 逐笔数据统计）。返回含 `main_net_inflow`（主力净流入）列。
 
 **资金分级**：
 | 级别 | 单笔成交额 |
@@ -346,10 +346,12 @@ c.get_fund_flow(market: Market, code: str) -> FundFlow
 
 ```python
 c.get_history_fund_flow(market: Market, code: str,
-                         start: int, count: int) -> list[HistoricalFundFlow]
+                         start: int, count: int) -> pd.DataFrame
 ```
 
-获取历史日线资金流向序列。优先走直连接口，若服务器不支持则自动回退为逐笔成交重算。
+获取历史日线资金流向序列，由"日K线取日期 + 逐笔成交重算"实现（标准服务器
+无资金流专用指令，Issue #52）。当日 bar 盘中取当日实时逐笔。返回列含
+`main_net_inflow`（主力净流入，单位元）。
 
 ---
 

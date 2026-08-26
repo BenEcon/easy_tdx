@@ -260,6 +260,7 @@
 
 | 字段名 | 中文 | 类型 | 说明 |
 |--------|------|------|------|
+| `main_net_inflow` | 主力净流入 | `float` | 列：超大+大净额（Issue #52 起物化为列） |
 | `super_in` | 超大单流入 | `float` | 单笔 >100 万 |
 | `super_out` | 超大单流出 | `float` | |
 | `large_in` | 大单流入 | `float` | 20~100 万 |
@@ -268,7 +269,6 @@
 | `medium_out` | 中单流出 | `float` | |
 | `small_in` | 小单流入 | `float` | ≤4 万 |
 | `small_out` | 小单流出 | `float` | |
-| `main_net_inflow` | 主力净流入 | `float` | 属性：超大+大 |
 | `total_net_inflow` | 全单净流入 | `float` | 属性：全部 |
 
 ---
@@ -277,7 +277,7 @@
 
 来源：`get_history_fund_flow()`
 
-字段同 FundFlow，额外包含：
+字段同 FundFlow（`main_net_inflow` 同样物化为列，紧随 `date` 之后），额外包含：
 
 | 字段名 | 中文 | 类型 |
 |--------|------|------|
