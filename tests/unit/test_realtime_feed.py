@@ -272,16 +272,18 @@ class TestAsyncPublishPath:
 
 
 class TestSessionGating:
-    async def test_outside_session_no_fetch(self) -> None:
+    async def test_outside_session_no_fetch(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """盘外时段不应调用 get_stock_quotes。"""
         bus = EventBus()
         client = AsyncMockClient([_sample_quotes_df()])
 
-        # 用一个不可能命中的时段（如 23:00-23:59）模拟盘外
+        outside = time.mktime(time.strptime("2026-07-13 08:00:00", "%Y-%m-%d %H:%M:%S"))
+        monkeypatch.setattr("easy_tdx.realtime.feed.time.time", lambda: outside)
+
         feed = RealtimeDataFeed(
             bus=bus,
             symbols=[(0, "000001")],
-            sessions=((23 * 60, 23 * 60 + 59),),
+            sessions=((9 * 60 + 15, 11 * 60 + 30),),
             interval=0.1,
         )
         await feed.run_async(client, max_iterations=1)

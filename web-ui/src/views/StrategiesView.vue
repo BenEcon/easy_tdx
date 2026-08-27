@@ -12,15 +12,21 @@ import GradeDetails from '../components/GradeDetails.vue'
 import MetricTable from '../components/MetricTable.vue'
 import PortfolioCompareChart from '../components/PortfolioCompareChart.vue'
 import PortfolioSummaryTable from '../components/PortfolioSummaryTable.vue'
+import MacSelect from '../components/MacSelect.vue'
+import StockQueryField from '../components/StockQueryField.vue'
+import StrategyPicker from '../components/StrategyPicker.vue'
 import {
   deleteSavedStrategy,
+  fetchStockNames,
+  fetchStrategies,
   fetchSavedStrategies,
   formatError,
   saveStrategy,
 } from '../api'
 import { gradePortfolio } from '../grading'
 import { detectMarket } from '../market'
-import type { MultiStrategyItem, Performance, SavedStrategy } from '../types'
+import { recordStockHistory } from '../stock-history'
+import type { Category, MultiStrategyItem, Performance, SavedStrategy, StrategySchema } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 
 const router = useRouter()
@@ -30,6 +36,73 @@ const strategies = ref<SavedStrategy[]>([])
 const loading = ref(false)
 const error = ref('')
 const deletingId = ref<string | null>(null)
+
+// ── 从内置策略创建个人策略 ──────────────────────────────────────────────────
+const builtinStrategies = ref<StrategySchema[]>([])
+const creatorOpen = ref(false)
+const templateStrategy = ref('')
+const templateParams = ref<Record<string, number | string | boolean>>({})
+const templateCode = ref('000001')
+const templateCategory = ref<Category>('DAY')
+const templateStartDate = ref('2020-01-02')
+const templateEndDate = ref(new Date().toISOString().slice(0, 10))
+const templateSaving = ref(false)
+const categoryOptions = ['DAY', 'WEEK', 'MONTH', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60'].map((value) => ({
+  value: value as Category,
+  label: value,
+}))
+
+async function createFromBuiltin() {
+  if (!/^\d{6}$/.test(templateCode.value)) {
+    error.value = '股票代码必须是 6 位数字'
+    return
+  }
+  if (!templateStrategy.value) {
+    error.value = '请选择一个内置策略'
+    return
+  }
+  if (templateStartDate.value >= templateEndDate.value) {
+    error.value = '开始日期必须早于结束日期'
+    return
+  }
+  const schema = builtinStrategies.value.find((item) => item.name === templateStrategy.value)
+  if (!schema) return
+  templateSaving.value = true
+  error.value = ''
+  try {
+    const market = detectMarket(templateCode.value)
+    const names: Record<string, string> = await fetchStockNames([
+      { market, code: templateCode.value },
+    ]).catch((): Record<string, string> => ({}))
+    const stockLabel = names[templateCode.value]
+      ? `${templateCode.value}-${names[templateCode.value]}`
+      : templateCode.value
+    const created = await saveStrategy({
+      name: `${schema.label} · ${stockLabel}`,
+      kind: 'single',
+      strategy: schema.name,
+      strategy_label: schema.label,
+      params: templateParams.value,
+      context: {
+        symbol: `${market}:${templateCode.value}`,
+        category: templateCategory.value,
+        start_date: templateStartDate.value,
+        end_date: templateEndDate.value,
+      },
+      trade_config: { cash: 1_000_000, commission: 0.0003, slippage: 0 },
+      snapshot: {},
+      tags: ['内置模板'],
+      notes: '从内置策略模板创建，可直接载入个股分析或加入组合回测。',
+    })
+    strategies.value = [created, ...strategies.value]
+    recordStockHistory({ code: templateCode.value, category: templateCategory.value })
+    creatorOpen.value = false
+  } catch (e) {
+    error.value = formatError(e)
+  } finally {
+    templateSaving.value = false
+  }
+}
 
 // ── Tab 分类：单标的 / 组合 ────────────────────────────────────────────────────
 // single tab = kind='single'；combo tab = kind='portfolio' | 'multi'
@@ -225,8 +298,13 @@ async function load() {
   loading.value = true
   error.value = ''
   try {
-    const resp = await fetchSavedStrategies()
+    const [resp, builtin] = await Promise.all([fetchSavedStrategies(), fetchStrategies()])
     strategies.value = resp.strategies
+    builtinStrategies.value = builtin.strategies
+    if (!templateStrategy.value && builtin.strategies.length) {
+      templateStrategy.value = builtin.strategies[0].name
+    }
+    if (resp.strategies.length === 0) creatorOpen.value = true
   } catch (e) {
     error.value = formatError(e)
   } finally {
@@ -430,6 +508,10 @@ const comboGrade = computed(() =>
         </p>
       </div>
       <div class="header-actions">
+        <button v-if="activeTab === 'single'" class="ghost sm" @click="creatorOpen = !creatorOpen">
+          <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12" /></svg>
+          <span>{{ creatorOpen ? '收起创建器' : '新建策略' }}</span>
+        </button>
         <button
           v-if="activeTab === 'single'"
           class="primary sm"
@@ -476,12 +558,40 @@ const comboGrade = computed(() =>
 
     <div v-if="error || store.error" class="error-banner">⚠ {{ error || store.error }}</div>
 
-    <div v-if="!loading && visibleStrategies.length === 0 && !error" class="placeholder">
+    <section v-if="activeTab === 'single' && creatorOpen" class="strategy-creator">
+      <header class="creator-head">
+        <div><h3>从内置模板创建</h3><p>选择策略、股票和周期，保存后即可载入分析或加入组合回测。</p></div>
+        <span>{{ builtinStrategies.length }} 个可用策略</span>
+      </header>
+      <div class="creator-grid">
+        <div class="strategy-config">
+          <StrategyPicker
+            :strategies="builtinStrategies"
+            :strategy="templateStrategy"
+            :params="templateParams"
+            @update:strategy="templateStrategy = $event"
+            @update:params="templateParams = $event"
+          />
+        </div>
+        <div class="context-config">
+          <StockQueryField v-model="templateCode" label="应用股票" />
+          <div class="field"><label>行情周期</label><MacSelect v-model="templateCategory" :options="categoryOptions" /></div>
+          <div class="date-row">
+            <div class="field"><label>开始日期</label><input v-model="templateStartDate" type="date" /></div>
+            <div class="field"><label>结束日期</label><input v-model="templateEndDate" type="date" /></div>
+          </div>
+          <button class="primary create-button" :disabled="templateSaving || !builtinStrategies.length" @click="createFromBuiltin">
+            {{ templateSaving ? '正在保存…' : '添加到个人策略库' }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div v-if="!loading && visibleStrategies.length === 0 && !error && !creatorOpen" class="placeholder">
       <p>{{ activeTab === 'single' ? '还没有保存的单标的策略。' : '还没有保存的组合策略。' }}</p>
       <p class="hint">
         <template v-if="activeTab === 'single'">
-          在「单标的回测」跑出满意结果后，点结果区的「保存策略」即可收藏到这里。
-          勾选多个单标的策略还能做「组合回测」。
+          点击右上角「新建策略」，可直接从内置模板创建；也可以在个股分析完成回测后保存。
         </template>
         <template v-else>
           勾选多个单标的策略 → 点「组合回测」→ 跑出结果后点「💾 保存为组合」，
@@ -878,6 +988,52 @@ const comboGrade = computed(() =>
   border-radius: var(--radius);
   margin-bottom: 16px;
   font-size: 13px;
+}
+
+.strategy-creator {
+  margin-bottom: 16px;
+  overflow: hidden;
+  background: linear-gradient(125deg, rgba(10, 132, 255, 0.07), rgba(255, 255, 255, 0.018) 55%);
+  border: 1px solid rgba(10, 132, 255, 0.18);
+  border-radius: 13px;
+}
+.creator-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.creator-head h3 { font-size: 13px; font-weight: 630; }
+.creator-head p { margin-top: 2px; color: var(--text-dim); font-size: 10px; }
+.creator-head > span {
+  padding: 3px 7px;
+  color: #8ec5ff;
+  background: rgba(10, 132, 255, 0.09);
+  border: 1px solid rgba(10, 132, 255, 0.15);
+  border-radius: 6px;
+  font-size: 9px;
+}
+.creator-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(360px, 1.1fr);
+  gap: 22px;
+  padding: 14px;
+}
+.strategy-config {
+  min-width: 0;
+  padding-right: 20px;
+  border-right: 1px solid var(--border);
+}
+.context-config { min-width: 0; }
+.context-config > .field { margin-top: 10px; }
+.date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.date-row .field { margin-bottom: 10px; }
+.create-button { width: 100%; min-height: 36px; }
+
+@media (max-width: 900px) {
+  .creator-grid { grid-template-columns: 1fr; }
+  .strategy-config { padding-right: 0; border-right: 0; border-bottom: 1px solid var(--border); }
 }
 
 /* 卡片网格 */

@@ -35,7 +35,7 @@ def get_mac_client_optional(request: Request) -> Any | None:
 
 
 def get_ex_client(request: Request) -> Any:
-    """从 app.state 获取共享的 AsyncExTdxClient 实例（可选）。"""
+    """从 app.state 获取共享的 AsyncMacExClient 实例（可选）。"""
     client: Any | None = request.app.state.ex_client
     if client is None:
         from easy_tdx.exceptions import TdxConnectionError

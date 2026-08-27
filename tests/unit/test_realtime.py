@@ -65,6 +65,15 @@ class TestEventBus:
 
         assert bus.subscriber_count == 1
 
+    def test_unsubscribe_global(self) -> None:
+        """WebSocket 断开后应移除全局订阅，避免回调泄漏。"""
+        bus = EventBus()
+        handler = lambda e: None  # noqa: E731
+        bus.subscribe_all(handler)
+        bus.unsubscribe_all(handler)
+
+        assert bus.subscriber_count == 0
+
     def test_unsubscribe(self) -> None:
         """取消订阅后计数应减少."""
         bus = EventBus()

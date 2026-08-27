@@ -1,8 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { initializeAuth, useAuth } from './auth'
 
-// 单标的回测（/）+ 组合回测（/portfolio）+ 参数寻优（/optimize）+ 结果对比（/compare）
-// + 策略库（/strategies）+ 信号雷达（/signals）+ 服务器设置（/settings）。
+// 行情与公司研究 + 单/多标的回测 + 策略工具 + 账户与服务器管理。
 const routes = [
   {
     path: '/login',
@@ -17,6 +16,36 @@ const routes = [
     meta: { title: '个股分析', subtitle: '观察行情结构，验证策略收益与风险' },
   },
   {
+    path: '/market',
+    name: 'market',
+    component: () => import('./views/MarketCenterView.vue'),
+    meta: { title: '市场行情', subtitle: '跟踪排行、涨跌分布与盘中异动' },
+  },
+  {
+    path: '/intraday',
+    name: 'intraday',
+    component: () => import('./views/IntradayResearchView.vue'),
+    meta: { title: '盘中研究', subtitle: '研究分时走势、逐笔成交、指数与实时快照' },
+  },
+  {
+    path: '/boards',
+    name: 'boards',
+    component: () => import('./views/BoardResearchView.vue'),
+    meta: { title: '板块研究', subtitle: '观察板块强弱、成分股与个股归属' },
+  },
+  {
+    path: '/company',
+    name: 'company',
+    component: () => import('./views/CompanyResearchView.vue'),
+    meta: { title: '公司资料', subtitle: '集中查阅行情、资金、公告与财务报表' },
+  },
+  {
+    path: '/extended',
+    name: 'extended',
+    component: () => import('./views/ExtendedMarketView.vue'),
+    meta: { title: '扩展市场', subtitle: '查询港股、期货与外盘的行情、K线和逐笔成交' },
+  },
+  {
     path: '/chanlun',
     name: 'chanlun',
     component: () => import('./views/ChanlunView.vue'),
@@ -27,6 +56,12 @@ const routes = [
     name: 'portfolio',
     component: () => import('./views/PortfolioView.vue'),
     meta: { title: '组合回测', subtitle: '在统一资金池中观察多标的组合表现' },
+  },
+  {
+    path: '/quant-research',
+    name: 'quant-research',
+    component: () => import('./views/QuantResearchView.vue'),
+    meta: { title: '量化研究', subtitle: '计算内置因子并分析组合权重、相关性与风险贡献' },
   },
   {
     path: '/optimize',
@@ -69,6 +104,12 @@ const routes = [
     name: 'admin-accounts',
     component: () => import('./views/AdminAccountsView.vue'),
     meta: { title: '账户管理', subtitle: '创建账户、分配权限并查看用户数据状态', requiresAdmin: true },
+  },
+  {
+    path: '/admin/data',
+    name: 'admin-data',
+    component: () => import('./views/AdminDataCenterView.vue'),
+    meta: { title: '数据中心', subtitle: '检查行情连接、扩展市场、离线数据和持久化状态', requiresAdmin: true },
   },
 ]
 

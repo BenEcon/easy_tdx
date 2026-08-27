@@ -4,10 +4,15 @@
 
 import { computed, ref } from 'vue'
 
+import StockHistoryMenu from './StockHistoryMenu.vue'
 import { detectMarket, marketLabel } from '../market'
+import { recordStockHistory, stockDisplayName } from '../stock-history'
+import type { StockHistoryItem } from '../stock-history'
+import type { Category } from '../types'
 
 const props = defineProps<{
   modelValue: string[]
+  category?: Category
 }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string[]] }>()
 
@@ -16,12 +21,22 @@ const detectedMarket = computed(() => (code.value && /^\d{6}$/.test(code.value)
   ? marketLabel(detectMarket(code.value))
   : ''))
 
-function add() {
-  if (!/^\d{6}$/.test(code.value)) return
-  const sym = `${detectMarket(code.value)}:${code.value}`
+function addCode(nextCode: string, name?: string) {
+  if (!/^\d{6}$/.test(nextCode)) return
+  const sym = `${detectMarket(nextCode)}:${nextCode}`
   if (!props.modelValue.includes(sym)) {
     emit('update:modelValue', [...props.modelValue, sym])
   }
+  recordStockHistory({ code: nextCode, name, category: props.category ?? 'DAY' })
+}
+
+function add() {
+  addCode(code.value)
+  code.value = ''
+}
+
+function selectHistory(item: StockHistoryItem) {
+  addCode(item.code, item.name)
   code.value = ''
 }
 
@@ -32,9 +47,15 @@ function remove(sym: string) {
 
 <template>
   <div class="stocks-picker">
+    <div class="picker-label-row">
+      <label>股票代码</label>
+      <StockHistoryMenu @select="selectHistory" />
+    </div>
     <div class="row add-row">
       <input
         v-model="code"
+        autocomplete="off"
+        inputmode="numeric"
         maxlength="6"
         placeholder="6位代码（市场自动识别）"
         @keyup.enter="add"
@@ -45,7 +66,7 @@ function remove(sym: string) {
 
     <div v-if="modelValue.length" class="stock-list">
       <span v-for="s in modelValue" :key="s" class="stock-tag">
-        {{ s }}
+        {{ stockDisplayName(s) }}
         <button class="remove" @click="remove(s)">×</button>
       </span>
     </div>
@@ -58,6 +79,14 @@ function remove(sym: string) {
   display: flex;
   gap: 6px;
 }
+.picker-label-row {
+  display: flex;
+  min-height: 23px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.picker-label-row > label { color: var(--text-dim); font-size: 11px; }
 .add-row input {
   flex: 1;
 }
@@ -81,7 +110,6 @@ function remove(sym: string) {
   padding: 3px 8px;
   border-radius: 4px;
   font-size: 12px;
-  font-family: var(--font-mono);
 }
 .remove {
   border: none;

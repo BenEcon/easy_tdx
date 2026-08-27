@@ -14,6 +14,7 @@ const currentUser = ref<AccountUser | null>(null)
 const setupRequired = ref(false)
 const ready = ref(false)
 let initializing: Promise<void> | null = null
+let preferenceQueue: Promise<void> = Promise.resolve()
 
 export async function initializeAuth(force = false): Promise<void> {
   if (ready.value && !force) return
@@ -56,8 +57,12 @@ export async function refreshCurrentUser(): Promise<void> {
   currentUser.value = await fetchMyAccount()
 }
 
-export async function updatePreferences(preferences: Record<string, unknown>): Promise<void> {
-  currentUser.value = await saveAccountPreferences(preferences)
+export function updatePreferences(patch: Record<string, unknown>): Promise<void> {
+  preferenceQueue = preferenceQueue.then(async () => {
+    const preferences = { ...(currentUser.value?.preferences ?? {}), ...patch }
+    currentUser.value = await saveAccountPreferences(preferences)
+  })
+  return preferenceQueue
 }
 
 export function useAuth() {

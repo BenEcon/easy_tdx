@@ -97,6 +97,10 @@ class EventBus:
         """
         self._global_subscribers.append(handler)
 
+    def unsubscribe_all(self, handler: EventHandler) -> None:
+        """取消一个全局订阅回调。"""
+        self._global_subscribers = [h for h in self._global_subscribers if h != handler]
+
     def unsubscribe(self, symbol: str, handler: EventHandler) -> None:
         """取消订阅。
 

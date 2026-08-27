@@ -39,7 +39,7 @@ watch(sidebarCollapsed, (value) => {
   if (preferencesReady && currentUser.value) {
     clearTimeout(preferenceTimer)
     preferenceTimer = setTimeout(() => {
-      void updatePreferences({ ...currentUser.value?.preferences, sidebar_collapsed: value })
+      void updatePreferences({ sidebar_collapsed: value })
     }, 350)
   }
 })
@@ -49,6 +49,8 @@ const baseNavGroups = [
     label: '分析',
     items: [
       { to: '/', label: '个股分析', paths: ['M3 16.5 8 11l3.5 3.5L18.5 7', 'M15 7h3.5v3.5'] },
+      { to: '/market', label: '市场行情', paths: ['M3 14.5h3l2-7 3.5 9 2.5-12 2 7.5h2'] },
+      { to: '/intraday', label: '盘中研究', paths: ['M3 10h2.5l1.7-4 2.6 8 2.1-5 1.7 3H18', 'M3 17h15'] },
       { to: '/chanlun', label: '缠论结构', paths: ['M3 16 8 9l4 5 6-9', 'M3 16h15'] },
       { to: '/signals', label: '信号雷达', paths: ['M10.5 3a7.5 7.5 0 1 1-5.3 2.2', 'M10.5 6a4.5 4.5 0 1 1-3.2 1.3', 'M10.5 10.5h.01'] },
     ],
@@ -56,6 +58,10 @@ const baseNavGroups = [
   {
     label: '研究',
     items: [
+      { to: '/boards', label: '板块研究', paths: ['M3 4h6v5H3z', 'M11 4h7v5h-7z', 'M3 11h4v6H3z', 'M9 11h9v6H9z'] },
+      { to: '/company', label: '公司资料', paths: ['M4 18V4.5h9V18', 'M13 8h4v10', 'M7 7h3M7 10h3M7 13h3'] },
+      { to: '/extended', label: '扩展市场', paths: ['M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z', 'M3.5 10.5h14', 'M10.5 3c2.2 2 3.3 4.5 3.3 7.5s-1.1 5.5-3.3 7.5c-2.2-2-3.3-4.5-3.3-7.5S8.3 5 10.5 3Z'] },
+      { to: '/quant-research', label: '量化研究', paths: ['M3 17V8m5 9V4m5 13v-6m5 6V6', 'M2.5 17.5h16'] },
       { to: '/portfolio', label: '组合回测', paths: ['M3 4.5h6v6H3z', 'M12 4.5h6v6h-6z', 'M3 13.5h6v4H3z', 'M12 13.5h6v4h-6z'] },
       { to: '/optimize', label: '参数寻优', paths: ['M4 5h12', 'M7 3v4', 'M4 10.5h12', 'M13 8.5v4', 'M4 16h12', 'M9 14v4'] },
       { to: '/compare', label: '结果对比', paths: ['M4 5h12', 'M6 10.5h12', 'M3 16h12'] },
@@ -78,6 +84,11 @@ const navGroups = computed(() => {
       to: '/admin/accounts',
       label: '账户管理',
       paths: ['M7.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z', 'M2.5 17c.5-3 2.3-4.5 5-4.5s4.5 1.5 5 4.5', 'M14.5 7.5a2 2 0 1 0 0-4', 'M14 12.5c2.5 0 4 1.4 4.4 4'],
+    })
+    groups[groups.length - 1].items.push({
+      to: '/admin/data',
+      label: '数据中心',
+      paths: ['M3.5 5.5c0-1.2 3-2.2 6.5-2.2s6.5 1 6.5 2.2-3 2.2-6.5 2.2-6.5-1-6.5-2.2Z', 'M3.5 5.5v5c0 1.2 3 2.2 6.5 2.2s6.5-1 6.5-2.2v-5', 'M3.5 10.5v4.2c0 1.2 3 2.2 6.5 2.2s6.5-1 6.5-2.2v-4.2'],
     })
   }
   return groups

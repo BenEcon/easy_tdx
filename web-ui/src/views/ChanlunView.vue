@@ -4,8 +4,11 @@ import { computed, ref } from 'vue'
 import ChanlunChart from '../components/ChanlunChart.vue'
 import ChartFrame from '../components/ChartFrame.vue'
 import MacSelect from '../components/MacSelect.vue'
+import StockHistoryMenu from '../components/StockHistoryMenu.vue'
 import { analyzeChanlun, fetchRecentBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
+import { recordStockHistory } from '../stock-history'
+import type { StockHistoryItem } from '../stock-history'
 import type { Bar, Category, ChanlunResult } from '../types'
 
 const code = ref('000001')
@@ -122,6 +125,11 @@ const segmentSequenceValid = computed(() => {
   )
 })
 
+function selectHistory(item: StockHistoryItem) {
+  code.value = item.code
+  category.value = item.category
+}
+
 async function runAnalysis() {
   if (!/^\d{6}$/.test(code.value)) {
     error.value = '请输入 6 位证券代码'
@@ -138,6 +146,7 @@ async function runAnalysis() {
     ])
     bars.value = nextBars
     result.value = nextResult
+    recordStockHistory({ code: code.value, category: category.value })
     activeTab.value = 'structure'
   } catch (e) {
     error.value = formatError(e)
@@ -161,8 +170,11 @@ async function runAnalysis() {
       <section class="inspector-section">
         <h3>标的与周期</h3>
         <div class="field code-field">
-          <label>证券代码</label>
-          <input v-model.trim="code" maxlength="6" inputmode="numeric" placeholder="000001" @keyup.enter="runAnalysis" />
+          <div class="code-label-row">
+            <label>证券代码</label>
+            <StockHistoryMenu @select="selectHistory" />
+          </div>
+          <input v-model.trim="code" autocomplete="off" maxlength="6" inputmode="numeric" placeholder="000001" @keyup.enter="runAnalysis" />
           <span class="market-label">{{ detectedMarket }}</span>
         </div>
         <div class="field">
@@ -398,6 +410,7 @@ async function runAnalysis() {
 }
 .analysis-inspector .field { margin-bottom: 10px; }
 .code-field { position: relative; }
+.code-label-row { display: flex; min-height: 23px; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .code-field input { padding-right: 68px; font-family: var(--font-mono); }
 .market-label {
   position: absolute;

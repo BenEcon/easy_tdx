@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import time
 from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -37,6 +38,46 @@ async def realtime_websocket(websocket: WebSocket, symbol: str) -> None:
 
     subscribed_symbols: set[str] = {symbol.upper()}
 
+    async def _push_snapshots() -> None:
+        """事件总线未配置时，直接轮询共享行情客户端近似实时推送。"""
+        client = getattr(websocket.app.state, "tdx_client", None)
+        if client is None or not subscribed_symbols:
+            return
+        from easy_tdx.web.convert import market_from_str
+
+        pairs: list[tuple[Any, str]] = []
+        symbols: list[str] = []
+        for subscribed in sorted(subscribed_symbols):
+            market_name, code = subscribed[:2], subscribed[2:]
+            if market_name not in {"SZ", "SH", "BJ"} or len(code) != 6:
+                continue
+            pairs.append((market_from_str(market_name), code))
+            symbols.append(subscribed)
+        if not pairs:
+            return
+        df = await client.get_security_quotes(pairs)
+        records = df.to_dict(orient="records") if hasattr(df, "to_dict") else []
+        for index, row in enumerate(records):
+            clean: dict[str, Any] = {}
+            for key, value in row.items():
+                if hasattr(value, "item"):
+                    value = value.item()
+                elif hasattr(value, "isoformat"):
+                    value = value.isoformat()
+                clean[str(key)] = value
+            subscribed = symbols[index] if index < len(symbols) else symbol.upper()
+            await websocket.send_json(
+                {
+                    "type": "tick",
+                    "market": subscribed[:2],
+                    "code": subscribed[2:],
+                    "price": clean.get("price", clean.get("close", 0)),
+                    "volume": clean.get("vol", clean.get("volume", 0)),
+                    "timestamp": time.time(),
+                    "data": clean,
+                }
+            )
+
     async def _on_event(event: Any) -> None:
         """EventBus 回调 → 推送 WebSocket 消息。"""
         event_symbol = f"{event.market}{event.code}"
@@ -63,7 +104,9 @@ async def realtime_websocket(websocket: WebSocket, symbol: str) -> None:
         while True:
             # Receive client messages (subscribe/unsubscribe control)
             try:
-                raw = await asyncio.wait_for(websocket.receive_text(), timeout=30.0)
+                raw = await asyncio.wait_for(
+                    websocket.receive_text(), timeout=30.0 if event_bus is not None else 3.0
+                )
                 data = json.loads(raw)
                 action = data.get("action", "")
 
@@ -83,10 +126,13 @@ async def realtime_websocket(websocket: WebSocket, symbol: str) -> None:
                     )
 
             except asyncio.TimeoutError:
-                # Send heartbeat ping
                 try:
-                    await websocket.send_json({"type": "ping"})
+                    if event_bus is None:
+                        await _push_snapshots()
+                    else:
+                        await websocket.send_json({"type": "ping"})
                 except Exception:
+                    logger.warning("Realtime snapshot polling failed for %s", symbol, exc_info=True)
                     break
             except WebSocketDisconnect:
                 break
@@ -99,5 +145,5 @@ async def realtime_websocket(websocket: WebSocket, symbol: str) -> None:
         logger.exception("WebSocket error for %s", symbol)
     finally:
         if event_bus is not None:
-            event_bus.unsubscribe(symbol.upper(), _on_event)
+            event_bus.unsubscribe_all(_on_event)
         logger.info("WebSocket connection closed: %s", symbol)

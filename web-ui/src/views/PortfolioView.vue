@@ -165,7 +165,7 @@ async function onSave() {
     <aside class="config-panel">
       <section class="panel-section">
         <h3>标的列表</h3>
-        <StocksPicker v-model="stocks" />
+        <StocksPicker v-model="stocks" :category="category" />
       </section>
 
       <section class="panel-section">

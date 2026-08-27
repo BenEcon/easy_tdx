@@ -209,11 +209,13 @@ onBeforeUnmount(() => {
 .chart-frame:fullscreen .chart-frame-content :deep(.compare-chart),
 .chart-frame:fullscreen .chart-frame-content :deep(.heatmap-chart),
 .chart-frame:fullscreen .chart-frame-content :deep(.chanlun-chart),
+.chart-frame:fullscreen .chart-frame-content :deep(.intraday-chart),
 .chart-frame.fallback-expanded .chart-frame-content :deep(.kline-chart),
 .chart-frame.fallback-expanded .chart-frame-content :deep(.equity-chart),
 .chart-frame.fallback-expanded .chart-frame-content :deep(.compare-chart),
 .chart-frame.fallback-expanded .chart-frame-content :deep(.heatmap-chart),
-.chart-frame.fallback-expanded .chart-frame-content :deep(.chanlun-chart) {
+.chart-frame.fallback-expanded .chart-frame-content :deep(.chanlun-chart),
+.chart-frame.fallback-expanded .chart-frame-content :deep(.intraday-chart) {
   height: 100% !important;
   min-height: 0;
   flex: 1;

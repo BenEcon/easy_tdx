@@ -31,6 +31,24 @@ import type {
 
 const BASE = '/api/v1'
 
+export interface DataRowsResponse {
+  data: Array<Record<string, unknown>>
+  count: number
+}
+
+export interface DictDataResponse {
+  data: Record<string, unknown>
+}
+
+function queryPath(path: string, params: Record<string, string | number | boolean | undefined>): string {
+  const query = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) query.set(key, String(value))
+  })
+  const suffix = query.toString()
+  return suffix ? `${path}?${suffix}` : path
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const resp = await fetch(`${BASE}${path}`, {
     credentials: 'same-origin',
@@ -146,6 +164,16 @@ export function resetAccountPassword(id: string, newPassword: string): Promise<{
   })
 }
 
+export function fetchAdminDataStatus(): Promise<{
+  capabilities: Array<Record<string, unknown>>
+  tdx_home: string | null
+  vipdoc: string | null
+  offline: Record<string, unknown>
+  config_dir: string
+}> {
+  return request('/admin/data/status')
+}
+
 /** 枚举预置策略 + 参数 schema。 */
 export async function fetchStrategies(): Promise<StrategiesResponse> {
   const resp = await fetch(`${BASE}/backtest/strategies`)
@@ -204,6 +232,318 @@ export async function fetchBars(
     // 否则引擎/图表只正确处理第一页的数据。
     bars.sort((a, b) => a.datetime.localeCompare(b.datetime))
     return bars
+}
+
+/** 批量读取股票简称，用于把历史记录展示为「代码-名称」。 */
+export async function fetchStockNames(
+  stocks: Array<{ market: string; code: string }>,
+): Promise<Record<string, string>> {
+  if (stocks.length === 0) return {}
+  const resp = await fetch(`${BASE}/quotes`, {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ stocks }),
+  })
+  if (!resp.ok) await throwError(resp)
+  const body = (await resp.json()) as { data: Array<Record<string, unknown>> }
+  const names = Object.fromEntries(body.data.flatMap((row) => {
+    const code = String(row.code ?? '')
+    const name = String(row.name ?? '').trim()
+    return code && name ? [[code, name]] : []
+  }))
+  // 部分标准行情节点会返回空批量报价；Mac 快照接口可作为稳定的名称回退源。
+  const missing = stocks.filter((stock) => !names[stock.code])
+  if (missing.length) {
+    const fallback = await Promise.allSettled(missing.map((stock) => (
+      request<DataRowsResponse>(queryPath('/mac/symbol-info', stock))
+    )))
+    fallback.forEach((result, index) => {
+      if (result.status !== 'fulfilled') return
+      const row = result.value.data[0]
+      const name = String(row?.name ?? '').trim()
+      if (name) names[missing[index].code] = name
+    })
+  }
+  return names
+}
+
+// ── 行情、板块与公司研究 ───────────────────────────────────────────────────
+
+export function fetchMarketRanking(params: {
+  category: string
+  count?: number
+  sortType?: string
+  sortOrder?: 'ASC' | 'DESC'
+}): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/mac/quote-list', {
+    category: params.category,
+    count: params.count ?? 80,
+    sort_type: params.sortType ?? 'CHANGE_PCT',
+    sort_order: params.sortOrder ?? 'DESC',
+  }))
+}
+
+export function fetchMarketUnusual(market: string, count = 80): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/mac/unusual', { market, count }))
+}
+
+export function fetchMarketStat(): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>('/market/stat')
+}
+
+export function fetchBoardList(params: {
+  boardType: string
+  sortColumn?: string
+  count?: number
+}): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/board-mac/list', {
+    board_type: params.boardType,
+    sort_column: params.sortColumn ?? 'CHANGE_PCT',
+    count: params.count ?? 200,
+  }))
+}
+
+export function fetchBoardMembers(boardSymbol: string, count = 200): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/board-mac/members', {
+    board_symbol: boardSymbol,
+    count,
+  }))
+}
+
+export function fetchBoardBelong(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/board-mac/belong', { market, code }))
+}
+
+export function fetchQuote(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>('/quotes', {
+    method: 'POST',
+    body: JSON.stringify({ stocks: [{ market, code }] }),
+  })
+}
+
+export function fetchSymbolInfo(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/mac/symbol-info', { market, code }))
+}
+
+export function fetchCapitalFlow(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/mac/capital-flow', { market, code }))
+}
+
+export function fetchFundFlowHistory(market: string, code: string, count = 100): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/fund-flow/history', { market, code, count }))
+}
+
+export function fetchAuction(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/mac/auction', { market, code }))
+}
+
+export function fetchFinanceInfo(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/finance', { market, code }))
+}
+
+export function fetchXdxrInfo(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/xdxr', { market, code }))
+}
+
+export function fetchAnnouncements(code: string, count = 30): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/announcements', { code, count }))
+}
+
+export function fetchFinancialReport(
+  code: string,
+  reportType: 'lrb' | 'fzb' | 'llb',
+  num = 8,
+): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/sina/financial-report', {
+    code,
+    type: reportType,
+    num,
+  }))
+}
+
+// ── 盘中研究、深层资料与高级市场能力 ───────────────────────────────────────
+
+export function fetchMinuteData(market: string, code: string, date?: string): Promise<DataRowsResponse> {
+  const normalizedDate = date?.replaceAll('-', '')
+  return request<DataRowsResponse>(queryPath(normalizedDate ? '/minute/history' : '/minute', {
+    market, code, date: normalizedDate,
+  }))
+}
+
+export function fetchTransactionData(
+  market: string,
+  code: string,
+  date?: string,
+  count = 800,
+): Promise<DataRowsResponse> {
+  const normalizedDate = date?.replaceAll('-', '')
+  return request<DataRowsResponse>(queryPath(normalizedDate ? '/transaction/history' : '/transaction', {
+    market, code, date: normalizedDate, start: 0, count,
+  }))
+}
+
+export function fetchIndexBars(
+  market: string,
+  code: string,
+  category = 'DAY',
+  count = 300,
+): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/bars/index', { market, code, category, start: 0, count }))
+}
+
+export function fetchServerSession(): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>('/mac/server-info')
+}
+
+export function fetchSecurityDirectory(market: string, start = 0): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/security/list', { market, start }))
+}
+
+export function fetchSecurityCount(market: string): Promise<{ count: number }> {
+  return request<{ count: number }>(queryPath('/security/count', { market }))
+}
+
+export function fetchMarketStrength(params: {
+  preset: 'steady' | 'breakout' | 'balanced'
+  universe: 'all' | 'sh' | 'sz'
+  topN?: number
+  minAmount?: number
+}): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/market/strength', {
+    preset: params.preset,
+    universe: params.universe,
+    top_n: params.topN ?? 50,
+    min_amount: params.minAmount ?? 0,
+  }))
+}
+
+export function fetchCurrentFundFlow(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/fund-flow', { market, code }))
+}
+
+export function fetchBoardSummary(boardSymbol: string): Promise<DictDataResponse> {
+  return request<DictDataResponse>(queryPath('/board-mac/summary', { board_symbol: boardSymbol }))
+}
+
+export function fetchBoardRanking(params: {
+  boardType: string
+  topN?: number
+  sortBy?: string
+  ascending?: boolean
+}): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/board-mac/ranking', {
+    board_type: params.boardType,
+    top_n: params.topN ?? 30,
+    sort_by: params.sortBy ?? 'change_pct',
+    ascending: params.ascending ?? false,
+  }))
+}
+
+export function fetchBoardChangeRanking(params: {
+  boardType: string
+  days: number
+  topN?: number
+  ascending?: boolean
+}): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/board-mac/change-ranking', {
+    board_type: params.boardType,
+    days: params.days,
+    top_n: params.topN ?? 30,
+    ascending: params.ascending ?? false,
+  }))
+}
+
+export function fetchBlockInfo(filename: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/block', { filename }))
+}
+
+export function fetchCompanyCategories(market: string, code: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/company/category', { market, code }))
+}
+
+export function fetchCompanyContent(
+  market: string,
+  code: string,
+  category: Record<string, unknown>,
+): Promise<{ content: string }> {
+  return request<{ content: string }>(queryPath('/company/content', {
+    market,
+    code,
+    filename: String(category.filename ?? ''),
+    offset: Number(category.start ?? 0),
+    length: Number(category.length ?? 1024),
+  }))
+}
+
+export function fetchFinancialFiles(): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>('/financial/file-list')
+}
+
+export function fetchFinancialRecords(filename: string, code?: string): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/financial/records', { filename, code }))
+}
+
+export function fetchIndicatorList(): Promise<Array<Record<string, unknown>>> {
+  return request<Array<Record<string, unknown>>>('/indicator/list')
+}
+
+export function computeIndicators(
+  data: Array<Record<string, unknown>>,
+  indicators: string[],
+): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>('/indicator/compute', {
+    method: 'POST',
+    body: JSON.stringify({ data, indicators, keep_ohlcv: true }),
+  })
+}
+
+export function fetchExtendedMarket(
+  kind: 'bars' | 'quote' | 'minute' | 'transaction',
+  market: string,
+  code: string,
+  category = 'DAY',
+): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath(`/ex/${kind}`, {
+    market, code, category: kind === 'bars' ? category : undefined,
+    start: kind === 'bars' || kind === 'transaction' ? 0 : undefined,
+    count: kind === 'bars' ? 500 : kind === 'transaction' ? 1000 : undefined,
+  }))
+}
+
+export function fetchExtendedMarkets(): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>('/ex/markets')
+}
+
+export function fetchExtendedInstruments(market: string, start = 0, count = 500): Promise<DataRowsResponse> {
+  return request<DataRowsResponse>(queryPath('/ex/instruments', { market, start, count }))
+}
+
+export function fetchResearchFactors(): Promise<Array<Record<string, unknown>>> {
+  return request<Array<Record<string, unknown>>>('/research/factors')
+}
+
+export function computeResearchFactors(payload: {
+  market: string
+  code: string
+  category: string
+  count: number
+  factors: string[]
+}): Promise<DictDataResponse> {
+  return request<DictDataResponse>('/research/factors/compute', {
+    method: 'POST', body: JSON.stringify(payload),
+  })
+}
+
+export function analyzePortfolioRisk(payload: {
+  stocks: Array<{ market: string; code: string }>
+  method: 'equal' | 'factor_weighted' | 'risk_parity' | 'mean_variance'
+  category: string
+  count: number
+}): Promise<DictDataResponse> {
+  return request<DictDataResponse>('/research/portfolio-risk', {
+    method: 'POST', body: JSON.stringify(payload),
+  })
 }
 
 /** 把后端 bars 的单条记录归一化为统一 Bar（datetime 字段）。 */

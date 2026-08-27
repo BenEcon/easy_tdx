@@ -100,11 +100,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     enable_ex = getattr(app.state, "enable_ex", False)
     if enable_ex:
         try:
-            from easy_tdx.ex.client import AsyncExTdxClient
+            from easy_tdx.ex.mac_client import AsyncMacExClient
 
-            ex_client = AsyncExTdxClient.from_best_host()
+            ex_client = AsyncMacExClient.from_best_host()
             await ex_client.connect()
-            logger.info("Ex market client connected")
+            logger.info("MAC Ex market client connected")
         except Exception:
             logger.warning("Ex market client connection failed — Ex endpoints will return 503")
             ex_client = None
@@ -144,7 +144,7 @@ def _create_app(
     timeout: float | None = None,
     *,
     enable_mac: bool = True,
-    enable_ex: bool = False,
+    enable_ex: bool | None = None,
 ) -> FastAPI:
     """创建并配置 FastAPI 应用实例。"""
     from easy_tdx.config import get_best_host, get_port, get_timeout
@@ -183,6 +183,8 @@ def _create_app(
     app.state.mac_client = None
     app.state.ex_client = None
     app.state.enable_mac = enable_mac
+    if enable_ex is None:
+        enable_ex = os.environ.get("EASY_TDX_ENABLE_EX", "").lower() in {"1", "true", "yes"}
     app.state.enable_ex = enable_ex
 
     # CORS middleware (permissive for development)
@@ -198,6 +200,7 @@ def _create_app(
     register_exception_handlers(app)
 
     # Mount routers
+    from easy_tdx.web.routers.admin_data import router as admin_data_router
     from easy_tdx.web.routers.announcement import router as announcement_router
     from easy_tdx.web.routers.auth import router as auth_router
     from easy_tdx.web.routers.backtest import router as backtest_router
@@ -212,17 +215,20 @@ def _create_app(
     from easy_tdx.web.routers.mac_quotes import router as mac_quotes_router
     from easy_tdx.web.routers.market import router as market_router
     from easy_tdx.web.routers.realtime import router as realtime_router
+    from easy_tdx.web.routers.research import router as research_router
     from easy_tdx.web.routers.server import router as server_router
     from easy_tdx.web.routers.sina import router as sina_router
     from easy_tdx.web.routers.strategies import router as strategies_router
 
     app.include_router(auth_router, prefix="/api/v1")
+    app.include_router(admin_data_router, prefix="/api/v1")
     app.include_router(market_router, prefix="/api/v1")
     app.include_router(bars_router, prefix="/api/v1")
     app.include_router(finance_router, prefix="/api/v1")
     app.include_router(block_router, prefix="/api/v1")
     app.include_router(chanlun_router, prefix="/api/v1")
     app.include_router(realtime_router, prefix="/api/v1")
+    app.include_router(research_router, prefix="/api/v1")
     # MAC 协议路由
     app.include_router(board_mac_router, prefix="/api/v1")
     app.include_router(mac_data_router, prefix="/api/v1")

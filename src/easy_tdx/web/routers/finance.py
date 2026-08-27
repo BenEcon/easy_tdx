@@ -78,8 +78,11 @@ async def financial_file_list(
 @router.get("/financial/records", response_model=DataFrameResponse)
 async def financial_records(
     filename: str = Query(..., description="财报文件名，如 tdxfin/gpcw20260331.zip"),
+    code: str | None = Query(None, min_length=6, max_length=6, description="可选：只返回指定股票"),
     client: Any = Depends(get_client),
 ) -> DataFrameResponse:
     """下载财报 zip 并解析为记录列表。"""
     df = await client.get_financial_records(filename)
+    if code and not df.empty and "code" in df.columns:
+        df = df[df["code"].astype(str).str.zfill(6) == code]
     return _df_resp(df)

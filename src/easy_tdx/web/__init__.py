@@ -24,6 +24,8 @@ def create_app(
     host: str | None = None,
     port: int | None = None,
     timeout: float | None = None,
+    *,
+    enable_ex: bool | None = None,
 ) -> FastAPI:
     """Create and configure the FastAPI application.
 
@@ -37,7 +39,7 @@ def create_app(
     """
     from easy_tdx.web.app import _create_app
 
-    return _create_app(host=host, port=port, timeout=timeout)
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
 
 
 def app_factory() -> FastAPI:
