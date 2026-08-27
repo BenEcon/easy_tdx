@@ -6,6 +6,7 @@
 
 import { computed, ref } from 'vue'
 
+import MacSelect from './MacSelect.vue'
 import { fetchBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
 import { useBacktestStore } from '../stores/backtest'
@@ -35,6 +36,7 @@ const error = ref('')
 const loading = ref(false)
 
 const CATEGORIES: Category[] = ['DAY', 'WEEK', 'MONTH', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60']
+const CATEGORY_OPTIONS = CATEGORIES.map((value) => ({ value, label: value }))
 
 // 智能识别的市场（用于提示展示）
 const detectedMarket = computed(() => (code.value && /^\d{6}$/.test(code.value)
@@ -103,9 +105,7 @@ defineExpose({ loadBars, loading })
 
     <div class="field">
       <label>周期</label>
-      <select v-model="category">
-        <option v-for="c in CATEGORIES" :key="c" :value="c">{{ c }}</option>
-      </select>
+      <MacSelect v-model="category" :options="CATEGORY_OPTIONS" aria-label="行情周期" />
     </div>
 
     <div class="row">

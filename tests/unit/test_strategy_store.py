@@ -163,15 +163,34 @@ def client(tmp_path, monkeypatch) -> TestClient:
     # 替换单例，避免污染全局
     monkeypatch.setattr(mod, "_store", test_store)
 
+    from easy_tdx.web.account_store import UserRecord
+    from easy_tdx.web.routers.auth import get_current_user
     from easy_tdx.web.routers.strategies import router as strategies_router
 
     app = FastAPI()
+    app.dependency_overrides[get_current_user] = lambda: UserRecord(
+        id="test-user", username="tester"
+    )
     app.include_router(strategies_router, prefix="/api/v1")
     # 复用项目的 ValueError → 400 处理
     from easy_tdx.web.errors import register_exception_handlers
 
     register_exception_handlers(app)
     return TestClient(app)
+
+
+def test_store_filters_records_by_owner(store: StrategyStore):
+    first = _sample_single(name="用户甲")
+    first.owner_id = "user-a"
+    second = _sample_single(name="用户乙")
+    second.owner_id = "user-b"
+    first = store.add(first)
+    second = store.add(second)
+
+    assert [item.id for item in store.list_all("user-a")] == [first.id]
+    assert store.get(second.id, "user-a") is None
+    assert store.delete(second.id, "user-a") is False
+    assert store.get(second.id, "user-b") is not None
 
 
 def _create_payload(kind: str = "single", **over) -> dict:

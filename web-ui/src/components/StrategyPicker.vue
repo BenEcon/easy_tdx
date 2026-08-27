@@ -5,6 +5,7 @@
 
 import { computed, watch } from 'vue'
 
+import MacSelect from './MacSelect.vue'
 import type { ParamSchema, StrategySchema } from '../types'
 
 const props = defineProps<{
@@ -21,6 +22,13 @@ const emit = defineEmits<{
 // 当前选中策略的 schema（用于渲染参数表单）
 const selectedSchema = computed(
   () => props.strategies.find((s) => s.name === props.strategy) ?? null,
+)
+const strategyOptions = computed(() =>
+  props.strategies.map((item) => ({
+    value: item.name,
+    label: `${item.label}（${item.name}）`,
+    description: item.description,
+  })),
 )
 
 // 切换策略时重置参数为默认值
@@ -50,25 +58,22 @@ function updateParam(p: ParamSchema, raw: string | boolean) {
   }
   emit('update:params', { ...props.params, [p.name]: v })
 }
+
+function choiceOptions(p: ParamSchema) {
+  return (p.choices ?? []).map((value) => ({ value, label: value }))
+}
 </script>
 
 <template>
   <div class="strategy-picker">
     <div class="field">
       <label>策略</label>
-      <select
-        :value="strategy"
-        @change="
-          emit(
-            'update:strategy',
-            ($event.target as HTMLSelectElement).value,
-          )
-        "
-      >
-        <option v-for="s in strategies" :key="s.name" :value="s.name">
-          {{ s.label }}（{{ s.name }}）
-        </option>
-      </select>
+      <MacSelect
+        :model-value="strategy"
+        :options="strategyOptions"
+        aria-label="回测策略"
+        @update:model-value="emit('update:strategy', $event)"
+      />
     </div>
 
     <p v-if="selectedSchema" class="desc">{{ selectedSchema.description }}</p>
@@ -78,13 +83,13 @@ function updateParam(p: ParamSchema, raw: string | boolean) {
       <div v-for="p in selectedSchema.params" :key="p.name" class="field">
         <label>{{ p.label }}</label>
         <!-- str + choices → 下拉 -->
-        <select
+        <MacSelect
           v-if="p.type === 'str' && p.choices"
-          :value="String(paramValue(p))"
-          @change="updateParam(p, ($event.target as HTMLSelectElement).value)"
-        >
-          <option v-for="c in p.choices" :key="c" :value="c">{{ c }}</option>
-        </select>
+          :model-value="String(paramValue(p))"
+          :options="choiceOptions(p)"
+          :aria-label="p.label"
+          @update:model-value="updateParam(p, $event)"
+        />
         <!-- bool → 复选 -->
         <input
           v-else-if="p.type === 'bool'"

@@ -13,6 +13,8 @@ venv/
 .omc/
 .claude/
 .playwright-mcp/
+.playwright-cli/
+output/playwright/
 docs/_build/
 FK/
 

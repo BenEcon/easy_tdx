@@ -47,6 +47,73 @@ export interface DataFrameResponse {
   count: number
 }
 
+// ── 缠论结构分析（POST /api/v1/chanlun/analyze）──────────────────────────────
+
+export interface ChanlunBi {
+  index: number
+  direction: 'up' | 'down'
+  start_date: string
+  end_date: string
+  high: number
+  low: number
+  done: boolean
+}
+
+export interface ChanlunCenter {
+  index: number
+  zg: number
+  zd: number
+  gg: number
+  dd: number
+  line_count: number
+  start_date: string | null
+  end_date: string | null
+  done: boolean
+}
+
+export interface ChanlunSegment {
+  index: number
+  direction: 'up' | 'down'
+  start_date: string
+  end_date: string
+  start_value?: number
+  end_value?: number
+  high: number
+  low: number
+}
+
+export interface ChanlunSignal {
+  type: '1buy' | '2buy' | '3buy' | '1sell' | '2sell' | '3sell'
+  date: string | null
+  msg: string
+}
+
+export interface ChanlunDivergence {
+  type: 'bi' | 'pz' | 'qs'
+  bc: boolean
+  curr_date: string | null
+  prev_date: string | null
+  msg: string
+}
+
+export interface ChanlunResult {
+  code: string
+  frequency: string
+  kline_count: number
+  ckline_count: number
+  fractal_count: number
+  bi_count: number
+  zs_count: number
+  xd_count: number
+  mmd_count: number
+  bc_count: number
+  bis: ChanlunBi[]
+  zss: ChanlunCenter[]
+  xds: ChanlunSegment[]
+  mmds: ChanlunSignal[]
+  bcs: ChanlunDivergence[]
+}
+
 // ── 回测请求（POST /api/v1/backtest/run） ─────────────────────────────────────
 
 export type ExecutionMode = 'next_open' | 'next_close'
@@ -311,6 +378,32 @@ export interface SavedStrategy {
 export interface SavedStrategyListResponse {
   strategies: SavedStrategy[]
   count: number
+}
+
+// ── 账户与个人数据 ──────────────────────────────────────────────────────────
+
+export interface AccountUser {
+  id: string
+  username: string
+  role: 'admin' | 'user'
+  active: boolean
+  preferences: Record<string, unknown>
+  created_at: string
+  updated_at: string
+  last_login_at: string
+  saved_strategy_count?: number
+}
+
+export interface AuthStatus {
+  setup_required: boolean
+  authenticated: boolean
+  user: AccountUser | null
+}
+
+export interface AccountListResponse {
+  users: AccountUser[]
+  count: number
+  active_count: number
 }
 
 // ── 信号雷达（POST /api/v1/backtest/signal-scan/run/async） ──────────────────

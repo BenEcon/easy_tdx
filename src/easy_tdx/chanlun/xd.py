@@ -55,7 +55,11 @@ def find_xds(
             if _forms_xd(segment_bis, config):
                 xd = _create_xd(segment_bis, len(xds))
                 xds.append(xd)
-                i += end_offset - 1  # 下一笔从倒数第2笔开始（共享转折点）
+                # 当前线段终点是最后一笔的 end；下一条线段应从下一笔开始，
+                # 其 start 正好与当前终点是同一个分型。旧逻辑回退一笔后，
+                # 新线段会从“最后一笔的起点”开始，时间早于上一线段终点，
+                # 不仅造成区间重叠，前端连线时也会出现明显回折。
+                i += end_offset
                 xd_found = True
                 break
 

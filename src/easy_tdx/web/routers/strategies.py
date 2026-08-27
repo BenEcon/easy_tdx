@@ -9,13 +9,15 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from easy_tdx.web.account_store import UserRecord
 from easy_tdx.web.backtest_schemas import (
     SavedStrategy,
     SavedStrategyCreate,
     SavedStrategyListResponse,
 )
+from easy_tdx.web.routers.auth import get_current_user
 from easy_tdx.web.strategy_store import (
     SavedStrategy as SavedStrategyRecord,
 )
@@ -41,25 +43,33 @@ def _to_response(rec: SavedStrategyRecord) -> SavedStrategy:
 
 
 @router.get("/strategies", response_model=SavedStrategyListResponse)
-async def list_saved_strategies() -> SavedStrategyListResponse:
+async def list_saved_strategies(
+    user: UserRecord = Depends(get_current_user),
+) -> SavedStrategyListResponse:
     """列出全部已保存策略（按创建时间倒序）。"""
     store = get_store()
-    items = [_to_response(r) for r in store.list_all()]
+    items = [_to_response(r) for r in store.list_all(user.id)]
     return SavedStrategyListResponse(strategies=items, count=len(items))
 
 
 @router.get("/strategies/{strategy_id}", response_model=SavedStrategy)
-async def get_saved_strategy(strategy_id: str) -> SavedStrategy:
+async def get_saved_strategy(
+    strategy_id: str,
+    user: UserRecord = Depends(get_current_user),
+) -> SavedStrategy:
     """按 id 查看单条已保存策略。"""
     store = get_store()
-    rec = store.get(strategy_id)
+    rec = store.get(strategy_id, user.id)
     if rec is None:
         raise ValueError(f"策略 '{strategy_id}' 不存在")
     return _to_response(rec)
 
 
 @router.post("/strategies", response_model=SavedStrategy, status_code=201)
-async def create_saved_strategy(req: SavedStrategyCreate) -> SavedStrategy:
+async def create_saved_strategy(
+    req: SavedStrategyCreate,
+    user: UserRecord = Depends(get_current_user),
+) -> SavedStrategy:
     """保存一条策略（含当时的标的上下文与成绩快照）。"""
     store = get_store()
     rec = SavedStrategyRecord(
@@ -75,13 +85,17 @@ async def create_saved_strategy(req: SavedStrategyCreate) -> SavedStrategy:
         tags=req.tags,
         notes=req.notes,
         app_version=_app_version(),
+        owner_id=user.id,
     )
     saved = store.add(rec)
     return _to_response(saved)
 
 
 @router.delete("/strategies/{strategy_id}")
-async def delete_saved_strategy(strategy_id: str) -> dict[str, str]:
+async def delete_saved_strategy(
+    strategy_id: str,
+    user: UserRecord = Depends(get_current_user),
+) -> dict[str, str]:
     """按 id 删除一条已保存策略。不存在则 400。
 
     注：不用 204（No Content），因较新 FastAPI 在路由注册阶段就拒绝
@@ -89,6 +103,6 @@ async def delete_saved_strategy(strategy_id: str) -> dict[str, str]:
     返回简单确认体更兼容、前端无需特判。
     """
     store = get_store()
-    if not store.delete(strategy_id):
+    if not store.delete(strategy_id, user.id):
         raise ValueError(f"策略 '{strategy_id}' 不存在")
     return {"deleted": strategy_id}

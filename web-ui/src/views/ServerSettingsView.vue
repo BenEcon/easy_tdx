@@ -196,13 +196,15 @@ function latencyText(ms: number | null): string {
 }
 .btn-test {
   width: 100%;
-  padding: 10px;
+  min-height: 42px;
+  padding: 0 16px;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 14px;
+  line-height: 1;
   margin-bottom: 16px;
 }
 .btn-test:hover:not(:disabled) {

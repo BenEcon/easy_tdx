@@ -3,10 +3,14 @@
 
 import type {
   ApiError,
+  AccountListResponse,
+  AccountUser,
+  AuthStatus,
   BacktestRequest,
   BacktestResult,
   Bar,
   Category,
+  ChanlunResult,
   MultiStrategyBacktestRequest,
   OptimizeAllBacktestRequest,
   OptimizeBacktestRequest,
@@ -27,6 +31,19 @@ import type {
 
 const BASE = '/api/v1'
 
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  const resp = await fetch(`${BASE}${path}`, {
+    credentials: 'same-origin',
+    ...init,
+    headers: {
+      ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
+      ...init?.headers,
+    },
+  })
+  if (!resp.ok) await throwError(resp)
+  return (await resp.json()) as T
+}
+
 /** 把未知错误格式化为用户可读的消息（网络错误给友好提示）。 */
 export function formatError(e: unknown): string {
   if (e instanceof TypeError && e.message.includes('fetch')) {
@@ -45,6 +62,88 @@ async function throwError(resp: Response): Promise<never> {
     // 非 JSON 错误体，用 statusText
   }
   throw new Error(detail)
+}
+
+// ── 账户认证与管理员平台 ───────────────────────────────────────────────────
+
+export function fetchAuthStatus(): Promise<AuthStatus> {
+  return request<AuthStatus>('/auth/status')
+}
+
+export async function loginAccount(username: string, password: string): Promise<AccountUser> {
+  const body = await request<{ user: AccountUser }>('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  })
+  return body.user
+}
+
+export async function setupAdmin(username: string, password: string): Promise<AccountUser> {
+  const body = await request<{ user: AccountUser }>('/auth/setup', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  })
+  return body.user
+}
+
+export function logoutAccount(): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>('/auth/logout', { method: 'POST' })
+}
+
+export async function fetchMyAccount(): Promise<AccountUser> {
+  const body = await request<{ user: AccountUser }>('/auth/me')
+  return body.user
+}
+
+export async function saveAccountPreferences(
+  preferences: Record<string, unknown>,
+): Promise<AccountUser> {
+  const body = await request<{ user: AccountUser }>('/auth/me/preferences', {
+    method: 'PUT',
+    body: JSON.stringify({ preferences }),
+  })
+  return body.user
+}
+
+export function changeAccountPassword(currentPassword: string, newPassword: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>('/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+  })
+}
+
+export function fetchAccounts(): Promise<AccountListResponse> {
+  return request<AccountListResponse>('/admin/users')
+}
+
+export async function createAccount(
+  username: string,
+  password: string,
+  role: 'admin' | 'user',
+): Promise<AccountUser> {
+  const body = await request<{ user: AccountUser }>('/admin/users', {
+    method: 'POST',
+    body: JSON.stringify({ username, password, role }),
+  })
+  return body.user
+}
+
+export async function updateAccount(
+  id: string,
+  update: { role?: 'admin' | 'user'; active?: boolean },
+): Promise<AccountUser> {
+  const body = await request<{ user: AccountUser }>(`/admin/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(update),
+  })
+  return body.user
+}
+
+export function resetAccountPassword(id: string, newPassword: string): Promise<{ ok: boolean }> {
+  return request<{ ok: boolean }>(`/admin/users/${id}/reset-password`, {
+    method: 'POST',
+    body: JSON.stringify({ new_password: newPassword }),
+  })
 }
 
 /** 枚举预置策略 + 参数 schema。 */
@@ -120,6 +219,43 @@ function normalizeBar(row: Record<string, unknown>): Bar {
     vol: Number(row.vol),
     amount: Number(row.amount),
   }
+}
+
+/** 获取最近 N 根 K 线，供缠论主图与后端结构分析使用同一时间窗口。 */
+export async function fetchRecentBars(
+  market: string,
+  code: string,
+  category: Category,
+  count: number,
+): Promise<Bar[]> {
+  const params = new URLSearchParams({
+    market,
+    code,
+    category,
+    count: String(count),
+    start: '0',
+  })
+  const resp = await fetch(`${BASE}/bars?${params}`)
+  if (!resp.ok) await throwError(resp)
+  const body = (await resp.json()) as { data: Record<string, unknown>[] }
+  return body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime))
+}
+
+/** 执行完整缠论管道：K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰。 */
+export async function analyzeChanlun(req: {
+  market: string
+  code: string
+  category: Category
+  count: number
+  start?: number
+}): Promise<ChanlunResult> {
+  const resp = await fetch(`${BASE}/chanlun/analyze`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...req, start: req.start ?? 0 }),
+  })
+  if (!resp.ok) await throwError(resp)
+  return (await resp.json()) as ChanlunResult
 }
 
 /** 同步回测（内联 OHLCV，快速）。 */

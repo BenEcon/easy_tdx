@@ -1,0 +1,17 @@
+.git
+.github
+.claude
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.playwright-cli
+output
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+web-ui/node_modules
+web-ui/dist
+tests
+docs
+examples

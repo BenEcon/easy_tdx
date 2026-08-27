@@ -71,6 +71,7 @@ class SavedStrategy:
     created_at: str = ""
     updated_at: str = ""
     app_version: str = ""
+    owner_id: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -109,6 +110,7 @@ class SavedStrategy:
             created_at=row["created_at"] or "",
             updated_at=row["updated_at"] or "",
             app_version=row["app_version"] or "",
+            owner_id=row["owner_id"] or "" if "owner_id" in row.keys() else "",
         )
 
 
@@ -134,10 +136,12 @@ class StrategyStore:
         created_at      TEXT NOT NULL DEFAULT '',
         updated_at      TEXT NOT NULL DEFAULT '',
         app_version     TEXT NOT NULL DEFAULT ''
+        ,owner_id       TEXT NOT NULL DEFAULT ''
     );
     CREATE INDEX IF NOT EXISTS idx_strategies_kind      ON strategies(kind);
     CREATE INDEX IF NOT EXISTS idx_strategies_strategy  ON strategies(strategy);
     CREATE INDEX IF NOT EXISTS idx_strategies_created   ON strategies(created_at);
+    CREATE INDEX IF NOT EXISTS idx_strategies_owner     ON strategies(owner_id);
     """
 
     def __init__(self, db_path: Path | None = None) -> None:
@@ -155,6 +159,22 @@ class StrategyStore:
     def _ensure_schema(self) -> None:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         with self._connect() as conn:
+            # Older installations predate accounts. Add owner_id before creating
+            # its index so the migration is safe for the existing strategies.db.
+            conn.execute(
+                """CREATE TABLE IF NOT EXISTS strategies (
+                    id TEXT PRIMARY KEY, name TEXT NOT NULL, kind TEXT NOT NULL,
+                    strategy TEXT NOT NULL, strategy_label TEXT NOT NULL DEFAULT '',
+                    params TEXT NOT NULL DEFAULT '{}', context TEXT NOT NULL DEFAULT '{}',
+                    trade_config TEXT NOT NULL DEFAULT '{}', snapshot TEXT NOT NULL DEFAULT '{}',
+                    tags TEXT NOT NULL DEFAULT '[]', notes TEXT NOT NULL DEFAULT '',
+                    created_at TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL DEFAULT '',
+                    app_version TEXT NOT NULL DEFAULT '', owner_id TEXT NOT NULL DEFAULT ''
+                )"""
+            )
+            columns = {row[1] for row in conn.execute("PRAGMA table_info(strategies)")}
+            if "owner_id" not in columns:
+                conn.execute("ALTER TABLE strategies ADD COLUMN owner_id TEXT NOT NULL DEFAULT ''")
             conn.executescript(self._SCHEMA)
 
     @staticmethod
@@ -176,8 +196,9 @@ class StrategyStore:
             conn.execute(
                 """INSERT INTO strategies
                    (id, name, kind, strategy, strategy_label, params, context,
-                    trade_config, snapshot, tags, notes, created_at, updated_at, app_version)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    trade_config, snapshot, tags, notes, created_at, updated_at, app_version,
+                    owner_id)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     record.id,
                     record.name,
@@ -193,27 +214,64 @@ class StrategyStore:
                     record.created_at,
                     record.updated_at,
                     record.app_version,
+                    record.owner_id,
                 ),
             )
         return record
 
-    def list_all(self) -> list[SavedStrategy]:
+    def list_all(self, owner_id: str | None = None) -> list[SavedStrategy]:
         """列出全部策略，按创建时间倒序（最新保存的在前）。"""
         with self._connect() as conn:
-            rows = conn.execute("SELECT * FROM strategies ORDER BY created_at DESC").fetchall()
+            if owner_id is None:
+                rows = conn.execute("SELECT * FROM strategies ORDER BY created_at DESC").fetchall()
+            else:
+                rows = conn.execute(
+                    "SELECT * FROM strategies WHERE owner_id = ? ORDER BY created_at DESC",
+                    (owner_id,),
+                ).fetchall()
         return [SavedStrategy.from_row(r) for r in rows]
 
-    def get(self, strategy_id: str) -> SavedStrategy | None:
+    def get(self, strategy_id: str, owner_id: str | None = None) -> SavedStrategy | None:
         """按 id 查看单条；不存在返回 None。"""
         with self._connect() as conn:
-            row = conn.execute("SELECT * FROM strategies WHERE id = ?", (strategy_id,)).fetchone()
+            if owner_id is None:
+                row = conn.execute(
+                    "SELECT * FROM strategies WHERE id = ?", (strategy_id,)
+                ).fetchone()
+            else:
+                row = conn.execute(
+                    "SELECT * FROM strategies WHERE id = ? AND owner_id = ?",
+                    (strategy_id, owner_id),
+                ).fetchone()
         return SavedStrategy.from_row(row) if row else None
 
-    def delete(self, strategy_id: str) -> bool:
+    def delete(self, strategy_id: str, owner_id: str | None = None) -> bool:
         """按 id 删除；返回是否确实删掉了一条（False = id 不存在）。"""
         with _write_lock, self._connect() as conn:
-            cur = conn.execute("DELETE FROM strategies WHERE id = ?", (strategy_id,))
+            if owner_id is None:
+                cur = conn.execute("DELETE FROM strategies WHERE id = ?", (strategy_id,))
+            else:
+                cur = conn.execute(
+                    "DELETE FROM strategies WHERE id = ? AND owner_id = ?",
+                    (strategy_id, owner_id),
+                )
             return cur.rowcount > 0
+
+    def claim_unowned(self, owner_id: str) -> int:
+        """首次启用账户体系时，把旧版无归属数据安全归入首位管理员。"""
+        with _write_lock, self._connect() as conn:
+            cur = conn.execute(
+                "UPDATE strategies SET owner_id = ? WHERE owner_id = ''",
+                (owner_id,),
+            )
+            return cur.rowcount
+
+    def count_for_owner(self, owner_id: str) -> int:
+        with self._connect() as conn:
+            row = conn.execute(
+                "SELECT COUNT(*) AS count FROM strategies WHERE owner_id = ?", (owner_id,)
+            ).fetchone()
+        return int(row["count"])
 
 
 # ── 单例 ───────────────────────────────────────────────────────────────────

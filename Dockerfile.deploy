@@ -1,0 +1,42 @@
+# syntax=docker/dockerfile:1.7
+
+FROM node:22-bookworm-slim AS frontend
+WORKDIR /build
+
+COPY web-ui/package.json web-ui/package-lock.json ./web-ui/
+RUN npm ci --prefix web-ui
+
+COPY web-ui/ ./web-ui/
+RUN npm run build --prefix web-ui
+
+FROM python:3.12-slim-bookworm AS runtime
+
+ENV HOME=/data \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /opt/easy_tdx
+
+RUN groupadd --system --gid 10001 easytdx \
+    && useradd --system --uid 10001 --gid easytdx --home-dir /data easytdx \
+    && mkdir -p /data /tmp \
+    && chown -R easytdx:easytdx /data /tmp
+
+COPY pyproject.toml README.md LICENSE NOTICE ./
+COPY src/ ./src/
+COPY strategies/ ./strategies/
+COPY --from=frontend /build/web-ui/dist ./web-ui/dist
+
+RUN python -m pip install ".[web]"
+
+USER easytdx
+
+EXPOSE 8000
+VOLUME ["/data"]
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/docs', timeout=4)" || exit 1
+
+CMD ["easy-tdx", "serve", "--host", "0.0.0.0", "--port", "8000", "--no-open-browser"]

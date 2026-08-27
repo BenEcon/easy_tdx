@@ -6,9 +6,11 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import ChartFrame from '../components/ChartFrame.vue'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
 import KlineChart from '../components/KlineChart.vue'
+import MacSelect from '../components/MacSelect.vue'
 import MetricTable from '../components/MetricTable.vue'
 import StrategyPicker from '../components/StrategyPicker.vue'
 import SymbolPicker from '../components/SymbolPicker.vue'
@@ -229,9 +231,7 @@ async function onSave() {
         </div>
         <div class="field">
           <label>成交价</label>
-          <select v-model="execution">
-            <option v-for="e in EXECUTIONS" :key="e.value" :value="e.value">{{ e.label }}</option>
-          </select>
+          <MacSelect v-model="execution" :options="EXECUTIONS" aria-label="成交价格模式" />
         </div>
       </section>
 
@@ -254,18 +254,25 @@ async function onSave() {
 
       <div v-if="store.result" class="report-content">
         <div class="result-toolbar">
-          <button class="ghost" @click="openSaveForm">💾 保存策略</button>
+          <button class="ghost" @click="openSaveForm">
+            <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 3.5h10l2 2v11H4z" /><path d="M7 3.5v5h6v-5M7 16.5v-5h6v5" />
+            </svg>
+            <span>保存策略</span>
+          </button>
           <span v-if="saveMsg" class="save-msg">{{ saveMsg }}</span>
         </div>
 
         <section class="report-section">
-          <h3>K线 + 买卖点</h3>
-          <KlineChart :bars="store.ohlcv" :trades="store.result.trades" />
+          <ChartFrame title="K线、买卖点与技术指标" description="主副图同步缩放；下方可切换成交量、MACD、KDJ 与 RSI。">
+            <KlineChart :bars="store.ohlcv" :trades="store.result.trades" />
+          </ChartFrame>
         </section>
 
         <section class="report-section">
-          <h3>净值曲线与回撤</h3>
-          <EquityChart :equity="store.result.equity_curve" />
+          <ChartFrame title="净值曲线与回撤" description="观察收益累积路径与风险区间">
+            <EquityChart :equity="store.result.equity_curve" />
+          </ChartFrame>
         </section>
 
         <section v-if="grade" class="report-section">

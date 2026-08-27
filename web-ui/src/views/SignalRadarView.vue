@@ -9,12 +9,14 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import MacSelect from '../components/MacSelect.vue'
 import { asSignalScanResult, formatError, runSignalScanWithPolling } from '../api'
 import type { SignalScanResult, SignalScanRow } from '../types'
 
 const router = useRouter()
 
 const WINDOW_OPTIONS = [1, 3, 5, 10]
+const WINDOW_SELECT_OPTIONS = WINDOW_OPTIONS.map((value) => ({ value, label: `${value} 根` }))
 const STORAGE_KEY = 'easy-tdx.signal-radar.last'
 
 const windowBars = ref(5)
@@ -153,12 +155,18 @@ function onLoad(r: SignalScanRow) {
       <div class="header-actions">
         <label class="window-picker">
           窗口
-          <select v-model="windowBars" :disabled="scanning">
-            <option v-for="w in WINDOW_OPTIONS" :key="w" :value="w">{{ w }} 根</option>
-          </select>
+          <MacSelect
+            v-model="windowBars"
+            :options="WINDOW_SELECT_OPTIONS"
+            :disabled="scanning"
+            aria-label="信号扫描窗口"
+          />
         </label>
         <button class="primary" :disabled="scanning" @click="onScan">
-          {{ scanning ? '扫描中…' : '⚡ 一键扫描' }}
+          <svg v-if="!scanning" class="button-icon" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="m11.5 2.5-6 9h4l-1 6 6-9h-4z" />
+          </svg>
+          <span>{{ scanning ? '扫描中…' : '一键扫描' }}</span>
         </button>
       </div>
     </header>

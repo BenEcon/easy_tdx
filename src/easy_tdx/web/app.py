@@ -199,6 +199,7 @@ def _create_app(
 
     # Mount routers
     from easy_tdx.web.routers.announcement import router as announcement_router
+    from easy_tdx.web.routers.auth import router as auth_router
     from easy_tdx.web.routers.backtest import router as backtest_router
     from easy_tdx.web.routers.bars import router as bars_router
     from easy_tdx.web.routers.block import router as block_router
@@ -215,6 +216,7 @@ def _create_app(
     from easy_tdx.web.routers.sina import router as sina_router
     from easy_tdx.web.routers.strategies import router as strategies_router
 
+    app.include_router(auth_router, prefix="/api/v1")
     app.include_router(market_router, prefix="/api/v1")
     app.include_router(bars_router, prefix="/api/v1")
     app.include_router(finance_router, prefix="/api/v1")

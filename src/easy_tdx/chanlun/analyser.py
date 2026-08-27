@@ -123,6 +123,8 @@ class ChanlunResult:
                     "direction": xd.direction.value,
                     "start_date": self._fmt_dt(xd.start.k.date),
                     "end_date": self._fmt_dt(xd.end.k.date),
+                    "start_value": round(xd.start.val, 2),
+                    "end_value": round(xd.end.val, 2),
                     "high": round(xd.high, 2),
                     "low": round(xd.low, 2),
                 }

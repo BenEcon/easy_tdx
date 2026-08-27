@@ -16,6 +16,7 @@ from typing import Any
 import pandas as pd
 from fastapi import APIRouter, Depends
 
+from easy_tdx.web.account_store import UserRecord
 from easy_tdx.web.backtest_schemas import (
     BacktestRequest,
     BacktestResultResponse,
@@ -34,6 +35,7 @@ from easy_tdx.web.backtest_schemas import (
     serialize_result,
 )
 from easy_tdx.web.deps import get_client
+from easy_tdx.web.routers.auth import get_current_user
 from easy_tdx.web.task_runner import get_runner
 
 router = APIRouter(tags=["backtest"])
@@ -305,6 +307,7 @@ async def run_optimize_all_async(
 async def run_signal_scan_async(
     req: SignalScanRequest,
     client: Any = Depends(get_client),
+    user: UserRecord = Depends(get_current_user),
 ) -> TaskSubmitResponse:
     """提交「信号雷达」后台任务：扫描策略库全部已保存策略的最近买卖信号。
 
@@ -316,7 +319,7 @@ async def run_signal_scan_async(
     from easy_tdx.web.signal_scan import expand_targets, fetch_scan_bars, run_scan
     from easy_tdx.web.strategy_store import get_store
 
-    records = get_store().list_all()
+    records = get_store().list_all(user.id)
     if not records:
         raise ValueError("策略库为空，请先在回测页保存策略")
 

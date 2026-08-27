@@ -187,6 +187,26 @@ class TestFindXds:
         for xd in xds:
             assert xd.direction in (Direction.UP, Direction.DOWN)
 
+    def test_xd_ranges_do_not_step_back_in_time(self) -> None:
+        """后一线段不能从前一线段终点之前重新起步。"""
+        from easy_tdx.chanlun.xd import find_xds
+
+        cks = [
+            _ck(i, f"2025-02-{i + 1:02d}", 10, 10, high, low)
+            for i, (high, low) in enumerate(
+                [
+                    (11, 8), (16, 9), (14, 10), (15, 9), (16, 11),
+                    (14, 10), (13, 8), (14, 9), (12, 6), (13, 7),
+                    (15, 8), (14, 9), (12, 5), (13, 6), (16, 8),
+                    (15, 9), (13, 7), (14, 8), (17, 10), (15, 9),
+                ]
+            )
+        ]
+        xds = find_xds(find_bis(find_fractals(cks)))
+
+        for previous, current in zip(xds, xds[1:], strict=False):
+            assert current.start.k.date >= previous.end.k.date
+
 
 # ── 买卖点测试 ────────────────────────────────────────────────────────────
 

@@ -5,7 +5,9 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
+import ChartFrame from '../components/ChartFrame.vue'
 import GradeBadge from '../components/GradeBadge.vue'
+import MacSelect from '../components/MacSelect.vue'
 import OptimizeHeatmap from '../components/OptimizeHeatmap.vue'
 import OptimizeResultTable from '../components/OptimizeResultTable.vue'
 import ParamGridPicker from '../components/ParamGridPicker.vue'
@@ -84,6 +86,13 @@ const EXECUTIONS: { value: ExecutionMode; label: string }[] = [
 
 const selectedStrategy = computed(
   () => store.strategies.find((s) => s.name === strategy.value) ?? null,
+)
+const strategyOptions = computed(() =>
+  store.strategies.map((item) => ({
+    value: item.name,
+    label: `${item.label}（${item.name}）`,
+    description: item.description,
+  })),
 )
 
 onMounted(() => {
@@ -219,11 +228,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
       <section class="panel-section">
         <h3>策略</h3>
         <div class="field">
-          <select v-model="strategy">
-            <option v-for="s in store.strategies" :key="s.name" :value="s.name">
-              {{ s.label }}（{{ s.name }}）
-            </option>
-          </select>
+          <MacSelect v-model="strategy" :options="strategyOptions" aria-label="寻优策略" />
         </div>
       </section>
 
@@ -240,9 +245,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
         </div>
         <div class="field">
           <label>成交价</label>
-          <select v-model="execution">
-            <option v-for="e in EXECUTIONS" :key="e.value" :value="e.value">{{ e.label }}</option>
-          </select>
+          <MacSelect v-model="execution" :options="EXECUTIONS" aria-label="成交价格模式" />
         </div>
       </section>
 
@@ -255,9 +258,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
               >CPU {{ cpuCount }} 核 · 推荐 {{ recommendedWorkers }}</span
             ></label
           >
-          <select v-model.number="workers">
-            <option v-for="o in WORKER_OPTIONS" :key="o.value" :value="o.value">{{ o.label }}</option>
-          </select>
+          <MacSelect v-model="workers" :options="WORKER_OPTIONS" aria-label="寻优工作进程数" />
         </div>
         <p class="workers-tip">
           寻优是 CPU 密集计算，多进程可显著提速（仅对「一键寻优所有策略」生效）。机器较弱时建议先用串行测一次再开并发。
@@ -311,8 +312,12 @@ const rankingGrades = computed<GradeResult[]>(() =>
         </section>
 
         <section v-if="store.optimizeResult.heatmap" class="report-section">
-          <h3>参数热力图（{{ store.optimizeResult.heatmap.x_name }} × {{ store.optimizeResult.heatmap.y_name }}）</h3>
-          <OptimizeHeatmap :heatmap="store.optimizeResult.heatmap" />
+          <ChartFrame
+            :title="`参数热力图（${store.optimizeResult.heatmap.x_name} × ${store.optimizeResult.heatmap.y_name}）`"
+            description="全屏观察参数稳定区间与局部最优点"
+          >
+            <OptimizeHeatmap :heatmap="store.optimizeResult.heatmap" />
+          </ChartFrame>
         </section>
 
         <section class="report-section">

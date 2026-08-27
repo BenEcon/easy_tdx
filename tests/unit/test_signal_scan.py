@@ -319,8 +319,13 @@ def api_client():
     from fastapi.testclient import TestClient
 
     from easy_tdx.web import create_app
+    from easy_tdx.web.account_store import UserRecord
+    from easy_tdx.web.routers.auth import get_current_user
 
     app = create_app()
+    app.dependency_overrides[get_current_user] = lambda: UserRecord(
+        id="test-user", username="tester"
+    )
     with TestClient(app) as c:
         yield c
 
@@ -335,7 +340,8 @@ def test_signal_scan_endpoint_e2e(api_client, monkeypatch) -> None:
     df.loc[df.index[-1], ["open", "high", "low", "close"]] = [14.95, 15.2, 14.8, 15.0]
 
     class FakeStore:
-        def list_all(self) -> list[SavedStrategy]:
+        def list_all(self, owner_id: str | None = None) -> list[SavedStrategy]:
+            del owner_id
             return [_single()]
 
     async def fake_fetch(client, targets):  # noqa: ANN001
@@ -372,7 +378,8 @@ def test_signal_scan_endpoint_empty_store(api_client, monkeypatch) -> None:
     import easy_tdx.web.strategy_store as store_mod
 
     class EmptyStore:
-        def list_all(self) -> list[SavedStrategy]:
+        def list_all(self, owner_id: str | None = None) -> list[SavedStrategy]:
+            del owner_id
             return []
 
     monkeypatch.setattr(store_mod, "get_store", lambda: EmptyStore())

@@ -6,6 +6,7 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import ChartFrame from '../components/ChartFrame.vue'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
 import MetricTable from '../components/MetricTable.vue'
@@ -445,7 +446,10 @@ const comboGrade = computed(() =>
           清除选择
         </button>
         <button class="ghost" :disabled="loading" @click="load">
-          {{ loading ? '刷新中…' : '↻ 刷新' }}
+          <svg :class="['button-icon', { spinning: loading }]" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M16 6.5V3l-2 2a6.5 6.5 0 1 0 1.5 8" />
+          </svg>
+          <span>{{ loading ? '刷新中…' : '刷新' }}</span>
         </button>
       </div>
     </header>
@@ -557,7 +561,14 @@ const comboGrade = computed(() =>
               :disabled="store.multiStrategyRunning"
               @click="onLoadMulti(s)"
             >
-              {{ store.multiStrategyRunning ? '重跑中…' : '↻ 重跑到今天' }}
+              <svg
+                :class="['button-icon', { spinning: store.multiStrategyRunning }]"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
+                <path d="M16 6.5V3l-2 2a6.5 6.5 0 1 0 1.5 8" />
+              </svg>
+              <span>{{ store.multiStrategyRunning ? '重跑中…' : '重跑到今天' }}</span>
             </button>
             <button v-else class="primary sm" @click="onLoad(s)">载入</button>
             <button
@@ -636,7 +647,10 @@ const comboGrade = computed(() =>
           class="save-combo-btn"
           @click="openSaveCombo"
         >
-          💾 保存为组合
+          <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 3.5h10l2 2v11H4z" /><path d="M7 3.5v5h6v-5M7 16.5v-5h6v5" />
+          </svg>
+          <span>保存为组合</span>
         </button>
       </h3>
 
@@ -670,8 +684,9 @@ const comboGrade = computed(() =>
         </div>
 
         <div class="combo-chart-block">
-          <h4>组合净值曲线</h4>
-          <EquityChart :equity="store.multiStrategyResult.combined_equity" />
+          <ChartFrame title="组合净值曲线" description="多策略资金分仓后的整体表现">
+            <EquityChart :equity="store.multiStrategyResult.combined_equity" />
+          </ChartFrame>
         </div>
 
         <div v-if="comboPerf" class="combo-chart-block">
@@ -688,10 +703,11 @@ const comboGrade = computed(() =>
         </div>
 
         <div class="combo-chart-block">
-          <h4>各策略净值叠加（归一化）</h4>
-          <PortfolioCompareChart
-            :results="store.multiStrategyResult.individual_results"
-          />
+          <ChartFrame title="各策略净值叠加（归一化）" description="比较每个策略的独立收益路径">
+            <PortfolioCompareChart
+              :results="store.multiStrategyResult.individual_results"
+            />
+          </ChartFrame>
         </div>
 
         <div class="combo-chart-block">

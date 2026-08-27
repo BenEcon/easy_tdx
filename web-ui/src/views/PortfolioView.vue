@@ -4,8 +4,10 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
+import ChartFrame from '../components/ChartFrame.vue'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
+import MacSelect from '../components/MacSelect.vue'
 import PortfolioCompareChart from '../components/PortfolioCompareChart.vue'
 import PortfolioSummaryTable from '../components/PortfolioSummaryTable.vue'
 import StocksPicker from '../components/StocksPicker.vue'
@@ -31,6 +33,7 @@ const EXECUTIONS: { value: ExecutionMode; label: string }[] = [
   { value: 'next_close', label: '收盘价' },
 ]
 const CATEGORIES: Category[] = ['DAY', 'WEEK', 'MONTH', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60']
+const CATEGORY_OPTIONS = CATEGORIES.map((value) => ({ value, label: value }))
 
 // 日期默认（复用单标的逻辑）
 function isoDaysFromNow(days: number): string {
@@ -180,9 +183,7 @@ async function onSave() {
         <h3>周期与日期</h3>
         <div class="field">
           <label>周期</label>
-          <select v-model="category">
-            <option v-for="c in CATEGORIES" :key="c" :value="c">{{ c }}</option>
-          </select>
+          <MacSelect v-model="category" :options="CATEGORY_OPTIONS" aria-label="行情周期" />
         </div>
         <div class="row">
           <div class="field">
@@ -204,9 +205,7 @@ async function onSave() {
         </div>
         <div class="field">
           <label>成交价</label>
-          <select v-model="execution">
-            <option v-for="e in EXECUTIONS" :key="e.value" :value="e.value">{{ e.label }}</option>
-          </select>
+          <MacSelect v-model="execution" :options="EXECUTIONS" aria-label="成交价格模式" />
         </div>
       </section>
 
@@ -231,7 +230,12 @@ async function onSave() {
 
       <div v-if="store.portfolioResult" class="report-content">
         <div class="result-toolbar">
-          <button class="ghost" @click="openSaveForm">💾 保存策略</button>
+          <button class="ghost" @click="openSaveForm">
+            <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 3.5h10l2 2v11H4z" /><path d="M7 3.5v5h6v-5M7 16.5v-5h6v5" />
+            </svg>
+            <span>保存策略</span>
+          </button>
           <span v-if="saveMsg" class="save-msg">{{ saveMsg }}</span>
         </div>
 
@@ -264,8 +268,9 @@ async function onSave() {
         </section>
 
         <section class="report-section">
-          <h3>组合净值曲线</h3>
-          <EquityChart :equity="store.portfolioResult.combined_equity" />
+          <ChartFrame title="组合净值曲线" description="统一资金池下的组合收益轨迹">
+            <EquityChart :equity="store.portfolioResult.combined_equity" />
+          </ChartFrame>
         </section>
 
         <section class="report-section">
@@ -277,8 +282,9 @@ async function onSave() {
         </section>
 
         <section class="report-section">
-          <h3>各标的净值叠加（归一化）</h3>
-          <PortfolioCompareChart :results="store.portfolioResult.individual_results" />
+          <ChartFrame title="各标的净值叠加（归一化）" description="比较不同标的的相对表现">
+            <PortfolioCompareChart :results="store.portfolioResult.individual_results" />
+          </ChartFrame>
         </section>
       </div>
     </main>

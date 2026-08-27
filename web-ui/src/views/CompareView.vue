@@ -4,6 +4,7 @@
 
 import { onMounted, ref, watch } from 'vue'
 
+import ChartFrame from '../components/ChartFrame.vue'
 import CompareChart from '../components/CompareChart.vue'
 import CompareTable from '../components/CompareTable.vue'
 import { fetchTask, fetchTaskList, formatError } from '../api'
@@ -130,8 +131,9 @@ watch(details, refreshItems, { deep: true })
 
       <div v-else class="report-content">
         <section class="report-section">
-          <h3>净值曲线对比（归一化）</h3>
-          <CompareChart :items="compareItems" />
+          <ChartFrame title="净值曲线对比（归一化）" description="全屏辨识不同任务的收益路径差异">
+            <CompareChart :items="compareItems" />
+          </ChartFrame>
         </section>
 
         <section class="report-section">
