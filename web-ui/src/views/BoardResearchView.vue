@@ -8,7 +8,7 @@ import {
   fetchBoardMembers, fetchBoardRanking, fetchBoardSummary, formatError,
 } from '../api'
 import { detectMarket } from '../market'
-import { recordStockHistory } from '../stock-history'
+import { getLastStockCode, recordStockHistory } from '../stock-history'
 
 type Row = Record<string, unknown>
 type Mode = 'live' | 'ranking' | 'change' | 'classic'
@@ -22,7 +22,7 @@ const members = ref<Row[]>([])
 const belongs = ref<Row[]>([])
 const summary = ref<Record<string, unknown>>({})
 const selectedBoard = ref<Row | null>(null)
-const stockCode = ref('000001')
+const stockCode = ref(getLastStockCode())
 const loadingBoards = ref(false)
 const loadingMembers = ref(false)
 const loadingBelong = ref(false)
@@ -179,7 +179,7 @@ onMounted(loadBoards)
       <div v-if="mode === 'live'" class="select-control"><label>排序周期</label><MacSelect v-model="sortColumn" :options="sortOptions" /></div>
       <div v-else-if="mode === 'change'" class="select-control"><label>统计区间</label><MacSelect v-model="changeDays" :options="dayOptions" /></div>
       <div v-else-if="mode === 'classic'" class="select-control"><label>板块文件</label><MacSelect v-model="blockFile" :options="blockOptions" /></div>
-      <button class="primary refresh-btn" :disabled="loadingBoards" @click="loadBoards">{{ loadingBoards ? '更新中' : '更新板块' }}</button>
+      <button class="primary refresh-btn action-button" :disabled="loadingBoards" @click="loadBoards">{{ loadingBoards ? '更新中' : '更新板块' }}</button>
     </section>
     <p v-if="error" class="error-banner status-banner">{{ error }}</p>
 
@@ -200,7 +200,11 @@ onMounted(loadBoards)
     <section class="belong-card">
       <div class="belong-query">
         <StockQueryField v-model="stockCode" label="个股板块归属" />
-        <button class="primary" :disabled="loadingBelong" @click="queryBelong">{{ loadingBelong ? '查询中' : '查询归属' }}</button>
+        <button class="primary action-button belong-action" :disabled="loadingBelong" @click="queryBelong">
+          <svg v-if="!loadingBelong" class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="4.5"/><path d="m12 12 4 4" /></svg>
+          <svg v-else class="button-icon spinning" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 6.5V3l-2 2a6.5 6.5 0 1 0 1.5 8" /></svg>
+          <span>{{ loadingBelong ? '查询中' : '查询归属' }}</span>
+        </button>
       </div>
       <div class="belong-result">
         <DataGrid :rows="belongs" :columns="[
@@ -214,4 +218,5 @@ onMounted(loadBoards)
 
 <style scoped>
 .board-page{display:flex;height:100%;min-height:0;flex-direction:column;gap:11px}.mode-tabs{display:flex;padding:3px;background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:10px}.mode-tabs button{min-height:29px;color:var(--text-dim);background:transparent;border-color:transparent;box-shadow:none}.mode-tabs button.active{color:var(--text);background:rgba(255,255,255,.08);border-color:var(--border)}.control-card{display:flex;align-items:flex-end;gap:10px;padding:12px 16px;background:linear-gradient(115deg,rgba(94,92,230,.08),rgba(255,255,255,.018));border:1px solid var(--border);border-radius:14px}.control-intro{min-width:290px;margin-right:auto}.control-intro span{color:#8f8cff;font-size:9px;font-weight:750;letter-spacing:.16em}.control-intro h2{margin-top:2px;font-size:18px}.control-intro p{color:var(--text-dim);font-size:10px}.select-control{width:145px}.refresh-btn{min-height:34px}.status-banner{padding:8px 11px;border-radius:8px;font-size:11px}.split-workspace{display:grid;min-height:300px;flex:1;grid-template-columns:minmax(350px,.85fr) minmax(440px,1.15fr);gap:12px}.pane,.belong-card{display:flex;min-height:0;flex-direction:column;padding:12px;background:rgba(255,255,255,.018);border:1px solid var(--border);border-radius:13px}.pane header{display:flex;align-items:center;justify-content:space-between;padding:0 3px 9px}.pane h3{font-size:13px}.pane p{color:var(--text-dim);font-size:10px}.pane-badge{padding:2px 6px;color:#8f8cff;background:rgba(94,92,230,.09);border:1px solid rgba(94,92,230,.18);border-radius:5px;font-size:8px;font-weight:750}.loading-label{color:var(--accent);font-size:10px}.summary-strip{display:flex;gap:6px;margin-bottom:8px;overflow-x:auto}.summary-strip>div{min-width:88px;padding:6px 8px;background:rgba(0,0,0,.17);border:1px solid var(--border);border-radius:7px}.summary-strip small{display:block;overflow:hidden;color:var(--text-dim);font-size:8px;text-overflow:ellipsis;white-space:nowrap}.summary-strip strong{display:block;overflow:hidden;color:var(--text-muted);font-size:10px;text-overflow:ellipsis;white-space:nowrap}.belong-card{display:grid;height:160px;min-height:160px;grid-template-columns:225px 1fr;gap:12px}.belong-query{display:flex;flex-direction:column;justify-content:center;padding:4px}.belong-query button{min-height:35px;margin-top:9px}.belong-result{min-width:0;min-height:0}.belong-result :deep(.data-grid-wrap){min-height:130px}.belong-result :deep(.empty-state){min-height:130px}@media(max-width:1050px){.control-intro p{display:none}.control-intro{min-width:190px}.split-workspace{grid-template-columns:1fr}.board-page{overflow:auto}.pane{min-height:320px}}
+.belong-query .belong-action{width:100%;min-height:34px}
 </style>

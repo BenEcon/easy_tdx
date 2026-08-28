@@ -6,6 +6,7 @@
 import { computed, watch } from 'vue'
 
 import MacSelect from './MacSelect.vue'
+import NumberStepper from './NumberStepper.vue'
 import type { ParamSchema, StrategySchema } from '../types'
 
 const props = defineProps<{
@@ -47,7 +48,7 @@ function paramValue(p: ParamSchema) {
   return props.params[p.name] ?? p.default
 }
 
-function updateParam(p: ParamSchema, raw: string | boolean) {
+function updateParam(p: ParamSchema, raw: string | boolean | number) {
   let v: number | string | boolean = raw
   if (p.type === 'int' || p.type === 'float') {
     // 空字符串（用户清空输入框中）：不 emit，保留旧值，避免把 0 回填打断输入
@@ -98,14 +99,14 @@ function choiceOptions(p: ParamSchema) {
           @change="updateParam(p, ($event.target as HTMLInputElement).checked)"
         />
         <!-- int/float → 数字输入（带 min/max） -->
-        <input
+        <NumberStepper
           v-else
-          type="number"
-          :value="paramValue(p)"
+          :model-value="Number(paramValue(p))"
           :min="p.min_value"
           :max="p.max_value"
-          :step="p.type === 'float' ? 'any' : '1'"
-          @input="updateParam(p, ($event.target as HTMLInputElement).value)"
+          :step="p.type === 'float' ? 'any' : 1"
+          :aria-label="p.label"
+          @update:model-value="updateParam(p, $event)"
         />
       </div>
     </div>

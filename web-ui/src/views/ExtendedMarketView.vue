@@ -89,7 +89,7 @@ onMounted(initialize)
       <label v-if="tab !== 'instruments'" class="field code-field"><span>证券 / 合约代码</span><input v-model="code" autocomplete="off" placeholder="00700 / AAPL / IFL0" @keyup.enter="load" /></label>
       <div v-if="tab === 'bars'" class="field period-field"><label>周期</label><MacSelect v-model="category" :options="categoryOptions" /></div>
       <label v-if="tab === 'instruments'" class="field search-field"><span>筛选合约</span><input v-model="query" type="search" placeholder="输入代码或名称" /></label>
-      <button class="primary load-button" :disabled="loading" @click="load">{{ loading ? '读取中' : '查询行情' }}</button>
+      <button class="primary load-button action-button" :disabled="loading" @click="load">{{ loading ? '读取中' : '查询行情' }}</button>
     </section>
     <nav class="tab-bar"><button v-for="item in tabs" :key="item.value" :class="{ active: tab === item.value }" @click="switchTab(item.value)">{{ item.label }}</button><span class="connection-mark"><i></i>EX 7727</span></nav>
     <p v-if="error" class="error-banner status-banner">{{ error }}</p>

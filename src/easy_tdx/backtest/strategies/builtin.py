@@ -9,11 +9,16 @@
 
 from __future__ import annotations
 
+import numpy as np
+import pandas as pd
+
 from easy_tdx.backtest.strategies.registry import (
     Param,
     ParametrizedStrategy,
     register_strategy,
 )
+from easy_tdx.chanlun.analyser import ChanlunAnalyser
+from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.MyTT import (
     ATR,
     BBI,
@@ -595,3 +600,163 @@ class FslStrategy(ParametrizedStrategy):
             self.buy()
         elif self.dead[i] and self.position["size"] > 0:
             self.sell()
+
+
+# ── 缠论买卖点 ────────────────────────────────────────────────────────────────
+
+
+_CHANLUN_BI_RULES = {"新笔": "new", "老笔": "old", "简单笔": "simple"}
+_CHANLUN_ENTRY_TYPES = {
+    "全部买点": {"1buy", "2buy", "3buy"},
+    "一类买点": {"1buy"},
+    "二类买点": {"2buy"},
+    "三类买点": {"3buy"},
+}
+_CHANLUN_EXIT_TYPES = {
+    "全部卖点": {"1sell", "2sell", "3sell"},
+    "一类卖点": {"1sell"},
+    "二类卖点": {"2sell"},
+    "三类卖点": {"3sell"},
+}
+
+
+def _fx_confirmation_index(fx: object | None) -> int:
+    """返回分型完成确认时对应的原始 K 线序号。"""
+    if fx is None:
+        return -1
+    klines = getattr(fx, "klines", None) or []
+    if klines:
+        return int(getattr(klines[-1], "k_index", -1))
+    kline = getattr(fx, "k", None)
+    return int(getattr(kline, "k_index", -1))
+
+
+def _chanlun_mmd_signal_arrays(
+    open_: object,
+    close: object,
+    high: object,
+    low: object,
+    vol: object,
+    *,
+    bi_rule: str,
+    zs_min_lines: int,
+    entry: str,
+    exit_: str,
+) -> tuple[np.ndarray, np.ndarray]:
+    """计算缠论买卖点信号，并将信号移动到所有相关结构均已确认的时刻。
+
+    ``MMD.bi.end`` 是图形上的买卖点锚点，但该分型至少需要右侧 K 线才能确认；
+    中枢也可能在更晚的笔完成后才成立。回测若直接在锚点日期交易会引入未来
+    信息，因此这里取笔端点和中枢终点的最晚确认序号作为实际交易信号位置。
+    """
+    open_arr = np.asarray(open_, dtype=float)
+    close_arr = np.asarray(close, dtype=float)
+    high_arr = np.asarray(high, dtype=float)
+    low_arr = np.asarray(low, dtype=float)
+    vol_arr = np.asarray(vol, dtype=float)
+    size = len(close_arr)
+    buy_signals = np.zeros(size, dtype=bool)
+    sell_signals = np.zeros(size, dtype=bool)
+    if size < 12:
+        return buy_signals, sell_signals
+
+    frame = pd.DataFrame(
+        {
+            # 缠论计算只依赖时间顺序；用稳定的逐分钟时间轴保留全局原始序号，
+            # 实际成交日期仍由 BacktestEngine 使用原始行情 datetime 输出。
+            "datetime": pd.date_range("2000-01-01", periods=size, freq="min"),
+            "open": open_arr,
+            "close": close_arr,
+            "high": high_arr,
+            "low": low_arr,
+            "vol": vol_arr,
+            "amount": vol_arr * close_arr,
+        }
+    )
+    config = ChanlunConfig(
+        bi_type=_CHANLUN_BI_RULES[bi_rule],
+        zs_min_lines=zs_min_lines,
+    )
+    result = ChanlunAnalyser(frequency="BACKTEST", config=config).process_klines(frame)
+    allowed_entries = _CHANLUN_ENTRY_TYPES[entry]
+    allowed_exits = _CHANLUN_EXIT_TYPES[exit_]
+
+    for mmd in result.mmds:
+        bi = getattr(mmd, "bi", None)
+        if bi is None:
+            continue
+        confirmation = _fx_confirmation_index(getattr(bi, "end", None))
+        zs = getattr(mmd, "zs", None)
+        if zs is not None:
+            confirmation = max(confirmation, _fx_confirmation_index(getattr(zs, "end", None)))
+        if confirmation < 0 or confirmation >= size:
+            continue
+        mmd_type = str(getattr(getattr(mmd, "mmd_type", None), "value", ""))
+        if mmd_type in allowed_entries:
+            buy_signals[confirmation] = True
+        elif mmd_type in allowed_exits:
+            sell_signals[confirmation] = True
+
+    return buy_signals, sell_signals
+
+
+@register_strategy(
+    name="chanlun_mmd",
+    label="缠论买卖点",
+    description="基于笔、中枢与一二三类买卖点交易；仅在相关结构完成确认后触发，避免未来信息。",
+)
+class ChanlunMmdStrategy(ParametrizedStrategy):
+    """缠论买点入场、卖点离场的多头策略。"""
+
+    params = [
+        Param(
+            "bi_rule",
+            str,
+            default="新笔",
+            choices=("新笔", "老笔", "简单笔"),
+            label="成笔规则",
+        ),
+        Param(
+            "entry",
+            str,
+            default="全部买点",
+            choices=("全部买点", "一类买点", "二类买点", "三类买点"),
+            label="入场信号",
+        ),
+        Param(
+            "exit",
+            str,
+            default="全部卖点",
+            choices=("全部卖点", "一类卖点", "二类卖点", "三类卖点"),
+            label="离场信号",
+        ),
+        Param(
+            "zs_min_lines",
+            int,
+            default=3,
+            min_value=3,
+            max_value=6,
+            label="中枢最少笔数",
+        ),
+    ]
+
+    def init(self) -> None:
+        self.buy_points, self.sell_points = self.I(
+            _chanlun_mmd_signal_arrays,
+            self.data.open,
+            self.data.close,
+            self.data.high,
+            self.data.low,
+            self.data.vol,
+            bi_rule=self.p["bi_rule"],
+            zs_min_lines=self.p["zs_min_lines"],
+            entry=self.p["entry"],
+            exit_=self.p["exit"],
+        )
+
+    def next(self) -> None:
+        i = self._bar_index
+        if self.sell_points[i] and self.position["size"] > 0:
+            self.sell()
+        elif self.buy_points[i] and self.position["size"] == 0:
+            self.buy()

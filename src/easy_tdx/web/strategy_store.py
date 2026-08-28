@@ -245,6 +245,49 @@ class StrategyStore:
                 ).fetchone()
         return SavedStrategy.from_row(row) if row else None
 
+    def update(
+        self,
+        strategy_id: str,
+        record: SavedStrategy,
+        owner_id: str | None = None,
+    ) -> SavedStrategy | None:
+        """更新一条策略并保留原创建时间；不存在或无权访问时返回 ``None``。"""
+        now = _now_iso()
+        where = "id = ?" if owner_id is None else "id = ? AND owner_id = ?"
+        where_args: tuple[str, ...] = (
+            (strategy_id,) if owner_id is None else (strategy_id, owner_id)
+        )
+        with _write_lock, self._connect() as conn:
+            existing = conn.execute(
+                f"SELECT created_at, owner_id FROM strategies WHERE {where}",  # noqa: S608 — 固定片段
+                where_args,
+            ).fetchone()
+            if existing is None:
+                return None
+            conn.execute(
+                f"""UPDATE strategies SET
+                    name = ?, kind = ?, strategy = ?, strategy_label = ?, params = ?,
+                    context = ?, trade_config = ?, snapshot = ?, tags = ?, notes = ?,
+                    updated_at = ?, app_version = ?
+                    WHERE {where}""",  # noqa: S608 — where 仅由上方两个固定片段组成
+                (
+                    record.name,
+                    record.kind,
+                    record.strategy,
+                    record.strategy_label,
+                    json.dumps(record.params, ensure_ascii=False),
+                    json.dumps(record.context, ensure_ascii=False),
+                    json.dumps(record.trade_config, ensure_ascii=False),
+                    json.dumps(record.snapshot, ensure_ascii=False),
+                    json.dumps(record.tags, ensure_ascii=False),
+                    record.notes,
+                    now,
+                    record.app_version,
+                    *where_args,
+                ),
+            )
+        return self.get(strategy_id, owner_id)
+
     def delete(self, strategy_id: str, owner_id: str | None = None) -> bool:
         """按 id 删除；返回是否确实删掉了一条（False = id 不存在）。"""
         with _write_lock, self._connect() as conn:

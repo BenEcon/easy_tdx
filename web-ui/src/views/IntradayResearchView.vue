@@ -7,12 +7,12 @@ import MacSelect from '../components/MacSelect.vue'
 import StockQueryField from '../components/StockQueryField.vue'
 import { fetchIndexBars, fetchMinuteData, fetchServerSession, fetchTransactionData, formatError } from '../api'
 import { detectMarket } from '../market'
-import { recordStockHistory, stockDisplayName } from '../stock-history'
+import { getLastStockCode, recordStockHistory, stockDisplayName } from '../stock-history'
 
 type Row = Record<string, unknown>
 type Tab = 'minute' | 'transactions' | 'index' | 'session'
 
-const code = ref('000001')
+const code = ref(getLastStockCode())
 const date = ref('')
 const tab = ref<Tab>('minute')
 const indexSymbol = ref('SH:000001')
@@ -139,7 +139,7 @@ onBeforeUnmount(disconnectLive)
         <div class="select-field"><label>指数</label><MacSelect v-model="indexSymbol" :options="indexOptions" /></div>
         <div class="select-field period"><label>周期</label><MacSelect v-model="category" :options="categoryOptions" /></div>
       </template>
-      <button class="primary query-button" :disabled="loading" @click="load">
+      <button class="primary query-button action-button" :disabled="loading" @click="load">
         <svg class="button-icon" :class="{ spinning: loading }" viewBox="0 0 20 20"><path d="M10 3a7 7 0 1 1-5.2 2.3M3 3v4h4" /></svg>
         {{ loading ? '读取中' : '更新数据' }}
       </button>

@@ -16,6 +16,7 @@ export interface StockHistoryItem {
 
 const CATEGORIES: Category[] = ['DAY', 'WEEK', 'MONTH', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60']
 const stockHistory = ref<StockHistoryItem[]>([])
+const lastStock = ref<StockHistoryItem | null>(null)
 const { currentUser } = useAuth()
 let hydratingNames = false
 
@@ -35,12 +36,18 @@ watch(currentUser, (user) => {
   const saved = user?.preferences.stock_history
   const items = Array.isArray(saved) ? saved.filter(isHistoryItem).slice(0, 12) : []
   stockHistory.value = items
+  const savedLastStock = user?.preferences.last_stock
+  lastStock.value = isHistoryItem(savedLastStock) ? savedLastStock : (items[0] ?? null)
   void hydrateHistoryNames(items)
 }, { immediate: true })
 
-function persist(items: StockHistoryItem[]) {
+function persist(items: StockHistoryItem[], nextLastStock?: StockHistoryItem) {
   stockHistory.value = items
-  void updatePreferences({ stock_history: items }).catch(() => undefined)
+  if (nextLastStock) lastStock.value = nextLastStock
+  void updatePreferences({
+    stock_history: items,
+    ...(nextLastStock ? { last_stock: nextLastStock } : {}),
+  }).catch(() => undefined)
 }
 
 async function hydrateHistoryNames(items: StockHistoryItem[]) {
@@ -67,12 +74,13 @@ export function recordStockHistory(
   item: Omit<StockHistoryItem, 'usedAt'> & { usedAt?: string },
 ) {
   const record: StockHistoryItem = { ...item, usedAt: item.usedAt ?? new Date().toISOString() }
-  persist([
+  const items = [
     record,
     ...stockHistory.value.filter(
       (saved) => saved.code !== record.code || saved.category !== record.category,
     ),
-  ].slice(0, 12))
+  ].slice(0, 12)
+  persist(items, record)
   void hydrateHistoryNames(stockHistory.value)
 }
 
@@ -92,6 +100,11 @@ export function stockDisplayName(code: string): string {
   return item?.name ? `${clean}-${item.name}` : clean
 }
 
+/** 当前登录用户最后一次成功查询的 A 股代码；旧账户自动从历史首项迁移。 */
+export function getLastStockCode(fallback = '000001'): string {
+  return lastStock.value?.code ?? stockHistory.value[0]?.code ?? fallback
+}
+
 export function useStockHistory() {
-  return { stockHistory: readonly(stockHistory) }
+  return { stockHistory: readonly(stockHistory), lastStock: readonly(lastStock) }
 }

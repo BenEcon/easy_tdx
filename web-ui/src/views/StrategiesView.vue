@@ -26,7 +26,7 @@ import {
 import { gradePortfolio } from '../grading'
 import { detectMarket } from '../market'
 import { useMarketPreferences } from '../market-preferences'
-import { recordStockHistory } from '../stock-history'
+import { getLastStockCode, recordStockHistory } from '../stock-history'
 import type { Category, MultiStrategyItem, Performance, SavedStrategy, StrategySchema } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 
@@ -44,7 +44,7 @@ const builtinStrategies = ref<StrategySchema[]>([])
 const creatorOpen = ref(false)
 const templateStrategy = ref('')
 const templateParams = ref<Record<string, number | string | boolean>>({})
-const templateCode = ref('000001')
+const templateCode = ref(getLastStockCode())
 const templateCategory = ref<Category>('DAY')
 const templateStartDate = ref('2020-01-02')
 const templateEndDate = ref(new Date().toISOString().slice(0, 10))
@@ -583,8 +583,9 @@ const comboGrade = computed(() =>
             <div class="field"><label>开始日期</label><input v-model="templateStartDate" type="date" /></div>
             <div class="field"><label>结束日期</label><input v-model="templateEndDate" type="date" /></div>
           </div>
-          <button class="primary create-button" :disabled="templateSaving || !builtinStrategies.length" @click="createFromBuiltin">
-            {{ templateSaving ? '正在保存…' : '添加到个人策略库' }}
+          <button class="primary create-button action-button" :disabled="templateSaving || !builtinStrategies.length" @click="createFromBuiltin">
+            <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3.5h10v13l-5-3-5 3zM10 6v5M7.5 8.5h5" /></svg>
+            <span>{{ templateSaving ? '正在保存…' : '添加到个人策略库' }}</span>
           </button>
         </div>
       </div>
@@ -1032,7 +1033,7 @@ const comboGrade = computed(() =>
 .context-config > .field { margin-top: 10px; }
 .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
 .date-row .field { margin-bottom: 10px; }
-.create-button { width: 100%; min-height: 36px; }
+.create-button { width: 100%; min-height: 34px; }
 
 @media (max-width: 900px) {
   .creator-grid { grid-template-columns: 1fr; }

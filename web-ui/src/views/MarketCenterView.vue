@@ -128,7 +128,7 @@ onMounted(load)
         <MacSelect v-model="strengthPreset" :options="strengthOptions" aria-label="强势模式" />
         <MacSelect v-model="strengthUniverse" :options="universeOptions" aria-label="市场范围" />
       </div>
-      <button class="primary query-button" :disabled="loading" @click="load">
+      <button class="primary query-button action-button" :disabled="loading" @click="load">
         <svg class="button-icon" :class="{ spinning: loading }" viewBox="0 0 20 20"><path d="M10 3a7 7 0 1 1-5.2 2.3M3 3v4h4" /></svg>
         {{ loading ? '正在获取' : '刷新数据' }}
       </button>

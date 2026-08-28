@@ -1,8 +1,8 @@
 """策略库（已保存策略）持久化 + Web API 测试（离线，无网络）。
 
 覆盖：
-- ``StrategyStore``：加入 / 列出 / 查看 / 删除 / 时间戳自动填充 / 重复 id
-- 路由端到端：POST 创建、GET 列表、GET 详情、DELETE、404 路径、校验
+- ``StrategyStore``：加入 / 列出 / 查看 / 更新 / 删除 / 时间戳自动填充 / 重复 id
+- 路由端到端：POST 创建、GET 列表、GET 详情、PUT 更新、DELETE、404 路径、校验
 """
 
 from __future__ import annotations
@@ -103,6 +103,31 @@ def test_get_returns_record(store: StrategyStore):
     assert got is not None
     assert got.kind == "portfolio"
     assert got.context["stocks"] == ["SH:600519", "SZ:000858"]
+
+
+def test_update_preserves_id_and_created_at(store: StrategyStore):
+    original = store.add(_sample_single())
+    replacement = _sample_single(name="双均线·平安·已调整")
+    replacement.params = {"fast": 8, "slow": 34}
+    replacement.notes = "人工复核后调整"
+
+    updated = store.update(original.id, replacement)
+
+    assert updated is not None
+    assert updated.id == original.id
+    assert updated.created_at == original.created_at
+    assert updated.name == "双均线·平安·已调整"
+    assert updated.params == {"fast": 8, "slow": 34}
+    assert updated.notes == "人工复核后调整"
+
+
+def test_update_respects_owner(store: StrategyStore):
+    original = _sample_single()
+    original.owner_id = "user-a"
+    original = store.add(original)
+
+    assert store.update(original.id, _sample_single(name="越权修改"), "user-b") is None
+    assert store.get(original.id, "user-a").name == "双均线·平安"
 
 
 def test_delete_removes_record(store: StrategyStore):
@@ -233,12 +258,26 @@ def test_router_create_then_list_get_delete(client: TestClient):
     assert resp.status_code == 200
     assert resp.json()["snapshot"]["total_return"] == pytest.approx(0.35)
 
-    # 4. 删除（返回 200 + 确认体，非 204，见路由注释）
+    # 4. 更新并保留 id / created_at
+    updated_payload = _create_payload(
+        name="我的策略·人工调整",
+        params={"fast": 8, "slow": 34},
+        notes="信号雷达复核后修改",
+    )
+    resp = client.put(f"/api/v1/strategies/{sid}", json=updated_payload)
+    assert resp.status_code == 200
+    updated = resp.json()
+    assert updated["id"] == sid
+    assert updated["created_at"] == created["created_at"]
+    assert updated["name"] == "我的策略·人工调整"
+    assert updated["params"] == {"fast": 8, "slow": 34}
+
+    # 5. 删除（返回 200 + 确认体，非 204，见路由注释）
     resp = client.delete(f"/api/v1/strategies/{sid}")
     assert resp.status_code == 200
     assert resp.json()["deleted"] == sid
 
-    # 5. 列表为空
+    # 6. 列表为空
     assert client.get("/api/v1/strategies").json()["count"] == 0
 
 
@@ -250,6 +289,11 @@ def test_router_get_missing_returns_400(client: TestClient):
 
 def test_router_delete_missing_returns_400(client: TestClient):
     resp = client.delete("/api/v1/strategies/nonexistent")
+    assert resp.status_code == 400
+
+
+def test_router_update_missing_returns_400(client: TestClient):
+    resp = client.put("/api/v1/strategies/nonexistent", json=_create_payload())
     assert resp.status_code == 400
 
 

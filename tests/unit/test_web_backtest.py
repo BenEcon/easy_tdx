@@ -60,7 +60,8 @@ def test_registry_has_builtin_strategies():
     assert "rsi_reversal" in names
     assert "kdj_cross" in names
     assert "fsl" in names
-    assert len(names) >= 19
+    assert "chanlun_mmd" in names
+    assert len(names) >= 20
 
 
 def test_strategy_schema_serialization():
@@ -74,6 +75,76 @@ def test_strategy_schema_serialization():
     assert isinstance(schema["description"], str)
     param_names = [p["name"] for p in schema["params"]]
     assert param_names == ["fast", "slow"]
+
+
+def test_chanlun_strategy_schema_and_preset():
+    """缠论策略应完整进入策略库，并提供中文参数与寻优预设。"""
+    from easy_tdx.backtest.strategies import get_registry
+
+    schema = get_registry().get("chanlun_mmd").to_schema()
+    assert schema["label"] == "缠论买卖点"
+    assert [param["name"] for param in schema["params"]] == [
+        "bi_rule",
+        "entry",
+        "exit",
+        "zs_min_lines",
+    ]
+    assert schema["params"][1]["choices"] == [
+        "全部买点",
+        "一类买点",
+        "二类买点",
+        "三类买点",
+    ]
+    assert schema["preset_grid"]["zs_min_lines"] == [3, 4]
+
+
+def test_chanlun_strategy_signals_wait_for_structure_confirmation(monkeypatch):
+    """买卖点应落在笔与中枢均确认后的 K 线，不能回填到未确认的转折点。"""
+    from types import SimpleNamespace
+
+    from easy_tdx.backtest.strategies import builtin
+
+    def fx(confirmation_index: int):
+        return SimpleNamespace(klines=[SimpleNamespace(k_index=confirmation_index)])
+
+    result = SimpleNamespace(
+        mmds=[
+            SimpleNamespace(
+                mmd_type=SimpleNamespace(value="1buy"),
+                bi=SimpleNamespace(end=fx(6)),
+                zs=SimpleNamespace(end=fx(9)),
+            ),
+            SimpleNamespace(
+                mmd_type=SimpleNamespace(value="2sell"),
+                bi=SimpleNamespace(end=fx(10)),
+                zs=SimpleNamespace(end=fx(8)),
+            ),
+        ]
+    )
+
+    class StubAnalyser:
+        def __init__(self, **_kwargs):
+            pass
+
+        def process_klines(self, _frame):
+            return result
+
+    monkeypatch.setattr(builtin, "ChanlunAnalyser", StubAnalyser)
+    values = np.linspace(10.0, 12.0, 12)
+    buys, sells = builtin._chanlun_mmd_signal_arrays(
+        values,
+        values,
+        values + 0.5,
+        values - 0.5,
+        np.full(12, 1000.0),
+        bi_rule="新笔",
+        zs_min_lines=3,
+        entry="全部买点",
+        exit_="全部卖点",
+    )
+
+    assert np.flatnonzero(buys).tolist() == [9]
+    assert np.flatnonzero(sells).tolist() == [10]
 
 
 def test_strategy_build_with_default_params():
@@ -582,9 +653,10 @@ def test_list_strategies_endpoint(client):
     resp = client.get("/api/v1/backtest/strategies")
     assert resp.status_code == 200
     body = resp.json()
-    assert body["count"] >= 18
+    assert body["count"] >= 20
     names = [s["name"] for s in body["strategies"]]
     assert "ma_cross" in names
+    assert "chanlun_mmd" in names
     # 每个策略的 schema 结构完整
     for s in body["strategies"]:
         assert "label" in s

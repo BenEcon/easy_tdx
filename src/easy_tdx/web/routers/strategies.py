@@ -91,6 +91,35 @@ async def create_saved_strategy(
     return _to_response(saved)
 
 
+@router.put("/strategies/{strategy_id}", response_model=SavedStrategy)
+async def update_saved_strategy(
+    strategy_id: str,
+    req: SavedStrategyCreate,
+    user: UserRecord = Depends(get_current_user),
+) -> SavedStrategy:
+    """更新当前用户的一条已保存策略。"""
+    store = get_store()
+    rec = SavedStrategyRecord(
+        id=strategy_id,
+        name=req.name,
+        kind=req.kind,
+        strategy=req.strategy,
+        strategy_label=req.strategy_label,
+        params=req.params,
+        context=req.context,
+        trade_config=req.trade_config,
+        snapshot=req.snapshot,
+        tags=req.tags,
+        notes=req.notes,
+        app_version=_app_version(),
+        owner_id=user.id,
+    )
+    updated = store.update(strategy_id, rec, user.id)
+    if updated is None:
+        raise ValueError(f"策略 '{strategy_id}' 不存在")
+    return _to_response(updated)
+
+
 @router.delete("/strategies/{strategy_id}")
 async def delete_saved_strategy(
     strategy_id: str,

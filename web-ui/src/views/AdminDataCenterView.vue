@@ -38,7 +38,7 @@ onMounted(load)
     <section class="status-header">
       <div><span>DATA OPERATIONS</span><h2>数据中心</h2><p>检查在线连接、扩展市场、离线行情库与持久化目录。</p></div>
       <div class="readiness"><small>可用能力</small><strong>{{ readyCount }} / {{ capabilities.length }}</strong></div>
-      <button class="primary" :disabled="loading" @click="load">{{ loading ? '检测中' : '重新检测' }}</button>
+      <button class="primary action-button" :disabled="loading" @click="load">{{ loading ? '检测中' : '重新检测' }}</button>
     </section>
     <p v-if="error" class="error-banner status-banner">{{ error }}</p>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 import ChanlunChart from '../components/ChanlunChart.vue'
 import ChartFrame from '../components/ChartFrame.vue'
@@ -8,12 +9,13 @@ import MacSelect from '../components/MacSelect.vue'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
 import { analyzeChanlun, fetchRecentBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
-import { recordStockHistory } from '../stock-history'
+import { getLastStockCode, recordStockHistory } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
 import type { Bar, Category, ChanlunResult } from '../types'
 import { useMarketPreferences } from '../market-preferences'
 
-const code = ref('000001')
+const route = useRoute()
+const code = ref(getLastStockCode())
 const category = ref<Category>('DAY')
 const count = ref(600)
 const loading = ref(false)
@@ -22,6 +24,12 @@ const result = ref<ChanlunResult | null>(null)
 const bars = ref<Bar[]>([])
 const activeTab = ref<'structure' | 'signals' | 'divergence'>('structure')
 const { adjustMode } = useMarketPreferences()
+const isSignalReview = computed(() => route.query.review === 'signal')
+const reviewSignalLabel = computed(() =>
+  route.query.signal === 'BUY' ? '买入信号' : route.query.signal === 'SELL' ? '卖出信号' : '缠论信号',
+)
+const reviewSignalDate = computed(() => String(route.query.signalDate || '日期未知'))
+const reviewSourceName = computed(() => String(route.query.strategyName || route.query.strategyLabel || '缠论买卖点'))
 
 interface LayerState {
   bis: boolean
@@ -160,6 +168,20 @@ async function runAnalysis() {
     loading.value = false
   }
 }
+
+onMounted(async () => {
+  const qSymbol = route.query.symbol as string | undefined
+  const qCategory = route.query.category as Category | undefined
+  const qCount = Number(route.query.count)
+  if (qSymbol) code.value = qSymbol
+  if (qCategory) category.value = qCategory
+  if (countOptions.some((item) => item.value === qCount)) count.value = qCount
+
+  if (isSignalReview.value && route.query.autoRun === '1' && qSymbol) {
+    await runAnalysis()
+    if (result.value) activeTab.value = 'signals'
+  }
+})
 </script>
 
 <template>
@@ -207,27 +229,98 @@ async function runAnalysis() {
         <p>K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰</p>
       </div>
 
-      <button class="primary analyze-button" :disabled="loading" @click="runAnalysis">
+      <button class="primary analyze-button action-button" :disabled="loading" @click="runAnalysis">
         <span v-if="loading" class="spinner"></span>
         {{ loading ? '正在解析结构…' : '开始分析' }}
       </button>
     </aside>
 
     <main class="analysis-workspace">
+      <section v-if="isSignalReview" class="review-context" aria-label="信号人工复核上下文">
+        <div class="review-context-icon">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="4.75" />
+            <path d="m12.1 12.1 3.4 3.4M6.4 8.7l1.3 1.3 2.8-3" />
+          </svg>
+        </div>
+        <div class="review-context-copy">
+          <span>雷达信号 · 人工复核</span>
+          <strong>{{ reviewSourceName }} · {{ code }}</strong>
+          <p>{{ reviewSignalLabel }} · {{ reviewSignalDate }} · {{ category }} · 已载入完整结构并定位买卖点</p>
+        </div>
+        <RouterLink class="review-back" to="/signals">返回信号雷达</RouterLink>
+      </section>
       <div v-if="error" class="error-banner">{{ error }}</div>
 
       <div v-if="!result && !loading" class="empty-state">
         <div class="empty-visual" aria-hidden="true">
-          <span class="node n1"></span><span class="node n2"></span><span class="node n3"></span>
-          <span class="node n4"></span><span class="node n5"></span>
-          <svg viewBox="0 0 520 180" preserveAspectRatio="none">
-            <polyline points="12,145 94,88 168,124 254,46 342,104 430,34 508,68" />
-            <rect x="236" y="64" width="124" height="48" rx="8" />
+          <div class="preview-meta"><span>结构演化</span><small><i></i> 已确认</small></div>
+          <svg viewBox="0 0 680 230" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <linearGradient id="preview-center-fill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#a88cdb" stop-opacity=".17" />
+                <stop offset="1" stop-color="#6f72d9" stop-opacity=".06" />
+              </linearGradient>
+              <filter id="preview-line-glow" x="-20%" y="-30%" width="140%" height="160%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+
+            <g class="preview-grid">
+              <path d="M38 50H642M38 90H642M38 130H642M38 170H642" />
+              <path d="M100 28V184M200 28V184M300 28V184M400 28V184M500 28V184M600 28V184" />
+            </g>
+
+            <g class="preview-candles">
+              <g><line x1="48" y1="126" x2="48" y2="166"/><rect x="42" y="139" width="12" height="16"/></g>
+              <g class="up"><line x1="78" y1="105" x2="78" y2="152"/><rect x="72" y="118" width="12" height="23"/></g>
+              <g class="up"><line x1="108" y1="72" x2="108" y2="130"/><rect x="102" y="88" width="12" height="31"/></g>
+              <g><line x1="138" y1="64" x2="138" y2="104"/><rect x="132" y="74" width="12" height="17"/></g>
+              <g><line x1="168" y1="88" x2="168" y2="140"/><rect x="162" y="96" width="12" height="32"/></g>
+              <g><line x1="198" y1="116" x2="198" y2="155"/><rect x="192" y="125" width="12" height="20"/></g>
+              <g class="up"><line x1="228" y1="92" x2="228" y2="137"/><rect x="222" y="103" width="12" height="25"/></g>
+              <g class="up"><line x1="258" y1="64" x2="258" y2="111"/><rect x="252" y="74" width="12" height="27"/></g>
+              <g class="up"><line x1="288" y1="38" x2="288" y2="84"/><rect x="282" y="48" width="12" height="25"/></g>
+              <g><line x1="318" y1="60" x2="318" y2="105"/><rect x="312" y="69" width="12" height="25"/></g>
+              <g><line x1="348" y1="86" x2="348" y2="132"/><rect x="342" y="96" width="12" height="25"/></g>
+              <g><line x1="378" y1="103" x2="378" y2="147"/><rect x="372" y="115" width="12" height="20"/></g>
+              <g class="up"><line x1="408" y1="82" x2="408" y2="128"/><rect x="402" y="93" width="12" height="23"/></g>
+              <g class="up"><line x1="438" y1="58" x2="438" y2="101"/><rect x="432" y="69" width="12" height="23"/></g>
+              <g class="up"><line x1="468" y1="48" x2="468" y2="84"/><rect x="462" y="57" width="12" height="15"/></g>
+              <g><line x1="498" y1="69" x2="498" y2="116"/><rect x="492" y="79" width="12" height="25"/></g>
+              <g><line x1="528" y1="95" x2="528" y2="137"/><rect x="522" y="106" width="12" height="20"/></g>
+              <g class="up"><line x1="558" y1="86" x2="558" y2="128"/><rect x="552" y="97" width="12" height="18"/></g>
+              <g class="up"><line x1="588" y1="56" x2="588" y2="105"/><rect x="582" y="66" width="12" height="31"/></g>
+              <g class="up"><line x1="618" y1="36" x2="618" y2="78"/><rect x="612" y="44" width="12" height="21"/></g>
+            </g>
+
+            <g class="preview-center">
+              <rect x="398" y="78" width="148" height="42" rx="7" />
+              <path d="M398 88H546M398 110H546" />
+              <text x="534" y="103">中枢</text>
+            </g>
+
+            <path class="preview-segment" d="M48 166L288 38L378 147L618 36" />
+            <path class="preview-stroke" filter="url(#preview-line-glow)" d="M48 166L138 64L198 155L288 38L378 147L468 48L528 137L618 36" />
+
+            <g class="preview-turns">
+              <circle cx="48" cy="166" r="4"/><circle cx="138" cy="64" r="4"/>
+              <circle cx="198" cy="155" r="4"/><circle cx="288" cy="38" r="4"/>
+              <circle cx="378" cy="147" r="4"/><circle cx="468" cy="48" r="4"/>
+              <circle cx="528" cy="137" r="4"/><circle cx="618" cy="36" r="4"/>
+            </g>
           </svg>
+          <div class="preview-legend">
+            <span class="candle-key"><i></i>K 线</span>
+            <span class="stroke-key"><i></i>笔</span>
+            <span class="segment-key"><i></i>线段</span>
+            <span class="center-key"><i></i>中枢</span>
+          </div>
         </div>
         <h2>观察价格如何形成结构</h2>
         <p>选择标的和周期，系统会把走势拆成笔、线段和中枢，并标出买卖点与背驰。</p>
-        <button class="primary" @click="runAnalysis">分析平安银行</button>
+        <button class="primary" @click="runAnalysis">分析 {{ code }}</button>
       </div>
 
       <div v-else-if="loading && !result" class="loading-state">
@@ -472,7 +565,7 @@ async function runAnalysis() {
 }
 .method-note strong { color: var(--text-muted); font-size: 10px; font-weight: 620; }
 .method-note p { margin-top: 4px; font-size: 10px; line-height: 1.45; }
-.analyze-button { width: 100%; min-height: 38px; flex-shrink: 0; padding-top: 0; padding-bottom: 0; line-height: 1; }
+.analyze-button { width: 100%; min-height: 35px; flex-shrink: 0; padding-top: 0; padding-bottom: 0; line-height: 1; }
 
 .spinner,
 .large-spinner {
@@ -497,6 +590,34 @@ async function runAnalysis() {
   background-size: 34px 34px;
 }
 .analysis-workspace > .error-banner { margin: 18px 20px 0; padding: 10px 13px; border-radius: var(--radius); }
+.review-context {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 18px 0;
+  padding: 10px 12px;
+  background: linear-gradient(100deg, rgba(42, 123, 194, .12), rgba(42, 123, 194, .035));
+  border: 1px solid rgba(91, 164, 225, .2);
+  border-radius: 10px;
+}
+.review-context-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: #9fd0f7;
+  background: rgba(70, 150, 217, .12);
+  border: 1px solid rgba(109, 180, 237, .18);
+  border-radius: 8px;
+}
+.review-context-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.review-context-copy { min-width: 0; }
+.review-context-copy > span { display: block; color: #7fafd5; font-size: 9px; font-weight: 650; letter-spacing: .12em; }
+.review-context-copy strong { display: block; margin-top: 2px; color: var(--text); font-size: 12px; font-weight: 620; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.review-context-copy p { margin-top: 2px; color: var(--text-dim); font-size: 10px; }
+.review-back { padding: 5px 8px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 6px; font-size: 10px; text-decoration: none; white-space: nowrap; }
+.review-back:hover { color: #b9dcff; border-color: rgba(91, 164, 225, .35); }
 
 .empty-state,
 .loading-state {
@@ -508,19 +629,110 @@ async function runAnalysis() {
   padding: 40px;
   text-align: center;
 }
-.empty-state h2 { margin-top: 20px; font-size: 19px; font-weight: 620; letter-spacing: -0.02em; }
+.empty-state h2 { margin-top: 22px; font-size: 19px; font-weight: 620; letter-spacing: -0.02em; }
 .empty-state > p { max-width: 430px; margin: 8px 0 18px; color: var(--text-dim); font-size: 12px; }
 .empty-visual {
   position: relative;
-  width: min(520px, 72%);
-  height: 180px;
-  opacity: 0.72;
+  width: min(680px, 84%);
+  aspect-ratio: 680 / 230;
+  padding: 25px 16px 10px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 58% 28%, rgba(121,185,239,.07), transparent 34%),
+    linear-gradient(145deg, rgba(29,31,38,.7), rgba(14,15,19,.42));
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 18px;
+  box-shadow: 0 22px 56px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.025);
 }
-.empty-visual svg { width: 100%; height: 100%; overflow: visible; }
-.empty-visual polyline { fill: none; stroke: #ffd60a; stroke-width: 2; filter: drop-shadow(0 0 8px rgba(255,214,10,.16)); }
-.empty-visual rect { fill: rgba(10,132,255,.12); stroke: rgba(10,132,255,.62); stroke-width: 1; }
-.node { position: absolute; z-index: 1; width: 7px; height: 7px; border-radius: 50%; background: #ffd60a; box-shadow: 0 0 0 4px rgba(255,214,10,.1); }
-.n1 { left: 17%; top: 46%; }.n2 { left: 32%; top: 66%; }.n3 { left: 49%; top: 22%; }.n4 { left: 66%; top: 55%; }.n5 { left: 82%; top: 15%; }
+.empty-visual::after {
+  position: absolute;
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 28%, rgba(255,255,255,.025) 48%, transparent 66%);
+  transform: translateX(-100%);
+  animation: preview-sheen 5.8s ease-in-out 1.5s infinite;
+}
+.empty-visual svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.preview-meta {
+  position: absolute;
+  z-index: 2;
+  top: 13px;
+  right: 17px;
+  left: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.preview-meta > span { color: #8c8e98; font: 8px var(--font-mono); letter-spacing: .14em; }
+.preview-meta small { display: flex; align-items: center; gap: 6px; color: #777b86; font-size: 8px; }
+.preview-meta small i { width: 5px; height: 5px; background: #6fb2eb; border-radius: 50%; box-shadow: 0 0 0 4px rgba(111,178,235,.08); }
+.preview-grid path { fill: none; stroke: rgba(255,255,255,.035); stroke-width: 1; }
+.preview-candles line { stroke: rgba(240,118,130,.43); stroke-width: 1; }
+.preview-candles rect { fill: rgba(240,118,130,.2); stroke: rgba(240,118,130,.52); stroke-width: 1; rx: 1.5px; }
+.preview-candles .up line { stroke: rgba(103,201,166,.43); }
+.preview-candles .up rect { fill: rgba(103,201,166,.16); stroke: rgba(103,201,166,.52); }
+.preview-center rect { fill: url(#preview-center-fill); stroke: rgba(168,140,219,.55); stroke-width: 1; }
+.preview-center path { fill: none; stroke: rgba(168,140,219,.22); stroke-width: 1; stroke-dasharray: 3 5; }
+.preview-center text { fill: rgba(199,180,233,.7); font-size: 8px; text-anchor: end; }
+.preview-segment {
+  fill: none;
+  stroke: #a88cdb;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 4 7;
+  opacity: .54;
+}
+.preview-stroke {
+  fill: none;
+  stroke: #79b9ef;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 980;
+  stroke-dashoffset: 980;
+  opacity: .88;
+  animation: preview-draw 1.35s cubic-bezier(.2,.72,.24,1) .12s forwards;
+}
+.preview-turns circle {
+  fill: #b4dcfb;
+  stroke: rgba(15,21,28,.92);
+  stroke-width: 2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: preview-node-in .36s ease-out forwards;
+}
+.preview-turns circle:nth-child(1){animation-delay:.25s}.preview-turns circle:nth-child(2){animation-delay:.38s}
+.preview-turns circle:nth-child(3){animation-delay:.51s}.preview-turns circle:nth-child(4){animation-delay:.64s}
+.preview-turns circle:nth-child(5){animation-delay:.77s}.preview-turns circle:nth-child(6){animation-delay:.9s}
+.preview-turns circle:nth-child(7){animation-delay:1.03s}.preview-turns circle:nth-child(8){animation-delay:1.16s}
+.preview-legend {
+  position: absolute;
+  z-index: 2;
+  right: 18px;
+  bottom: 11px;
+  display: flex;
+  gap: 14px;
+  color: #7f828d;
+  font-size: 8px;
+}
+.preview-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.preview-legend i { display: inline-block; width: 12px; height: 1px; background: #60636d; }
+.preview-legend .candle-key i { width: 5px; height: 9px; background: rgba(103,201,166,.22); border: 1px solid rgba(103,201,166,.55); border-radius: 1px; }
+.preview-legend .stroke-key i { background: #79b9ef; }
+.preview-legend .segment-key i { background: #a88cdb; }
+.preview-legend .center-key i { height: 6px; background: rgba(168,140,219,.14); border: 1px solid rgba(168,140,219,.45); border-radius: 2px; }
+@keyframes preview-draw { to { stroke-dashoffset: 0; } }
+@keyframes preview-node-in { from { opacity: 0; transform: scale(.35); } to { opacity: 1; transform: scale(1); } }
+@keyframes preview-sheen { 0%,55% { transform: translateX(-100%); } 78%,100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) {
+  .empty-visual::after,.preview-stroke,.preview-turns circle { animation: none; }
+  .preview-stroke { stroke-dashoffset: 0; }
+  .preview-turns circle { opacity: 1; }
+}
 .loading-state { gap: 13px; color: var(--text-dim); font-size: 12px; }
 
 .result-workspace {
@@ -576,7 +788,7 @@ async function runAnalysis() {
 .section-bar p { margin-top: 2px; color: var(--text-dim); font-size: 9px; }
 .chart-legend { display: flex; gap: 12px; color: var(--text-dim); font-size: 9px; }
 .chart-legend span::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 2px; vertical-align: -1px; }
-.legend-bi::before { background: #e8c75a; }.legend-zs::before { background: #4a9eff; }.legend-xd::before { background: #ad7cff; }.legend-bc::before { background: transparent; border: 1px solid #d9a3ff; transform: rotate(45deg); }
+.legend-bi::before { background: #79b9ef; }.legend-zs::before { background: #4a9eff; }.legend-xd::before { background: #a88cdb; }.legend-bc::before { background: transparent; border: 1px solid #d9a3ff; transform: rotate(45deg); }
 
 .detail-workspace { overflow: hidden; min-height: 220px; }
 .detail-tabs { display: flex; align-items: center; gap: 4px; min-height: 48px; padding: 8px 12px; border-bottom: 1px solid var(--border); }

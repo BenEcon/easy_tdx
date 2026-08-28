@@ -54,6 +54,8 @@ export interface ChanlunBi {
   direction: 'up' | 'down'
   start_date: string
   end_date: string
+  start_value?: number
+  end_value?: number
   high: number
   low: number
   done: boolean

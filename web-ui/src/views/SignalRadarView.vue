@@ -19,7 +19,7 @@ const router = useRouter()
 const { adjustMode } = useMarketPreferences()
 
 const WINDOW_OPTIONS = [1, 3, 5, 10]
-const WINDOW_SELECT_OPTIONS = WINDOW_OPTIONS.map((value) => ({ value, label: `${value} 根` }))
+const WINDOW_SELECT_OPTIONS = WINDOW_OPTIONS.map((value) => ({ value, label: `窗口 · ${value} 根` }))
 const STORAGE_KEY = 'easy-tdx.signal-radar.last'
 
 const windowBars = ref(5)
@@ -123,16 +123,58 @@ function kindLabel(kind: SignalScanRow['kind']): string {
   return kind === 'multi' ? '多策略' : kind === 'portfolio' ? '多标的' : '单标的'
 }
 
-/** 窗口内信号序列，如 "B 08-19 · S 08-20"（B=买 S=卖）。 */
-function signalSeq(r: SignalScanRow): string {
-  return r.recent_signals
-    .map((s) => `${s.direction === 'BUY' ? 'B' : 'S'} ${s.date.slice(5, 10)}`)
-    .join(' · ')
+function parameterSummary(params: SignalScanRow['params']): string {
+  const entries = Object.entries(params)
+  if (entries.length === 0) return '无额外参数'
+  return entries.map(([key, value]) => `${key}: ${String(value)}`).join(' · ')
 }
 
-/** 跳转单标的回测页回填该子策略（query 模式与策略库「载入」一致）。 */
-function onLoad(r: SignalScanRow) {
+function reviewStartDate(endDate: string): string {
+  const date = new Date(`${endDate}T00:00:00`)
+  if (Number.isNaN(date.getTime())) return '2020-01-06'
+  date.setFullYear(date.getFullYear() - 2)
+  return date.toISOString().slice(0, 10)
+}
+
+/** 打开信号对应的研究页，并还原扫描时的标的、策略与参数供人工复核。 */
+function onReview(r: SignalScanRow, selectedSignal?: SignalScanRow['recent_signals'][number]) {
   const codeOnly = r.symbol.includes(':') ? r.symbol.split(':').pop()! : r.symbol
+  const endDate = (r.last_bar_date || new Date().toISOString()).slice(0, 10)
+  const reviewQuery = {
+    review: 'signal',
+    autoRun: '1',
+    symbol: codeOnly || undefined,
+    category: r.category || undefined,
+    signal: selectedSignal?.direction || r.latest_signal || undefined,
+    signalDate: selectedSignal?.date || r.signal_date || undefined,
+    strategyName: r.strategy_name,
+    strategyLabel: r.strategy_label || r.strategy,
+  }
+
+  if (r.strategy === 'chanlun_mmd') {
+    router.push({
+      path: '/chanlun',
+      query: { ...reviewQuery, count: '800' },
+    })
+    return
+  }
+
+  router.push({
+    path: '/',
+    query: {
+      ...reviewQuery,
+      strategy: r.strategy,
+      params: JSON.stringify(r.params),
+      startDate: reviewStartDate(endDate),
+      endDate,
+    },
+  })
+}
+
+/** 打开可编辑的策略配置；单标的策略保存时覆盖原记录，组合子策略保存为独立策略。 */
+function onModify(r: SignalScanRow) {
+  const codeOnly = r.symbol.includes(':') ? r.symbol.split(':').pop()! : r.symbol
+  const endDate = (r.last_bar_date || new Date().toISOString()).slice(0, 10)
   router.push({
     path: '/',
     query: {
@@ -140,7 +182,12 @@ function onLoad(r: SignalScanRow) {
       params: JSON.stringify(r.params),
       symbol: codeOnly || undefined,
       category: r.category || undefined,
-      endDate: new Date().toISOString().slice(0, 10),
+      startDate: reviewStartDate(endDate),
+      endDate,
+      editStrategyId: r.kind === 'single' ? r.strategy_id : undefined,
+      editMode: r.kind === 'single' ? 'update' : 'copy',
+      strategyName: r.strategy_name,
+      strategyLabel: r.strategy_label || r.strategy,
     },
   })
 }
@@ -160,16 +207,15 @@ function onLoad(r: SignalScanRow) {
       </div>
       <div class="header-actions">
         <AdjustPicker compact />
-        <label class="window-picker">
-          窗口
+        <div class="window-picker">
           <MacSelect
             v-model="windowBars"
             :options="WINDOW_SELECT_OPTIONS"
             :disabled="scanning"
             aria-label="信号扫描窗口"
           />
-        </label>
-        <button class="primary" :disabled="scanning" @click="onScan">
+        </div>
+        <button class="primary action-button" :disabled="scanning" @click="onScan">
           <svg v-if="!scanning" class="button-icon" viewBox="0 0 20 20" aria-hidden="true">
             <path d="m11.5 2.5-6 9h4l-1 6 6-9h-4z" />
           </svg>
@@ -229,29 +275,45 @@ function onLoad(r: SignalScanRow) {
         <p class="hint">可切换更大的窗口（如 10 根）或点「一键扫描」重新检查。</p>
       </div>
 
-      <table v-else class="radar-table">
+      <div v-else class="radar-table-shell">
+      <table class="radar-table">
         <thead>
           <tr>
             <th>策略</th>
             <th>类型</th>
-            <th>子策略 / 参数</th>
+            <th>子策略</th>
             <th>标的</th>
             <th>最新信号</th>
             <th>窗口内信号</th>
             <th class="num">最新收盘</th>
             <th>仓位</th>
-            <th></th>
+            <th class="review-heading">策略操作</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(r, i) in visibleRows" :key="`${r.strategy_id}-${i}`" :class="{ errored: r.error }">
-            <td class="name" :title="r.strategy_name">{{ r.strategy_name }}</td>
-            <td><span class="kind-badge" :class="r.kind">{{ kindLabel(r.kind) }}</span></td>
-            <td class="sub-strat">
-              {{ r.strategy_label || r.strategy }}
-              <span class="params">{{ JSON.stringify(r.params) }}</span>
+          <tr
+            v-for="(r, i) in visibleRows"
+            :key="`${r.strategy_id}-${i}`"
+            :class="{ errored: r.error }"
+            :data-signal="r.latest_signal || undefined"
+          >
+            <td class="name" :title="r.strategy_name">
+              <span class="strategy-marker" aria-hidden="true"></span>
+              <span class="strategy-row-name">{{ r.strategy_name }}</span>
             </td>
-            <td class="sym">{{ r.symbol }}</td>
+            <td><span class="kind-badge" :class="r.kind">{{ kindLabel(r.kind) }}</span></td>
+            <td
+              class="sub-strat"
+              tabindex="0"
+              :aria-label="`${r.strategy_label || r.strategy}；参数：${parameterSummary(r.params)}`"
+            >
+              <span class="strategy-name-text">{{ r.strategy_label || r.strategy }}</span>
+              <span class="params-tooltip" role="tooltip">
+                <small>策略参数</small>
+                {{ parameterSummary(r.params) }}
+              </span>
+            </td>
+            <td class="sym"><span class="symbol-code">{{ r.symbol }}</span></td>
             <td v-if="r.error" class="err" colspan="4">⚠ {{ r.error }}</td>
             <template v-else>
               <td>
@@ -260,20 +322,52 @@ function onLoad(r: SignalScanRow) {
                 </span>
                 <span v-else class="none-tag">—</span>
               </td>
-              <td class="seq">{{ signalSeq(r) || '—' }}</td>
-              <td class="num">{{ r.last_close != null ? r.last_close.toFixed(2) : '-' }}</td>
+              <td class="seq">
+                <div v-if="r.recent_signals.length" class="signal-links">
+                  <button
+                    v-for="signal in r.recent_signals"
+                    :key="`${signal.direction}-${signal.date}`"
+                    :class="['signal-link', signal.direction]"
+                    :title="`复核 ${signal.date} ${signal.direction === 'BUY' ? '买入' : '卖出'}信号`"
+                    @click="onReview(r, signal)"
+                  >
+                    <span class="signal-direction">
+                      <i></i>{{ signal.direction === 'BUY' ? '买入' : '卖出' }}
+                    </span>
+                    <time>{{ signal.date.slice(5, 10) }}</time>
+                  </button>
+                </div>
+                <span v-else>—</span>
+              </td>
+              <td class="num"><strong class="close-value">{{ r.last_close != null ? r.last_close.toFixed(2) : '-' }}</strong></td>
               <td>
                 <span v-if="r.position" class="pos-tag" :class="r.position">
                   {{ r.position === 'holding' ? '持仓' : '空仓' }}
                 </span>
+                <span v-else class="none-tag">—</span>
               </td>
             </template>
-            <td>
-              <button v-if="!r.error" class="ghost sm" @click="onLoad(r)">载入</button>
+            <td class="review-cell">
+              <div v-if="!r.error" class="strategy-actions">
+                <button class="review-button modify-button" title="修改策略参数" @click="onModify(r)">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="m4 14.8.5-3.2L12.2 4l2.8 2.8-7.7 7.6zM10.8 5.4l2.8 2.8M4 16h12" />
+                  </svg>
+                  <span>修改策略</span>
+                </button>
+                <button class="review-button" @click="onReview(r)">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <circle cx="8.5" cy="8.5" r="4.75" />
+                    <path d="m12.1 12.1 3.4 3.4M6.4 8.7l1.3 1.3 2.8-3" />
+                  </svg>
+                  <span>{{ r.recent_signals.length ? '复核信号' : '查看策略' }}</span>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
+      </div>
     </template>
 
     <div v-if="!result && !scanning && !error" class="placeholder">
@@ -311,35 +405,39 @@ function onLoad(r: SignalScanRow) {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+}
+.header-actions :deep(.mac-select-trigger) {
+  height: 34px;
+  min-height: 34px;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1;
 }
 .window-picker {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text-muted);
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
-.window-picker select {
-  background: var(--bg-panel);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 5px 8px;
-  font-size: 12px;
-  cursor: pointer;
-}
+.window-picker :deep(.mac-select) { width: 118px; }
 .primary {
-  font-size: 13px;
-  padding: 7px 18px;
-  background: var(--accent);
-  border: 1px solid var(--accent);
-  color: #fff;
-  font-weight: 600;
-  border-radius: var(--radius);
+  min-height: 34px;
+  padding: 0 12px;
+  font-size: 11px;
+  background: linear-gradient(180deg, rgba(38,143,247,.2), rgba(10,112,214,.14));
+  border: 1px solid rgba(82,168,255,.34);
+  color: #b9dcff;
+  font-weight: 620;
+  border-radius: 8px;
   cursor: pointer;
+  box-shadow: 0 1px 0 rgba(255,255,255,.055) inset;
 }
 .primary:hover:not(:disabled) {
-  filter: brightness(1.1);
+  color: #e2f1ff;
+  background: linear-gradient(180deg, rgba(45,151,255,.29), rgba(10,116,222,.2));
+  border-color: rgba(93,176,255,.5);
 }
 .primary:disabled {
   opacity: 0.6;
@@ -473,50 +571,168 @@ function onLoad(r: SignalScanRow) {
 }
 
 /* 结果表 */
+.radar-table-shell {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .14) transparent;
+}
 .radar-table {
   width: 100%;
-  border-collapse: collapse;
+  min-width: 1080px;
+  border-collapse: separate;
+  border-spacing: 0 6px;
   font-size: 13px;
 }
-.radar-table th,
-.radar-table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-  vertical-align: middle;
-}
 .radar-table th {
+  padding: 3px 12px 6px;
+  text-align: left;
+  vertical-align: middle;
   color: var(--text-dim);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .045em;
+  white-space: nowrap;
+}
+.radar-table tbody td {
+  height: 48px;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: middle;
+  background: color-mix(in srgb, var(--bg-panel) 72%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.radar-table tbody td:first-child {
+  border-left: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-radius: 10px 0 0 10px;
+}
+.radar-table tbody td:last-child {
+  border-right: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
+  border-radius: 0 10px 10px 0;
+}
+.radar-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--bg-panel) 88%, rgba(255, 255, 255, .025));
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--border));
+  box-shadow: inset 0 1px rgba(255, 255, 255, .018), 0 5px 18px rgba(0, 0, 0, .08);
 }
 .radar-table .num {
   text-align: right;
   font-family: var(--font-mono);
 }
 .radar-table .name {
-  max-width: 180px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  width: 190px;
+  max-width: 190px;
   white-space: nowrap;
-  font-weight: 500;
+}
+.strategy-marker {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 9px;
+  vertical-align: 1px;
+  background: color-mix(in srgb, var(--text-dim) 58%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--text-dim) 8%, transparent);
+}
+.radar-table tr[data-signal="BUY"] .strategy-marker {
+  background: color-mix(in srgb, var(--up) 82%, white);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--up) 10%, transparent);
+}
+.radar-table tr[data-signal="SELL"] .strategy-marker {
+  background: color-mix(in srgb, var(--down) 82%, white);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--down) 10%, transparent);
+}
+.strategy-row-name {
+  display: inline-block;
+  max-width: calc(100% - 22px);
+  overflow: hidden;
+  color: var(--text);
+  font-weight: 620;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 .radar-table .sym {
-  font-family: var(--font-mono);
-  font-weight: 600;
   white-space: nowrap;
 }
+.symbol-code {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 7px;
+  color: color-mix(in srgb, var(--text) 88%, var(--text-muted));
+  background: rgba(255, 255, 255, .028);
+  border: 1px solid rgba(255, 255, 255, .055);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .025em;
+}
+.close-value {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 650;
+}
 .radar-table .sub-strat {
-  max-width: 220px;
+  position: relative;
+  width: 190px;
+  max-width: 190px;
+  white-space: nowrap;
+  outline: none;
+}
+.strategy-name-text {
+  display: block;
   overflow: hidden;
+  color: var(--text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.sub-strat .params {
+.params-tooltip {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% - 2px);
+  left: 8px;
+  display: block;
+  width: max-content;
+  max-width: min(420px, 46vw);
+  padding: 8px 10px;
+  color: #c8ccd4;
+  background: rgba(22, 24, 29, .97);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .34), inset 0 1px rgba(255, 255, 255, .035);
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-dim);
-  margin-left: 6px;
+  font-size: 10px;
+  line-height: 1.55;
+  white-space: normal;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-3px) scale(.985);
+  transform-origin: top left;
+  transition: opacity .14s ease, transform .14s ease;
+}
+.params-tooltip small {
+  display: block;
+  margin-bottom: 3px;
+  color: #7fafd5;
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: .1em;
+}
+.sub-strat:hover .params-tooltip,
+.sub-strat:focus-visible .params-tooltip {
+  z-index: 50;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.sub-strat:hover,
+.sub-strat:focus-within { z-index: 40; }
+.sub-strat:focus-visible .strategy-name-text {
+  color: var(--text);
 }
 .radar-table .seq {
   font-family: var(--font-mono);
@@ -524,62 +740,202 @@ function onLoad(r: SignalScanRow) {
   color: var(--text-muted);
   white-space: nowrap;
 }
+.signal-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.signal-link {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 7px 0 6px;
+  color: var(--text-muted);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .012));
+  border: 1px solid rgba(255, 255, 255, .075);
+  border-radius: 7px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025);
+  transition: color .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+.signal-direction { display: inline-flex; align-items: center; gap: 4px; font-family: inherit; font-weight: 650; }
+.signal-direction i {
+  width: 5px;
+  height: 5px;
+  flex: 0 0 auto;
+  background: currentColor;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 10%, transparent);
+}
+.signal-link time {
+  padding-left: 6px;
+  color: var(--text-dim);
+  border-left: 1px solid rgba(255, 255, 255, .075);
+  font: inherit;
+  letter-spacing: .02em;
+}
+.signal-link.BUY {
+  color: color-mix(in srgb, var(--up) 76%, #d7d9df);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--up) 8%, transparent), rgba(255, 255, 255, .012));
+  border-color: color-mix(in srgb, var(--up) 18%, rgba(255, 255, 255, .06));
+}
+.signal-link.SELL {
+  color: color-mix(in srgb, var(--down) 76%, #d7d9df);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--down) 8%, transparent), rgba(255, 255, 255, .012));
+  border-color: color-mix(in srgb, var(--down) 18%, rgba(255, 255, 255, .06));
+}
+.signal-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, .18), inset 0 1px rgba(255, 255, 255, .04);
+}
+.signal-link.BUY:hover { color: var(--up); border-color: color-mix(in srgb, var(--up) 40%, transparent); background: color-mix(in srgb, var(--up) 10%, rgba(255, 255, 255, .01)); }
+.signal-link.SELL:hover { color: var(--down); border-color: color-mix(in srgb, var(--down) 40%, transparent); background: color-mix(in srgb, var(--down) 10%, rgba(255, 255, 255, .01)); }
+.signal-link:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(10, 132, 255, .15); border-color: rgba(10, 132, 255, .65); }
 .radar-table .err {
   color: var(--up);
   font-size: 12px;
+  line-height: 1.45;
 }
-.radar-table tr.errored {
-  opacity: 0.75;
+.radar-table tr.errored td {
+  background: color-mix(in srgb, var(--up) 3%, var(--bg-panel));
+}
+.radar-table tr.errored .strategy-marker {
+  background: var(--up);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--up) 10%, transparent);
+}
+.review-heading,
+.review-cell {
+  text-align: right !important;
+  white-space: nowrap;
+}
+.strategy-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  opacity: .86;
+  transition: opacity .16s ease;
+}
+.radar-table tbody tr:hover .strategy-actions { opacity: 1; }
+.review-button {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 9px;
+  color: #a9d3f8;
+  background: linear-gradient(180deg, rgba(62, 142, 211, .12), rgba(42, 104, 160, .08));
+  border: 1px solid rgba(105, 174, 230, .25);
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 590;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .035);
+  transition: color .16s ease, border-color .16s ease, background .16s ease, transform .16s ease;
+}
+.review-button svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.55;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.review-button:hover {
+  color: #d8ecff;
+  border-color: rgba(113, 187, 247, .45);
+  background: linear-gradient(180deg, rgba(70, 153, 224, .2), rgba(42, 104, 160, .12));
+  transform: translateY(-1px);
+}
+.modify-button {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, .025);
+  border-color: var(--border);
+}
+.modify-button:hover {
+  color: #d2d5dc;
+  border-color: rgba(190, 195, 205, .25);
+  background: rgba(255, 255, 255, .05);
 }
 
 /* 徽章 */
 .kind-badge {
-  font-size: 11px;
-  padding: 2px 7px;
-  border-radius: 4px;
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 8px;
+  border: 1px solid rgba(74, 158, 255, .12);
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 620;
   background: rgba(74, 158, 255, 0.15);
   color: var(--accent);
   white-space: nowrap;
 }
 .kind-badge.portfolio {
   background: rgba(140, 110, 220, 0.18);
+  border-color: rgba(140, 110, 220, .16);
   color: #b39ddb;
 }
 .kind-badge.multi {
   background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, .16);
   color: #f59e0b;
 }
 .signal-tag {
-  font-size: 12px;
-  padding: 2px 10px;
-  border-radius: 4px;
-  font-weight: 600;
+  display: inline-flex;
+  min-width: 48px;
+  min-height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 650;
   white-space: nowrap;
 }
 /* A股习惯：买入红、卖出绿 */
 .signal-tag.BUY {
   background: rgba(239, 65, 70, 0.14);
+  border-color: rgba(239, 65, 70, .13);
   color: var(--up);
 }
 .signal-tag.SELL {
   background: rgba(24, 160, 88, 0.16);
+  border-color: rgba(24, 160, 88, .14);
   color: var(--down);
 }
 .none-tag {
   color: var(--text-dim);
 }
 .pos-tag {
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 620;
   white-space: nowrap;
 }
 .pos-tag.holding {
   background: rgba(239, 65, 70, 0.12);
+  border-color: rgba(239, 65, 70, .12);
   color: var(--up);
 }
 .pos-tag.flat {
-  background: var(--border);
+  background: rgba(255, 255, 255, .035);
+  border-color: rgba(255, 255, 255, .055);
   color: var(--text-dim);
 }
 .ghost {

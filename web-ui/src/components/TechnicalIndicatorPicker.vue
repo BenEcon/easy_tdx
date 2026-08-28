@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
+import NumberStepper from './NumberStepper.vue'
+
 import {
   INDICATOR_CATEGORIES,
   QUICK_INDICATORS,
@@ -135,7 +137,7 @@ watch(() => props.params, (value) => {
                 </div>
                 <div v-if="Object.keys(current.defaultParams).length" class="param-editor">
                   <small>参数设置</small>
-                  <label v-for="(_, key) in current.defaultParams" :key="key"><span>{{ key }}</span><input v-model.number="draftParams[key]" type="number" step="any" /></label>
+                  <label v-for="(_, key) in current.defaultParams" :key="key"><span>{{ key }}</span><NumberStepper v-model="draftParams[key]" step="any" :aria-label="String(key)" compact /></label>
                 </div>
                 <p v-else class="no-params">该指标无需调整参数</p>
                 <button class="primary apply-button" @click="applyParams">应用指标</button>

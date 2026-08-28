@@ -66,7 +66,7 @@ async function changePassword() {
         <label><span>新密码</span><input v-model="newPassword" type="password" autocomplete="new-password" minlength="8" required /></label>
         <label><span>确认新密码</span><input v-model="confirmPassword" type="password" autocomplete="new-password" minlength="8" required /></label>
         <p v-if="message" class="notice success">{{ message }}</p><p v-if="error" class="notice error">{{ error }}</p>
-        <button class="primary" type="submit" :disabled="busy">{{ busy ? '正在保存…' : '保存新密码' }}</button>
+        <button class="primary action-button" type="submit" :disabled="busy">{{ busy ? '正在保存…' : '保存新密码' }}</button>
       </form>
     </section>
   </div>

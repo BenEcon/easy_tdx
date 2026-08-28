@@ -100,8 +100,9 @@ function latencyText(ms: number | null): string {
         <span class="label">当前服务器</span>
         <span class="host-value">{{ currentHost || '未连接' }}</span>
       </div>
-      <button class="btn-test" :disabled="testing || loading" @click="testAll">
-        {{ testing ? '测速中...' : '🔄 测试全部服务器' }}
+      <button class="btn-test action-button" :disabled="testing || loading" @click="testAll">
+        <svg class="button-icon" :class="{ spinning: testing }" viewBox="0 0 20 20" aria-hidden="true"><path d="M16 6.5V3l-2 2a6.5 6.5 0 1 0 1.5 8" /></svg>
+        <span>{{ testing ? '测速中…' : '测试全部服务器' }}</span>
       </button>
       <p class="hint">
         点击"测试全部"测速各服务器延迟，然后点"使用"切换到最快或可用的服务器。
@@ -196,19 +197,23 @@ function latencyText(ms: number | null): string {
 }
 .btn-test {
   width: 100%;
-  min-height: 42px;
-  padding: 0 16px;
-  background: var(--accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
+  min-height: 34px;
+  padding: 0 12px;
+  background: linear-gradient(180deg, rgba(10,132,255,.16), rgba(10,132,255,.09));
+  color: #add5ff;
+  border: 1px solid rgba(82,168,255,.26);
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 11px;
+  font-weight: 600;
   line-height: 1;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.045) inset;
 }
 .btn-test:hover:not(:disabled) {
-  opacity: 0.9;
+  color: #e2f1ff;
+  background: linear-gradient(180deg, rgba(10,132,255,.24), rgba(10,132,255,.14));
+  border-color: rgba(82,168,255,.42);
 }
 .btn-test:disabled {
   opacity: 0.5;

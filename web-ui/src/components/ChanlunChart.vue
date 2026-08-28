@@ -88,8 +88,8 @@ function buildOption(): echarts.EChartsCoreOption {
       const start = resolveDate(bi.start_date)
       const end = resolveDate(bi.end_date)
       if (!start || !end) continue
-      const startValue = bi.direction === 'up' ? bi.low : bi.high
-      const endValue = bi.direction === 'up' ? bi.high : bi.low
+      const startValue = bi.start_value ?? (bi.direction === 'up' ? bi.low : bi.high)
+      const endValue = bi.end_value ?? (bi.direction === 'up' ? bi.high : bi.low)
       if (biPoints[biPoints.length - 1]?.[0] !== start) biPoints.push([start, startValue])
       biPoints.push([end, endValue])
     }
@@ -142,21 +142,21 @@ function buildOption(): echarts.EChartsCoreOption {
           price: isBuy ? bar.low : bar.high,
           coord: [date, isBuy ? bar.low : bar.high],
           symbol: 'roundRect',
-          symbolSize: [22, 15],
-          symbolOffset: [0, isBuy ? 14 : -14],
+          symbolSize: [18, 13],
+          symbolOffset: [0, isBuy ? 12 : -12],
           itemStyle: {
             color: isBuy ? 'rgba(255, 73, 86, 0.94)' : 'rgba(28, 187, 107, 0.94)',
             borderColor: isBuy ? '#ff9ca3' : '#87e8b7',
             borderWidth: 1,
-            shadowBlur: 5,
-            shadowColor: isBuy ? 'rgba(255,73,86,.22)' : 'rgba(28,187,107,.20)',
+            shadowBlur: 3,
+            shadowColor: isBuy ? 'rgba(255,73,86,.18)' : 'rgba(28,187,107,.16)',
           },
           label: {
             show: true,
             formatter: `${isBuy ? 'B' : 'S'}${signal.type.slice(0, 1)}`,
             position: 'inside',
             color: '#fff',
-            fontSize: 8,
+            fontSize: 7,
             fontWeight: 700,
           },
         }]
@@ -176,13 +176,13 @@ function buildOption(): echarts.EChartsCoreOption {
           message: item.msg,
           coord: [date, bar.close],
           symbol: 'diamond',
-          symbolSize: 12,
+          symbolSize: 9,
           itemStyle: {
             color: 'rgba(191,90,242,.26)',
             borderColor: '#d9a3ff',
             borderWidth: 1.5,
-            shadowBlur: 6,
-            shadowColor: 'rgba(191,90,242,.28)',
+            shadowBlur: 3,
+            shadowColor: 'rgba(191,90,242,.2)',
           },
           label: { show: false },
         }]
@@ -247,11 +247,15 @@ function buildOption(): echarts.EChartsCoreOption {
       data: biPoints,
       showSymbol: true,
       symbol: 'circle',
-      symbolSize: 4,
+      symbolSize: 3,
       connectNulls: false,
-      lineStyle: { color: '#e8c75a', width: 1.25, opacity: 0.74 },
-      itemStyle: { color: '#f4d96f', borderColor: '#17181d', borderWidth: 1 },
-      emphasis: { lineStyle: { width: 2, opacity: 1 } },
+      lineStyle: { color: '#79b9ef', width: 1.35, opacity: 0.78 },
+      itemStyle: { color: '#a6d4f8', borderColor: '#1a2630', borderWidth: 0.8 },
+      emphasis: {
+        focus: 'series',
+        scale: 1.45,
+        lineStyle: { color: '#9bcefa', width: 2, opacity: 1 },
+      },
       z: 5,
     })
   }
@@ -263,10 +267,14 @@ function buildOption(): echarts.EChartsCoreOption {
       data: segment.points,
       showSymbol: true,
       symbol: 'circle',
-      symbolSize: 5,
-      lineStyle: { color: '#ad7cff', width: 2, opacity: 0.82 },
-      itemStyle: { color: '#c49aff', borderColor: '#17181d', borderWidth: 1 },
-      emphasis: { lineStyle: { width: 3, opacity: 1 } },
+      symbolSize: 4,
+      lineStyle: { color: '#a88cdb', width: 1.8, opacity: 0.84 },
+      itemStyle: { color: '#c8b3ec', borderColor: '#251f31', borderWidth: 0.8 },
+      emphasis: {
+        focus: 'series',
+        scale: 1.35,
+        lineStyle: { color: '#c0a7eb', width: 2.6, opacity: 1 },
+      },
       tooltip: {
         valueFormatter: (value: number | string) => price2(value),
       },
@@ -334,12 +342,8 @@ function buildOption(): echarts.EChartsCoreOption {
     legend: {
       top: 0,
       right: 6,
-      data: [
-        'K 线',
-        ...(biPoints.length ? ['笔'] : []),
-        ...(xdSegments.length ? ['线段'] : []),
-        ...secondarySeries.map((item) => String(item.name)),
-      ],
+      show: secondarySeries.length > 0,
+      data: secondarySeries.map((item) => String(item.name)),
       itemWidth: 14,
       itemHeight: 7,
       icon: 'roundRect',

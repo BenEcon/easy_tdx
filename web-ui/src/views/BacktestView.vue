@@ -12,14 +12,16 @@ import GradeDetails from '../components/GradeDetails.vue'
 import KlineChart from '../components/KlineChart.vue'
 import MacSelect from '../components/MacSelect.vue'
 import MetricTable from '../components/MetricTable.vue'
+import NumberStepper from '../components/NumberStepper.vue'
 import StrategyPicker from '../components/StrategyPicker.vue'
 import SymbolPicker from '../components/SymbolPicker.vue'
 import TradeTable from '../components/TradeTable.vue'
-import { formatError, saveStrategy } from '../api'
+import { fetchSavedStrategy, formatError, saveStrategy, updateSavedStrategy } from '../api'
 import { detectMarket } from '../market'
 import { useMarketPreferences } from '../market-preferences'
+import { getLastStockCode } from '../stock-history'
 import { gradePerformance } from '../grading'
-import type { Category, ExecutionMode } from '../types'
+import type { Category, ExecutionMode, SavedStrategy, SavedStrategyCreate } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 
 const store = useBacktestStore()
@@ -31,7 +33,7 @@ const symbolPicker = ref<InstanceType<typeof SymbolPicker> | null>(null)
 
 // 镜像 SymbolPicker 的代码/周期/日期，与 SymbolPicker 通过 v-model 双向同步。
 // 初始值与 SymbolPicker 默认一致；onMounted 时若 URL query 带了寻优页传来的值则覆盖。
-const code = ref('000001')
+const code = ref(getLastStockCode())
 const category = ref<Category>('DAY')
 function isoDaysFromNow(days: number): string {
   const d = new Date()
@@ -54,6 +56,17 @@ const EXECUTIONS: { value: ExecutionMode; label: string }[] = [
   { value: 'next_open', label: '开盘价' },
   { value: 'next_close', label: '收盘价' },
 ]
+
+const isSignalReview = computed(() => route.query.review === 'signal')
+const reviewSignalLabel = computed(() =>
+  route.query.signal === 'BUY' ? '买入信号' : route.query.signal === 'SELL' ? '卖出信号' : '策略信号',
+)
+const reviewSignalDate = computed(() => String(route.query.signalDate || '日期未知'))
+const reviewSourceName = computed(() => String(route.query.strategyName || route.query.strategyLabel || strategy.value))
+const editStrategyId = computed(() => typeof route.query.editStrategyId === 'string' ? route.query.editStrategyId : '')
+const editingRecord = ref<SavedStrategy | null>(null)
+const isStrategyEdit = computed(() => Boolean(editStrategyId.value))
+const isStrategyCopyEdit = computed(() => route.query.editMode === 'copy')
 
 onMounted(async () => {
   await store.loadStrategies().catch((e) => {
@@ -87,6 +100,25 @@ onMounted(async () => {
   if (qStartDate) startDate.value = qStartDate
   if (qEndDate) endDate.value = qEndDate
   if (qCategory) category.value = qCategory
+
+  if (editStrategyId.value) {
+    try {
+      editingRecord.value = await fetchSavedStrategy(editStrategyId.value)
+      const trade = editingRecord.value.trade_config
+      if (typeof trade.cash === 'number') cash.value = trade.cash
+      if (typeof trade.commission === 'number') commission.value = trade.commission
+      if (typeof trade.slippage === 'number') slippage.value = trade.slippage
+      if (trade.execution === 'next_open' || trade.execution === 'next_close') execution.value = trade.execution
+    } catch (e) {
+      store.error = `读取待修改策略失败：${formatError(e)}`
+    }
+  }
+
+  // 从信号雷达进入时直接重放同一标的与策略，落地即可进行人工复核。
+  if (isSignalReview.value && route.query.autoRun === '1' && qSymbol) {
+    await nextTick()
+    await onRun()
+  }
 })
 
 // 取行情 + 回测 串联（点击「开始回测」触发）
@@ -133,9 +165,9 @@ function fullSymbol(code6: string): string {
 }
 
 function openSaveForm() {
-  saveName.value = `${strategyLabel.value} · ${code.value}`
-  saveTags.value = ''
-  saveNotes.value = ''
+  saveName.value = editingRecord.value?.name || `${strategyLabel.value} · ${code.value}`
+  saveTags.value = editingRecord.value?.tags.join('，') || ''
+  saveNotes.value = editingRecord.value?.notes || ''
   saveMsg.value = ''
   showSaveForm.value = true
 }
@@ -145,7 +177,7 @@ async function onSave() {
   saving.value = true
   saveMsg.value = ''
   try {
-    await saveStrategy({
+    const payload: SavedStrategyCreate = {
       name: saveName.value.trim(),
       kind: 'single',
       strategy: strategy.value,
@@ -179,8 +211,14 @@ async function onSave() {
         .map((t) => t.trim())
         .filter(Boolean),
       notes: saveNotes.value,
-    })
-    saveMsg.value = '✓ 已保存到策略库'
+    }
+    if (editingRecord.value) {
+      editingRecord.value = await updateSavedStrategy(editingRecord.value.id, payload)
+      saveMsg.value = '✓ 策略修改已保存'
+    } else {
+      await saveStrategy(payload)
+      saveMsg.value = '✓ 已保存到策略库'
+    }
     showSaveForm.value = false
   } catch (e) {
     saveMsg.value = `保存失败：${formatError(e)}`
@@ -220,16 +258,16 @@ async function onSave() {
         <h3>资金与成本</h3>
         <div class="field">
           <label>初始资金</label>
-          <input v-model.number="cash" type="number" min="1000" step="10000" />
+          <NumberStepper v-model="cash" :min="1000" :step="10000" aria-label="初始资金" />
         </div>
         <div class="row">
           <div class="field">
             <label>佣金率</label>
-            <input v-model.number="commission" type="number" min="0" step="0.0001" />
+            <NumberStepper v-model="commission" :min="0" :step="0.0001" aria-label="佣金率" />
           </div>
           <div class="field">
             <label>滑点</label>
-            <input v-model.number="slippage" type="number" min="0" step="0.001" />
+            <NumberStepper v-model="slippage" :min="0" :step="0.001" aria-label="滑点" />
           </div>
         </div>
         <div class="field">
@@ -239,16 +277,42 @@ async function onSave() {
       </section>
 
       <button
-        class="primary run-btn"
+        class="primary run-btn action-button"
         :disabled="store.running"
         @click="onRun"
       >
-        {{ store.running ? '取行情+回测中…' : '开始回测' }}
+        <svg class="button-icon" :class="{ spinning: store.running }" viewBox="0 0 20 20" aria-hidden="true">
+          <path v-if="store.running" d="M16.5 10a6.5 6.5 0 1 1-1.9-4.6" />
+          <path v-else d="M4 15.5V4.5M4 13l4-3 3 2 5-6M13 6h3v3" />
+        </svg>
+        <span>{{ store.running ? '取行情+回测中…' : '开始回测' }}</span>
       </button>
     </aside>
 
     <!-- 右栏：报告 -->
     <main class="report-panel">
+      <section v-if="isSignalReview || isStrategyEdit || isStrategyCopyEdit" class="review-context" :aria-label="isStrategyEdit || isStrategyCopyEdit ? '修改策略上下文' : '信号人工复核上下文'">
+        <div class="review-context-icon">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <template v-if="isStrategyEdit || isStrategyCopyEdit"><path d="m4 14.8.5-3.2L12.2 4l2.8 2.8-7.7 7.6zM10.8 5.4l2.8 2.8M4 16h12" /></template>
+            <template v-else><circle cx="8.5" cy="8.5" r="4.75" /><path d="m12.1 12.1 3.4 3.4M6.4 8.7l1.3 1.3 2.8-3" /></template>
+          </svg>
+        </div>
+        <div class="review-context-copy">
+          <template v-if="isStrategyEdit || isStrategyCopyEdit">
+            <span>信号雷达 · 修改策略</span>
+            <strong>{{ editingRecord?.name || reviewSourceName }} · {{ code }}</strong>
+            <p v-if="isStrategyEdit">调整左侧参数后运行验证，再点击“保存修改”覆盖原策略</p>
+            <p v-else>这是组合中的子策略；调整并验证后可保存为独立策略，不影响原组合</p>
+          </template>
+          <template v-else>
+            <span>雷达信号 · 人工复核</span>
+            <strong>{{ reviewSourceName }} · {{ code }}</strong>
+            <p>{{ reviewSignalLabel }} · {{ reviewSignalDate }} · {{ category }} · 已还原策略参数并自动运行</p>
+          </template>
+        </div>
+        <RouterLink class="review-back" to="/signals">返回信号雷达</RouterLink>
+      </section>
       <div v-if="store.error" class="error-banner">⚠ {{ store.error }}</div>
 
       <div v-if="!store.result && !store.running && !store.error" class="placeholder">
@@ -261,7 +325,7 @@ async function onSave() {
             <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true">
               <path d="M4 3.5h10l2 2v11H4z" /><path d="M7 3.5v5h6v-5M7 16.5v-5h6v5" />
             </svg>
-            <span>保存策略</span>
+            <span>{{ isStrategyEdit ? '保存修改' : '保存策略' }}</span>
           </button>
           <span v-if="saveMsg" class="save-msg">{{ saveMsg }}</span>
         </div>
@@ -298,9 +362,9 @@ async function onSave() {
     <!-- 保存策略对话框 -->
     <div v-if="showSaveForm" class="modal-overlay" @click.self="showSaveForm = false">
       <div class="modal">
-        <h3>保存到策略库</h3>
+        <h3>{{ isStrategyEdit ? '保存策略修改' : '保存到策略库' }}</h3>
         <p class="modal-desc">
-          将当前策略 + 标的上下文 + 成绩快照存下，下次可在「策略库」载入或重跑。
+          {{ isStrategyEdit ? '保存后将覆盖原策略配置，并保留原策略编号与创建时间。' : '将当前策略、标的上下文和成绩快照存下，下次可在「策略库」载入或重跑。' }}
         </p>
         <div class="field">
           <label>名称</label>
@@ -321,7 +385,7 @@ async function onSave() {
         <div class="modal-actions">
           <button class="ghost" :disabled="saving" @click="showSaveForm = false">取消</button>
           <button class="primary" :disabled="saving || !saveName.trim()" @click="onSave">
-            {{ saving ? '保存中…' : '保存' }}
+            {{ saving ? '保存中…' : isStrategyEdit ? '保存修改' : '保存' }}
           </button>
         </div>
       </div>
@@ -367,8 +431,9 @@ async function onSave() {
 .run-btn {
   margin-top: auto;
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
+  min-height: 35px;
+  padding: 0 12px;
+  font-size: 11px;
 }
 
 /* 右栏报告面板 */
@@ -393,6 +458,34 @@ async function onSave() {
   margin-bottom: 16px;
   font-size: 13px;
 }
+.review-context {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: linear-gradient(100deg, rgba(42, 123, 194, .12), rgba(42, 123, 194, .035));
+  border: 1px solid rgba(91, 164, 225, .2);
+  border-radius: 10px;
+}
+.review-context-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  color: #9fd0f7;
+  background: rgba(70, 150, 217, .12);
+  border: 1px solid rgba(109, 180, 237, .18);
+  border-radius: 8px;
+}
+.review-context-icon svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.review-context-copy { min-width: 0; }
+.review-context-copy > span { display: block; color: #7fafd5; font-size: 9px; font-weight: 650; letter-spacing: .12em; }
+.review-context-copy strong { display: block; margin-top: 2px; color: var(--text); font-size: 12px; font-weight: 620; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.review-context-copy p { margin-top: 2px; color: var(--text-dim); font-size: 10px; }
+.review-back { padding: 5px 8px; color: var(--text-muted); border: 1px solid var(--border); border-radius: 6px; font-size: 10px; text-decoration: none; white-space: nowrap; }
+.review-back:hover { color: #b9dcff; border-color: rgba(91, 164, 225, .35); }
 .report-section {
   background: var(--bg-panel);
   border: 1px solid var(--border);

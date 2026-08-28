@@ -576,6 +576,50 @@ class TestChanlunAnalyser:
             if bc["prev_date"] is not None:
                 assert date_re.match(bc["prev_date"])
 
+    def test_result_visual_endpoint_uses_raw_extreme_date(self) -> None:
+        """合并 K 线的端点日期必须吸附到极值实际所在的原始 K 线。"""
+        from easy_tdx.chanlun.analyser import ChanlunResult
+        from easy_tdx.chanlun.types import BI, FX
+
+        bottom_sources = [
+            _k(0, "2025-01-02", 10, 9, 11, 8),
+            _k(1, "2025-01-03", 9, 10, 10.5, 8.5),
+        ]
+        bottom = CLKline(
+            k_index=1,
+            date=bottom_sources[-1].date,
+            open=9,
+            close=10,
+            high=11,
+            low=8,
+            amount=0,
+            klines=bottom_sources,
+        )
+        top_sources = [
+            _k(2, "2025-01-06", 14, 15, 16, 13),
+            _k(3, "2025-01-07", 15, 14, 15.5, 13.5),
+        ]
+        top = CLKline(
+            k_index=3,
+            date=top_sources[-1].date,
+            open=15,
+            close=14,
+            high=16,
+            low=13.5,
+            amount=0,
+            klines=top_sources,
+        )
+        start = FX(FXType.DI, bottom, [bottom, bottom, bottom], 8)
+        end = FX(FXType.DING, top, [top, top, top], 16)
+        bi = BI(start=start, end=end, direction=Direction.UP, high=16, low=8)
+
+        payload = ChanlunResult(frequency="DAILY", bis=[bi]).to_dict()["bis"][0]
+
+        assert payload["start_date"] == "2025-01-02"
+        assert payload["end_date"] == "2025-01-06"
+        assert payload["start_value"] == 8
+        assert payload["end_value"] == 16
+
     def test_result_to_dict_with_visual_dates(self) -> None:
         """可视化字段：足够数据下 zss/mmds/bcs 应携带合法 K 线日期。
 

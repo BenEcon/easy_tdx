@@ -9,6 +9,7 @@ import AdjustPicker from '../components/AdjustPicker.vue'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
 import MacSelect from '../components/MacSelect.vue'
+import NumberStepper from '../components/NumberStepper.vue'
 import PortfolioCompareChart from '../components/PortfolioCompareChart.vue'
 import PortfolioSummaryTable from '../components/PortfolioSummaryTable.vue'
 import StocksPicker from '../components/StocksPicker.vue'
@@ -18,12 +19,19 @@ import { gradePortfolio } from '../grading'
 import type { Category, ExecutionMode } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 import { useMarketPreferences } from '../market-preferences'
+import { detectMarket } from '../market'
+import { getLastStockCode } from '../stock-history'
 
 const store = useBacktestStore()
 const route = useRoute()
 const { adjustMode } = useMarketPreferences()
 
-const stocks = ref<string[]>(['SZ:000001', 'SH:600519'])
+const recentStockCode = getLastStockCode()
+const recentStockSymbol = `${detectMarket(recentStockCode)}:${recentStockCode}`
+const stocks = ref<string[]>([
+  recentStockSymbol,
+  ...['SZ:000001', 'SH:600519'].filter((symbol) => symbol !== recentStockSymbol),
+].slice(0, 2))
 const strategy = ref('ma_cross')
 const params = ref<Record<string, number | string | boolean>>({})
 const cash = ref(1000000)
@@ -207,7 +215,7 @@ async function onSave() {
         <h3>资金</h3>
         <div class="field">
           <label>组合总资金</label>
-          <input v-model.number="cash" type="number" min="1000" step="10000" />
+          <NumberStepper v-model="cash" :min="1000" :step="10000" aria-label="组合总资金" />
         </div>
         <div class="field">
           <label>成交价</label>
@@ -216,11 +224,15 @@ async function onSave() {
       </section>
 
       <button
-        class="primary run-btn"
+        class="primary run-btn action-button"
         :disabled="store.portfolioRunning || stocks.length === 0"
         @click="onRun"
       >
-        {{ store.portfolioRunning ? '组合回测中…' : '开始组合回测' }}
+        <svg class="button-icon" :class="{ spinning: store.portfolioRunning }" viewBox="0 0 20 20" aria-hidden="true">
+          <path v-if="store.portfolioRunning" d="M16.5 10a6.5 6.5 0 1 1-1.9-4.6" />
+          <path v-else d="M3.5 14.5 7.4 10l3 2.2 5.9-7M13 5.2h3.3v3.3" />
+        </svg>
+        <span>{{ store.portfolioRunning ? '组合回测中…' : '开始组合回测' }}</span>
       </button>
     </aside>
 
@@ -365,8 +377,9 @@ async function onSave() {
 }
 .run-btn {
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
+  min-height: 35px;
+  padding: 0 12px;
+  font-size: 11px;
 }
 .report-panel {
   flex: 1;

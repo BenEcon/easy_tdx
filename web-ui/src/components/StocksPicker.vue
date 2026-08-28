@@ -6,7 +6,7 @@ import { computed, ref } from 'vue'
 
 import StockHistoryMenu from './StockHistoryMenu.vue'
 import { detectMarket, marketLabel } from '../market'
-import { recordStockHistory, stockDisplayName } from '../stock-history'
+import { getLastStockCode, recordStockHistory, stockDisplayName } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
 import type { Category } from '../types'
 
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string[]] }>()
 
-const code = ref('')
+const code = ref(getLastStockCode())
 const detectedMarket = computed(() => (code.value && /^\d{6}$/.test(code.value)
   ? marketLabel(detectMarket(code.value))
   : ''))

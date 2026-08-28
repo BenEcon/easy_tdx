@@ -20,7 +20,7 @@ from easy_tdx.chanlun.fractal import find_fractals
 from easy_tdx.chanlun.kline_merge import merge_klines
 from easy_tdx.chanlun.macd import calc_macd  # noqa: F401
 from easy_tdx.chanlun.mmd import find_mmds  # noqa: F401
-from easy_tdx.chanlun.types import BC, BI, FX, MMD, XD, ZS, CLKline, Kline
+from easy_tdx.chanlun.types import BC, BI, FX, MMD, XD, ZS, CLKline, FXType, Kline
 from easy_tdx.chanlun.xd import find_xds  # noqa: F401
 from easy_tdx.chanlun.zs import find_zss
 
@@ -78,6 +78,22 @@ class ChanlunResult:
         fmt = "%Y-%m-%d %H:%M" if "min" in self.frequency.lower() else "%Y-%m-%d"
         return dt.strftime(fmt)
 
+    @staticmethod
+    def _fx_dt(fx: FX) -> datetime:
+        """返回分型极值真正所在的原始 K 线时间。
+
+        包含处理后的 CLKline.date 是合并区间最后一根 K 线时间，但分型高低值
+        可能来自区间内更早的一根。图表若直接使用 CLKline.date，会让端点价格
+        落在错误蜡烛上。这里按分型类型回溯原始 K 线并吸附到真实极值位置。
+        """
+        price_field = "high" if fx.fx_type == FXType.DING else "low"
+        tolerance = max(1e-8, abs(fx.val) * 1e-9)
+        matches = [
+            kline for kline in fx.k.klines
+            if abs(float(getattr(kline, price_field)) - fx.val) <= tolerance
+        ]
+        return matches[-1].date if matches else fx.k.date
+
     def to_dict(self) -> dict[str, Any]:
         """将结果转为可序列化的字典（用于 JSON 输出）。"""
         return {
@@ -95,8 +111,10 @@ class ChanlunResult:
                 {
                     "index": bi.index,
                     "direction": bi.direction.value,
-                    "start_date": self._fmt_dt(bi.start.k.date),
-                    "end_date": self._fmt_dt(bi.end.k.date),
+                    "start_date": self._fmt_dt(self._fx_dt(bi.start)),
+                    "end_date": self._fmt_dt(self._fx_dt(bi.end)),
+                    "start_value": round(bi.start.val, 2),
+                    "end_value": round(bi.end.val, 2),
                     "high": round(bi.high, 2),
                     "low": round(bi.low, 2),
                     "done": bi.is_done(),
@@ -111,8 +129,8 @@ class ChanlunResult:
                     "gg": round(zs.gg, 2),
                     "dd": round(zs.dd, 2),
                     "line_count": zs.line_count,
-                    "start_date": self._fmt_dt(zs.start.k.date) if zs.start else None,
-                    "end_date": self._fmt_dt(zs.end.k.date) if zs.end else None,
+                    "start_date": self._fmt_dt(self._fx_dt(zs.start)) if zs.start else None,
+                    "end_date": self._fmt_dt(self._fx_dt(zs.end)) if zs.end else None,
                     "done": zs.done,
                 }
                 for zs in self.zss
@@ -121,8 +139,8 @@ class ChanlunResult:
                 {
                     "index": xd.index,
                     "direction": xd.direction.value,
-                    "start_date": self._fmt_dt(xd.start.k.date),
-                    "end_date": self._fmt_dt(xd.end.k.date),
+                    "start_date": self._fmt_dt(self._fx_dt(xd.start)),
+                    "end_date": self._fmt_dt(self._fx_dt(xd.end)),
                     "start_value": round(xd.start.val, 2),
                     "end_value": round(xd.end.val, 2),
                     "high": round(xd.high, 2),
@@ -133,7 +151,7 @@ class ChanlunResult:
             "mmds": [
                 {
                     "type": mmd.mmd_type.value,
-                    "date": self._fmt_dt(mmd.bi.end.k.date) if mmd.bi else None,
+                    "date": self._fmt_dt(self._fx_dt(mmd.bi.end)) if mmd.bi else None,
                     "msg": mmd.msg,
                 }
                 for mmd in self.mmds
@@ -142,8 +160,8 @@ class ChanlunResult:
                 {
                     "type": bc.bc_type.value,
                     "bc": bc.bc,
-                    "curr_date": self._fmt_dt(bc.curr.end.k.date) if bc.curr else None,
-                    "prev_date": self._fmt_dt(bc.prev.end.k.date) if bc.prev else None,
+                    "curr_date": self._fmt_dt(self._fx_dt(bc.curr.end)) if bc.curr else None,
+                    "prev_date": self._fmt_dt(self._fx_dt(bc.prev.end)) if bc.prev else None,
                     "msg": bc.msg,
                 }
                 for bc in self.bcs

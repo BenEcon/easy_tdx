@@ -8,12 +8,14 @@ import { useRouter } from 'vue-router'
 import ChartFrame from '../components/ChartFrame.vue'
 import GradeBadge from '../components/GradeBadge.vue'
 import MacSelect from '../components/MacSelect.vue'
+import NumberStepper from '../components/NumberStepper.vue'
 import OptimizeHeatmap from '../components/OptimizeHeatmap.vue'
 import OptimizeResultTable from '../components/OptimizeResultTable.vue'
 import ParamGridPicker from '../components/ParamGridPicker.vue'
 import QuoteCarousel from '../components/QuoteCarousel.vue'
 import SymbolPicker from '../components/SymbolPicker.vue'
 import { gradeGridPoint } from '../grading'
+import { getLastStockCode } from '../stock-history'
 import type { GradeResult } from '../grading'
 import type { Category, ExecutionMode } from '../types'
 import { useBacktestStore } from '../stores/backtest'
@@ -26,7 +28,7 @@ const symbolPicker = ref<InstanceType<typeof SymbolPicker> | null>(null)
 
 // 镜像 SymbolPicker 的代码/周期/日期，用于「查看」跳转时拼进 URL query。
 // 与 SymbolPicker 通过 v-model 双向同步，初始值与 SymbolPicker 默认一致。
-const code = ref('000001')
+const code = ref(getLastStockCode())
 const category = ref<Category>('DAY')
 function isoDaysFromNow(days: number): string {
   const d = new Date()
@@ -241,7 +243,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
         <h3>资金</h3>
         <div class="field">
           <label>初始资金</label>
-          <input v-model.number="cash" type="number" min="1000" step="10000" />
+          <NumberStepper v-model="cash" :min="1000" :step="10000" aria-label="初始资金" />
         </div>
         <div class="field">
           <label>成交价</label>
@@ -266,18 +268,26 @@ const rankingGrades = computed<GradeResult[]>(() =>
       </section>
 
       <button
-        class="primary run-btn"
+        class="primary run-btn action-button"
         :disabled="store.optimizeRunning || store.optimizeAllRunning"
         @click="onRun"
       >
-        {{ store.optimizeRunning ? '取行情+寻优中…' : '开始寻优' }}
+        <svg class="button-icon" :class="{ spinning: store.optimizeRunning }" viewBox="0 0 20 20" aria-hidden="true">
+          <path v-if="store.optimizeRunning" d="M16.5 10a6.5 6.5 0 1 1-1.9-4.6" />
+          <path v-else d="M3.5 14.5 7.4 10l3 2.2 5.9-7M13 5.2h3.3v3.3" />
+        </svg>
+        <span>{{ store.optimizeRunning ? '取行情+寻优中…' : '开始寻优' }}</span>
       </button>
       <button
-        class="run-all-btn run-btn"
+        class="run-all-btn run-btn action-button"
         :disabled="store.optimizeRunning || store.optimizeAllRunning"
         @click="onRunAll"
       >
-        {{ store.optimizeAllRunning ? '一键寻优所有策略中…' : '一键寻优所有策略' }}
+        <svg class="button-icon" :class="{ spinning: store.optimizeAllRunning }" viewBox="0 0 20 20" aria-hidden="true">
+          <path v-if="store.optimizeAllRunning" d="M16.5 10a6.5 6.5 0 1 1-1.9-4.6" />
+          <path v-else d="M4 4h4v4H4zM12 4h4v4h-4zM4 12h4v4H4zM12 12h4v4h-4z" />
+        </svg>
+        <span>{{ store.optimizeAllRunning ? '一键寻优所有策略中…' : '一键寻优所有策略' }}</span>
       </button>
     </aside>
 
@@ -448,38 +458,37 @@ const rankingGrades = computed<GradeResult[]>(() =>
 }
 .run-btn {
   width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  margin-top: 8px;
+  min-height: 35px;
+  padding: 0 12px;
+  font-size: 11px;
+  margin-top: 7px;
 }
 .run-btn:first-of-type {
   margin-top: 0;
 }
 
-/* 「一键寻优所有策略」按钮：暖橙渐变，比 primary 蓝更醒目 */
+/* 批量寻优属于次级动作，使用中性的蓝灰表面，避免与主操作争夺注意力。 */
 .run-all-btn {
-  background: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%);
-  border: 1px solid #f59e0b;
-  color: #fff;
-  font-weight: 600;
-  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  background: linear-gradient(180deg, rgba(255,255,255,.065), rgba(255,255,255,.03));
+  border: 1px solid rgba(255,255,255,.12);
+  color: #b5b8c0;
+  font-weight: 580;
+  box-shadow: 0 1px 0 rgba(255,255,255,.045) inset;
 }
 .run-all-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  border-color: #fbbf24;
-  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.5);
-  transform: translateY(-1px);
+  background: linear-gradient(180deg, rgba(255,255,255,.095), rgba(255,255,255,.05));
+  border-color: rgba(111,177,243,.28);
+  color: #d6e7f8;
+  box-shadow: 0 1px 0 rgba(255,255,255,.06) inset;
 }
 .run-all-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
+  transform: scale(.985);
 }
-/* 运行中：暗橙 disabled，但仍是橙，区别于普通按钮的纯灰 */
 .run-all-btn:disabled {
-  background: linear-gradient(135deg, #b45309, #9a3412);
-  border-color: #b45309;
-  color: #fde68a;
-  opacity: 0.9;
+  background: rgba(255,255,255,.025);
+  border-color: var(--border);
+  color: var(--text-dim);
+  opacity: .55;
   cursor: not-allowed;
   box-shadow: none;
   transform: none;

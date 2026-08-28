@@ -6,7 +6,7 @@ import AdjustPicker from './AdjustPicker.vue'
 import StockHistoryMenu from './StockHistoryMenu.vue'
 import { fetchBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
-import { recordStockHistory } from '../stock-history'
+import { getLastStockCode, recordStockHistory } from '../stock-history'
 import { useBacktestStore } from '../stores/backtest'
 import type { StockHistoryItem } from '../stock-history'
 import type { Category } from '../types'
@@ -14,7 +14,7 @@ import { useMarketPreferences } from '../market-preferences'
 
 const store = useBacktestStore()
 const { adjustMode, adjustOptions } = useMarketPreferences()
-const code = defineModel<string>('code', { default: '000001' })
+const code = defineModel<string>('code', { default: getLastStockCode() })
 const category = defineModel<Category>('category', { default: 'DAY' })
 const startDate = defineModel<string>('startDate', { default: '2020-01-06' })
 const endDate = defineModel<string>('endDate', {
