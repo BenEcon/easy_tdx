@@ -5,6 +5,7 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ChartFrame from '../components/ChartFrame.vue'
+import AdjustPicker from '../components/AdjustPicker.vue'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
 import MacSelect from '../components/MacSelect.vue'
@@ -16,9 +17,11 @@ import { formatError, saveStrategy } from '../api'
 import { gradePortfolio } from '../grading'
 import type { Category, ExecutionMode } from '../types'
 import { useBacktestStore } from '../stores/backtest'
+import { useMarketPreferences } from '../market-preferences'
 
 const store = useBacktestStore()
 const route = useRoute()
+const { adjustMode } = useMarketPreferences()
 
 const stocks = ref<string[]>(['SZ:000001', 'SH:600519'])
 const strategy = ref('ma_cross')
@@ -88,6 +91,7 @@ async function onRun() {
     category: category.value,
     start_date: startDate.value,
     end_date: endDate.value,
+    adjust: adjustMode.value,
   })
 }
 
@@ -134,6 +138,7 @@ async function onSave() {
         category: category.value,
         start_date: startDate.value,
         end_date: endDate.value,
+        adjust: adjustMode.value,
       },
       trade_config: {
         cash: cash.value,
@@ -195,6 +200,7 @@ async function onSave() {
             <input v-model="endDate" type="date" />
           </div>
         </div>
+        <AdjustPicker />
       </section>
 
       <section class="panel-section">

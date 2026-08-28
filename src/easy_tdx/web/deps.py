@@ -31,7 +31,7 @@ def get_mac_client_optional(request: Request) -> Any | None:
     供需要"MAC 不可用时自动回退标准 TdxClient"的端点使用（如 ``/bars``）。
     其他强制依赖 MAC 的端点（``/mac/*``）仍用 :func:`get_mac_client`。
     """
-    return request.app.state.mac_client
+    return getattr(request.app.state, "mac_client", None)
 
 
 def get_ex_client(request: Request) -> Any:

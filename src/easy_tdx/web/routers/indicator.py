@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+import numpy as np
 import pandas as pd
 from fastapi import APIRouter
 
@@ -42,4 +43,5 @@ async def indicator_compute(
         keep_ohlcv=req.keep_ohlcv,
         tail=req.tail,
     )
+    result = result.replace([np.inf, -np.inf], np.nan).astype(object).where(pd.notna(result), None)
     return _df_resp(result)

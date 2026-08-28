@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import DataGrid from '../components/DataGrid.vue'
+import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
 import StockQueryField from '../components/StockQueryField.vue'
 import StocksPicker from '../components/StocksPicker.vue'
 import { analyzePortfolioRisk, computeResearchFactors, fetchResearchFactors, formatError } from '../api'
 import { detectMarket } from '../market'
 import { recordStockHistory, stockDisplayName } from '../stock-history'
+import { useMarketPreferences } from '../market-preferences'
 
 type Row = Record<string, unknown>
 type Tab = 'factor' | 'risk'
@@ -31,6 +33,7 @@ const error = ref('')
 const showGlossary = ref(false)
 const glossaryQuery = ref('')
 const glossaryScope = ref<GlossaryScope>('all')
+const { adjustMode } = useMarketPreferences()
 
 const categoryLabels: Record<string, string> = {
   chanlun: '缠论结构', momentum: '动量与反转', quality: '质量与稳定性',
@@ -167,6 +170,7 @@ async function runFactor() {
     const response = await computeResearchFactors({
       market: detectMarket(code.value), code: code.value, category: category.value,
       count: 500, factors: selectedFactors.value,
+      adjust: adjustMode.value,
     })
     factorRows.value = Array.isArray(response.data.rows) ? response.data.rows as Row[] : []
     factorErrors.value = (response.data.errors ?? {}) as Record<string, string>
@@ -193,6 +197,7 @@ async function runRisk() {
         return { market, code: stockCode }
       }),
       method: method.value, category: 'DAY', count: 500,
+      adjust: adjustMode.value,
     })
     assetRows.value = Array.isArray(response.data.assets) ? response.data.assets as Row[] : []
     correlationRows.value = Array.isArray(response.data.correlation) ? response.data.correlation as Row[] : []
@@ -234,6 +239,7 @@ onMounted(initialize)
       <section class="factor-controls">
         <StockQueryField v-model="code" />
         <div class="period-field"><label>数据周期</label><MacSelect v-model="category" :options="categoryOptions" /></div>
+        <AdjustPicker compact />
         <div class="selected-count"><small>已选因子</small><strong>{{ selectedFactors.length }}</strong><span>/ 12</span></div>
         <button class="primary run-button" :disabled="loading" @click="runFactor">{{ loading ? '计算中' : '计算因子' }}</button>
       </section>
@@ -264,6 +270,7 @@ onMounted(initialize)
           <div><span>组合风险模型</span><h3>组合设置</h3><p>以最近 500 根日线估计收益、相关性与风险贡献。</p></div>
           <StocksPicker v-model="stocks" category="DAY" />
           <div><label>权重模型</label><MacSelect v-model="method" :options="methodOptions" /></div>
+          <AdjustPicker />
           <button class="primary risk-button" :disabled="loading" @click="runRisk">{{ loading ? '分析中' : '分析组合风险' }}</button>
         </aside>
         <div class="risk-results">

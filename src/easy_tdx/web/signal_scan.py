@@ -172,13 +172,15 @@ def _error_target(rec: SavedStrategy, message: str) -> ScanTarget:
 async def fetch_scan_bars(
     client: Any,
     targets: list[ScanTarget],
+    mac_client: Any | None = None,
+    adjust: str = "QFQ",
 ) -> dict[tuple[str, str], pd.DataFrame | None]:
     """按 (symbol, category) 去重取最近 ``SCAN_BARS`` 根 K 线（async，event loop 内调用）。
 
     同一标的被多个策略引用时只取一次。单个标的取数失败/数据无效记 None
     （不中断整批），run_scan 会给相关行统一标 error。
     """
-    from easy_tdx.web.convert import category_from_str, market_from_str
+    from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
 
     bars: dict[tuple[str, str], pd.DataFrame | None] = {}
     for t in targets:
@@ -187,12 +189,8 @@ async def fetch_scan_bars(
             continue
         try:
             market_str, code = t.symbol.split(":", 1)
-            df = await client.get_security_bars(
-                market_from_str(market_str),
-                code,
-                category_from_str(t.category),
-                0,
-                SCAN_BARS,
+            df = await fetch_adjusted_bars(
+                client, mac_client, market_str, code, t.category, 0, SCAN_BARS, adjust
             )
         except Exception as exc:  # noqa: BLE001 — 单标的失败不中断整批
             logger.warning("信号扫描取数失败 %s: %s", t.symbol, exc)

@@ -73,6 +73,7 @@ class BacktestRequest(BaseModel):
         default="DAY", description="K 线周期"
     )
     count: int = Field(default=250, ge=20, le=2000, description="K 线根数")
+    adjust: Literal["NONE", "QFQ", "HFQ"] = Field(default="QFQ", description="复权方式")
 
     @model_validator(mode="after")
     def _check_data_source(self) -> BacktestRequest:
@@ -107,6 +108,7 @@ class PortfolioBacktestRequest(BaseModel):
     )
     start_date: str | None = Field(default=None, description="开始日期 YYYY-MM-DD（可选过滤）")
     end_date: str | None = Field(default=None, description="结束日期 YYYY-MM-DD（可选过滤）")
+    adjust: Literal["NONE", "QFQ", "HFQ"] = Field(default="QFQ", description="复权方式")
 
     @model_validator(mode="after")
     def _check_stocks_format(self) -> PortfolioBacktestRequest:
@@ -147,6 +149,7 @@ class OptimizeBacktestRequest(BaseModel):
     count: int = Field(default=250, ge=20, le=800)
     start_date: str | None = Field(default=None)
     end_date: str | None = Field(default=None)
+    adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
 
     @model_validator(mode="after")
     def _check_data_source(self) -> OptimizeBacktestRequest:
@@ -187,6 +190,7 @@ class OptimizeAllBacktestRequest(BaseModel):
     count: int = Field(default=250, ge=20, le=800)
     start_date: str | None = Field(default=None)
     end_date: str | None = Field(default=None)
+    adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
 
     @model_validator(mode="after")
     def _check_data_source(self) -> OptimizeAllBacktestRequest:
@@ -374,6 +378,7 @@ class MultiStrategyBacktestRequest(BaseModel):
     stamp_tax: float = Field(default=0.001, ge=0, le=0.01)
     slippage: float = Field(default=0.0, ge=0, le=0.05)
     execution: Literal["next_open", "next_close"] = Field(default="next_open")
+    adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
 
 
 # ── 信号雷达（一键扫描已保存策略的最近买卖信号）────────────────────────────────
@@ -385,6 +390,7 @@ class SignalScanRequest(BaseModel):
     window_bars: int = Field(
         default=5, ge=1, le=30, description="检查最近 N 根 K 线内的信号（日线即 N 个交易日）"
     )
+    adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
 
 
 class SignalScanRecentSignal(BaseModel):

@@ -3,11 +3,13 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import echarts, { DOWN_COLOR, UP_COLOR } from '../echarts-setup'
 import {
-  calculateKdj,
-  calculateMacd,
-  calculateRsi,
+  buildIndicatorSeries,
+  calculateIndicatorRows,
   compactNumber,
+  getIndicatorDefinition,
+  indicatorUsesPanel,
   percentageChange,
+  type IndicatorParams,
   type TechnicalIndicator,
 } from '../technical-indicators'
 import type { Bar, ChanlunResult } from '../types'
@@ -27,6 +29,10 @@ const props = defineProps<{
 
 const container = ref<HTMLDivElement>()
 const selectedIndicator = ref<TechnicalIndicator>('macd')
+const indicatorParams = ref<IndicatorParams>(getIndicatorDefinition('macd').defaultParams)
+const indicatorRows = ref<Array<Record<string, unknown>>>([])
+const indicatorLoading = ref(false)
+const indicatorError = ref('')
 let chart: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
 
@@ -51,55 +57,6 @@ function signalName(type: string): string {
   return names[type] ?? type
 }
 
-function indicatorSeries(indicator: TechnicalIndicator): Array<Record<string, unknown>> {
-  const shared = { xAxisIndex: 1, yAxisIndex: 1, symbol: 'none', animationDuration: 260 }
-  if (indicator === 'volume') {
-    return [{
-      name: '成交量', type: 'bar', xAxisIndex: 1, yAxisIndex: 1,
-      data: props.bars.map((bar) => bar.vol), barMaxWidth: 8,
-      itemStyle: {
-        color: (params: { dataIndex: number }) => props.bars[params.dataIndex].close >= props.bars[params.dataIndex].open
-          ? 'rgba(255,94,104,.62)' : 'rgba(48,209,123,.62)',
-        borderRadius: [2, 2, 0, 0],
-      },
-    }]
-  }
-  if (indicator === 'macd') {
-    const macd = calculateMacd(props.bars)
-    return [
-      {
-        name: 'MACD', type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: macd.histogram, barMaxWidth: 7,
-        itemStyle: {
-          color: (params: { value: number }) => params.value >= 0 ? 'rgba(255,94,104,.62)' : 'rgba(48,209,123,.62)',
-          borderRadius: 1,
-        },
-      },
-      { ...shared, name: 'DIF', type: 'line', data: macd.dif, lineStyle: { color: '#56a8ff', width: 1.35 } },
-      { ...shared, name: 'DEA', type: 'line', data: macd.dea, lineStyle: { color: '#f2c94c', width: 1.35 } },
-    ]
-  }
-  if (indicator === 'kdj') {
-    const kdj = calculateKdj(props.bars)
-    return [
-      { ...shared, name: 'K', type: 'line', data: kdj.k, lineStyle: { color: '#56a8ff', width: 1.3 } },
-      { ...shared, name: 'D', type: 'line', data: kdj.d, lineStyle: { color: '#f2c94c', width: 1.3 } },
-      { ...shared, name: 'J', type: 'line', data: kdj.j, lineStyle: { color: '#c488ff', width: 1.3 } },
-    ]
-  }
-  if (indicator === 'rsi') {
-    return [{
-      ...shared, name: 'RSI(14)', type: 'line', data: calculateRsi(props.bars),
-      lineStyle: { color: '#c488ff', width: 1.45 },
-      markLine: {
-        silent: true, symbol: 'none', label: { show: false },
-        lineStyle: { color: 'rgba(255,255,255,.11)', type: 'dashed' },
-        data: [{ yAxis: 30 }, { yAxis: 70 }],
-      },
-    }]
-  }
-  return []
-}
-
 function buildOption(): echarts.EChartsCoreOption {
   const intraday = props.bars.some((bar) => bar.datetime.slice(11, 19) !== '00:00:00')
   const dates = props.bars.map((bar) => {
@@ -107,7 +64,8 @@ function buildOption(): echarts.EChartsCoreOption {
     return intraday ? normalized : normalized.slice(0, 10)
   })
   const ohlc = props.bars.map((bar) => [bar.open, bar.close, bar.low, bar.high])
-  const hasIndicator = selectedIndicator.value !== 'none'
+  const hasIndicator = indicatorUsesPanel(selectedIndicator.value)
+  const indicatorDefinition = getIndicatorDefinition(selectedIndicator.value)
 
   const resolveDate = (raw: string | null): string | null => {
     if (!raw) return null
@@ -316,7 +274,7 @@ function buildOption(): echarts.EChartsCoreOption {
     })
   }
 
-  const secondarySeries = indicatorSeries(selectedIndicator.value)
+  const secondarySeries = buildIndicatorSeries(selectedIndicator.value, props.bars, indicatorRows.value)
   series.push(...secondarySeries)
 
   return {
@@ -416,9 +374,9 @@ function buildOption(): echarts.EChartsCoreOption {
       },
       ...(hasIndicator ? [{
         type: 'value', gridIndex: 1,
-        scale: selectedIndicator.value !== 'kdj' && selectedIndicator.value !== 'rsi',
-        min: selectedIndicator.value === 'rsi' ? 0 : undefined,
-        max: selectedIndicator.value === 'rsi' ? 100 : undefined,
+        scale: !indicatorDefinition.bounds,
+        min: indicatorDefinition.bounds?.[0],
+        max: indicatorDefinition.bounds?.[1],
         splitNumber: 3, axisLine: { show: false }, axisTick: { show: false },
         splitLine: { lineStyle: { color: 'rgba(255,255,255,.045)', type: 'dashed' } },
         axisLabel: { formatter: (value: number) => selectedIndicator.value === 'volume' ? compactNumber(value) : price2(value) },
@@ -460,8 +418,36 @@ function render() {
   requestAnimationFrame(() => chart?.resize())
 }
 
+let indicatorRequest = 0
+async function refreshIndicator() {
+  const requestId = ++indicatorRequest
+  indicatorError.value = ''
+  const definition = getIndicatorDefinition(selectedIndicator.value)
+  if (!props.bars.length || definition.code === 'NONE' || definition.code === 'VOLUME') {
+    indicatorRows.value = []
+    render()
+    return
+  }
+  indicatorLoading.value = true
+  try {
+    const rows = await calculateIndicatorRows(props.bars, selectedIndicator.value, indicatorParams.value)
+    if (requestId === indicatorRequest) indicatorRows.value = rows
+  } catch (error) {
+    if (requestId === indicatorRequest) {
+      indicatorRows.value = []
+      indicatorError.value = error instanceof Error ? error.message : '指标计算失败'
+    }
+  } finally {
+    if (requestId === indicatorRequest) {
+      indicatorLoading.value = false
+      render()
+    }
+  }
+}
+
 onMounted(() => {
   render()
+  void refreshIndicator()
   if (container.value) {
     resizeObserver = new ResizeObserver(() => chart?.resize())
     resizeObserver.observe(container.value)
@@ -474,7 +460,8 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-watch(() => [props.bars, props.result, props.layers, selectedIndicator.value], render, { deep: true })
+watch(() => [props.result, props.layers], render, { deep: true })
+watch(() => [props.bars, selectedIndicator.value, indicatorParams.value], () => void refreshIndicator(), { deep: true })
 </script>
 
 <template>
@@ -482,9 +469,14 @@ watch(() => [props.bars, props.result, props.layers, selectedIndicator.value], r
     <div
       ref="container"
       class="chanlun-chart"
-      :class="{ 'has-indicator': selectedIndicator !== 'none' }"
+      :class="{ 'has-indicator': indicatorUsesPanel(selectedIndicator) }"
     ></div>
-    <TechnicalIndicatorPicker v-model="selectedIndicator" />
+    <TechnicalIndicatorPicker
+      v-model="selectedIndicator"
+      v-model:params="indicatorParams"
+      :loading="indicatorLoading"
+      :error="indicatorError"
+    />
   </div>
 </template>
 

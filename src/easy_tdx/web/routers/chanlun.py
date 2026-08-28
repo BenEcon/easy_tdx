@@ -6,8 +6,8 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 
-from easy_tdx.web.convert import category_from_str, market_from_str
-from easy_tdx.web.deps import get_client
+from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
+from easy_tdx.web.deps import get_client, get_mac_client_optional
 from easy_tdx.web.schemas import ChanlunRequest
 
 router = APIRouter(tags=["chanlun"])
@@ -17,6 +17,7 @@ router = APIRouter(tags=["chanlun"])
 async def chanlun_analyze(
     req: ChanlunRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> dict[str, Any]:
     """执行缠论分析。
 
@@ -26,12 +27,15 @@ async def chanlun_analyze(
     from easy_tdx.chanlun import ChanlunAnalyser
 
     # 1. Fetch kline data
-    df = await client.get_security_bars(
-        market_from_str(req.market),
+    df = await fetch_adjusted_bars(
+        client,
+        mac_client,
+        req.market,
         req.code,
-        category_from_str(req.category),
+        req.category,
         req.start,
         req.count,
+        req.adjust,
     )
 
     # 2. Run chanlun analysis

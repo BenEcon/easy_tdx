@@ -17,11 +17,13 @@ import SymbolPicker from '../components/SymbolPicker.vue'
 import TradeTable from '../components/TradeTable.vue'
 import { formatError, saveStrategy } from '../api'
 import { detectMarket } from '../market'
+import { useMarketPreferences } from '../market-preferences'
 import { gradePerformance } from '../grading'
 import type { Category, ExecutionMode } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 
 const store = useBacktestStore()
+const { adjustMode } = useMarketPreferences()
 const route = useRoute()
 
 // SymbolPicker 实例引用，用于触发取行情
@@ -154,6 +156,7 @@ async function onSave() {
         category: category.value,
         start_date: startDate.value,
         end_date: endDate.value,
+        adjust: adjustMode.value,
       },
       trade_config: {
         cash: cash.value,
@@ -264,7 +267,7 @@ async function onSave() {
         </div>
 
         <section class="report-section">
-          <ChartFrame title="K线、买卖点与技术指标" description="主副图同步缩放；下方可切换成交量、MACD、KDJ 与 RSI。">
+          <ChartFrame title="K线、买卖点与技术指标" description="主副图同步缩放；支持完整指标库、参数设置与主图叠加。">
             <KlineChart :bars="store.ohlcv" :trades="store.result.trades" />
           </ChartFrame>
         </section>

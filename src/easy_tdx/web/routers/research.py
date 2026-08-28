@@ -9,8 +9,8 @@ import pandas as pd
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
-from easy_tdx.web.convert import category_from_str, market_from_str
-from easy_tdx.web.deps import get_client
+from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
+from easy_tdx.web.deps import get_client, get_mac_client_optional
 from easy_tdx.web.schemas import DataFrameResponse, DictResponse, StockIdentifier
 
 router = APIRouter(tags=["research"])
@@ -22,6 +22,7 @@ class FactorComputeRequest(BaseModel):
     category: str = "DAY"
     count: int = Field(default=300, ge=60, le=800)
     factors: list[str] = Field(..., min_length=1, max_length=12)
+    adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
 
 
 class PortfolioRiskRequest(BaseModel):
@@ -29,6 +30,7 @@ class PortfolioRiskRequest(BaseModel):
     method: Literal["equal", "factor_weighted", "risk_parity", "mean_variance"] = "risk_parity"
     category: str = "DAY"
     count: int = Field(default=300, ge=60, le=800)
+    adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
 
 
 def _json_safe_frame(df: pd.DataFrame) -> pd.DataFrame:
@@ -47,12 +49,13 @@ async def factor_list() -> list[dict[str, Any]]:
 async def factor_compute(
     req: FactorComputeRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> DictResponse:
     """获取单股行情并计算一个或多个内置因子。"""
     from easy_tdx.factor import FactorEngine
 
-    df = await client.get_security_bars(
-        market_from_str(req.market), req.code, category_from_str(req.category), 0, req.count
+    df = await fetch_adjusted_bars(
+        client, mac_client, req.market, req.code, req.category, 0, req.count, req.adjust
     )
     if "date" in df.columns and "datetime" not in df.columns:
         df = df.rename(columns={"date": "datetime"})
@@ -96,6 +99,7 @@ async def factor_compute(
 async def portfolio_risk(
     req: PortfolioRiskRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> DictResponse:
     """基于在线日线计算组合权重、相关性、年化波动与风险贡献。"""
     from easy_tdx.portfolio import RiskModel, get_optimizer
@@ -103,12 +107,15 @@ async def portfolio_risk(
     series: list[pd.Series] = []
     asset_rows: list[dict[str, Any]] = []
     for stock in req.stocks:
-        df = await client.get_security_bars(
-            market_from_str(stock.market),
+        df = await fetch_adjusted_bars(
+            client,
+            mac_client,
+            stock.market,
             stock.code,
-            category_from_str(req.category),
+            req.category,
             0,
             req.count,
+            req.adjust,
         )
         if df.empty or "close" not in df.columns:
             continue

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import IntEnum
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -71,6 +71,7 @@ class ChanlunRequest(BaseModel):
     category: str = Field(default="DAY", description="K线周期")
     count: int = Field(default=800, ge=1, le=800)
     start: int = Field(default=0, ge=0)
+    adjust: Literal["NONE", "QFQ", "HFQ"] = Field(default="QFQ", description="复权方式")
 
 
 class ComputeIndicatorsRequest(BaseModel):

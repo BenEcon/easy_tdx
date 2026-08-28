@@ -227,6 +227,8 @@ export interface TaskListResponse {
 
 // ── 组合回测（Phase 3） ───────────────────────────────────────────────────────
 
+export type AdjustMode = 'NONE' | 'QFQ' | 'HFQ'
+
 export interface PortfolioBacktestRequest {
   strategy: string
   params?: Record<string, number | string | boolean>
@@ -238,6 +240,7 @@ export interface PortfolioBacktestRequest {
   category?: Category
   start_date?: string
   end_date?: string
+  adjust?: AdjustMode
 }
 
 export interface PortfolioResult {
@@ -267,6 +270,7 @@ export interface OptimizeBacktestRequest {
   count?: number
   start_date?: string
   end_date?: string
+  adjust?: AdjustMode
 }
 
 export interface GridPointResult {
@@ -309,6 +313,7 @@ export interface OptimizeAllBacktestRequest {
   count?: number
   start_date?: string
   end_date?: string
+  adjust?: AdjustMode
 }
 
 export interface OptimizeAllRankEntry {
@@ -411,6 +416,7 @@ export interface AccountListResponse {
 /** 信号扫描请求：window_bars = 检查最近 N 根 K 线内的信号。 */
 export interface SignalScanRequest {
   window_bars?: number
+  adjust?: AdjustMode
 }
 
 /** 窗口内单根 K 线的信号。 */
@@ -470,6 +476,7 @@ export interface MultiStrategyBacktestRequest {
   stamp_tax?: number
   slippage?: number
   execution?: ExecutionMode
+  adjust?: AdjustMode
 }
 
 // ── 服务器设置（GET /api/v1/server/hosts 等） ────────────────────────────────

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 
 import ChanlunChart from '../components/ChanlunChart.vue'
 import ChartFrame from '../components/ChartFrame.vue'
+import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
 import { analyzeChanlun, fetchRecentBars, formatError } from '../api'
@@ -10,6 +11,7 @@ import { detectMarket, marketLabel } from '../market'
 import { recordStockHistory } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
 import type { Bar, Category, ChanlunResult } from '../types'
+import { useMarketPreferences } from '../market-preferences'
 
 const code = ref('000001')
 const category = ref<Category>('DAY')
@@ -19,6 +21,7 @@ const error = ref('')
 const result = ref<ChanlunResult | null>(null)
 const bars = ref<Bar[]>([])
 const activeTab = ref<'structure' | 'signals' | 'divergence'>('structure')
+const { adjustMode } = useMarketPreferences()
 
 interface LayerState {
   bis: boolean
@@ -141,8 +144,11 @@ async function runAnalysis() {
   try {
     const market = detectMarket(code.value)
     const [nextBars, nextResult] = await Promise.all([
-      fetchRecentBars(market, code.value, category.value, count.value),
-      analyzeChanlun({ market, code: code.value, category: category.value, count: count.value }),
+      fetchRecentBars(market, code.value, category.value, count.value, adjustMode.value),
+      analyzeChanlun({
+        market, code: code.value, category: category.value, count: count.value,
+        adjust: adjustMode.value,
+      }),
     ])
     bars.value = nextBars
     result.value = nextResult
@@ -185,6 +191,7 @@ async function runAnalysis() {
           <label>历史窗口</label>
           <MacSelect v-model="count" :options="countOptions" aria-label="缠论历史窗口" />
         </div>
+        <AdjustPicker />
       </section>
 
       <section class="inspector-section layer-section">
@@ -249,7 +256,7 @@ async function runAnalysis() {
         </section>
 
         <section class="chart-workspace">
-          <ChartFrame title="走势结构图" description="主副图同步缩放；下方可切换成交量、MACD、KDJ 与 RSI。">
+          <ChartFrame title="走势结构图" description="主副图同步缩放；支持完整指标库、参数设置与主图叠加。">
             <template #actions>
               <div class="chart-legend">
                 <span class="legend-bi">笔</span>

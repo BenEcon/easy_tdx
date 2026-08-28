@@ -25,12 +25,14 @@ import {
 } from '../api'
 import { gradePortfolio } from '../grading'
 import { detectMarket } from '../market'
+import { useMarketPreferences } from '../market-preferences'
 import { recordStockHistory } from '../stock-history'
 import type { Category, MultiStrategyItem, Performance, SavedStrategy, StrategySchema } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 
 const router = useRouter()
 const store = useBacktestStore()
+const { adjustMode } = useMarketPreferences()
 
 const strategies = ref<SavedStrategy[]>([])
 const loading = ref(false)
@@ -188,7 +190,7 @@ async function onComboBacktest() {
   }))
   lastComboItems.value = items
   lastComboCash.value = 1_000_000
-  await store.runMultiStrategy({ items, cash: 1_000_000 })
+  await store.runMultiStrategy({ items, cash: 1_000_000, adjust: adjustMode.value })
   if (skipped > 0) {
     store.error = `已跳过 ${skipped} 个缺少单一标的的策略（组合策略无 symbol）。`
   }
@@ -230,6 +232,7 @@ async function submitSaveCombo() {
       context: {
         items: lastComboItems.value,
         cash: lastComboCash.value,
+        adjust: adjustMode.value,
       },
       trade_config: { cash: lastComboCash.value },
       snapshot: {
@@ -286,7 +289,7 @@ async function onLoadMulti(s: SavedStrategy) {
   const cash = typeof ctx.cash === 'number' ? ctx.cash : 1_000_000
   lastComboItems.value = items
   lastComboCash.value = cash
-  await store.runMultiStrategy({ items, cash })
+  await store.runMultiStrategy({ items, cash, adjust: adjustMode.value })
   // 跑完滚动到结果区
   await nextTick()
   comboResultRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })

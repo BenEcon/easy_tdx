@@ -10,10 +10,13 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import MacSelect from '../components/MacSelect.vue'
+import AdjustPicker from '../components/AdjustPicker.vue'
 import { asSignalScanResult, formatError, runSignalScanWithPolling } from '../api'
 import type { SignalScanResult, SignalScanRow } from '../types'
+import { useMarketPreferences } from '../market-preferences'
 
 const router = useRouter()
+const { adjustMode } = useMarketPreferences()
 
 const WINDOW_OPTIONS = [1, 3, 5, 10]
 const WINDOW_SELECT_OPTIONS = WINDOW_OPTIONS.map((value) => ({ value, label: `${value} 根` }))
@@ -53,7 +56,10 @@ async function onScan() {
   error.value = ''
   const t0 = Date.now()
   try {
-    const state = await runSignalScanWithPolling({ window_bars: windowBars.value })
+    const state = await runSignalScanWithPolling({
+      window_bars: windowBars.value,
+      adjust: adjustMode.value,
+    })
     result.value = asSignalScanResult(state)
     scannedAt.value = new Date().toLocaleString('zh-CN', { hour12: false })
     elapsedSec.value = ((Date.now() - t0) / 1000).toFixed(1)
@@ -153,6 +159,7 @@ function onLoad(r: SignalScanRow) {
         </p>
       </div>
       <div class="header-actions">
+        <AdjustPicker compact />
         <label class="window-picker">
           窗口
           <MacSelect

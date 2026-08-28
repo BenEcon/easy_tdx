@@ -5,6 +5,7 @@ import type {
   ApiError,
   AccountListResponse,
   AccountUser,
+  AdjustMode,
   AuthStatus,
   BacktestRequest,
   BacktestResult,
@@ -196,6 +197,7 @@ export async function fetchBars(
   category: Category,
   startDate?: string,
   endDate?: string,
+  adjust: AdjustMode = 'QFQ',
 ): Promise<Bar[]> {
   let allBars: Bar[] = []
   for (let page = 0; page < MAX_PAGES; page++) {
@@ -205,6 +207,7 @@ export async function fetchBars(
       category,
       count: '800',
       start: String(page * 800),
+      adjust,
     })
     const resp = await fetch(`${BASE}/bars?${params}`)
     if (!resp.ok) await throwError(resp)
@@ -491,10 +494,11 @@ export function fetchIndicatorList(): Promise<Array<Record<string, unknown>>> {
 export function computeIndicators(
   data: Array<Record<string, unknown>>,
   indicators: string[],
+  params?: Record<string, Record<string, number>>,
 ): Promise<DataRowsResponse> {
   return request<DataRowsResponse>('/indicator/compute', {
     method: 'POST',
-    body: JSON.stringify({ data, indicators, keep_ohlcv: true }),
+    body: JSON.stringify({ data, indicators, params, keep_ohlcv: false }),
   })
 }
 
@@ -529,6 +533,7 @@ export function computeResearchFactors(payload: {
   category: string
   count: number
   factors: string[]
+  adjust?: AdjustMode
 }): Promise<DictDataResponse> {
   return request<DictDataResponse>('/research/factors/compute', {
     method: 'POST', body: JSON.stringify(payload),
@@ -540,6 +545,7 @@ export function analyzePortfolioRisk(payload: {
   method: 'equal' | 'factor_weighted' | 'risk_parity' | 'mean_variance'
   category: string
   count: number
+  adjust?: AdjustMode
 }): Promise<DictDataResponse> {
   return request<DictDataResponse>('/research/portfolio-risk', {
     method: 'POST', body: JSON.stringify(payload),
@@ -567,6 +573,7 @@ export async function fetchRecentBars(
   code: string,
   category: Category,
   count: number,
+  adjust: AdjustMode = 'QFQ',
 ): Promise<Bar[]> {
   const params = new URLSearchParams({
     market,
@@ -574,6 +581,7 @@ export async function fetchRecentBars(
     category,
     count: String(count),
     start: '0',
+    adjust,
   })
   const resp = await fetch(`${BASE}/bars?${params}`)
   if (!resp.ok) await throwError(resp)
@@ -588,6 +596,7 @@ export async function analyzeChanlun(req: {
   category: Category
   count: number
   start?: number
+  adjust?: AdjustMode
 }): Promise<ChanlunResult> {
   const resp = await fetch(`${BASE}/chanlun/analyze`, {
     method: 'POST',

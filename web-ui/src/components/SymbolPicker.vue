@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 
 import MacSelect from './MacSelect.vue'
+import AdjustPicker from './AdjustPicker.vue'
 import StockHistoryMenu from './StockHistoryMenu.vue'
 import { fetchBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
@@ -9,8 +10,10 @@ import { recordStockHistory } from '../stock-history'
 import { useBacktestStore } from '../stores/backtest'
 import type { StockHistoryItem } from '../stock-history'
 import type { Category } from '../types'
+import { useMarketPreferences } from '../market-preferences'
 
 const store = useBacktestStore()
+const { adjustMode, adjustOptions } = useMarketPreferences()
 const code = defineModel<string>('code', { default: '000001' })
 const category = defineModel<Category>('category', { default: 'DAY' })
 const startDate = defineModel<string>('startDate', { default: '2020-01-06' })
@@ -49,14 +52,17 @@ async function loadBars(): Promise<boolean> {
   error.value = ''
   try {
     const market = detectMarket(code.value)
-    const bars = await fetchBars(market, code.value, category.value, startDate.value, endDate.value)
+    const bars = await fetchBars(
+      market, code.value, category.value, startDate.value, endDate.value, adjustMode.value,
+    )
     if (bars.length < 2) {
       error.value = `该日期范围内仅取到 ${bars.length} 根 K 线，不足以回测`
       store.error = error.value
       return false
     }
     const range = `${startDate.value} ~ ${endDate.value}`
-    store.setOhlcv(bars, `${market}:${code.value} ${category.value} ${range}`)
+    const adjustLabel = adjustOptions.find((item) => item.value === adjustMode.value)?.label ?? ''
+    store.setOhlcv(bars, `${market}:${code.value} ${category.value} · ${adjustLabel} · ${range}`)
     store.clearResult()
     recordStockHistory({
       code: code.value,
@@ -91,6 +97,7 @@ defineExpose({ loadBars, loading })
       <label>周期</label>
       <MacSelect v-model="category" :options="CATEGORY_OPTIONS" aria-label="行情周期" />
     </div>
+    <AdjustPicker />
     <div class="row">
       <div class="field"><label>开始日期</label><input v-model="startDate" type="date" /></div>
       <div class="field"><label>结束日期</label><input v-model="endDate" type="date" /></div>

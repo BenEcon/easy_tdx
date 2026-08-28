@@ -11,12 +11,14 @@
 
 from __future__ import annotations
 
+import inspect
 from typing import Any
 
 import pandas as pd
 from fastapi import APIRouter, Depends
 
 from easy_tdx.web.account_store import UserRecord
+from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
 from easy_tdx.web.backtest_schemas import (
     BacktestRequest,
     BacktestResultResponse,
@@ -34,7 +36,7 @@ from easy_tdx.web.backtest_schemas import (
     TaskSummary,
     serialize_result,
 )
-from easy_tdx.web.deps import get_client
+from easy_tdx.web.deps import get_client, get_mac_client_optional
 from easy_tdx.web.routers.auth import get_current_user
 from easy_tdx.web.task_runner import get_runner
 
@@ -80,6 +82,7 @@ async def run_backtest(req: BacktestRequest) -> BacktestResultResponse:
 async def run_backtest_async(
     req: BacktestRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> TaskSubmitResponse:
     """提交后台回测任务，立即返回 task_id。
 
@@ -91,7 +94,17 @@ async def run_backtest_async(
         df = _ohlcv_to_df(req.ohlcv)
         bars_desc = f"{len(df)} 根"
     elif req.symbol is not None:
-        df = await _fetch_bars(client, req.symbol, req.category, req.count)
+        if mac_client is None or "mac_client" not in inspect.signature(_fetch_bars).parameters:
+            df = await _fetch_bars(client, req.symbol, req.category, req.count)
+        else:
+            df = await _fetch_bars(
+                client,
+                req.symbol,
+                req.category,
+                req.count,
+                mac_client=mac_client,
+                adjust=req.adjust,
+            )
         bars_desc = f"{req.symbol} {req.category}×{req.count}"
     else:
         # BacktestRequest 校验器已保证二者至少其一，此处不可达
@@ -158,6 +171,7 @@ async def get_task(task_id: str) -> TaskStateResponse:
 async def run_portfolio_backtest_async(
     req: PortfolioBacktestRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> TaskSubmitResponse:
     """提交组合（多标的）回测后台任务。
 
@@ -165,9 +179,22 @@ async def run_portfolio_backtest_async(
     PortfolioBacktestEngine。通过 GET /backtest/tasks/{task_id} 轮询结果。
     """
     # 1. 逐个标的取行情（async 上下文内）
-    stock_data_list = await _fetch_portfolio_bars(
-        client, req.stocks, req.category, req.start_date, req.end_date
-    )
+    if mac_client is None or "mac_client" not in inspect.signature(
+        _fetch_portfolio_bars
+    ).parameters:
+        stock_data_list = await _fetch_portfolio_bars(
+            client, req.stocks, req.category, req.start_date, req.end_date
+        )
+    else:
+        stock_data_list = await _fetch_portfolio_bars(
+            client,
+            req.stocks,
+            req.category,
+            req.start_date,
+            req.end_date,
+            mac_client=mac_client,
+            adjust=req.adjust,
+        )
     if not stock_data_list:
         raise ValueError("所有标的均未取到有效行情数据")
 
@@ -195,6 +222,7 @@ async def run_portfolio_backtest_async(
 async def run_multi_strategy_backtest_async(
     req: MultiStrategyBacktestRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> TaskSubmitResponse:
     """提交多策略组合回测后台任务（资金分仓 / 并行制）。
 
@@ -202,7 +230,14 @@ async def run_multi_strategy_backtest_async(
     单个策略取数失败则跳过（不中断整组），全部失败返回 400。结果为
     MultiStrategyResult（结构同 PortfolioResult），通过 GET /backtest/tasks/{task_id} 轮询。
     """
-    slots = await _fetch_multi_strategy_bars(client, req.items)
+    if mac_client is None or "mac_client" not in inspect.signature(
+        _fetch_multi_strategy_bars
+    ).parameters:
+        slots = await _fetch_multi_strategy_bars(client, req.items)
+    else:
+        slots = await _fetch_multi_strategy_bars(
+            client, req.items, mac_client=mac_client, adjust=req.adjust
+        )
     if not slots:
         raise ValueError("所有策略槽位均未取到有效行情数据")
 
@@ -223,6 +258,7 @@ async def run_multi_strategy_backtest_async(
 async def run_optimize_async(
     req: OptimizeBacktestRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> TaskSubmitResponse:
     """提交参数网格寻优后台任务。
 
@@ -234,7 +270,17 @@ async def run_optimize_async(
         df = _ohlcv_to_df(req.ohlcv)
         desc_bars = f"{len(df)} 根"
     elif req.symbol is not None:
-        df = await _fetch_bars(client, req.symbol, req.category, 800)
+        if mac_client is None or "mac_client" not in inspect.signature(_fetch_bars).parameters:
+            df = await _fetch_bars(client, req.symbol, req.category, 800)
+        else:
+            df = await _fetch_bars(
+                client,
+                req.symbol,
+                req.category,
+                800,
+                mac_client=mac_client,
+                adjust=req.adjust,
+            )
         desc_bars = f"{req.symbol}"
         if req.start_date or req.end_date:
             df = _filter_df_by_date(df, req.start_date, req.end_date)
@@ -266,6 +312,7 @@ async def run_optimize_async(
 async def run_optimize_all_async(
     req: OptimizeAllBacktestRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
 ) -> TaskSubmitResponse:
     """提交「一键寻优所有策略」后台任务。
 
@@ -278,7 +325,17 @@ async def run_optimize_all_async(
         df = _ohlcv_to_df(req.ohlcv)
         desc_bars = f"{len(df)} 根"
     elif req.symbol is not None:
-        df = await _fetch_bars(client, req.symbol, req.category, 800)
+        if mac_client is None or "mac_client" not in inspect.signature(_fetch_bars).parameters:
+            df = await _fetch_bars(client, req.symbol, req.category, 800)
+        else:
+            df = await _fetch_bars(
+                client,
+                req.symbol,
+                req.category,
+                800,
+                mac_client=mac_client,
+                adjust=req.adjust,
+            )
         desc_bars = f"{req.symbol}"
         if req.start_date or req.end_date:
             df = _filter_df_by_date(df, req.start_date, req.end_date)
@@ -307,6 +364,7 @@ async def run_optimize_all_async(
 async def run_signal_scan_async(
     req: SignalScanRequest,
     client: Any = Depends(get_client),
+    mac_client: Any | None = Depends(get_mac_client_optional),
     user: UserRecord = Depends(get_current_user),
 ) -> TaskSubmitResponse:
     """提交「信号雷达」后台任务：扫描策略库全部已保存策略的最近买卖信号。
@@ -324,7 +382,10 @@ async def run_signal_scan_async(
         raise ValueError("策略库为空，请先在回测页保存策略")
 
     targets = expand_targets(records)
-    bars = await fetch_scan_bars(client, targets)
+    if mac_client is None or "mac_client" not in inspect.signature(fetch_scan_bars).parameters:
+        bars = await fetch_scan_bars(client, targets)
+    else:
+        bars = await fetch_scan_bars(client, targets, mac_client=mac_client, adjust=req.adjust)
     description = (
         f"信号扫描 | {len(records)}条策略 · {len(targets)}个子任务 · 窗口{req.window_bars}根"
     )
@@ -386,17 +447,19 @@ def _ohlcv_to_df(records: list[dict[str, Any]]) -> pd.DataFrame:
     return df
 
 
-async def _fetch_bars(client: Any, symbol: str, category: str, count: int) -> pd.DataFrame:
+async def _fetch_bars(
+    client: Any,
+    symbol: str,
+    category: str,
+    count: int,
+    *,
+    mac_client: Any | None = None,
+    adjust: str = "QFQ",
+) -> pd.DataFrame:
     """按标的取 K 线（async，必须在 event loop 内调用）。"""
-    from easy_tdx.web.convert import category_from_str, market_from_str
-
     market_str, code = symbol.split(":", 1)
-    df = await client.get_security_bars(
-        market_from_str(market_str),
-        code,
-        category_from_str(category),
-        0,
-        count,
+    df = await fetch_adjusted_bars(
+        client, mac_client, market_str, code, category, 0, count, adjust
     )
     if len(df) == 0:
         raise ValueError(f"标的 {symbol} 未取到任何 K 线数据")
@@ -436,6 +499,9 @@ async def _fetch_portfolio_bars(
     category: str,
     start_date: str | None,
     end_date: str | None,
+    *,
+    mac_client: Any | None = None,
+    adjust: str = "QFQ",
 ) -> list[Any]:
     """逐个标的取 K 线并组装 StockData 列表（async，必须在 event loop 内调用）。
 
@@ -443,8 +509,6 @@ async def _fetch_portfolio_bars(
     同逻辑）。单个标的取数失败时跳过（不中断整个组合），全部失败返回空列表。
     """
     from easy_tdx.backtest.portfolio_engine import StockData
-    from easy_tdx.web.convert import category_from_str, market_from_str
-
     max_pages = 10  # 翻页上限：10 × 800 = 8000 根
     stock_data_list: list[StockData] = []
     for symbol in stocks:
@@ -452,12 +516,15 @@ async def _fetch_portfolio_bars(
         frames: list[pd.DataFrame] = []
         for page in range(max_pages):
             try:
-                page_df = await client.get_security_bars(
-                    market_from_str(market_str),
+                page_df = await fetch_adjusted_bars(
+                    client,
+                    mac_client,
+                    market_str,
                     code,
-                    category_from_str(category),
+                    category,
                     page * 800,
                     800,
+                    adjust,
                 )
             except Exception:
                 break  # 单页失败则停止该标的的翻页
@@ -502,6 +569,9 @@ async def _fetch_portfolio_bars(
 async def _fetch_multi_strategy_bars(
     client: Any,
     items: list[Any],
+    *,
+    mac_client: Any | None = None,
+    adjust: str = "QFQ",
 ) -> list[Any]:
     """逐个策略槽位取行情 + 构造策略实例，组装 StrategySlot 列表（async）。
 
@@ -511,8 +581,6 @@ async def _fetch_multi_strategy_bars(
     """
     from easy_tdx.backtest.multi_strategy_engine import StrategySlot
     from easy_tdx.backtest.strategies import get_registry
-    from easy_tdx.web.convert import category_from_str, market_from_str
-
     registry = get_registry()
     slots: list[StrategySlot] = []
     for item in items:
@@ -526,12 +594,15 @@ async def _fetch_multi_strategy_bars(
         frames: list[pd.DataFrame] = []
         for page in range(10):
             try:
-                page_df = await client.get_security_bars(
-                    market_from_str(market_str),
+                page_df = await fetch_adjusted_bars(
+                    client,
+                    mac_client,
+                    market_str,
                     code,
-                    category_from_str(item.category),
+                    item.category,
                     page * 800,
                     800,
+                    adjust,
                 )
             except Exception:
                 break
