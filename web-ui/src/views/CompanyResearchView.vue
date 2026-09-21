@@ -11,12 +11,12 @@ import {
   fetchSymbolInfo, fetchXdxrInfo, formatError,
 } from '../api'
 import { detectMarket } from '../market'
-import { getLastStockCode, recordStockHistory, stockDisplayName } from '../stock-history'
+import { useSelectedStock, recordStockHistory, stockDisplayName } from '../stock-history'
 
 type Row = Record<string, unknown>
 type Tab = 'overview' | 'f10' | 'flow' | 'announcements' | 'reports' | 'professional' | 'events' | 'auction'
 
-const code = ref(getLastStockCode())
+const code = useSelectedStock()
 const tab = ref<Tab>('overview')
 const reportType = ref<'lrb' | 'fzb' | 'llb'>('lrb')
 const quoteRows = ref<Row[]>([])

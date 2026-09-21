@@ -1,4 +1,4 @@
-import { readonly, ref, watch } from 'vue'
+import { readonly, ref, watch, type Ref } from 'vue'
 
 import { fetchStockNames } from './api'
 import { updatePreferences, useAuth } from './auth'
@@ -19,6 +19,18 @@ const stockHistory = ref<StockHistoryItem[]>([])
 const lastStock = ref<StockHistoryItem | null>(null)
 const { currentUser } = useAuth()
 let hydratingNames = false
+const selectionKey = () => `easy-tdx.selected-stock.${currentUser.value?.id ?? 'guest'}`
+function cachedSelection(): StockHistoryItem | null {
+  try {
+    const value = JSON.parse(localStorage.getItem(selectionKey()) || 'null')
+    return isHistoryItem(value) ? value : null
+  } catch { return null }
+}
+if (typeof window !== 'undefined') window.addEventListener('storage', (event) => {
+  if (event.key !== selectionKey()) return
+  const value = cachedSelection()
+  if (value) lastStock.value = value
+})
 
 function isHistoryItem(value: unknown): value is StockHistoryItem {
   if (!value || typeof value !== 'object') return false
@@ -38,12 +50,17 @@ watch(currentUser, (user) => {
   stockHistory.value = items
   const savedLastStock = user?.preferences.last_stock
   lastStock.value = isHistoryItem(savedLastStock) ? savedLastStock : (items[0] ?? null)
+  const cached = cachedSelection()
+  if (cached && (!lastStock.value || cached.usedAt > lastStock.value.usedAt)) lastStock.value = cached
   void hydrateHistoryNames(items)
 }, { immediate: true })
 
 function persist(items: StockHistoryItem[], nextLastStock?: StockHistoryItem) {
   stockHistory.value = items
-  if (nextLastStock) lastStock.value = nextLastStock
+  if (nextLastStock) {
+    lastStock.value = nextLastStock
+    try { localStorage.setItem(selectionKey(), JSON.stringify(nextLastStock)) } catch { /* Storage may be unavailable. */ }
+  }
   void updatePreferences({
     stock_history: items,
     ...(nextLastStock ? { last_stock: nextLastStock } : {}),
@@ -103,6 +120,13 @@ export function stockDisplayName(code: string): string {
 /** 当前登录用户最后一次成功查询的 A 股代码；旧账户自动从历史首项迁移。 */
 export function getLastStockCode(fallback = '000001'): string {
   return lastStock.value?.code ?? stockHistory.value[0]?.code ?? fallback
+}
+
+/** Follow confirmed selections without persisting partially typed input. */
+export function useSelectedStock(fallback = '000001'): Ref<string> {
+  const code = ref(getLastStockCode(fallback))
+  watch(lastStock, (item) => { code.value = item?.code ?? fallback })
+  return code
 }
 
 export function useStockHistory() {

@@ -8,7 +8,7 @@ import {
   fetchBoardMembers, fetchBoardRanking, fetchBoardSummary, formatError,
 } from '../api'
 import { detectMarket } from '../market'
-import { getLastStockCode, recordStockHistory } from '../stock-history'
+import { useSelectedStock, recordStockHistory } from '../stock-history'
 
 type Row = Record<string, unknown>
 type Mode = 'live' | 'ranking' | 'change' | 'classic'
@@ -22,7 +22,7 @@ const members = ref<Row[]>([])
 const belongs = ref<Row[]>([])
 const summary = ref<Record<string, unknown>>({})
 const selectedBoard = ref<Row | null>(null)
-const stockCode = ref(getLastStockCode())
+const stockCode = useSelectedStock()
 const loadingBoards = ref(false)
 const loadingMembers = ref(false)
 const loadingBelong = ref(false)

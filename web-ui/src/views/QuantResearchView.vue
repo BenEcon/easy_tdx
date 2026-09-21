@@ -8,7 +8,7 @@ import StockQueryField from '../components/StockQueryField.vue'
 import StocksPicker from '../components/StocksPicker.vue'
 import { analyzePortfolioRisk, computeResearchFactors, fetchResearchFactors, formatError } from '../api'
 import { detectMarket } from '../market'
-import { getLastStockCode, recordStockHistory, stockDisplayName } from '../stock-history'
+import { getLastStockCode, useSelectedStock, recordStockHistory, stockDisplayName } from '../stock-history'
 import { useMarketPreferences } from '../market-preferences'
 
 type Row = Record<string, unknown>
@@ -20,7 +20,7 @@ type GlossaryEntry = FactorTerm & { key: string; category: string; scope: Exclud
 const tab = ref<Tab>('factor')
 const recentStockCode = getLastStockCode()
 const recentStockSymbol = `${detectMarket(recentStockCode)}:${recentStockCode}`
-const code = ref(recentStockCode)
+const code = useSelectedStock()
 const category = ref('DAY')
 const factors = ref<Row[]>([])
 const selectedFactors = ref<string[]>(['momentum_20d', 'rsi_14', 'volatility_20d', 'sharpe_20d'])

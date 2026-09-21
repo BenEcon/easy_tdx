@@ -590,6 +590,14 @@ export async function fetchRecentBars(
 }
 
 /** 执行完整缠论管道：K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰。 */
+export function analyzeIndustry(req: { stock_market: string; stock_code: string; board_code: string; category: Category; count: number }): Promise<{ bars: Bar[]; result: ChanlunResult }> {
+  return request('/chanlun/industry', { method: 'POST', body: JSON.stringify(req) })
+}
+
+export function fetchStockIndustries(market: string, code: string): Promise<DataRowsResponse> {
+  return request(queryPath('/chanlun/industries', { market, code }))
+}
+
 export async function analyzeChanlun(req: {
   market: string
   code: string

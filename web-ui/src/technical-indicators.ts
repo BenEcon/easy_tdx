@@ -1,5 +1,6 @@
 import { computeIndicators } from './api'
 import type { Bar } from './types'
+import { INDICATOR_LINE_COLORS, movingAverageColor } from './moving-averages'
 
 export type TechnicalIndicator = string
 export type IndicatorParams = Record<string, number>
@@ -37,7 +38,7 @@ const item = (
 
 export const TECHNICAL_INDICATORS: IndicatorDefinition[] = [
   item('NONE', '无指标', '无技术指标', '基础', '专注观察价格走势与买卖信号。', [], {}, 'none'),
-  item('VOLUME', '成交量', '成交量', '量价', '比较每根 K 线的成交活跃程度与涨跌方向。', ['VOL'], {}, 'panel'),
+  item('VOLUME', '成交量', '成交量', '量价', '比较成交活跃程度，并显示 5、10 周期平均成交量。', ['VOL', 'MAVOL5', 'MAVOL10'], {}, 'panel'),
   item('MACD', 'MACD', '指数平滑异同移动平均线', '趋势', '用快慢均线差观察趋势方向与动能变化。', ['MACD_DIF', 'MACD_DEA', 'MACD_HIST'], { SHORT: 12, LONG: 26, M: 9 }, 'panel', { guideLines: [0], histogramOutput: 'MACD_HIST' }),
   item('KDJ', 'KDJ', '随机指标', '摆动', '结合近期高低价判断短期超买、超卖和拐点。', ['KDJ_K', 'KDJ_D', 'KDJ_J'], { N: 9, M1: 3, M2: 3 }, 'panel', { guideLines: [20, 80] }),
   item('RSI', 'RSI', '相对强弱指标', '摆动', '衡量一段时间内上涨与下跌力量的相对强弱。', ['RSI'], { N: 24 }, 'panel', { bounds: [0, 100], guideLines: [30, 70] }),
@@ -100,8 +101,6 @@ export async function calculateIndicatorRows(
   return response.data
 }
 
-const SERIES_COLORS = ['#56a8ff', '#f2c94c', '#c488ff', '#ff8a92', '#6ee0a5']
-
 export function buildIndicatorSeries(
   value: TechnicalIndicator,
   bars: Bar[],
@@ -120,7 +119,20 @@ export function buildIndicatorSeries(
           ? 'rgba(255,94,104,.62)' : 'rgba(48,209,123,.62)',
         borderRadius: [2, 2, 0, 0],
       },
-    }]
+    }, ...[5, 10].map(period => {
+      let total = 0
+      const data = bars.map((bar, index) => {
+        total += bar.vol
+        if (index >= period) total -= bars[index - period]!.vol
+        return index >= period - 1 ? total / period : null
+      })
+      return {
+        name: `MAVOL${period}`, type: 'line', xAxisIndex, yAxisIndex,
+        data, symbol: 'none', connectNulls: false,
+        lineStyle: { color: movingAverageColor(period), width: 1.35 },
+        itemStyle: { color: movingAverageColor(period) },
+      }
+    })]
   }
 
   return definition.outputs.map((output, index) => {
@@ -144,14 +156,17 @@ export function buildIndicatorSeries(
         borderRadius: 1,
       }
     } else {
+      const color = output === 'MACD_DIF' ? movingAverageColor(5)
+        : output === 'MACD_DEA' ? movingAverageColor(10)
+        : INDICATOR_LINE_COLORS[index % INDICATOR_LINE_COLORS.length]
       shared.symbol = definition.code === 'SAR' ? 'circle' : 'none'
       shared.symbolSize = definition.code === 'SAR' ? 4 : undefined
       shared.lineStyle = {
-        color: SERIES_COLORS[index % SERIES_COLORS.length],
+        color,
         width: definition.placement === 'overlay' ? 1.2 : 1.35,
         opacity: definition.placement === 'overlay' ? 0.88 : 1,
       }
-      shared.itemStyle = { color: SERIES_COLORS[index % SERIES_COLORS.length] }
+      shared.itemStyle = { color }
     }
     if (index === 0 && definition.guideLines?.length) {
       shared.markLine = {

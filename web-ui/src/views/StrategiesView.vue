@@ -26,7 +26,7 @@ import {
 import { gradePortfolio } from '../grading'
 import { detectMarket } from '../market'
 import { useMarketPreferences } from '../market-preferences'
-import { getLastStockCode, recordStockHistory } from '../stock-history'
+import { useSelectedStock, recordStockHistory } from '../stock-history'
 import type { Category, MultiStrategyItem, Performance, SavedStrategy, StrategySchema } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 
@@ -44,7 +44,7 @@ const builtinStrategies = ref<StrategySchema[]>([])
 const creatorOpen = ref(false)
 const templateStrategy = ref('')
 const templateParams = ref<Record<string, number | string | boolean>>({})
-const templateCode = ref(getLastStockCode())
+const templateCode = useSelectedStock()
 const templateCategory = ref<Category>('DAY')
 const templateStartDate = ref('2020-01-02')
 const templateEndDate = ref(new Date().toISOString().slice(0, 10))

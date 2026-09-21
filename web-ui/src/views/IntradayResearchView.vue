@@ -7,12 +7,12 @@ import MacSelect from '../components/MacSelect.vue'
 import StockQueryField from '../components/StockQueryField.vue'
 import { fetchIndexBars, fetchMinuteData, fetchServerSession, fetchTransactionData, formatError } from '../api'
 import { detectMarket } from '../market'
-import { getLastStockCode, recordStockHistory, stockDisplayName } from '../stock-history'
+import { useSelectedStock, recordStockHistory, stockDisplayName } from '../stock-history'
 
 type Row = Record<string, unknown>
 type Tab = 'minute' | 'transactions' | 'index' | 'session'
 
-const code = ref(getLastStockCode())
+const code = useSelectedStock()
 const date = ref('')
 const tab = ref<Tab>('minute')
 const indexSymbol = ref('SH:000001')

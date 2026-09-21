@@ -19,7 +19,7 @@ import TradeTable from '../components/TradeTable.vue'
 import { fetchSavedStrategy, formatError, saveStrategy, updateSavedStrategy } from '../api'
 import { detectMarket } from '../market'
 import { useMarketPreferences } from '../market-preferences'
-import { getLastStockCode } from '../stock-history'
+import { useSelectedStock } from '../stock-history'
 import { gradePerformance } from '../grading'
 import type { Category, ExecutionMode, SavedStrategy, SavedStrategyCreate } from '../types'
 import { useBacktestStore } from '../stores/backtest'
@@ -33,7 +33,7 @@ const symbolPicker = ref<InstanceType<typeof SymbolPicker> | null>(null)
 
 // 镜像 SymbolPicker 的代码/周期/日期，与 SymbolPicker 通过 v-model 双向同步。
 // 初始值与 SymbolPicker 默认一致；onMounted 时若 URL query 带了寻优页传来的值则覆盖。
-const code = ref(getLastStockCode())
+const code = useSelectedStock()
 const category = ref<Category>('DAY')
 function isoDaysFromNow(days: number): string {
   const d = new Date()

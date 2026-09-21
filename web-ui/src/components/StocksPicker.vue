@@ -2,11 +2,11 @@
 // 多标的输入（组合回测用）。逐个添加 6 位代码，市场自动识别。
 // 删除手动市场选择（沪市/深市/北交所），由 detectMarket 智能匹配。
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 import StockHistoryMenu from './StockHistoryMenu.vue'
 import { detectMarket, marketLabel } from '../market'
-import { getLastStockCode, recordStockHistory, stockDisplayName } from '../stock-history'
+import { useSelectedStock, recordStockHistory, stockDisplayName } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
 import type { Category } from '../types'
 
@@ -16,7 +16,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string[]] }>()
 
-const code = ref(getLastStockCode())
+const code = useSelectedStock()
 const detectedMarket = computed(() => (code.value && /^\d{6}$/.test(code.value)
   ? marketLabel(detectMarket(code.value))
   : ''))

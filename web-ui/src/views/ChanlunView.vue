@@ -1,21 +1,58 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ChanlunChart from '../components/ChanlunChart.vue'
 import ChartFrame from '../components/ChartFrame.vue'
 import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
+import NumberStepper from '../components/NumberStepper.vue'
+import { movingAverageColor } from '../moving-averages'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
-import { analyzeChanlun, fetchRecentBars, formatError } from '../api'
+import { analyzeChanlun, analyzeIndustry, fetchStockIndustries, fetchRecentBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
-import { getLastStockCode, recordStockHistory } from '../stock-history'
+import { useSelectedStock, recordStockHistory } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
 import type { Bar, Category, ChanlunResult } from '../types'
 import { useMarketPreferences } from '../market-preferences'
 
 const route = useRoute()
-const code = ref(getLastStockCode())
+const code = useSelectedStock()
+const maSettings = ref([5, 10, 20, 30, 60, 120].map(period => ({ period, enabled: period !== 30 && period !== 120 })))
+const maPeriods = computed(() => [...new Set(maSettings.value.filter(item => item.enabled).map(item => item.period))].sort((a, b) => a - b))
+function setMAPeriod(index: number, value: number) {
+  if (Number.isFinite(value)) maSettings.value[index]!.period = Math.max(1, Math.min(800, Math.round(value)))
+}
+const industries = ref<Array<{ value: string; label: string }>>([])
+const industryCode = ref('')
+const industryView = ref('stock')
+const industryData = ref<Awaited<ReturnType<typeof analyzeIndustry>> | null>(null)
+const industryError = ref('')
+const industryLoading = ref(false)
+let analysisVersion = 0
+let industryVersion = 0
+async function loadIndustry() {
+  const version = ++industryVersion
+  industryData.value = null
+  if (!industryCode.value || industryView.value === 'stock') { industryLoading.value = false; return }
+  industryLoading.value = true
+  industryError.value = ''
+  try {
+    const data = await analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value })
+    if (version === industryVersion) industryData.value = data
+  } catch (e) { if (version === industryVersion) industryError.value = formatError(e) }
+  finally { if (version === industryVersion) industryLoading.value = false }
+}
+watch([industryCode, industryView], () => void loadIndustry())
+watch(code, () => {
+  analysisVersion++
+  industryVersion++
+  result.value = null
+  bars.value = []
+  industries.value = []
+  industryCode.value = ''
+  industryData.value = null
+}, { flush: 'sync' })
 const category = ref<Category>('DAY')
 const count = ref(600)
 const loading = ref(false)
@@ -24,6 +61,12 @@ const result = ref<ChanlunResult | null>(null)
 const bars = ref<Bar[]>([])
 const activeTab = ref<'structure' | 'signals' | 'divergence'>('structure')
 const { adjustMode } = useMarketPreferences()
+watch([category, count, adjustMode], () => {
+  analysisVersion++
+  industryVersion++
+  result.value = null
+  industryData.value = null
+}, { flush: 'sync' })
 const isSignalReview = computed(() => route.query.review === 'signal')
 const reviewSignalLabel = computed(() =>
   route.query.signal === 'BUY' ? '买入信号' : route.query.signal === 'SELL' ? '卖出信号' : '缠论信号',
@@ -149,6 +192,11 @@ async function runAnalysis() {
 
   loading.value = true
   error.value = ''
+  const version = ++analysisVersion
+  industryData.value = null
+  industries.value = []
+  industryCode.value = ''
+  industryError.value = ''
   try {
     const market = detectMarket(code.value)
     const [nextBars, nextResult] = await Promise.all([
@@ -158,12 +206,19 @@ async function runAnalysis() {
         adjust: adjustMode.value,
       }),
     ])
+    if (version !== analysisVersion) return
     bars.value = nextBars
     result.value = nextResult
     recordStockHistory({ code: code.value, category: category.value })
     activeTab.value = 'structure'
+    try {
+      const belonging = await fetchStockIndustries(market, code.value)
+      if (version !== analysisVersion) return
+      industries.value = belonging.data.map((row) => ({ value: String(row.board_code), label: String(row.board_name) }))
+      industryCode.value = industries.value[0]?.value ?? ''
+    } catch (e) { if (version === analysisVersion) industryError.value = formatError(e) }
   } catch (e) {
-    error.value = formatError(e)
+    if (version === analysisVersion) error.value = formatError(e)
   } finally {
     loading.value = false
   }
@@ -215,6 +270,21 @@ onMounted(async () => {
         </div>
         <AdjustPicker />
       </section>
+
+      <details class="inspector-section ma-section">
+        <summary class="ma-heading"><h3>均线系统</h3><span>周期 · K 线数</span><i aria-hidden="true"></i></summary>
+        <div class="ma-settings">
+          <div v-for="(item, index) in maSettings" :key="index" class="ma-setting" :class="{ enabled: item.enabled }">
+            <label class="ma-toggle">
+              <input v-model="item.enabled" type="checkbox" :aria-label="`显示第 ${index + 1} 条均线`" />
+              <i :style="{ background: movingAverageColor(item.period) }" aria-hidden="true"></i>
+              <span>均线 {{ index + 1 }}</span>
+            </label>
+            <NumberStepper :model-value="item.period" :min="1" :max="800" :step="1" compact :aria-label="`第 ${index + 1} 条均线周期`" @update:model-value="setMAPeriod(index, $event)" />
+          </div>
+        </div>
+        <p class="ma-help">输入周期后生效；相同周期合并显示。</p>
+      </details>
 
       <section class="inspector-section layer-section">
         <h3>图层</h3>
@@ -349,7 +419,15 @@ onMounted(async () => {
         </section>
 
         <section class="chart-workspace">
-          <ChartFrame title="走势结构图" description="主副图同步缩放；支持完整指标库、参数设置与主图叠加。">
+          <div class="industry-toolbar">
+            <span>所属行业</span>
+            <MacSelect v-if="industries.length" v-model="industryCode" :options="industries" aria-label="所属行业" />
+            <span v-else>{{ industryError || '暂无行业归属数据' }}</span>
+            <div v-if="industries.length" class="industry-modes">
+              <button v-for="mode in [{ value: 'stock', label: '个股' }, { value: 'industry', label: '行业' }, { value: 'compare', label: '上下对比' }]" :key="mode.value" :class="{ active: industryView === mode.value }" @click="industryView = mode.value">{{ mode.label }}</button>
+            </div>
+          </div>
+          <ChartFrame v-if="industryView !== 'industry'" :title="`个股 · ${result.code}`" description="均线与缠论结构叠加；可在下方选择技术指标。">
             <template #actions>
               <div class="chart-legend">
                 <span class="legend-bi">笔</span>
@@ -358,11 +436,19 @@ onMounted(async () => {
                 <span class="legend-bc">背驰</span>
               </div>
             </template>
-            <ChanlunChart :bars="bars" :result="result" :layers="layers" />
+            <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" />
           </ChartFrame>
+          <template v-if="industryView !== 'stock'">
+            <p v-if="industryLoading" role="status">正在加载行业结构…</p>
+            <p v-else-if="industryError" role="alert">{{ industryError }} <button @click="loadIndustry">重试</button></p>
+            <ChartFrame v-else-if="industryData" :title="`行业 · ${industries.find(item => item.value === industryCode)?.label}`" description="行业指数 · 不复权；使用与个股一致的周期和均线。">
+              <ChanlunChart :bars="industryData.bars" :result="industryData.result" :layers="layers" :ma-periods="maPeriods" />
+            </ChartFrame>
+          </template>
         </section>
 
         <section class="detail-workspace">
+          <p class="detail-stock-label">以下结构明细对应个股 {{ result.code }}</p>
           <nav class="detail-tabs" aria-label="缠论结果分类">
             <button :class="{ active: activeTab === 'structure' }" @click="activeTab = 'structure'">
               结构 <span>{{ result.bi_count + result.zs_count + result.xd_count }}</span>
@@ -458,6 +544,35 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.detail-stock-label { padding: 12px 14px 0; font-size: 11px; color: var(--text-dim); }
+.chart-workspace :deep(.chart-frame + .chart-frame) { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.ma-heading { display: flex; align-items: center; gap: 8px; min-height: 24px; cursor: pointer; list-style: none; }
+.ma-heading::-webkit-details-marker { display: none; }
+.inspector-section .ma-heading h3 { margin: 0; }
+.ma-heading span { margin-left: auto; color: var(--text-dim); font-size: 9px; }
+.ma-heading i { width: 5px; height: 5px; margin-right: 3px; border-right: 1px solid var(--text-dim); border-bottom: 1px solid var(--text-dim); transform: rotate(-45deg); transition: transform .15s; }
+.ma-section[open] .ma-heading i { transform: rotate(45deg); }
+.ma-heading:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.ma-settings { display: flex; flex-direction: column; margin-top: 8px; }
+.ma-setting { display: grid; grid-template-columns: minmax(0, 1fr) 78px; align-items: center; gap: 14px; min-height: 41px; border-bottom: 1px solid rgba(255,255,255,.045); }
+.ma-setting:last-child { border-bottom: 0; }
+.ma-toggle { display: flex; align-items: center; gap: 9px; margin: 0; cursor: pointer; color: var(--text-dim); font-size: 11px; white-space: nowrap; }
+.ma-setting.enabled .ma-toggle { color: var(--text-muted); }
+.ma-toggle i { width: 12px; height: 2px; flex: 0 0 auto; border-radius: 2px; opacity: .35; }
+.ma-setting.enabled .ma-toggle i { opacity: 1; }
+.ma-help { margin-top: 8px; color: var(--text-dim); font-size: 9px; line-height: 1.5; }
+.ma-toggle input { appearance: none; width: 24px; min-height: 14px; height: 14px; padding: 0; margin: 0; border: 0; border-radius: 8px; background: #383b43; box-shadow: none; cursor: pointer; transition: background .15s; }
+.ma-toggle input::after { content: ''; display: block; width: 10px; height: 10px; margin: 2px; border-radius: 50%; background: #d7dce4; transition: transform .15s; }
+.ma-toggle input:checked { background: #397ab6; }
+.ma-toggle input:checked::after { transform: translateX(10px); background: white; }
+.ma-toggle input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.industry-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; font-size: 12px; color: var(--text-muted); }
+.industry-toolbar :deep(.mac-select) { width: 180px; }
+.industry-toolbar :deep(.mac-select-trigger) { min-height: 28px; padding-top: 3px; padding-bottom: 3px; font-size: 12px; }
+.industry-modes { display: flex; flex-shrink: 0; margin-left: auto; gap: 3px; padding: 3px; border: 1px solid var(--border); border-radius: 8px; }
+.industry-modes button { padding: 5px 10px; border: 0; border-radius: 5px; background: transparent; color: var(--text-muted); cursor: pointer; }
+.industry-modes button.active { background: var(--bg-elevated); color: var(--text); }
+.industry-modes button:hover { color: var(--accent); }
 .chanlun-view {
   display: flex;
   width: 100%;

@@ -15,7 +15,7 @@ import ParamGridPicker from '../components/ParamGridPicker.vue'
 import QuoteCarousel from '../components/QuoteCarousel.vue'
 import SymbolPicker from '../components/SymbolPicker.vue'
 import { gradeGridPoint } from '../grading'
-import { getLastStockCode } from '../stock-history'
+import { useSelectedStock } from '../stock-history'
 import type { GradeResult } from '../grading'
 import type { Category, ExecutionMode } from '../types'
 import { useBacktestStore } from '../stores/backtest'
@@ -28,7 +28,7 @@ const symbolPicker = ref<InstanceType<typeof SymbolPicker> | null>(null)
 
 // 镜像 SymbolPicker 的代码/周期/日期，用于「查看」跳转时拼进 URL query。
 // 与 SymbolPicker 通过 v-model 双向同步，初始值与 SymbolPicker 默认一致。
-const code = ref(getLastStockCode())
+const code = useSelectedStock()
 const category = ref<Category>('DAY')
 function isoDaysFromNow(days: number): string {
   const d = new Date()

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import echarts, { DOWN_COLOR, UP_COLOR } from '../echarts-setup'
 import {
@@ -14,9 +14,11 @@ import {
 } from '../technical-indicators'
 import type { Bar, ChanlunResult } from '../types'
 import TechnicalIndicatorPicker from './TechnicalIndicatorPicker.vue'
+import { movingAverageColor } from '../moving-averages'
 
 const props = defineProps<{
   bars: Bar[]
+  maPeriods?: number[]
   result: ChanlunResult
   layers: {
     bis: boolean
@@ -28,9 +30,16 @@ const props = defineProps<{
 }>()
 
 const container = ref<HTMLDivElement>()
-const selectedIndicator = ref<TechnicalIndicator>('macd')
-const indicatorParams = ref<IndicatorParams>(getIndicatorDefinition('macd').defaultParams)
-const indicatorRows = ref<Array<Record<string, unknown>>>([])
+let nextIndicatorId = 1
+const indicators = ref<Array<{ id: number; type: TechnicalIndicator; params: IndicatorParams; rows: Array<Record<string, unknown>> }>>([
+  { id: 0, type: 'macd', params: { ...getIndicatorDefinition('macd').defaultParams }, rows: [] },
+])
+const panels = computed(() => indicators.value.filter(item => indicatorUsesPanel(item.type)))
+const chartHeight = computed(() => 470 + panels.value.length * 155)
+function addIndicator() {
+  const type = (['kdj', 'rsi', 'volume', 'boll'] as TechnicalIndicator[]).find(type => !indicators.value.some(item => item.type === type)) ?? 'macd'
+  indicators.value.push({ id: nextIndicatorId++, type, params: { ...getIndicatorDefinition(type).defaultParams }, rows: [] })
+}
 const indicatorLoading = ref(false)
 const indicatorError = ref('')
 let chart: echarts.ECharts | null = null
@@ -64,8 +73,8 @@ function buildOption(): echarts.EChartsCoreOption {
     return intraday ? normalized : normalized.slice(0, 10)
   })
   const ohlc = props.bars.map((bar) => [bar.open, bar.close, bar.low, bar.high])
-  const hasIndicator = indicatorUsesPanel(selectedIndicator.value)
-  const indicatorDefinition = getIndicatorDefinition(selectedIndicator.value)
+  const hasIndicator = panels.value.length > 0
+  const axisIndices = Array.from({ length: panels.value.length + 1 }, (_, i) => i)
 
   const resolveDate = (raw: string | null): string | null => {
     if (!raw) return null
@@ -282,8 +291,24 @@ function buildOption(): echarts.EChartsCoreOption {
     })
   }
 
-  const secondarySeries = buildIndicatorSeries(selectedIndicator.value, props.bars, indicatorRows.value)
-  series.push(...secondarySeries)
+  const legendLabels = new Map<string, string>()
+  const tooltipLabels = new Map<string, string>()
+  const secondarySeries = indicators.value.flatMap(item => {
+    const axis = indicatorUsesPanel(item.type) ? panels.value.findIndex(panel => panel.id === item.id) + 1 : 0
+    return buildIndicatorSeries(item.type, props.bars, item.rows).map(series => {
+      const name = `indicator-${item.id}-${series.name}`
+      legendLabels.set(name, String(series.name))
+      tooltipLabels.set(name, `${getIndicatorDefinition(item.type).label} · ${series.name}`)
+      return { ...series, name, xAxisIndex: axis, yAxisIndex: axis }
+    })
+  })
+  const averages = [...new Set(props.maPeriods ?? [])].sort((a, b) => a - b).map(period => ({
+    name: `MA${period}`, type: 'line', showSymbol: false, connectNulls: false,
+    data: props.bars.map((_, i) => i + 1 < period ? null : props.bars.slice(i + 1 - period, i + 1).reduce((sum, bar) => sum + bar.close, 0) / period),
+    lineStyle: { width: 1.2, color: movingAverageColor(period) },
+    itemStyle: { color: movingAverageColor(period) },
+  }))
+  series.push(...averages, ...secondarySeries)
 
   return {
     backgroundColor: 'transparent',
@@ -310,7 +335,7 @@ function buildOption(): echarts.EChartsCoreOption {
           value?: unknown
         }>
         const candle = params.find((item) => item.seriesType === 'candlestick')
-        const index = candle?.dataIndex ?? -1
+        const index = candle?.dataIndex ?? params[0]?.dataIndex ?? -1
         const bar = props.bars[index]
         if (!bar) return candle?.axisValueLabel ?? ''
         const change = percentageChange(props.bars, index)
@@ -321,7 +346,7 @@ function buildOption(): echarts.EChartsCoreOption {
             const raw = Array.isArray(item.value) ? item.value[item.value.length - 1] : item.value
             const value = Number(raw)
             if (!Number.isFinite(value)) return ''
-            return `<span>${item.seriesName}<b style="float:right;color:#c8c8cd">${selectedIndicator.value === 'volume' ? compactNumber(value) : price2(value)}</b></span>`
+            return `<span>${tooltipLabels.get(item.seriesName ?? '') ?? item.seriesName}<b style="float:right;color:#c8c8cd">${price2(value)}</b></span>`
           }).join('')
         return `
           <div style="min-width:190px">
@@ -339,19 +364,32 @@ function buildOption(): echarts.EChartsCoreOption {
           </div>`
       },
     },
-    legend: {
-      top: 0,
-      right: 6,
-      show: secondarySeries.length > 0,
-      data: secondarySeries.map((item) => String(item.name)),
-      itemWidth: 14,
-      itemHeight: 7,
-      icon: 'roundRect',
-      textStyle: { color: '#777982', fontSize: 10 },
-    },
-    grid: hasIndicator
-      ? [{ left: 58, right: 28, top: 42, height: '54%' }, { left: 58, right: 28, top: '68%', height: '19%' }]
-      : [{ left: 58, right: 28, top: 42, bottom: 62 }],
+    legend: [
+      {
+        type: 'scroll', top: 0, right: 28,
+        show: averages.length > 0,
+        data: averages.map(item => item.name),
+        itemWidth: 12, itemHeight: 3, itemGap: 12, icon: 'roundRect',
+        textStyle: { color: '#9298a4', fontSize: 10 },
+      },
+      ...[0, ...panels.value.map((_, i) => i + 1)].map(axis => ({
+        type: 'scroll',
+        top: axis === 0 ? 22 : 396 + (axis - 1) * 155,
+        right: 28,
+        show: secondarySeries.some(item => item.xAxisIndex === axis),
+        data: secondarySeries.filter(item => item.xAxisIndex === axis).map(item => item.name),
+        formatter: (name: string) => legendLabels.get(name) ?? name,
+        itemWidth: 12, itemHeight: 3, itemGap: 12, icon: 'roundRect',
+        textStyle: { color: '#858b98', fontSize: 10 },
+        pageIconColor: '#9298a4', pageIconInactiveColor: '#363943',
+        pageTextStyle: { color: '#858b98' },
+      })),
+    ],
+    axisPointer: { link: [{ xAxisIndex: 'all' }] },
+    grid: [
+      { left: 58, right: 28, top: 50, height: 342 },
+      ...panels.value.map((_, i) => ({ left: 58, right: 28, top: 420 + i * 155, height: 115 })),
+    ],
     xAxis: [
       {
         type: 'category', data: dates, boundaryGap: true, axisLine: { onZero: false },
@@ -361,14 +399,15 @@ function buildOption(): echarts.EChartsCoreOption {
           hideOverlap: true,
         },
       },
-      ...(hasIndicator ? [{
-        type: 'category', gridIndex: 1, data: dates, boundaryGap: true,
+      ...panels.value.map((_, i) => ({
+        type: 'category', gridIndex: i + 1, data: dates, boundaryGap: true,
         axisLine: { onZero: false }, axisTick: { show: false },
         axisLabel: {
+          show: i === panels.value.length - 1,
           formatter: (value: string) => intraday ? value.slice(5) : value.slice(2),
           hideOverlap: true,
         },
-      }] : []),
+      })),
     ],
     yAxis: [
       {
@@ -376,24 +415,26 @@ function buildOption(): echarts.EChartsCoreOption {
         axisLine: { show: false }, axisTick: { show: false },
         splitLine: { lineStyle: { color: 'rgba(255,255,255,.052)', type: 'dashed' } },
       },
-      ...(hasIndicator ? [{
-        type: 'value', gridIndex: 1,
-        scale: !indicatorDefinition.bounds,
-        min: indicatorDefinition.bounds?.[0],
-        max: indicatorDefinition.bounds?.[1],
+      ...panels.value.map((item, i) => ({
+        type: 'value', gridIndex: i + 1,
+        name: getIndicatorDefinition(item.type).label,
+        nameTextStyle: { color: '#9298a4', fontSize: 10 },
+        scale: !getIndicatorDefinition(item.type).bounds,
+        min: getIndicatorDefinition(item.type).bounds?.[0],
+        max: getIndicatorDefinition(item.type).bounds?.[1],
         splitNumber: 3, axisLine: { show: false }, axisTick: { show: false },
         splitLine: { lineStyle: { color: 'rgba(255,255,255,.045)', type: 'dashed' } },
-        axisLabel: { formatter: (value: number) => selectedIndicator.value === 'volume' ? compactNumber(value) : price2(value) },
-      }] : []),
+        axisLabel: { formatter: (value: number) => item.type === 'volume' ? compactNumber(value) : price2(value) },
+      })),
     ],
     dataZoom: [
       {
-        type: 'inside', xAxisIndex: hasIndicator ? [0, 1] : [0],
+        type: 'inside', xAxisIndex: axisIndices,
         start: Math.max(0, 100 - Math.min(100, 12000 / Math.max(dates.length, 1))), end: 100,
       },
       {
         type: 'slider',
-        xAxisIndex: hasIndicator ? [0, 1] : [0],
+        xAxisIndex: axisIndices,
         height: 20,
         bottom: 15,
         borderColor: 'transparent',
@@ -426,21 +467,19 @@ let indicatorRequest = 0
 async function refreshIndicator() {
   const requestId = ++indicatorRequest
   indicatorError.value = ''
-  const definition = getIndicatorDefinition(selectedIndicator.value)
-  if (!props.bars.length || definition.code === 'NONE' || definition.code === 'VOLUME') {
-    indicatorRows.value = []
-    render()
-    return
-  }
   indicatorLoading.value = true
   try {
-    const rows = await calculateIndicatorRows(props.bars, selectedIndicator.value, indicatorParams.value)
-    if (requestId === indicatorRequest) indicatorRows.value = rows
-  } catch (error) {
-    if (requestId === indicatorRequest) {
-      indicatorRows.value = []
-      indicatorError.value = error instanceof Error ? error.message : '指标计算失败'
-    }
+    await Promise.all(indicators.value.map(async item => {
+      try {
+        const rows = await calculateIndicatorRows(props.bars, item.type, item.params)
+        if (requestId === indicatorRequest) item.rows = rows
+      } catch (error) {
+        if (requestId === indicatorRequest) {
+          item.rows = []
+          indicatorError.value += `${getIndicatorDefinition(item.type).label}：${error instanceof Error ? error.message : '计算失败'}；`
+        }
+      }
+    }))
   } finally {
     if (requestId === indicatorRequest) {
       indicatorLoading.value = false
@@ -464,8 +503,8 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-watch(() => [props.result, props.layers], render, { deep: true })
-watch(() => [props.bars, selectedIndicator.value, indicatorParams.value], () => void refreshIndicator(), { deep: true })
+watch(() => [props.result, props.layers, props.maPeriods], render, { deep: true })
+watch(() => [props.bars, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
 </script>
 
 <template>
@@ -473,18 +512,28 @@ watch(() => [props.bars, selectedIndicator.value, indicatorParams.value], () => 
     <div
       ref="container"
       class="chanlun-chart"
-      :class="{ 'has-indicator': indicatorUsesPanel(selectedIndicator) }"
+      :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px` }"
     ></div>
+    <div class="indicator-heading"><span>技术指标 · 可同时显示多个</span><button @click="addIndicator">＋ 添加指标</button></div>
+    <div v-for="(item, index) in indicators" :key="item.id" class="indicator-entry">
+    <button class="remove-indicator" :aria-label="`移除第 ${index + 1} 个指标`" @click="indicators.splice(index, 1)">移除</button>
     <TechnicalIndicatorPicker
-      v-model="selectedIndicator"
-      v-model:params="indicatorParams"
+      v-model="item.type"
+      v-model:params="item.params"
       :loading="indicatorLoading"
-      :error="indicatorError"
     />
+    </div>
+    <p v-if="indicatorError" role="alert">{{ indicatorError }}</p>
   </div>
 </template>
 
 <style scoped>
+.indicator-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0 4px; font-size: 11px; color: var(--text-muted); }
+.indicator-heading button, .remove-indicator { padding: 5px 9px; font-size: 11px; border: 1px solid var(--border); border-radius: 7px; background: rgba(255,255,255,.03); color: var(--text-muted); cursor: pointer; }
+.indicator-entry { position: relative; border-bottom: 1px solid var(--border); padding-right: 52px; }
+.remove-indicator { position: absolute; right: 0; top: 13px; }
+:global(.chart-frame:fullscreen) .market-chart-shell, :global(.chart-frame.fallback-expanded) .market-chart-shell { overflow-y: auto; }
+:global(.chart-frame:fullscreen) .chanlun-chart, :global(.chart-frame.fallback-expanded) .chanlun-chart { flex: none !important; }
 .market-chart-shell {
   width: 100%;
 }
