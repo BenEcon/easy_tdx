@@ -659,8 +659,8 @@ class TestChanlunAnalyser:
             assert date_re.match(zs["start_date"])
             assert date_re.match(zs["end_date"])
 
-        # 买卖点必须有触发日期
-        assert len(d["mmds"]) > 0
+        # 单中枢样本不能因价格振幅衰减被升级为趋势一买/一卖。
+        assert not any(m["type"] in ("1buy", "1sell") for m in d["mmds"])
         for mmd in d["mmds"]:
             assert mmd["date"] is not None
             assert date_re.match(mmd["date"])
@@ -761,9 +761,9 @@ class TestChanlunAnalyser:
             _print_table(d)
         out = buf.getvalue()
 
-        # 中枢/买卖点/背驰都应出现，且中枢行应含日期区间箭头
+        # 单中枢样本保留指标背离，不再误报趋势一类买卖点。
         assert "── 中枢 ──" in out
-        assert "── 买卖点 ──" in out
+        assert "买卖点: 0" in out
         assert "── 背驰 ──" in out
         # 中枢行格式：[idx] <start> → <end> zg=...
         assert "→" in out

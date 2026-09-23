@@ -17,6 +17,7 @@ from easy_tdx.chanlun.beichi import check_bi_beichi  # noqa: F401
 from easy_tdx.chanlun.bi import find_bis
 from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.fractal import find_fractals
+from easy_tdx.chanlun.divergence_signals import indicator_events, trend_events, wave_events
 from easy_tdx.chanlun.kline_merge import merge_klines
 from easy_tdx.chanlun.macd import calc_macd  # noqa: F401
 from easy_tdx.chanlun.mmd import find_mmds  # noqa: F401
@@ -153,6 +154,8 @@ class ChanlunResult:
                     "type": mmd.mmd_type.value,
                     "date": self._fmt_dt(self._fx_dt(mmd.bi.end)) if mmd.bi else None,
                     "msg": mmd.msg,
+                    "confirmed_date": self._fmt_dt(self.klines[mmd.confirmed_index].date)
+                    if mmd.confirmed_index is not None else None,
                 }
                 for mmd in self.mmds
             ],
@@ -160,8 +163,20 @@ class ChanlunResult:
                 {
                     "type": bc.bc_type.value,
                     "bc": bc.bc,
-                    "curr_date": self._fmt_dt(self._fx_dt(bc.curr.end)) if bc.curr else None,
-                    "prev_date": self._fmt_dt(self._fx_dt(bc.prev.end)) if bc.prev else None,
+                    "curr_date": self._fmt_dt(self.klines[bc.signal_index].date) if bc.signal_index is not None
+                    else self._fmt_dt(self._fx_dt(bc.curr.end)) if bc.curr else None,
+                    "prev_date": self._fmt_dt(self.klines[bc.reference_index].date) if bc.reference_index is not None
+                    else self._fmt_dt(self._fx_dt(bc.prev.end)) if bc.prev else None,
+                    "detected_date": self._fmt_dt(self.klines[bc.detected_index].date) if bc.detected_index is not None else None,
+                    "confirmed_date": self._fmt_dt(self.klines[bc.confirmed_index].date) if bc.confirmed_index is not None else None,
+                    "status": bc.status,
+                    "direction": bc.direction,
+                    "evidence": bc.evidence,
+                    "intervals": {
+                        key: self._fmt_dt(self.klines[int(value)].date)
+                        for key, value in bc.evidence.items()
+                        if key in ("a_start", "a_end", "b_start", "b_end", "c_start", "c_end")
+                    },
                     "msg": bc.msg,
                 }
                 for bc in self.bcs
@@ -247,12 +262,15 @@ class ChanlunAnalyser:
         self._result.xds = xds
 
         # Step 8: 买卖点识别
+        # One-class signals must share the exact structural divergence evidence.
+        trend_bcs, first_signals = trend_events(klines, self._result.macd, self._config)
         mmds = find_mmds(bis, zss, self._config)
-        self._result.mmds = mmds
-
-        # Step 9: 背驰判断
-        bcs = check_bi_beichi(bis, zss, self._config)
-        self._result.bcs = bcs
+        self._result.mmds = [m for m in mmds if m.mmd_type.value not in ("1buy", "1sell")] + first_signals
+        self._result.bcs = sorted(
+            indicator_events(klines, self._result.macd)
+            + wave_events(klines, self._result.macd) + trend_bcs,
+            key=lambda event: event.signal_index if event.signal_index is not None else -1,
+        )
 
         return self._result
 

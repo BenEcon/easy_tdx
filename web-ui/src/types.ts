@@ -88,14 +88,21 @@ export interface ChanlunSignal {
   type: '1buy' | '2buy' | '3buy' | '1sell' | '2sell' | '3sell'
   date: string | null
   msg: string
+  confirmed_date?: string | null
 }
 
 export interface ChanlunDivergence {
-  type: 'bi' | 'pz' | 'qs'
+  type: 'bi' | 'pz' | 'qs' | 'macd' | 'macd_wave'
   bc: boolean
   curr_date: string | null
   prev_date: string | null
   msg: string
+  status?: 'candidate' | 'confirmed' | 'superseded'
+  direction?: 'up' | 'down'
+  detected_date?: string | null
+  confirmed_date?: string | null
+  evidence?: Record<string, number>
+  intervals?: Record<string, string>
 }
 
 export interface ChanlunResult {

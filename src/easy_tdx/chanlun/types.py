@@ -185,6 +185,7 @@ class MMD:
     zs: ZS | None = None
     bi: BI | None = None  # 触发该买卖点的笔（用于可视化锚定日期）
     msg: str = ""
+    confirmed_index: int | None = None
 
     def __str__(self) -> str:
         return f"MMD({self.mmd_type.value} {self.msg})"
@@ -196,6 +197,8 @@ class BCType(str, Enum):
     BI = "bi"  # 笔背驰
     PZ = "pz"  # 盘整背驰
     QS = "qs"  # 趋势背驰
+    MACD = "macd"  # 指标背离，不等同于趋势背驰
+    MACD_WAVE = "macd_wave"  # 同向柱波段面积背离
 
 
 @dataclass
@@ -208,6 +211,13 @@ class BC:
     curr: BI | XD | None = None  # 当前背驰笔/线段（用于可视化锚定日期）
     prev: BI | XD | None = None  # 前一同向笔/线段（力度对照基准）
     msg: str = ""
+    signal_index: int | None = None
+    reference_index: int | None = None
+    detected_index: int | None = None
+    confirmed_index: int | None = None
+    status: str = "confirmed"
+    direction: str = ""
+    evidence: dict = field(default_factory=dict)
 
     def __str__(self) -> str:
         return f"BC({self.bc_type.value} {self.bc})"

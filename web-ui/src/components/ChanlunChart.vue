@@ -15,6 +15,7 @@ import {
 import type { Bar, ChanlunResult } from '../types'
 import TechnicalIndicatorPicker from './TechnicalIndicatorPicker.vue'
 import { movingAverageColor } from '../moving-averages'
+import { divergenceEvidence, divergenceName } from '../divergence-evidence'
 
 const props = defineProps<{
   bars: Bar[]
@@ -173,21 +174,22 @@ function buildOption(): echarts.EChartsCoreOption {
     : []
 
   const divergencePoints = props.layers.bcs
-    ? props.result.bcs.filter((item) => item.bc).flatMap((item) => {
+    ? props.result.bcs.filter((item) => item.bc && item.status !== 'superseded').flatMap((item) => {
         const date = resolveDate(item.curr_date)
         const bar = barAt(item.curr_date)
         if (!date || !bar) return []
         return [{
-          name: '背驰',
+          name: divergenceName(item),
           value: item.type.toUpperCase(),
           date,
-          price: bar.close,
-          message: item.msg,
-          coord: [date, bar.close],
+          price: item.direction === 'down' ? bar.low : bar.high,
+          message: `${item.status === 'candidate' ? '候选 · 尚未确认' : '已确认（不保证反转）'}；对照：${item.prev_date ?? '—'}<br/>${divergenceEvidence(item).join('<br/>')}`,
+          coord: [date, item.direction === 'down' ? bar.low : bar.high],
+          symbolOffset: [0, item.direction === 'down' ? 23 : -23],
           symbol: 'diamond',
           symbolSize: 9,
           itemStyle: {
-            color: 'rgba(191,90,242,.26)',
+            color: item.status === 'candidate' ? 'transparent' : 'rgba(191,90,242,.7)',
             borderColor: '#d9a3ff',
             borderWidth: 1.5,
             shadowBlur: 3,
@@ -235,6 +237,7 @@ function buildOption(): echarts.EChartsCoreOption {
       markPoint: {
         data: [...signalPoints, ...divergencePoints],
         tooltip: {
+          triggerOn: 'mousemove|click',
           formatter: (params: { data?: { name?: string; date?: string; price?: number; message?: string } }) => {
             const data = params.data
             if (!data) return ''

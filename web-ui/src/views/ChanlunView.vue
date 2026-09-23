@@ -8,6 +8,7 @@ import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
 import { movingAverageColor } from '../moving-averages'
+import { divergenceEvidence, divergenceName } from '../divergence-evidence'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
 import { analyzeChanlun, analyzeIndustry, fetchStockIndustries, fetchRecentBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
@@ -95,7 +96,7 @@ const layerOptions: Array<{ key: keyof LayerState; label: string }> = [
   { key: 'zss', label: '中枢' },
   { key: 'xds', label: '线段' },
   { key: 'mmds', label: '买卖点' },
-  { key: 'bcs', label: '背驰' },
+  { key: 'bcs', label: '背离 / 背驰' },
 ]
 
 const categories: Array<{ value: Category; label: string }> = [
@@ -128,7 +129,7 @@ const summary = computed(() => {
     { label: '中枢', value: result.value.zs_count },
     { label: '线段', value: result.value.xd_count },
     { label: '买卖点', value: result.value.mmd_count },
-    { label: '背驰', value: result.value.bcs.filter((item) => item.bc).length },
+    { label: '背离 / 背驰', value: result.value.bcs.filter((item) => item.bc && item.status !== 'superseded').length },
   ]
 })
 
@@ -152,10 +153,6 @@ function signalLabel(type: string): string {
     '3sell': '三类卖点',
   }
   return labels[type] ?? type
-}
-
-function divergenceLabel(type: string): string {
-  return ({ bi: '笔背驰', pz: '盘整背驰', qs: '趋势背驰' } as Record<string, string>)[type] ?? type
 }
 
 function formatMessage(text: string): string {
@@ -457,7 +454,7 @@ onMounted(async () => {
               买卖点 <span>{{ result.mmd_count }}</span>
             </button>
             <button :class="{ active: activeTab === 'divergence' }" @click="activeTab = 'divergence'">
-              背驰 <span>{{ result.bcs.filter(item => item.bc).length }}</span>
+              背离 / 背驰 <span>{{ result.bcs.filter(item => item.bc && item.status !== 'superseded').length }}</span>
             </button>
           </nav>
 
@@ -524,6 +521,7 @@ onMounted(async () => {
             <div v-for="(signal, index) in result.mmds.slice().reverse()" :key="`${signal.type}-${signal.date}-${index}`" class="event-row">
               <span class="event-tag" :class="signal.type.includes('buy') ? 'buy' : 'sell'">{{ signalLabel(signal.type) }}</span>
               <time>{{ signal.date || '时间未知' }}</time>
+              <small v-if="signal.confirmed_date">确认于 {{ signal.confirmed_date }}</small>
               <p>{{ formatMessage(signal.msg) }}</p>
             </div>
             <p v-if="result.mmds.length === 0" class="no-data">当前窗口没有识别到买卖点。</p>
@@ -531,9 +529,11 @@ onMounted(async () => {
 
           <div v-else class="event-list">
             <div v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="event-row">
-              <span class="event-tag divergence">{{ divergenceLabel(bc.type) }}</span>
+              <span class="event-tag divergence">{{ divergenceName(bc) }}</span>
               <time>{{ bc.curr_date || '时间未知' }}</time>
+              <small>{{ bc.status === 'candidate' ? '候选 · 尚未确认' : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${bc.confirmed_date || '—'}` }} · 对照 {{ bc.prev_date || '—' }}</small>
               <p>{{ formatMessage(bc.msg) }}</p>
+              <details class="divergence-evidence"><summary>查看判定依据</summary><p v-for="line in divergenceEvidence(bc)" :key="line">{{ line }}</p></details>
             </div>
             <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有确认背驰。</p>
           </div>
@@ -948,6 +948,10 @@ onMounted(async () => {
 .event-row { display: grid; align-items: center; grid-template-columns: 82px 112px 1fr; gap: 12px; min-height: 48px; padding: 0 8px; border-bottom: 1px solid rgba(255,255,255,.05); transition: background-color 120ms ease; }
 .event-row:hover { background: rgba(255,255,255,.022); }
 .event-row:last-child { border-bottom: 0; }
+.event-row > small { grid-column: 2 / -1; color: var(--text-dim); font-size: 10px; }
+.event-row > p, .divergence-evidence { grid-column: 1 / -1; }
+.divergence-evidence { padding-bottom: 10px; color: var(--text-muted); font-size: 10px; line-height: 1.8; }
+.divergence-evidence summary { cursor: pointer; color: var(--accent); }
 .event-tag { width: fit-content; padding: 4px 8px; border: 1px solid transparent; border-radius: 999px; font-size: 9px; font-weight: 620; }
 .event-tag.buy { color: #ff858d; background: rgba(255,94,104,.09); border-color: rgba(255,94,104,.13); }.event-tag.sell { color: #61dfa0; background: rgba(48,209,123,.09); border-color: rgba(48,209,123,.13); }.event-tag.divergence { color: #d9a3ff; background: rgba(191,90,242,.1); border-color: rgba(191,90,242,.14); }
 .event-row time { color: var(--text-dim); font-family: var(--font-mono); font-size: 9px; }

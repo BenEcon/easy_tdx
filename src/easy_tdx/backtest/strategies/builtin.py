@@ -685,7 +685,9 @@ def _chanlun_mmd_signal_arrays(
         bi = getattr(mmd, "bi", None)
         if bi is None:
             continue
-        confirmation = _fx_confirmation_index(getattr(bi, "end", None))
+        confirmation = getattr(mmd, "confirmed_index", None)
+        if confirmation is None:
+            confirmation = _fx_confirmation_index(getattr(bi, "end", None))
         zs = getattr(mmd, "zs", None)
         if zs is not None:
             confirmation = max(confirmation, _fx_confirmation_index(getattr(zs, "end", None)))
