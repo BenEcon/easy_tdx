@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ChanlunChart from '../components/ChanlunChart.vue'
+import ConfirmationReplay from '../components/ConfirmationReplay.vue'
+import DecompositionInspector from '../components/DecompositionInspector.vue'
+import ExtensionHierarchyInspector from '../components/ExtensionHierarchyInspector.vue'
 import ChartFrame from '../components/ChartFrame.vue'
 import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
 import { movingAverageColor } from '../moving-averages'
-import { divergenceEvidence, divergenceName } from '../divergence-evidence'
+import { divergenceEvidence, divergenceName, signalEvidence } from '../divergence-evidence'
+import { divergenceFocus, type DivergenceFocus } from '../divergence-focus'
+import { centreEvidence, centreState, segmentEvidence, segmentsConnected } from '../structure-evidence'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
-import { analyzeChanlun, analyzeIndustry, fetchStockIndustries, fetchRecentBars, formatError } from '../api'
+import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchRecentBars, formatError } from '../api'
 import { detectMarket, marketLabel } from '../market'
 import { useSelectedStock, recordStockHistory } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
-import type { Bar, Category, ChanlunResult } from '../types'
+import type { Bar, Category, ChanlunResult, ChanlunDivergence } from '../types'
 import { useMarketPreferences } from '../market-preferences'
 
 const route = useRoute()
@@ -28,6 +33,8 @@ const industries = ref<Array<{ value: string; label: string }>>([])
 const industryCode = ref('')
 const industryView = ref('stock')
 const industryData = ref<Awaited<ReturnType<typeof analyzeIndustry>> | null>(null)
+const industrySnapshot = ref<Awaited<ReturnType<typeof analyzeIndustry>> | null>(null)
+const industryAlignment = ref<Awaited<ReturnType<typeof replayChanlunComparison>>['alignment'] | null>(null)
 const industryError = ref('')
 const industryLoading = ref(false)
 let analysisVersion = 0
@@ -35,19 +42,37 @@ let industryVersion = 0
 async function loadIndustry() {
   const version = ++industryVersion
   industryData.value = null
+  industryAlignment.value = null
   if (!industryCode.value || industryView.value === 'stock') { industryLoading.value = false; return }
   industryLoading.value = true
   industryError.value = ''
   try {
-    const data = await analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value })
-    if (version === industryVersion) industryData.value = data
+    const data = industrySnapshot.value ?? await analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value })
+    if (version !== industryVersion) return
+    industrySnapshot.value = data
+    if (!snapshotResult.value || !bars.value.length) return
+    const aligned = await replayChanlunComparison({
+      stock: { code: snapshotResult.value.code, category: category.value, bars: snapshotBars.value, visible_count: bars.value.length },
+      industry: { code: industryCode.value, bars: data.bars },
+    })
+    if (version === industryVersion) {
+      industryData.value = aligned.industry
+      industryAlignment.value = aligned.alignment
+    }
   } catch (e) { if (version === industryVersion) industryError.value = formatError(e) }
   finally { if (version === industryVersion) industryLoading.value = false }
 }
-watch([industryCode, industryView], () => void loadIndustry())
+watch([industryCode, industryView], ([nextCode], [previousCode]) => {
+  replayVersion++
+  replayBusy.value = false
+  replayPosition.value = bars.value.length || 1
+  if (nextCode !== previousCode) industrySnapshot.value = null
+  void loadIndustry()
+})
 watch(code, () => {
   analysisVersion++
   industryVersion++
+  loading.value = false
   result.value = null
   bars.value = []
   industries.value = []
@@ -60,11 +85,94 @@ const loading = ref(false)
 const error = ref('')
 const result = ref<ChanlunResult | null>(null)
 const bars = ref<Bar[]>([])
+const snapshotBars = ref<Bar[]>([])
+const snapshotResult = ref<ChanlunResult | null>(null)
+const replayPosition = ref(1)
+const replayBusy = ref(false)
+const replaySlider = ref<HTMLInputElement | null>(null)
+const replayActive = computed(() => bars.value.length < snapshotBars.value.length)
+const replayDate = computed(() => (bars.value.at(-1)?.datetime ?? '').replace('T', ' ').replace(/ 00:00:00$/, ''))
+let replayVersion = 0
+function clearReplay() {
+  replayVersion++
+  replayBusy.value = false
+  snapshotBars.value = []
+  snapshotResult.value = null
+  industryVersion++
+  industrySnapshot.value = null
+  industryData.value = null
+  industryAlignment.value = null
+  industryLoading.value = false
+}
+watch([code, category, count], clearReplay, { flush: 'sync' })
+onBeforeUnmount(() => { analysisVersion++; industryVersion++; replayVersion++ })
+async function seekReplay(position: number) {
+  if (!snapshotResult.value || replayBusy.value || loading.value || industryLoading.value) return
+  const target = Math.max(1, Math.min(snapshotBars.value.length, position))
+  const version = ++replayVersion
+  const restoreFocus = document.activeElement === replaySlider.value
+  replayBusy.value = true
+  error.value = ''
+  try {
+    const request = {
+      code: snapshotResult.value.code, category: category.value,
+      bars: snapshotBars.value, visible_count: target,
+    }
+    const comparison = industryView.value !== 'stock' && industrySnapshot.value
+      ? await replayChanlunComparison({ stock: request, industry: { code: industryCode.value, bars: industrySnapshot.value.bars } })
+      : null
+    const next = comparison?.stock ?? (target === snapshotBars.value.length ? snapshotResult.value : await replayChanlun(request))
+    if (version !== replayVersion) return
+    result.value = next
+    bars.value = snapshotBars.value.slice(0, target)
+    replayPosition.value = target
+    if (comparison) {
+      industryData.value = comparison.industry
+      industryAlignment.value = comparison.alignment
+    } else if (industryView.value !== 'stock') {
+      industryData.value = null
+      industryAlignment.value = null
+    }
+  } catch (e) {
+    if (version === replayVersion) {
+      error.value = formatError(e)
+      replayPosition.value = bars.value.length
+    }
+  } finally {
+    if (version === replayVersion) {
+      replayBusy.value = false
+      await nextTick()
+      if (restoreFocus && version === replayVersion) replaySlider.value?.focus({ preventScroll: true })
+    }
+  }
+}
 const activeTab = ref<'structure' | 'signals' | 'divergence'>('structure')
+const focusedDivergence = ref<DivergenceFocus | null>(null)
+const focusToolbar = ref<HTMLElement>()
+watch(result, () => { focusedDivergence.value = null }, { flush: 'sync' })
+async function locateDivergence(item: ChanlunDivergence) {
+  const focus = divergenceFocus(item, bars.value.length, `${divergenceName(item)} · ${item.curr_date ?? ''}${item.status === 'candidate' ? ' · 候选未确认' : ''}`)
+  if (!focus) return
+  if (industryView.value === 'industry') industryView.value = 'stock'
+  focusedDivergence.value = focus
+  await nextTick()
+  focusToolbar.value?.scrollIntoView({ block: 'center' })
+  focusToolbar.value?.focus({ preventScroll: true })
+}
+async function jumpToConfirmation(position: number) {
+  await seekReplay(position)
+  if (bars.value.length === position && !error.value) {
+    await nextTick()
+    replaySlider.value?.scrollIntoView({ block: 'center' })
+    replaySlider.value?.focus({ preventScroll: true })
+  }
+}
 const { adjustMode } = useMarketPreferences()
 watch([category, count, adjustMode], () => {
+  clearReplay()
   analysisVersion++
   industryVersion++
+  loading.value = false
   result.value = null
   industryData.value = null
 }, { flush: 'sync' })
@@ -119,6 +227,7 @@ const detectedMarket = computed(() =>
   /^\d{6}$/.test(code.value) ? marketLabel(detectMarket(code.value)) : '等待识别',
 )
 
+const displayCentres = computed(() => result.value?.structural_centres ?? result.value?.zss ?? [])
 const summary = computed(() => {
   if (!result.value) return []
   return [
@@ -126,7 +235,7 @@ const summary = computed(() => {
     { label: '合并 K 线', value: result.value.ckline_count },
     { label: '分型', value: result.value.fractal_count },
     { label: '笔', value: result.value.bi_count },
-    { label: '中枢', value: result.value.zs_count },
+    { label: '基础中枢', value: displayCentres.value.length },
     { label: '线段', value: result.value.xd_count },
     { label: '买卖点', value: result.value.mmd_count },
     { label: '背离 / 背驰', value: result.value.bcs.filter((item) => item.bc && item.status !== 'superseded').length },
@@ -137,8 +246,8 @@ const latestStructure = computed(() => {
   if (!result.value || result.value.bis.length === 0) return '暂无可确认结构'
   const latestBi = result.value.bis[result.value.bis.length - 1]
   const direction = latestBi.direction === 'up' ? '向上笔' : '向下笔'
-  const status = latestBi.done ? '已确认' : '进行中'
-  const center = result.value.zss[result.value.zss.length - 1]
+  const status = (latestBi.structurally_confirmed ?? latestBi.done) ? '已确认' : '进行中'
+  const center = displayCentres.value[displayCentres.value.length - 1]
   if (!center) return `当前 ${direction} · ${status}，尚未形成中枢`
   return `当前 ${direction} · ${status}，最近中枢 ${center.zd.toFixed(2)}–${center.zg.toFixed(2)}`
 })
@@ -170,10 +279,7 @@ function segmentValue(
 }
 
 const segmentSequenceValid = computed(() => {
-  if (!result.value) return true
-  return result.value.xds.every((segment, index, segments) =>
-    index === 0 || segment.start_date >= segments[index - 1]!.end_date,
-  )
+  return segmentsConnected(result.value?.xds ?? [])
 })
 
 function selectHistory(item: StockHistoryItem) {
@@ -188,6 +294,7 @@ async function runAnalysis() {
   }
 
   loading.value = true
+  clearReplay()
   error.value = ''
   const version = ++analysisVersion
   industryData.value = null
@@ -196,16 +303,19 @@ async function runAnalysis() {
   industryError.value = ''
   try {
     const market = detectMarket(code.value)
-    const [nextBars, nextResult] = await Promise.all([
-      fetchRecentBars(market, code.value, category.value, count.value, adjustMode.value),
-      analyzeChanlun({
-        market, code: code.value, category: category.value, count: count.value,
-        adjust: adjustMode.value,
-      }),
-    ])
+    const nextBars = await fetchRecentBars(market, code.value, category.value, count.value, adjustMode.value)
+    if (version !== analysisVersion) return
+    if (!nextBars.length) throw new Error('所选范围暂无行情')
+    const nextResult = await replayChanlun({
+      code: `${market}${code.value}`, category: category.value,
+      bars: nextBars, visible_count: nextBars.length,
+    })
     if (version !== analysisVersion) return
     bars.value = nextBars
     result.value = nextResult
+    snapshotBars.value = nextBars
+    snapshotResult.value = nextResult
+    replayPosition.value = nextBars.length
     recordStockHistory({ code: code.value, category: category.value })
     activeTab.value = 'structure'
     try {
@@ -217,7 +327,7 @@ async function runAnalysis() {
   } catch (e) {
     if (version === analysisVersion) error.value = formatError(e)
   } finally {
-    loading.value = false
+    if (version === analysisVersion) loading.value = false
   }
 }
 
@@ -416,6 +526,16 @@ onMounted(async () => {
         </section>
 
         <section class="chart-workspace">
+          <p v-if="result.structure_metadata" class="structure-scope">线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。</p>
+          <div v-if="snapshotBars.length" class="replay-toolbar" :aria-busy="replayBusy || industryLoading">
+            <strong>{{ replayActive ? '历史回放' : '快照末尾' }}</strong>
+            <button :disabled="replayBusy || loading || industryLoading || bars.length <= 1" aria-label="回放上一根 K 线" @click="seekReplay(bars.length - 1)">上一根</button>
+            <input ref="replaySlider" v-model.number="replayPosition" type="range" min="1" :max="snapshotBars.length" :disabled="replayBusy || loading || industryLoading" aria-label="K 线回放位置" @change="seekReplay(replayPosition)" />
+            <button :disabled="replayBusy || loading || industryLoading || !replayActive" aria-label="回放下一根 K 线" @click="seekReplay(bars.length + 1)">下一根</button>
+            <span role="status">{{ replayBusy ? '重新计算…' : `${replayDate} · ${bars.length}/${snapshotBars.length}` }}</span>
+            <button :disabled="replayBusy || loading || industryLoading || !replayActive" @click="seekReplay(snapshotBars.length)">返回末尾</button>
+            <small>按当前快照回放，不代表历史当天的数据版本；个股与行业以个股所选 K 线时间为共同截止点。</small>
+          </div>
           <div class="industry-toolbar">
             <span>所属行业</span>
             <MacSelect v-if="industries.length" v-model="industryCode" :options="industries" aria-label="所属行业" />
@@ -423,6 +543,11 @@ onMounted(async () => {
             <div v-if="industries.length" class="industry-modes">
               <button v-for="mode in [{ value: 'stock', label: '个股' }, { value: 'industry', label: '行业' }, { value: 'compare', label: '上下对比' }]" :key="mode.value" :class="{ active: industryView === mode.value }" @click="industryView = mode.value">{{ mode.label }}</button>
             </div>
+          </div>
+          <div v-if="focusedDivergence && industryView !== 'industry'" ref="focusToolbar" class="focus-toolbar" tabindex="-1" aria-label="背驰区间核验">
+            <strong>{{ focusedDivergence.title }}</strong>
+            <span>{{ focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
+            <button @click="focusedDivergence = null">清除区间定位</button>
           </div>
           <ChartFrame v-if="industryView !== 'industry'" :title="`个股 · ${result.code}`" description="均线与缠论结构叠加；可在下方选择技术指标。">
             <template #actions>
@@ -433,12 +558,14 @@ onMounted(async () => {
                 <span class="legend-bc">背驰</span>
               </div>
             </template>
-            <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" />
+            <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" :focus="focusedDivergence" />
           </ChartFrame>
           <template v-if="industryView !== 'stock'">
             <p v-if="industryLoading" role="status">正在加载行业结构…</p>
             <p v-else-if="industryError" role="alert">{{ industryError }} <button @click="loadIndustry">重试</button></p>
-            <ChartFrame v-else-if="industryData" :title="`行业 · ${industries.find(item => item.value === industryCode)?.label}`" description="行业指数 · 不复权；使用与个股一致的周期和均线。">
+            <p v-else-if="industryAlignment?.status === 'unavailable'" class="structure-scope" role="status">行业快照在 {{ replayDate }} 及以前没有行情，未补造数据。可向后回放或扩大历史窗口。</p>
+            <p v-else-if="industryAlignment" class="structure-scope">共同截止：{{ replayDate }} · 行业最新：{{ industryAlignment.industry_as_of?.replace(' 00:00:00', '') }}{{ industryAlignment.status === 'earlier' ? '（行业数据早于截止时间）' : '（时间已对齐）' }}</p>
+            <ChartFrame v-if="industryData && !industryLoading && !industryError" :title="`行业 · ${industries.find(item => item.value === industryCode)?.label}`" description="行业指数 · 不复权；与个股按共同截止时间重新计算。">
               <ChanlunChart :bars="industryData.bars" :result="industryData.result" :layers="layers" :ma-periods="maPeriods" />
             </ChartFrame>
           </template>
@@ -448,7 +575,7 @@ onMounted(async () => {
           <p class="detail-stock-label">以下结构明细对应个股 {{ result.code }}</p>
           <nav class="detail-tabs" aria-label="缠论结果分类">
             <button :class="{ active: activeTab === 'structure' }" @click="activeTab = 'structure'">
-              结构 <span>{{ result.bi_count + result.zs_count + result.xd_count }}</span>
+              结构 <span>{{ result.bi_count + displayCentres.length + result.xd_count }}</span>
             </button>
             <button :class="{ active: activeTab === 'signals' }" @click="activeTab = 'signals'">
               买卖点 <span>{{ result.mmd_count }}</span>
@@ -465,7 +592,8 @@ onMounted(async () => {
                 <span class="direction" :class="bi.direction">{{ bi.direction === 'up' ? '↗' : '↘' }}</span>
                 <div class="row-primary">
                   <strong>{{ bi.start_date }} → {{ bi.end_date }}</strong>
-                  <small>{{ bi.direction === 'up' ? '向上笔' : '向下笔' }} · {{ bi.done ? '已确认' : '进行中' }}</small>
+                  <small>{{ bi.direction === 'up' ? '向上笔' : '向下笔' }} · {{ (bi.structurally_confirmed ?? bi.done) ? '已确认' : '进行中' }}</small>
+                  <small v-if="bi.confirmed_date">确认于 {{ bi.confirmed_date }}</small>
                 </div>
                 <span class="range">{{ bi.low.toFixed(2) }}–{{ bi.high.toFixed(2) }}</span>
               </div>
@@ -473,16 +601,23 @@ onMounted(async () => {
             </div>
 
             <div class="data-list">
-              <h4>最近的中枢</h4>
-              <div v-for="zs in result.zss.slice(-8).reverse()" :key="zs.index" class="data-row center-row">
+              <h4>最近的基础中枢</h4>
+              <div v-for="zs in displayCentres.slice(-8).reverse()" :key="zs.index" class="data-row center-row">
                 <span class="center-index">{{ zs.index + 1 }}</span>
                 <div class="row-primary">
                   <strong>{{ zs.zd.toFixed(2) }} — {{ zs.zg.toFixed(2) }}</strong>
                   <small>{{ zs.start_date }} → {{ zs.end_date || '延续中' }}</small>
+                  <small>{{ centreState(zs.state) }}</small>
                 </div>
-                <span class="range">{{ zs.line_count }} 笔</span>
+                <span class="range">{{ zs.line_count }} {{ result.structural_centres ? '段' : '笔' }}</span>
+                <details v-if="zs.state" class="structure-evidence">
+                  <summary>中枢 {{ zs.index + 1 }} · 确认依据</summary>
+                  <p v-for="(line, index) in centreEvidence(zs)" :key="index">{{ line }}</p>
+                  <ConfirmationReplay :index="zs.formed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="`中枢 ${zs.index + 1} 形成`" @seek="jumpToConfirmation" />
+                  <ConfirmationReplay :index="zs.exited_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="`中枢 ${zs.index + 1} 退出`" @seek="jumpToConfirmation" />
+                </details>
               </div>
-              <p v-if="result.zss.length === 0" class="no-data">当前窗口尚未形成中枢。</p>
+              <p v-if="displayCentres.length === 0" class="no-data">当前窗口尚未形成已确认线段构成的基础中枢。</p>
             </div>
 
             <section class="segment-list">
@@ -492,7 +627,7 @@ onMounted(async () => {
                   <p>端点按时间顺序连接，价格统一保留两位小数。</p>
                 </div>
                 <span :class="['sequence-status', { valid: segmentSequenceValid }]">
-                  <i></i>{{ segmentSequenceValid ? '时间序列连续' : '检测到区间重叠' }}
+                  <i></i>{{ !result.xds.length ? '暂无确认线段' : segmentSequenceValid ? '端点连接一致' : '连接待核验' }}
                 </span>
               </header>
               <div v-if="result.xds.length" class="segment-grid">
@@ -511,10 +646,17 @@ onMounted(async () => {
                   <span class="segment-price">
                     {{ segmentValue(xd, 'start').toFixed(2) }} → {{ segmentValue(xd, 'end').toFixed(2) }}
                   </span>
+                  <details class="structure-evidence">
+                    <summary>线段 {{ xd.index + 1 }} · 确认依据</summary>
+                    <p v-for="(line, index) in segmentEvidence(xd)" :key="index">{{ line }}</p>
+                    <ConfirmationReplay :index="xd.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="`线段 ${xd.index + 1}`" @seek="jumpToConfirmation" />
+                  </details>
                 </article>
               </div>
               <p v-else class="no-data">当前窗口尚未形成有效线段。</p>
             </section>
+            <DecompositionInspector :data="result.base_decomposition" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
+            <ExtensionHierarchyInspector :data="result.extension_hierarchy" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
           </div>
 
           <div v-else-if="activeTab === 'signals'" class="event-list">
@@ -523,6 +665,11 @@ onMounted(async () => {
               <time>{{ signal.date || '时间未知' }}</time>
               <small v-if="signal.confirmed_date">确认于 {{ signal.confirmed_date }}</small>
               <p>{{ formatMessage(signal.msg) }}</p>
+              <details v-if="signal.source === 'confirmed_segment_base_v1'" class="divergence-evidence">
+                <summary>查看结构依据</summary>
+                <p v-for="line in signalEvidence(signal)" :key="line">{{ line }}</p>
+                <ConfirmationReplay :index="signal.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="signalLabel(signal.type)" @seek="jumpToConfirmation" />
+              </details>
             </div>
             <p v-if="result.mmds.length === 0" class="no-data">当前窗口没有识别到买卖点。</p>
           </div>
@@ -533,7 +680,12 @@ onMounted(async () => {
               <time>{{ bc.curr_date || '时间未知' }}</time>
               <small>{{ bc.status === 'candidate' ? '候选 · 尚未确认' : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${bc.confirmed_date || '—'}` }} · 对照 {{ bc.prev_date || '—' }}</small>
               <p>{{ formatMessage(bc.msg) }}</p>
-              <details class="divergence-evidence"><summary>查看判定依据</summary><p v-for="line in divergenceEvidence(bc)" :key="line">{{ line }}</p></details>
+              <details class="divergence-evidence">
+                <summary>查看判定依据</summary>
+                <p v-for="line in divergenceEvidence(bc)" :key="line">{{ line }}</p>
+                <button v-if="divergenceFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateDivergence(bc)">{{ bc.type === 'macd' ? '定位前后极值' : '定位比较区间' }}</button>
+                <ConfirmationReplay v-if="bc.status === 'confirmed'" :index="bc.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" @seek="jumpToConfirmation" />
+              </details>
             </div>
             <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有确认背驰。</p>
           </div>
@@ -544,6 +696,26 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.focus-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 10px 12px; font-size: 11px; border-left: 2px solid var(--accent); background: rgba(74,158,255,.04); }
+.focus-toolbar strong { font-weight: 550; }
+.focus-toolbar span { color: var(--text-dim); }
+.focus-toolbar button { margin-left: auto; min-height: 28px; padding: 4px 9px; font-size: 11px; }
+.focus-toolbar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.structure-evidence { grid-column: 1 / -1; min-width: 0; font-size: 11px; color: var(--text-muted); line-height: 1.7; }
+.structure-evidence summary { cursor: pointer; color: var(--accent); padding: 4px 0; }
+.structure-evidence p { margin: 5px 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.structure-evidence summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.center-row { flex-wrap: wrap; padding: 8px 0; row-gap: 0; }
+.center-row > .structure-evidence { flex-basis: 100%; }
+.replay-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 0; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.replay-toolbar strong { font-size: 11px; font-weight: 500; white-space: nowrap; }
+.replay-toolbar button { min-height: 28px; padding: 3px 9px; font-size: 11px; white-space: nowrap; transition: background .15s ease; }
+.replay-toolbar input { flex: 1 1 120px; min-width: 90px; max-width: 320px; accent-color: var(--accent); }
+.replay-toolbar span { font-variant-numeric: tabular-nums; }
+.replay-toolbar small { flex-basis: 100%; color: var(--text-dim); line-height: 1.5; }
+.replay-toolbar :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .replay-toolbar button { transition: none; } }
+.structure-scope { margin: 0; padding: 10px 14px; color: #a0a5b0; font-size: 12px; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,.07); }
 .detail-stock-label { padding: 12px 14px 0; font-size: 11px; color: var(--text-dim); }
 .chart-workspace :deep(.chart-frame + .chart-frame) { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
 .ma-heading { display: flex; align-items: center; gap: 8px; min-height: 24px; cursor: pointer; list-style: none; }
@@ -934,7 +1106,7 @@ onMounted(async () => {
 .sequence-status i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px rgba(255,159,10,.1); }
 .sequence-status.valid { color: #56d98d; background: rgba(48,209,88,.07); border-color: rgba(48,209,88,.17); }
 .sequence-status.valid i { box-shadow: 0 0 0 3px rgba(48,209,88,.09); }
-.segment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+.segment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 7px; }
 .segment-card { display: grid; min-width: 0; min-height: 52px; align-items: center; grid-template-columns: 28px minmax(0,1fr) auto; gap: 9px; padding: 7px 10px; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.045); border-radius: 9px; }
 .segment-direction { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 7px; font-size: 14px; }
 .segment-direction.up { color: var(--up); background: rgba(255,94,104,.09); }

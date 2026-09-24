@@ -49,7 +49,7 @@ def _ck(
         high=h,
         low=l,
         amount=0.0,
-        index=0,
+        index=idx,
         merged_count=merged_count,
         direction=direction,
     )

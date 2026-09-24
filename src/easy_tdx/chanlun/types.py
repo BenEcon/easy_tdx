@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 # ── K 线 ──────────────────────────────────────────────────────────────────
 
@@ -119,14 +120,17 @@ class Line:
 class BI(Line):
     """笔。"""
 
-    pass
+    # Stabilised by the first valid opposite pen; None denotes the mutable tail.
+    confirmed_index: int | None = None
 
 
 @dataclass
 class XD(Line):
     """线段。"""
 
-    pass
+    lines: list[BI] = field(default_factory=list)
+    confirmed_index: int | None = None
+    evidence: dict[str, Any] = field(default_factory=dict)
 
 
 # ── 中枢 ──────────────────────────────────────────────────────────────────
@@ -183,9 +187,11 @@ class MMD:
 
     mmd_type: MMDType
     zs: ZS | None = None
-    bi: BI | None = None  # 触发该买卖点的笔（用于可视化锚定日期）
+    bi: BI | XD | None = None  # 图形锚点；新结构模式使用已确认线段
     msg: str = ""
     confirmed_index: int | None = None
+    source: str = 'legacy_pen_proxy'
+    evidence: dict = field(default_factory=dict)
 
     def __str__(self) -> str:
         return f"MMD({self.mmd_type.value} {self.msg})"

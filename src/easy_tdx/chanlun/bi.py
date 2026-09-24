@@ -3,7 +3,7 @@
 笔的定义：
 - 由相邻的顶底分型连接而成
 - 顶→底 = 向下笔，底→顶 = 向上笔
-- 新笔规则：分型之间至少有 1 根独立缠论 K 线（即分型中间 K 线的 index 差 > 2）
+- 新笔规则：两组三根分型之间至少有 1 根独立缠论 K 线（中间 K 线序号差 >= 4）
 - 老笔规则：分型之间至少有 3 根缠论 K 线
 - 简单笔规则：只要顶底交替即可
 """
@@ -12,6 +12,16 @@ from __future__ import annotations
 
 from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.types import BI, FX, Direction, FXType
+
+
+def _first_observable(fx: FX) -> int:
+    """A right-hand merged candle establishes the fractal on its first raw bar.
+
+    Later containment can extend that candle's k_index without postponing the
+    already observable turn. Synthetic candles without provenance use k_index.
+    """
+    right = fx.klines[-1]
+    return right.klines[0].index if right.klines else right.k_index
 
 
 def _can_form_bi(
@@ -24,10 +34,17 @@ def _can_form_bi(
     if start.fx_type == end.fx_type:
         return False
 
+    # A top must lie above the bottom, not merely occur later in time.
+    top, bottom = (start, end) if start.fx_type == FXType.DING else (end, start)
+    if top.k.high <= bottom.k.high or top.k.low <= bottom.k.low:
+        return False
+    if end.k.index <= start.k.index:
+        return False
+
     # 分型之间缠论 K 线的间距
     # 分型由三根 K 线组成：[left, mid, right]
-    # 独立 K 线数 = end.left.index - start.right.index + 1（如果 >0）
-    gap = end.klines[0].index - start.klines[2].index + 1
+    # 两侧分型的端点不计入独立 K 线；共享 K 线时结果为负。
+    gap = end.klines[0].index - start.klines[2].index - 1
 
     if config.bi_type == "new":
         # 新笔：至少1根独立K线
@@ -46,16 +63,8 @@ def find_bis(
 ) -> list[BI]:
     """从分型列表中计算笔。
 
-    算法（贪心，带 pending 保护）：
-    1. 遍历分型列表，维护最后一个有效分型（start_fx）
-    2. 如果当前分型与 start_fx 可以成笔，形成新笔
-    3. 如果当前分型与 start_fx 同类型，取更极端的替换（顶取更高，底取更低）
-    4. 如果当前分型与 start_fx 异类型但 gap 不够，记录为 pending_opposite
-    5. 当存在 pending_opposite 时，不替换 start_fx，保留其在较前的位置，
-       使后续异类型分型自然满足 gap 要求（避免"分型陷阱"）
-
-    "分型陷阱"场景：持续下跌/上涨中，密集交替分型导致每次替换 start_fx
-    都把 right_kline_index 前推，使下一个异类型分型的 gap 永远为 0。
+    维护交替的有效端点，再统一构造连接。未成笔的反向分型不冻结
+    当前极值；更极端的同类分型替换共享端点时，前后笔同步更新。
 
     Args:
         fxs: 分型列表
@@ -70,49 +79,21 @@ def find_bis(
     if len(fxs) < 2:
         return []
 
-    bis: list[BI] = []
+    anchors = [fxs[0]]
+    first_seen = [_first_observable(fxs[0])]
+    for current in fxs[1:]:
+        last = anchors[-1]
+        if current.fx_type == last.fx_type:
+            stronger = (current.val > last.val if current.fx_type == FXType.DING
+                        else current.val < last.val)
+            if stronger and (len(anchors) == 1 or _can_form_bi(anchors[-2], current, config)):
+                anchors[-1] = current
+        elif _can_form_bi(last, current, config):
+            anchors.append(current)
+            first_seen.append(_first_observable(current))
 
-    # 用一个指针追踪当前笔的起始分型
-    start_fx = fxs[0]
-    # 记录最近一个因 gap 不足而跳过的异类型分型
-    pending_opposite: FX | None = None
-
-    for i in range(1, len(fxs)):
-        current_fx = fxs[i]
-
-        # 同类型分型：取更极端的
-        if current_fx.fx_type == start_fx.fx_type:
-            # 当存在 pending_opposite 时，不替换 start_fx。
-            # 保留 start_fx 在较早位置，让后续异类型分型有机会满足 gap。
-            # 若替换，right_kline_index 前推会导致 gap 反复为 0，卡死算法。
-            if pending_opposite is not None:
-                continue
-
-            if start_fx.fx_type == FXType.DING and current_fx.val > start_fx.val:
-                start_fx = current_fx
-            elif start_fx.fx_type == FXType.DI and current_fx.val < start_fx.val:
-                start_fx = current_fx
-            continue
-
-        # 异类型分型，检查是否可以成笔
-        if _can_form_bi(start_fx, current_fx, config):
-            direction = Direction.UP if start_fx.fx_type == FXType.DI else Direction.DOWN
-            high = max(start_fx.val, current_fx.val)
-            low = min(start_fx.val, current_fx.val)
-
-            bi = BI(
-                start=start_fx,
-                end=current_fx,
-                direction=direction,
-                index=len(bis),
-                high=high,
-                low=low,
-            )
-            bis.append(bi)
-            start_fx = current_fx
-            pending_opposite = None
-        else:
-            # gap 不够，记录为 pending
-            pending_opposite = current_fx
-
-    return bis
+    return [BI(start=start, end=end,
+               direction=Direction.UP if start.fx_type == FXType.DI else Direction.DOWN,
+               index=i, high=max(start.val, end.val), low=min(start.val, end.val),
+               confirmed_index=first_seen[i + 2] if i + 2 < len(first_seen) else None)
+            for i, (start, end) in enumerate(zip(anchors, anchors[1:]))]

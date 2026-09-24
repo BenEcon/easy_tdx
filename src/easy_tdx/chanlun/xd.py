@@ -1,132 +1,168 @@
-"""线段计算。
+"""Characteristic-sequence segments (lessons 67/78).
 
-线段定义：
-- 由至少3笔构成
-- 特征序列：将笔的高低点转化为特征序列
-- 特征序列分型：判断线段的转折
-- 简化实现：使用笔的方向和重叠关系判断线段
+Only confirmed segments are returned. A turn of one pen is not confirmation.
+The unresolved tail is deliberately not drawn as a completed segment.
 """
-
 from __future__ import annotations
+
+from dataclasses import dataclass
 
 from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.types import BI, XD, Direction
 
 
-def find_xds(
-    bis: list[BI],
-    config: ChanlunConfig | None = None,
-) -> list[XD]:
-    """从笔列表中计算线段。
+@dataclass
+class Feature:
+    high: float
+    low: float
+    high_at: int
+    low_at: int
+    last: int
+    members: tuple[int, ...]
 
-    简化算法（基于中枢）：
-    1. 将笔序列划分为线段，每个线段对应一个中枢的形成和离开
-    2. 从第一笔开始，累积笔直到形成中枢（至少3笔有重叠）
-    3. 当后续笔离开中枢时，关闭当前线段，开始新线段
 
-    Args:
-        bis: 笔列表
-        config: 缠论配置
+def _feature_evidence(sequence: list[Feature], bis: list[BI]) -> list[dict]:
+    return [{'low': item.low, 'high': item.high,
+             'pen_indices': [bis[i].index for i in item.members],
+             'high_pen': bis[item.high_at].index, 'low_pen': bis[item.low_at].index}
+            for item in sequence[-3:]]
 
-    Returns:
-        线段列表
-    """
-    if config is None:
-        config = ChanlunConfig()
 
-    if len(bis) < 3:
-        return []
+def _features(bis: list[BI], start: int, direction: Direction):
+    """Yield a fresh snapshot after each opposite-direction pen, preserving provenance."""
+    sequence: list[Feature] = []
+    for i in range(start, len(bis)):
+        bi = bis[i]
+        if bi.direction == direction:
+            continue
+        item = Feature(bi.high, bi.low, i, i, i, (i,))
+        if sequence:
+            prev = sequence[-1]
+            included = ((prev.high >= item.high and prev.low <= item.low)
+                        or (item.high >= prev.high and item.low <= prev.low))
+            if included:
+                upward = (prev.high > sequence[-2].high if len(sequence) > 1
+                          else direction == Direction.UP)
+                high_from = item if (item.high >= prev.high if upward
+                                     else item.high <= prev.high) else prev
+                low_from = item if (item.low >= prev.low if upward
+                                    else item.low <= prev.low) else prev
+                sequence[-1] = Feature(high_from.high, low_from.low,
+                                       high_from.high_at, low_from.low_at, i,
+                                       prev.members + item.members)
+            else:
+                sequence.append(item)
+        else:
+            sequence.append(item)
+        yield sequence.copy(), i
 
-    xds: list[XD] = []
 
-    # 简化线段划分：使用笔的重叠区域判断
-    # 每个线段至少包含3笔（形成一个中枢）
-    i = 0
-    while i < len(bis):
-        # 尝试从第 i 笔开始寻找线段
-        xd_found = False
+def _turn(sequence: list[Feature], direction: Direction) -> bool:
+    if len(sequence) < 3:
+        return False
+    a, b, c = sequence[-3:]
+    if direction == Direction.UP:
+        return b.high > max(a.high, c.high) and b.low > max(a.low, c.low)
+    return b.high < min(a.high, c.high) and b.low < min(a.low, c.low)
 
-        # 从3笔开始尝试，逐步扩展
-        for end_offset in range(3, len(bis) - i + 1):
-            segment_bis = bis[i : i + end_offset]
 
-            # 检查这段笔是否构成有意义的线段
-            # 条件：中间的笔有价格重叠（类似中枢），且最后一笔离开重叠区
-            if _forms_xd(segment_bis, config):
-                xd = _create_xd(segment_bis, len(xds))
-                xds.append(xd)
-                # 当前线段终点是最后一笔的 end；下一条线段应从下一笔开始，
-                # 其 start 正好与当前终点是同一个分型。旧逻辑回退一笔后，
-                # 新线段会从“最后一笔的起点”开始，时间早于上一线段终点，
-                # 不仅造成区间重叠，前端连线时也会出现明显回折。
-                i += end_offset
-                xd_found = True
+def _initial_overlap(bis: list[BI], start: int) -> bool:
+    seed = bis[start:start + 3]
+    return len(seed) == 3 and min(b.high for b in seed) > max(b.low for b in seed)
+
+
+def _endpoint(bis: list[BI], start: int):
+    direction = bis[start].direction
+    best = None
+    for sequence, now in _features(bis, start, direction):
+        if not _turn(sequence, direction):
+            continue
+        a, b, c = sequence[-3:]
+        pivot = b.high_at if direction == Direction.UP else b.low_at
+        # The opposite pen starts at the extremum. The segment ends BEFORE that pen.
+        if pivot - start < 3 or (pivot - start) % 2 != 1:
+            continue
+        end_price = bis[pivot].start.val
+        relevant = bis[start:pivot]
+        if direction == Direction.UP:
+            if end_price <= bis[start].start.val or end_price < max(p.high for p in relevant):
+                continue
+            gap = b.low > a.high
+        else:
+            if end_price >= bis[start].start.val or end_price > min(p.low for p in relevant):
+                continue
+            gap = b.high < a.low
+        confirmation = now
+        reverse_features = []
+        if gap:
+            reverse = Direction.DOWN if direction == Direction.UP else Direction.UP
+            if not _initial_overlap(bis, pivot):
+                continue
+            confirmation = None
+            for other, later in _features(bis, pivot, reverse):
+                # Invalidated before a reverse feature fractal can confirm it.
+                crossed = (bis[later].high > end_price if direction == Direction.UP
+                           else bis[later].low < end_price)
+                if crossed:
+                    break
+                if later >= now and _turn(other, reverse):
+                    confirmation = later
+                    reverse_features = _feature_evidence(other, bis)
+                    break
+            if confirmation is None:
+                continue
+        # Original-bar date on which the last supporting pen became observable.
+        confirmed = max(p.confirmed_index if p.confirmed_index is not None
+                        else p.end.klines[-1].k_index
+                        for p in bis[start:confirmation + 1])
+        candidate = pivot, confirmed, {
+            'rule': 'feature_sequence_v1',
+            'case': 'gap_reverse_fractal' if gap else 'no_gap_fractal',
+            'feature_intervals': [[x.low, x.high] for x in (a, b, c)],
+            'feature_pen_indices': [x.last for x in (a, b, c)],
+            'start_pen': start, 'end_pen': pivot - 1,
+            'features': _feature_evidence(sequence, bis),
+            'reverse_features': reverse_features,
+            'supporting_pen': bis[confirmation].index,
+        }
+        # A candidate waiting for a future reverse fractal must not displace
+        # another candidate that had already confirmed earlier in real time.
+        if best is None or confirmed < best[1]:
+            best = candidate
+    return best
+
+
+def find_xds(bis: list[BI], config: ChanlunConfig | None = None) -> list[XD]:
+    """Find connected, alternating confirmed segments; do not skip an unresolved tail."""
+    result: list[XD] = []
+    candidates = [(start, _endpoint(bis, start)) for start in range(len(bis) - 2)
+                  if _initial_overlap(bis, start)]
+    candidates = [(start, end) for start, end in candidates if end is not None]
+    if not candidates:
+        return result
+    # Initialise by earliest observable confirmation, not by an earlier start
+    # whose completion only becomes visible far into the future.
+    start, _ = min(candidates, key=lambda pair: (pair[1][1], pair[0]))
+    while start + 3 <= len(bis):
+        if not _initial_overlap(bis, start):
+            if result:
                 break
-
-        if not xd_found:
-            i += 1
-
-    return xds
-
-
-def _forms_xd(bis: list[BI], config: ChanlunConfig) -> bool:
-    """判断一组笔是否构成线段。
-
-    简化条件：
-    1. 至少3笔
-    2. 中间的笔有价格重叠区域（类似中枢）
-    3. 最后一笔与重叠区有明确的方向性突破
-    """
-    if len(bis) < 3:
-        return False
-
-    # 计算中间笔的重叠区域（排除第一笔和最后一笔）
-    inner_bis = bis[1:-1]
-    if not inner_bis:
-        return False
-
-    # 重叠区域
-    overlap_high = min(bi.high for bi in inner_bis)
-    overlap_low = max(bi.low for bi in inner_bis)
-
-    if overlap_high <= overlap_low:
-        return False
-
-    # 第一笔的方向决定线段的主方向
-    main_direction = bis[0].direction
-
-    # 最后一笔应该离开重叠区域
-    last_bi = bis[-1]
-    if main_direction == Direction.UP:
-        # 向上线段：最后一笔应向上突破
-        return last_bi.high > overlap_high
-    else:
-        # 向下线段：最后一笔应向下跌破
-        return last_bi.low < overlap_low
-
-
-def _create_xd(bis: list[BI], index: int) -> XD:
-    """从一组笔创建线段。"""
-    start_bi = bis[0]
-    end_bi = bis[-1]
-
-    # 线段方向由第一笔的方向决定
-    direction = start_bi.direction
-
-    # 但如果第一笔向下，最后一笔向上，需要根据整体走势判断
-    if end_bi.direction == Direction.UP and end_bi.high > start_bi.high:
-        direction = Direction.UP
-    elif end_bi.direction == Direction.DOWN and end_bi.low < start_bi.low:
-        direction = Direction.DOWN
-
-    high = max(bi.high for bi in bis)
-    low = min(bi.low for bi in bis)
-
-    return XD(
-        start=start_bi.start,
-        end=end_bi.end,
-        direction=direction,
-        index=index,
-        high=high,
-        low=low,
-    )
+            start += 1
+            continue
+        endpoint = _endpoint(bis, start)
+        if endpoint is None:
+            if result:
+                break
+            start += 1
+            continue
+        pivot, confirmed, evidence = endpoint
+        if result:
+            confirmed = max(confirmed, result[-1].confirmed_index)
+        lines = bis[start:pivot]
+        result.append(XD(start=lines[0].start, end=lines[-1].end,
+                         direction=lines[0].direction, index=len(result),
+                         high=max(line.high for line in lines),
+                         low=min(line.low for line in lines), lines=lines,
+                         confirmed_index=confirmed, evidence=evidence))
+        start = pivot
+    return result

@@ -7,7 +7,7 @@ K线合并 → 分型识别 → 笔计算 → 中枢计算 → 线段 → 买卖
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any
 
@@ -16,11 +16,20 @@ import pandas as pd
 from easy_tdx.chanlun.beichi import check_bi_beichi  # noqa: F401
 from easy_tdx.chanlun.bi import find_bis
 from easy_tdx.chanlun.config import ChanlunConfig
+from easy_tdx.chanlun.decomposition import decompose_base_chain
+from easy_tdx.chanlun.expansion_regrouping import expansion_regrouping
+from easy_tdx.chanlun.extension_recursion import extension_hierarchy
+from easy_tdx.chanlun.divergence_signals import indicator_events, wave_events
 from easy_tdx.chanlun.fractal import find_fractals
-from easy_tdx.chanlun.divergence_signals import indicator_events, trend_events, wave_events
 from easy_tdx.chanlun.kline_merge import merge_klines
 from easy_tdx.chanlun.macd import calc_macd  # noqa: F401
 from easy_tdx.chanlun.mmd import find_mmds  # noqa: F401
+from easy_tdx.chanlun.structure import StructuralCentre, find_structural_centres
+from easy_tdx.chanlun.structure_signals import (
+    StructuralSignal,
+    structure_signals,
+    to_chart_signals,
+)
 from easy_tdx.chanlun.types import BC, BI, FX, MMD, XD, ZS, CLKline, FXType, Kline
 from easy_tdx.chanlun.xd import find_xds  # noqa: F401
 from easy_tdx.chanlun.zs import find_zss
@@ -67,6 +76,8 @@ class ChanlunResult:
     mmds: list[MMD] = field(default_factory=list)
     bcs: list[BC] = field(default_factory=list)
     macd: dict[str, list[float]] = field(default_factory=dict)
+    structural_centres: list[StructuralCentre] = field(default_factory=list)
+    structural_signals: list[StructuralSignal] = field(default_factory=list)
 
     def _fmt_dt(self, dt: datetime) -> str:
         """按 frequency 自适应格式化日期。
@@ -97,6 +108,32 @@ class ChanlunResult:
 
     def to_dict(self) -> dict[str, Any]:
         """将结果转为可序列化的字典（用于 JSON 输出）。"""
+        decomposition = decompose_base_chain(self.xds, len(self.klines))
+        for block in decomposition['blocks']:
+            block['known_date'] = self._fmt_dt(self.klines[block['known_index']].date)
+        hierarchy = extension_hierarchy(self.xds, len(self.klines))
+
+        def date_proof(proof: dict) -> None:
+            for key in ('start', 'end', 'known'):
+                proof[f'{key}_date'] = self._fmt_dt(self.klines[proof[f'{key}_index']].date)
+            for child in proof['children']:
+                date_proof(child)
+
+        for proof in hierarchy['proofs']:
+            date_proof(proof)
+        regrouping = expansion_regrouping(self.xds, len(self.klines))
+        for event in regrouping['candidates']:
+            event['known_date'] = (self._fmt_dt(self.klines[event['known_index']].date)
+                                   if event['known_index'] is not None else None)
+            for part in event['parts']:
+                for key in ('start', 'end', 'known'):
+                    part[f'{key}_date'] = self._fmt_dt(self.klines[part[f'{key}_index']].date)
+        for audit in regrouping['completion_audits']:
+            audit['as_of_date'] = self._fmt_dt(self.klines[audit['as_of_index']].date)
+            for part in audit['parts']:
+                known = part['opposite_known_index']
+                part['opposite_known_date'] = (self._fmt_dt(self.klines[known].date)
+                                               if known is not None else None)
         return {
             "code": self.code,
             "frequency": self.frequency,
@@ -108,6 +145,48 @@ class ChanlunResult:
             "xd_count": len(self.xds),
             "mmd_count": len(self.mmds),
             "bc_count": len(self.bcs),
+            "base_decomposition": decomposition,
+            "extension_hierarchy": hierarchy,
+            "expansion_regrouping": regrouping,
+            "structure_metadata": {
+                "version": "segment-centres-v1-preview",
+                "display_frequency": self.frequency,
+                "base_unit": "confirmed_segment",
+                "recursive_levels_ready": False,
+                "extension_regrouping_ready": True,
+                "legacy_zss_source": "pen_overlap_auxiliary",
+                "signals_source": "confirmed_segment_base_v1",
+                "structural_signals_scope": "base_layer_research_preview",
+                "centre_relation_scope": "committed_base_members_not_recursive_types",
+            },
+            "structural_centres": [
+                {**asdict(centre),
+                 "relation_history": [
+                     {**event, "known_date": self._fmt_dt(self.klines[event['known_index']].date)}
+                     for event in centre.relation_history],
+                 "transitions": [
+                     {**transition,
+                      "known_date": self._fmt_dt(self.klines[transition['known_index']].date)}
+                     for transition in centre.transitions],
+                 "line_count": len(centre.member_segments),
+                 "done": centre.state == 'exited',
+                 "start_date": self._fmt_dt(self._fx_dt(
+                     self.xds[centre.seed_segments[0]].start)),
+                 "end_date": self._fmt_dt(self._fx_dt(self.xds[
+                     centre.return_segment if centre.return_segment is not None else
+                     centre.departure_segment if centre.departure_segment is not None else
+                     centre.member_segments[-1]].end)),
+                 "formed_date": self._fmt_dt(self.klines[centre.formed_index].date),
+                 "exited_date": self._fmt_dt(self.klines[centre.exited_index].date)
+                 if centre.exited_index is not None else None}
+                for centre in self.structural_centres
+            ],
+            "structural_signals": [
+                {**asdict(signal),
+                 "date": self._fmt_dt(self.klines[signal.signal_index].date),
+                 "confirmed_date": self._fmt_dt(self.klines[signal.confirmed_index].date)}
+                for signal in self.structural_signals
+            ],
             "bis": [
                 {
                     "index": bi.index,
@@ -119,6 +198,10 @@ class ChanlunResult:
                     "high": round(bi.high, 2),
                     "low": round(bi.low, 2),
                     "done": bi.is_done(),
+                    "structurally_confirmed": bi.confirmed_index is not None,
+                    "confirmed_index": bi.confirmed_index,
+                    "confirmed_date": self._fmt_dt(self.klines[bi.confirmed_index].date)
+                    if bi.confirmed_index is not None else None,
                 }
                 for bi in self.bis
             ],
@@ -146,6 +229,11 @@ class ChanlunResult:
                     "end_value": round(xd.end.val, 2),
                     "high": round(xd.high, 2),
                     "low": round(xd.low, 2),
+                    "confirmed_index": xd.confirmed_index,
+                    "confirmed_date": self._fmt_dt(self.klines[xd.confirmed_index].date)
+                    if xd.confirmed_index is not None and xd.confirmed_index < len(self.klines)
+                    else None,
+                    "evidence": xd.evidence,
                 }
                 for xd in self.xds
             ],
@@ -154,6 +242,9 @@ class ChanlunResult:
                     "type": mmd.mmd_type.value,
                     "date": self._fmt_dt(self._fx_dt(mmd.bi.end)) if mmd.bi else None,
                     "msg": mmd.msg,
+                    "source": mmd.source,
+                    "confirmed_index": mmd.confirmed_index,
+                    "evidence": mmd.evidence,
                     "confirmed_date": self._fmt_dt(self.klines[mmd.confirmed_index].date)
                     if mmd.confirmed_index is not None else None,
                 }
@@ -170,6 +261,9 @@ class ChanlunResult:
                     "detected_date": self._fmt_dt(self.klines[bc.detected_index].date) if bc.detected_index is not None else None,
                     "confirmed_date": self._fmt_dt(self.klines[bc.confirmed_index].date) if bc.confirmed_index is not None else None,
                     "status": bc.status,
+                    "signal_index": bc.signal_index,
+                    "reference_index": bc.reference_index,
+                    "confirmed_index": bc.confirmed_index,
                     "direction": bc.direction,
                     "evidence": bc.evidence,
                     "intervals": {
@@ -228,6 +322,8 @@ class ChanlunAnalyser:
             ChanlunResult 包含所有缠论计算结果
         """
         self._prev_df = df.copy()
+        # Reusing an analyser with empty input must not retain earlier structures.
+        self._result = ChanlunResult(code=self._result.code, frequency=self._result.frequency)
         # Step 1: DataFrame → Kline 列表
         klines = _df_to_klines(df)
         self._result.klines = klines
@@ -258,17 +354,18 @@ class ChanlunAnalyser:
         )
 
         # Step 7: 线段计算
-        xds = find_xds(bis, self._config)
+        # The last pen may extend. Do not let it confirm a permanent segment.
+        xds = find_xds([bi for bi in bis if bi.confirmed_index is not None], self._config)
         self._result.xds = xds
+        self._result.structural_centres = find_structural_centres(xds)
+        self._result.structural_signals = structure_signals(xds, klines, self._result.macd)
 
         # Step 8: 买卖点识别
         # One-class signals must share the exact structural divergence evidence.
-        trend_bcs, first_signals = trend_events(klines, self._result.macd, self._config)
-        mmds = find_mmds(bis, zss, self._config)
-        self._result.mmds = [m for m in mmds if m.mmd_type.value not in ("1buy", "1sell")] + first_signals
+        self._result.mmds, structural_bcs = to_chart_signals(self._result.structural_signals, xds)
         self._result.bcs = sorted(
             indicator_events(klines, self._result.macd)
-            + wave_events(klines, self._result.macd) + trend_bcs,
+            + wave_events(klines, self._result.macd) + structural_bcs,
             key=lambda event: event.signal_index if event.signal_index is not None else -1,
         )
 

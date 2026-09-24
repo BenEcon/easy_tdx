@@ -642,6 +642,7 @@ def _chanlun_mmd_signal_arrays(
     zs_min_lines: int,
     entry: str,
     exit_: str,
+    allow_weak_second: bool = False,
 ) -> tuple[np.ndarray, np.ndarray]:
     """计算缠论买卖点信号，并将信号移动到所有相关结构均已确认的时刻。
 
@@ -682,6 +683,12 @@ def _chanlun_mmd_signal_arrays(
     allowed_exits = _CHANLUN_EXIT_TYPES[exit_]
 
     for mmd in result.mmds:
+        if getattr(mmd, 'source', '') == 'confirmed_segment_base_v1':
+            evidence = getattr(mmd, 'evidence', {})
+            if evidence.get('centre_segment_count', 0) < zs_min_lines:
+                continue
+            if not allow_weak_second and evidence.get('strength') == 'weak_new_extreme':
+                continue
         bi = getattr(mmd, "bi", None)
         if bi is None:
             continue
@@ -705,7 +712,7 @@ def _chanlun_mmd_signal_arrays(
 @register_strategy(
     name="chanlun_mmd",
     label="缠论买卖点",
-    description="基于笔、中枢与一二三类买卖点交易；仅在相关结构完成确认后触发，避免未来信息。",
+    description="线段基础中枢与确认买卖点；按确认时间触发，默认过滤弱二买/二卖。尚非高层级递归模型。",
 )
 class ChanlunMmdStrategy(ParametrizedStrategy):
     """缠论买点入场、卖点离场的多头策略。"""
@@ -738,8 +745,9 @@ class ChanlunMmdStrategy(ParametrizedStrategy):
             default=3,
             min_value=3,
             max_value=6,
-            label="中枢最少笔数",
+            label="中枢最少线段数",
         ),
+        Param("allow_weak_second", bool, default=False, label="允许弱二类买卖点"),
     ]
 
     def init(self) -> None:
@@ -754,6 +762,7 @@ class ChanlunMmdStrategy(ParametrizedStrategy):
             zs_min_lines=self.p["zs_min_lines"],
             entry=self.p["entry"],
             exit_=self.p["exit"],
+            allow_weak_second=self.p["allow_weak_second"],
         )
 
     def next(self) -> None:

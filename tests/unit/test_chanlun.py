@@ -53,7 +53,7 @@ def _ck(
         high=h,
         low=l,
         amount=0.0,
-        index=0,  # 由 merge_klines 赋值
+        index=idx,
         merged_count=merged_count,
         direction=direction,
     )
@@ -224,10 +224,10 @@ class TestFindFractals:
             _ck(5, "2025-01-09", 15, 10, 15, 10),  # 下降 → ck[4] 成为顶
         ]
         fxs = find_fractals(cks)
-        assert len(fxs) == 3
+        assert len(fxs) == 2
         assert fxs[0].fx_type == FXType.DING  # ck[1]
         assert fxs[1].fx_type == FXType.DI  # ck[3]
-        assert fxs[2].fx_type == FXType.DING  # ck[4]
+        # ck[4] contains ck[5]; its low is not highest, hence not a valid top.
 
     def test_insufficient_klines(self) -> None:
         """少于3根K线不应有分型。"""
@@ -280,10 +280,12 @@ class TestFindBis:
             _ck(4, "2025-01-08", 9, 13, 16, 9),
             _ck(5, "2025-01-09", 15, 10, 15, 10),
         ]
+        cks = [_ck(i, f"2025-01-{i + 1:02d}", h-1, h-1, h, h-2)
+               for i, h in enumerate([11, 15, 14, 13, 12, 10, 11, 12, 13, 16, 14])]
         fxs = find_fractals(cks)
         bis = find_bis(fxs)
-        # ding(1) → di(3) 向下笔, di(3) → ding(4) 向上笔
-        assert len(bis) >= 2
+        # Independent candle between each pair of three-candle fractals.
+        assert len(bis) == 2
         assert bis[0].direction == Direction.DOWN  # 顶→底
         assert bis[1].direction == Direction.UP  # 底→顶
 
@@ -355,21 +357,15 @@ class TestFindBis:
             _k(6, "2025-01-10", 7, 12, 13, 6),
             _k(7, "2025-01-13", 12, 9, 14, 8),
         ]
+        klines = [_k(i, f"2025-01-{i + 1:02d}", h-1, h-1, h, h-2)
+                  for i, h in enumerate([11, 15, 14, 13, 12, 10, 11])]
         merged = merge_klines(klines)
         fxs = find_fractals(merged)
         bis = find_bis(fxs)
         assert len(bis) >= 1
 
     def test_fractal_trap_regression(self) -> None:
-        """回归测试：密集交替分型不应卡死笔算法。
-
-        场景：持续下跌走势中，分型在相邻 CKline 位置交替出现（mid_gap=1），
-        导致每个异类型分型与前一个同类型分型共享 2 根 CKline（gap=0）。
-
-        修复前：贪心算法用更极端的同类型分型替换 start_fx，
-        推进 right_kline_index，使后续所有异类型分型 gap 永远为 0，卡死算法。
-        修复后：存在 pending 异类型分型时不替换 start_fx，保留较早位置使 gap 自然递增。
-        """
+        """密集锯齿没有合规成笔间距时，不能冻结旧极值强行凑笔。"""
         # 下跌锯齿形：分型在连续 CKline 位置交替（ding/di mid_gap=1）
         # 每个 di 比前一个低，每个 ding 也比前一个低 → 持续下跌
         cks = [
@@ -393,11 +389,8 @@ class TestFindBis:
 
         bis = find_bis(fxs)
 
-        # 关键断言：密集交替分型不应导致算法卡死
-        assert len(bis) >= 2, (
-            f"密集交替分型场景应产出至少2笔，实际只有 {len(bis)} 笔。"
-            f"分型数: {len(fxs)}，可能触发了分型陷阱 bug。"
-        )
+        # Too-close opposite fractals cannot freeze a stale low to fabricate pens.
+        assert bis == []
 
         # 验证方向交替
         for i in range(1, len(bis)):
@@ -424,6 +417,9 @@ class TestFindZss:
             _ck(6, "2025-01-10", 11, 9, 12, 9),
             _ck(7, "2025-01-13", 10, 11, 12, 10),
         ]
+        cks = [_ck(i, f"2025-01-{i + 1:02d}", h-1, h-1, h, h-2)
+               for i, h in enumerate([11, 16, 15, 14, 13, 10, 11, 12, 13,
+                                      15, 14, 13, 12, 9, 10])]
         fxs = find_fractals(cks)
         bis = find_bis(fxs)
         zss = find_zss(bis)
@@ -763,7 +759,7 @@ class TestChanlunAnalyser:
 
         # 单中枢样本保留指标背离，不再误报趋势一类买卖点。
         assert "── 中枢 ──" in out
-        assert "买卖点: 0" in out
+        assert not any(m["type"] in ("1buy", "1sell") for m in d["mmds"])
         assert "── 背驰 ──" in out
         # 中枢行格式：[idx] <start> → <end> zg=...
         assert "→" in out

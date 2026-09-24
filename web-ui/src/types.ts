@@ -59,6 +59,9 @@ export interface ChanlunBi {
   high: number
   low: number
   done: boolean
+  structurally_confirmed?: boolean
+  confirmed_index?: number | null
+  confirmed_date?: string | null
 }
 
 export interface ChanlunCenter {
@@ -71,6 +74,30 @@ export interface ChanlunCenter {
   start_date: string | null
   end_date: string | null
   done: boolean
+  state?: string
+  formed_date?: string
+  formed_index?: number
+  exited_index?: number | null
+  exited_date?: string | null
+  seed_segments?: number[]
+  member_segments?: number[]
+  relation_at_formation?: string
+  relation_current?: string
+  relation_history?: {
+    relation: string; known_index: number; known_date: string; segment_index: number
+    previous_centre: number; previous_envelope: [number, number]
+    current_envelope: [number, number]; envelope_overlap: [number, number] | null
+    member_segments: number[]; both_exited: boolean; higher_level_confirmed: boolean
+  }[]
+  transitions?: { state: string; segment_index: number; known_date: string }[]
+}
+
+export interface ChanlunFeature {
+  low: number
+  high: number
+  pen_indices: number[]
+  high_pen: number
+  low_pen: number
 }
 
 export interface ChanlunSegment {
@@ -82,6 +109,16 @@ export interface ChanlunSegment {
   end_value?: number
   high: number
   low: number
+  confirmed_date?: string | null
+  confirmed_index?: number | null
+  evidence?: {
+    case: string
+    start_pen: number
+    end_pen: number
+    supporting_pen?: number
+    features?: ChanlunFeature[]
+    reverse_features?: ChanlunFeature[]
+  }
 }
 
 export interface ChanlunSignal {
@@ -89,9 +126,14 @@ export interface ChanlunSignal {
   date: string | null
   msg: string
   confirmed_date?: string | null
+  confirmed_index?: number | null
+  source?: string
+  evidence?: Record<string, unknown>
 }
 
 export interface ChanlunDivergence {
+  signal_index?: number | null
+  reference_index?: number | null
   type: 'bi' | 'pz' | 'qs' | 'macd' | 'macd_wave'
   bc: boolean
   curr_date: string | null
@@ -101,11 +143,46 @@ export interface ChanlunDivergence {
   direction?: 'up' | 'down'
   detected_date?: string | null
   confirmed_date?: string | null
+  confirmed_index?: number | null
   evidence?: Record<string, number>
   intervals?: Record<string, string>
 }
 
+export interface BaseDecomposition {
+  rule: string
+  recursive_levels_ready: boolean
+  input_segment_count: number
+  accepted_segment_count: number
+  rejected_suffix_count: number
+  as_of_index: number | null
+  blocks: {
+    role: string; centre_index: number | null; ownership_frozen: boolean
+    segment_indices: number[]; known_index: number; known_date?: string
+    start_index: number; end_index: number; high: number; low: number
+    recursive_type_complete: boolean
+  }[]
+}
+
+export interface ExtensionProof {
+  id: string; level: number; source_segment_indices: number[]
+  start_index: number; end_index: number; known_index: number
+  start_date: string; end_date: string; known_date: string
+  zd: number; zg: number; low: number; high: number
+  children: ExtensionProof[]; child_ranges: number[][]
+  natural_type_complete: false
+}
+
+export interface ExtensionHierarchy {
+  rule: string; scope: string; natural_type_recursion_ready: false
+  accepted_segment_count: number; rejected_suffix_count: number
+  highest_proven_level: number; proofs: ExtensionProof[]
+}
+
 export interface ChanlunResult {
+  extension_hierarchy?: ExtensionHierarchy
+  base_decomposition?: BaseDecomposition
+  structure_metadata?: { signals_source: string; recursive_levels_ready: boolean }
+  structural_centres?: (ChanlunCenter & { state: string; formed_date: string; exited_date: string | null })[]
   code: string
   frequency: string
   kline_count: number

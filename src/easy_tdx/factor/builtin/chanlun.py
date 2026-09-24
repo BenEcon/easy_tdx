@@ -12,7 +12,7 @@ from easy_tdx.factor.base import Factor, register_factor
 class ChanlunBiDir(Factor):
     name = "chanlun_bi_dir"
     category = "chanlun"
-    description = "当前笔方向（+1=向上笔，-1=向下笔，0=无笔）"
+    description = "最近确认笔方向（+1=向上，-1=向下，0=未确认），不回填历史"
     inputs = ("open", "high", "low", "close", "vol", "amount")
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
@@ -30,15 +30,9 @@ class ChanlunBiDir(Factor):
 
             for bi in bis:
                 direction = 1.0 if bi.direction == "up" else -1.0
-                start = getattr(bi, "start_index", 0)
-                end = getattr(bi, "end_index", len(df) - 1)
-                lo = max(0, start)
-                hi = min(len(df), end + 1)
-                result.iloc[lo:hi] = direction
-
-            last_bi = bis[-1]
-            direction = 1.0 if last_bi.direction == "up" else -1.0
-            result.iloc[-1] = direction
+                known = bi.confirmed_index
+                if known is not None and 0 <= known < len(df):
+                    result.iloc[known:] = direction
 
         except Exception:
             pass
@@ -50,7 +44,7 @@ class ChanlunBiDir(Factor):
 class ChanlunMMD(Factor):
     name = "chanlun_mmd"
     category = "chanlun"
-    description = "最近买卖点类型编码（正=买点，负=卖点，0=无信号）"
+    description = "确认时刻的结构买卖点（正=买，负=卖，0=无）；重合点优先三类"
     inputs = ("open", "high", "low", "close", "vol", "amount")
 
     _MMD_MAP: dict[str, float] = {
@@ -78,11 +72,12 @@ class ChanlunMMD(Factor):
                 return result
 
             for mmd in mmds:
-                mmd_type = getattr(mmd, "type", "")
-                mmd_index = getattr(mmd, "index", -1)
+                mmd_type = mmd.mmd_type.value
+                mmd_index = mmd.confirmed_index
                 value = self._MMD_MAP.get(mmd_type, 0.0)
-                if 0 <= mmd_index < len(df):
-                    result.iloc[mmd_index] = value
+                if mmd_index is not None and 0 <= mmd_index < len(df):
+                    if abs(value) > abs(result.iloc[mmd_index]):
+                        result.iloc[mmd_index] = value
 
         except Exception:
             pass

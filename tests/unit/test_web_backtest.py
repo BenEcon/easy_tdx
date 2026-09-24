@@ -88,6 +88,7 @@ def test_chanlun_strategy_schema_and_preset():
         "entry",
         "exit",
         "zs_min_lines",
+        "allow_weak_second",
     ]
     assert schema["params"][1]["choices"] == [
         "全部买点",

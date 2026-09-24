@@ -8,6 +8,8 @@ entry/exit legs; they deliberately do not promote ordinary MACD divergence to 1b
 """
 from __future__ import annotations
 
+from math import isfinite
+
 from easy_tdx.chanlun.bi import find_bis
 from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.fractal import find_fractals
@@ -81,6 +83,11 @@ def segment_evidence(bars: list[Kline], macd: dict[str, list[float]],
     c0, c1 = c
     if not (0 <= a0 <= a1 < c0 <= c1 < len(bars)):
         return None
+    # Partial indicator windows must not look like smaller complete MACD areas.
+    for key in ('dif', 'dea', 'hist'):
+        values = macd.get(key, [])
+        if len(values) <= c1 or not all(isfinite(value) for value in values[a0:c1 + 1]):
+            return None
     down = direction == "down"
     sign = 1 if down else -1
     price_key = "low" if down else "high"

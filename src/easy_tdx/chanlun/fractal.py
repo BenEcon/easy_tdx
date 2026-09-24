@@ -42,12 +42,16 @@ def find_fractals(
 
         if config.fx_strict:
             # 严格模式：中间 K 线的高/低必须严格大于/小于两边
-            is_ding = mid.high > left.high and mid.high > right.high
-            is_di = mid.low < left.low and mid.low < right.low
+            is_ding = (mid.high > left.high and mid.high > right.high
+                       and mid.low > left.low and mid.low > right.low)
+            is_di = (mid.low < left.low and mid.low < right.low
+                     and mid.high < left.high and mid.high < right.high)
         else:
             # 非严格模式：允许等于
-            is_ding = mid.high >= left.high and mid.high >= right.high
-            is_di = mid.low <= left.low and mid.low <= right.low
+            is_ding = (mid.high >= left.high and mid.high >= right.high
+                       and mid.low >= left.low and mid.low >= right.low)
+            is_di = (mid.low <= left.low and mid.low <= right.low
+                     and mid.high <= left.high and mid.high <= right.high)
 
         if is_ding and is_di:
             # 同时满足顶底分型条件（如十字星），跳过

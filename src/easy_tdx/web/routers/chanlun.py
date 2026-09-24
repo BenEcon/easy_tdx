@@ -10,8 +10,10 @@ from pydantic import BaseModel, Field
 from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
 from easy_tdx.web.deps import get_client, get_mac_client_optional
 from easy_tdx.web.schemas import ChanlunRequest
+from easy_tdx.web.routers.chanlun_replay import router as replay_router
 
 router = APIRouter(tags=["chanlun"])
+router.include_router(replay_router)
 
 
 async def stock_industries(client: Any, market: str, code: str) -> list[dict[str, Any]]:

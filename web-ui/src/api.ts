@@ -598,6 +598,21 @@ export function fetchStockIndustries(market: string, code: string): Promise<Data
   return request(queryPath('/chanlun/industries', { market, code }))
 }
 
+export function replayChanlun(req: { code: string; category: Category; bars: Bar[]; visible_count: number }): Promise<ChanlunResult> {
+  return request('/chanlun/replay', { method: 'POST', body: JSON.stringify(req) })
+}
+
+export function replayChanlunComparison(req: {
+  stock: { code: string; category: Category; bars: Bar[]; visible_count: number }
+  industry: { code: string; bars: Bar[] }
+}): Promise<{
+  stock: ChanlunResult
+  industry: { bars: Bar[]; result: ChanlunResult } | null
+  alignment: { as_of: string; industry_as_of: string | null; status: 'aligned' | 'earlier' | 'unavailable' }
+}> {
+  return request('/chanlun/replay/compare', { method: 'POST', body: JSON.stringify(req) })
+}
+
 export async function analyzeChanlun(req: {
   market: string
   code: string

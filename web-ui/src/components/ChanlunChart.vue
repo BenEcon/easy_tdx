@@ -16,9 +16,13 @@ import type { Bar, ChanlunResult } from '../types'
 import TechnicalIndicatorPicker from './TechnicalIndicatorPicker.vue'
 import { movingAverageColor } from '../moving-averages'
 import { divergenceEvidence, divergenceName } from '../divergence-evidence'
+import type { DivergenceFocus } from '../divergence-focus'
+import { chartBarIndex, priceAxisPadding } from '../chart-position'
+import { ChartViewportMemory } from '../chart-viewport'
 
 const props = defineProps<{
   bars: Bar[]
+  focus?: DivergenceFocus | null
   maPeriods?: number[]
   result: ChanlunResult
   layers: {
@@ -45,6 +49,10 @@ const indicatorLoading = ref(false)
 const indicatorError = ref('')
 let chart: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
+const viewportMemory = new ChartViewportMemory()
+let renderedBars: Bar[] | null = null
+let renderedIdentity = ''
+let viewportScope = {}
 
 function normalizedDate(value: string): string {
   return value.replace('T', ' ').slice(0, 16).replace(/ 00:00$/, '')
@@ -78,11 +86,8 @@ function buildOption(): echarts.EChartsCoreOption {
   const axisIndices = Array.from({ length: panels.value.length + 1 }, (_, i) => i)
 
   const resolveDate = (raw: string | null): string | null => {
-    if (!raw) return null
-    const normalized = normalizedDate(raw)
-    const exact = dates.find((date) => date === normalized)
-    if (exact) return exact
-    return dates.find((date) => date.startsWith(normalized.slice(0, 10))) ?? null
+    const index = chartBarIndex(props.bars, raw)
+    return index === null ? null : dates[index]!
   }
 
   const barAt = (raw: string | null): Bar | null => {
@@ -126,7 +131,7 @@ function buildOption(): echarts.EChartsCoreOption {
   }
 
   const centerAreas = props.layers.zss
-    ? props.result.zss.flatMap((zs) => {
+    ? (props.result.structural_centres ?? props.result.zss).flatMap((zs) => {
         const start = resolveDate(zs.start_date)
         const end = resolveDate(zs.end_date)
         if (!start || !end) return []
@@ -137,22 +142,29 @@ function buildOption(): echarts.EChartsCoreOption {
       })
     : []
 
+  const signalGroups = new Map<string, typeof props.result.mmds>()
+  for (const signal of props.result.mmds) {
+    const key = `${resolveDate(signal.date)}:${signal.type.includes('buy')}`
+    signalGroups.set(key, [...(signalGroups.get(key) ?? []), signal])
+  }
   const signalPoints = props.layers.mmds
-    ? props.result.mmds.flatMap((signal) => {
+    ? [...signalGroups.values()].flatMap((signals) => {
+        const signal = signals[0]!
         const date = resolveDate(signal.date)
         const bar = barAt(signal.date)
         if (!date || !bar) return []
         const isBuy = signal.type.includes('buy')
+        const label = `${isBuy ? 'B' : 'S'}${[...new Set(signals.map(item => item.type.slice(0, 1)))].sort().join('·')}`
         return [{
-          name: signalName(signal.type),
-          value: `${isBuy ? 'B' : 'S'}${signal.type.slice(0, 1)}`,
+          name: signals.map(item => signalName(item.type)).join(' / '),
+          value: label,
           signalType: signal.type,
-          message: signal.msg,
+          message: signals.map(item => `${item.msg}；确认：${item.confirmed_date ?? '尚未确认'}`).join('<br/>'),
           date,
           price: isBuy ? bar.low : bar.high,
           coord: [date, isBuy ? bar.low : bar.high],
           symbol: 'roundRect',
-          symbolSize: [18, 13],
+          symbolSize: [label.length > 2 ? 28 : 18, 13],
           symbolOffset: [0, isBuy ? 12 : -12],
           itemStyle: {
             color: isBuy ? 'rgba(255, 73, 86, 0.94)' : 'rgba(28, 187, 107, 0.94)',
@@ -163,7 +175,7 @@ function buildOption(): echarts.EChartsCoreOption {
           },
           label: {
             show: true,
-            formatter: `${isBuy ? 'B' : 'S'}${signal.type.slice(0, 1)}`,
+            formatter: label,
             position: 'inside',
             color: '#fff',
             fontSize: 7,
@@ -175,16 +187,17 @@ function buildOption(): echarts.EChartsCoreOption {
 
   const divergencePoints = props.layers.bcs
     ? props.result.bcs.filter((item) => item.bc && item.status !== 'superseded').flatMap((item) => {
-        const date = resolveDate(item.curr_date)
-        const bar = barAt(item.curr_date)
-        if (!date || !bar) return []
+        const index = chartBarIndex(props.bars, item.curr_date, item.signal_index)
+        if (index === null) return []
+        const date = dates[index]!
+        const bar = props.bars[index]!
         return [{
           name: divergenceName(item),
           value: item.type.toUpperCase(),
           date,
           price: item.direction === 'down' ? bar.low : bar.high,
           message: `${item.status === 'candidate' ? '候选 · 尚未确认' : '已确认（不保证反转）'}；对照：${item.prev_date ?? '—'}<br/>${divergenceEvidence(item).join('<br/>')}`,
-          coord: [date, item.direction === 'down' ? bar.low : bar.high],
+          coord: [index, item.direction === 'down' ? bar.low : bar.high],
           symbolOffset: [0, item.direction === 'down' ? 23 : -23],
           symbol: 'diamond',
           symbolSize: 9,
@@ -252,6 +265,29 @@ function buildOption(): echarts.EChartsCoreOption {
     },
   ]
 
+  if (props.focus) {
+    // Independent overlays keep centre areas and indicator colors unchanged.
+    for (const axis of axisIndices) {
+      series.push({
+        name: `核验区间 ${axis}`, type: 'line', xAxisIndex: axis, yAxisIndex: axis,
+        data: [], silent: true, tooltip: { show: false },
+        markLine: { silent: true, symbol: 'none',
+          lineStyle: { color: 'rgba(116,184,255,.75)', width: 1, type: 'dashed' },
+          label: { show: true, formatter: '{b}', color: '#b4d9ff', fontSize: 10, rotate: 0,
+            position: axis ? 'insideEndTop' : 'end', distance: 6 },
+          data: props.focus.points.map(point => ({name: point.label, xAxis: point.index})),
+        },
+        markArea: { silent: true, label: { show: true, color: '#b4d9ff', fontSize: axis ? 9 : 11,
+          position: axis ? 'insideTop' : 'top', padding: axis ? [4, 0] : 0 },
+          itemStyle: { color: 'rgba(74,158,255,.06)', borderColor: 'rgba(116,184,255,.65)', borderWidth: 1, borderType: 'dashed' },
+          data: props.focus.ranges.map(range => [
+            { name: range.label, xAxis: range.start }, { xAxis: range.end },
+          ]),
+        },
+      })
+    }
+  }
+
   if (biPoints.length) {
     series.push({
       name: '笔',
@@ -312,9 +348,13 @@ function buildOption(): echarts.EChartsCoreOption {
     itemStyle: { color: movingAverageColor(period) },
   }))
   series.push(...averages, ...secondarySeries)
+  if (props.focus) {
+    for (const item of series) Object.assign(item, { animation: false, animationDuration: 0, animationDurationUpdate: 0 })
+  }
 
   return {
     backgroundColor: 'transparent',
+    animation: !props.focus,
     animationDuration: 420,
     animationEasing: 'cubicOut',
     tooltip: {
@@ -415,6 +455,8 @@ function buildOption(): echarts.EChartsCoreOption {
     yAxis: [
       {
         scale: true, splitNumber: 5, axisLabel: { formatter: (value: number) => value.toFixed(2) },
+        min: (extent: {min: number; max: number}) => extent.min - priceAxisPadding(extent),
+        max: (extent: {min: number; max: number}) => extent.max + priceAxisPadding(extent),
         axisLine: { show: false }, axisTick: { show: false },
         splitLine: { lineStyle: { color: 'rgba(255,255,255,.052)', type: 'dashed' } },
       },
@@ -433,7 +475,8 @@ function buildOption(): echarts.EChartsCoreOption {
     dataZoom: [
       {
         type: 'inside', xAxisIndex: axisIndices,
-        start: Math.max(0, 100 - Math.min(100, 12000 / Math.max(dates.length, 1))), end: 100,
+        ...(props.focus ? { startValue: props.focus.start, endValue: props.focus.end }
+          : { start: Math.max(0, 100 - Math.min(100, 12000 / Math.max(dates.length, 1))), end: 100 }),
       },
       {
         type: 'slider',
@@ -462,7 +505,29 @@ function buildOption(): echarts.EChartsCoreOption {
 function render() {
   if (!container.value || !props.bars.length) return
   chart ??= echarts.init(container.value, 'dark')
-  chart.setOption(buildOption(), true)
+  const current = (chart.getOption() ?? {}) as { dataZoom?: unknown[]; legend?: Array<{selected?: Record<string, boolean>}> }
+  const identity = `${props.result.code}:${props.result.frequency}`
+  const sameSnapshot = renderedBars === props.bars && renderedIdentity === identity
+  if (!sameSnapshot) viewportScope = {}
+  const zoom = viewportMemory.update(viewportScope, props.focus ?? null, current.dataZoom?.[0])
+  const option = buildOption()
+  if (zoom) {
+    for (const axis of option.dataZoom as Array<Record<string, unknown>>) {
+      delete axis.startValue
+      delete axis.endValue
+      Object.assign(axis, zoom)
+    }
+  }
+  if (sameSnapshot) {
+    const selected = Object.assign({}, ...((current.legend ?? []).map(legend => legend.selected ?? {})))
+    for (const legend of option.legend as Array<Record<string, unknown>>) {
+      legend.selected = selected
+    }
+  }
+  renderedBars = props.bars
+  renderedIdentity = identity
+  if (props.focus) chart.clear()
+  chart.setOption(option, true)
   requestAnimationFrame(() => chart?.resize())
 }
 
@@ -506,7 +571,7 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-watch(() => [props.result, props.layers, props.maPeriods], render, { deep: true })
+watch(() => [props.result, props.layers, props.maPeriods, props.focus], render, { deep: true })
 watch(() => [props.bars, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
 </script>
 
