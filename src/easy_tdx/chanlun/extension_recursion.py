@@ -7,19 +7,21 @@ does not turn ownership blocks or two neighbouring centres into completed types.
 """
 from __future__ import annotations
 
-from easy_tdx.chanlun.structure import confirmed_segment_prefix, find_structural_centres
-from easy_tdx.chanlun.types import FX, XD, FXType
+from easy_tdx.chanlun.anchors import extreme_index
+from easy_tdx.chanlun.structure import (
+    StructuralCentre,
+    confirmed_segment_prefix,
+    find_structural_centres,
+)
+from easy_tdx.chanlun.types import FX, XD
 
 
 def _endpoint_index(point: FX) -> int:
-    field = 'high' if point.fx_type == FXType.DING else 'low'
-    tolerance = max(1e-8, abs(point.val) * 1e-9)
-    matches = [bar.index for bar in point.k.klines
-               if abs(getattr(bar, field) - point.val) <= tolerance]
-    return matches[-1] if matches else point.k.k_index
+    """Compatibility wrapper; all structural consumers share the raw anchor."""
+    return extreme_index(point)
 
 
-def _proof(items: list[XD], level: int, known: dict[int, int]) -> dict | None:
+def _proof(items: list[XD], level: int, admissions: dict[int, dict]) -> dict | None:
     """Construct an explicit associative regrouping; never rely on count alone."""
     if len(items) != 3 ** level:
         return None
@@ -28,7 +30,7 @@ def _proof(items: list[XD], level: int, known: dict[int, int]) -> dict | None:
         ranges = [(item.low, item.high) for item in items]
     else:
         size = len(items) // 3
-        children = [_proof(items[i:i + size], level - 1, known)
+        children = [_proof(items[i:i + size], level - 1, admissions)
                     for i in range(0, len(items), size)]
         if any(child is None for child in children):
             return None
@@ -42,7 +44,10 @@ def _proof(items: list[XD], level: int, known: dict[int, int]) -> dict | None:
         'source_segment_indices': [item.index for item in items],
         'start_index': _endpoint_index(items[0].start),
         'end_index': _endpoint_index(items[-1].end),
-        'known_index': max(known[item.index] for item in items),
+        'known_index': max(admissions[item.index]['admitted_index'] for item in items),
+        # A return outside this node may be needed to admit its final member.
+        # It is confirmation evidence, never an extra geometric source member.
+        'member_admissions': [admissions[item.index].copy() for item in items],
         'zd': zd, 'zg': zg,
         'low': min(item.low for item in items),
         'high': max(item.high for item in items),
@@ -53,40 +58,53 @@ def _proof(items: list[XD], level: int, known: dict[int, int]) -> dict | None:
     }
 
 
+def centre_extension_proof(centre: StructuralCentre, by_id: dict[int, XD],
+                           level: int = 2) -> dict | None:
+    """Prove the admitted prefix of a live or final centre, never count alone.
+
+    Usable by the signal pass without rebuilding its already visited lifecycle.
+    A waiting departure is absent from member_segments and cannot supply an
+    early upgrade. The returned proof is detached from the live admission ledger.
+    """
+    if level < 2:
+        raise ValueError('Extension promotion starts at level 2')
+    width = 3 ** level
+    source = centre.member_segments[:width]
+    if len(source) != width or source != list(range(source[0], source[0] + width)):
+        return None
+    admissions = {entry['segment_index']: entry for entry in centre.member_admissions}
+    proof = _proof([by_id[index] for index in source], level, admissions)
+    if proof is not None:
+        proof['base_centre_index'] = centre.index
+        proof['base_core'] = [centre.zd, centre.zg]
+        proof['rule'] = 'nine_movement_extension_v1'
+    return proof
+
+
 def extension_hierarchy(segments: list[XD], bar_count: int | None = None) -> dict:
     """Return immutable formation proofs at their earliest committed-prefix time.
 
     An unreturned departure is excluded, as are missing/invalid suffixes. Each
     proof uses a connected, non-overlapping partition of ONE extending centre.
     Short independent centres are never stitched together to manufacture nine.
-    Prefix recomputation is intentional: final envelope membership must not be
-    used to backdate the proof of an unsuccessful departure's reintegration.
+    The lifecycle ledger records the actual admission time of each member.
+    Final membership alone is insufficient: a failed departure is only admitted
+    when its return confirms, not when the departure itself became observable.
     """
     available = confirmed_segment_prefix(segments, bar_count)
     by_id = {item.index: item for item in available}
     proofs: dict[str, dict] = {}
-    membership_known: dict[int, dict[int, int]] = {}
-    for size in range(3, len(available) + 1):
-        prefix = available[:size]
-        for centre in find_structural_centres(prefix):
-            members = centre.member_segments
-            known = membership_known.setdefault(centre.index, {})
-            for index in members:
-                known.setdefault(index, prefix[-1].confirmed_index)
-            level, width = 2, 9
-            while width <= len(members):
-                source = members[:width]
-                if source != list(range(source[0], source[0] + width)):
-                    break
-                key = f'extension:L{level}:{source[0]}:{source[-1]}'
-                if key not in proofs:
-                    proof = _proof([by_id[index] for index in source], level, known)
-                    if proof is not None:
-                        proof['base_centre_index'] = centre.index
-                        proof['base_core'] = [centre.zd, centre.zg]
-                        proof['rule'] = 'nine_movement_extension_v1'
-                        proofs[key] = proof
-                level, width = level + 1, width * 3
+    for centre in find_structural_centres(available):
+        members = centre.member_segments
+        level, width = 2, 9
+        while width <= len(members):
+            source = members[:width]
+            if source != list(range(source[0], source[0] + width)):
+                break
+            proof = centre_extension_proof(centre, by_id, level)
+            if proof is not None:
+                proofs[proof['id']] = proof
+            level, width = level + 1, width * 3
     return {
         'rule': 'nine_movement_extension_v1',
         'scope': 'extension_regrouping_proofs_only',

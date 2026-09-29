@@ -85,10 +85,11 @@ class TestMergeKlines:
         合并后取高高：h=15, l=11
         """
         klines = [
+            _k(-1, "2025-01-01", 8, 9, 12, 7),  # 前置非包含关系确立向上
             _k(0, "2025-01-02", 10, 14, 15, 10),
             _k(1, "2025-01-03", 11, 13, 13, 11),
         ]
-        result = merge_klines(klines)
+        result = merge_klines(klines)[1:]
         assert len(result) == 1
         assert result[0].high == 15.0
         assert result[0].low == 11.0
@@ -102,10 +103,11 @@ class TestMergeKlines:
         合并后取低低：h=9, l=5
         """
         klines = [
+            _k(-1, "2025-01-01", 11, 12, 14, 8),  # 前置非包含关系确立向下
             _k(0, "2025-01-02", 12, 8, 10, 5),
             _k(1, "2025-01-03", 8, 7, 9, 6),
         ]
-        result = merge_klines(klines)
+        result = merge_klines(klines)[1:]
         assert len(result) == 1
         assert result[0].high == 9.0
         assert result[0].low == 5.0
@@ -114,11 +116,12 @@ class TestMergeKlines:
     def test_three_klines_with_two_merges(self) -> None:
         """连续包含：三根 K 线合并为一根。"""
         klines = [
+            _k(-1, "2025-01-01", 8, 9, 12, 7),
             _k(0, "2025-01-02", 10, 14, 15, 10),  # 大阳线
             _k(1, "2025-01-03", 11, 13, 14, 11),  # 被包含
             _k(2, "2025-01-06", 12, 14, 14, 12),  # 被包含
         ]
-        result = merge_klines(klines)
+        result = merge_klines(klines)[1:]
         assert len(result) == 1
         assert result[0].merged_count == 3
         # 向上合并：取高高 => h=15, l=12
@@ -140,12 +143,13 @@ class TestMergeKlines:
     def test_mixed_merge_and_non_merge(self) -> None:
         """混合场景：部分合并，部分不合并。"""
         klines = [
+            _k(-1, "2025-01-01", 8, 9, 12, 7),
             _k(0, "2025-01-02", 10, 14, 15, 10),  # 大阳线
             _k(1, "2025-01-03", 11, 13, 14, 11),  # 被包含，合并
             _k(2, "2025-01-06", 16, 18, 19, 15),  # 新高，不合并
             _k(3, "2025-01-07", 17, 15, 18, 14),  # 阴线，不包含
         ]
-        result = merge_klines(klines)
+        result = merge_klines(klines)[1:]
         assert len(result) == 3
         assert result[0].merged_count == 2  # K0+K1 合并
         assert result[1].merged_count == 1  # K2 独立
@@ -165,10 +169,11 @@ class TestMergeKlines:
     def test_klines_reference_preserved(self) -> None:
         """CLKline.klines 应包含合并前的原始 K 线。"""
         klines = [
+            _k(-1, "2025-01-01", 8, 9, 12, 7),
             _k(0, "2025-01-02", 10, 14, 15, 10),
             _k(1, "2025-01-03", 11, 13, 14, 11),  # 被包含
         ]
-        result = merge_klines(klines)
+        result = merge_klines(klines)[1:]
         assert len(result[0].klines) == 2
 
 

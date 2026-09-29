@@ -10,21 +10,23 @@ from __future__ import annotations
 
 from math import isfinite
 
+from easy_tdx.chanlun.anchors import extreme_index
 from easy_tdx.chanlun.bi import find_bis
 from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.fractal import find_fractals
 from easy_tdx.chanlun.kline_merge import merge_klines
-from easy_tdx.chanlun.types import BC, FX, MMD, BCType, Kline, MMDType
+from easy_tdx.chanlun.types import BC, MMD, BCType, Kline, MMDType
 from easy_tdx.chanlun.zs import find_zss
 
 
-def extreme_index(fx: FX) -> int:
-    key = "low" if fx.fx_type.value == "di" else "high"
-    matches = [k.index for k in fx.k.klines if abs(getattr(k, key) - fx.val) < 1e-6]
-    return matches[-1] if matches else fx.k.k_index
-
-
 def indicator_events(bars: list[Kline], macd: dict[str, list[float]]) -> list[BC]:
+    """Use exactly mirrored rules for lows and highs, including confirmation.
+
+    A top requires a strictly higher high and BOTH DIF/DEA lower at that high
+    than at the reference high, with all four values above zero. A bottom uses
+    the inverse inequalities below zero. Histogram colour is not a prerequisite
+    for this two-pivot indicator signal (unlike the separate wave comparison).
+    """
     events: list[BC] = []
     # Independently track low and high swings, always using an intervening rebound.
     for direction, sign, key in (("down", 1, "low"), ("up", -1, "high")):
@@ -60,7 +62,9 @@ def indicator_events(bars: list[Kline], macd: dict[str, list[float]]) -> list[BC
                         bc_type=BCType.MACD, bc=True, signal_index=i,
                         reference_index=p, detected_index=i, status="candidate",
                         direction=direction,
-                        msg="MACD 指标背离：价格突破前极值，DIF、DEA 同时向零轴抬升/回落；非缠论一买/一卖。",
+                        msg=("MACD 双线底背离：价格严格创新低，低点对应的 DIF、DEA 均抬高，且均在零轴下方；非缠论一买。"
+                             if direction == "down" else
+                             "MACD 双线顶背离：价格严格创新高，高点对应的 DIF、DEA 均回落，且均在零轴上方；非缠论一卖。"),
                         evidence={"price": getattr(bars[i], key), "previous_price": getattr(bars[p], key),
                                   "dif": macd["dif"][i], "previous_dif": macd["dif"][p],
                                   "dea": macd["dea"][i], "previous_dea": macd["dea"][p]},
@@ -102,7 +106,7 @@ def segment_evidence(bars: list[Kline], macd: dict[str, list[float]],
     for line in ("dif", "dea"):
         av = min(sign * v for v in macd[line][a0:a1 + 1])
         cv = min(sign * v for v in macd[line][c0:c1 + 1])
-        # Segment troughs improve, both are on the trend side of zero.
+        # Bottom: troughs rise below zero. Top: peaks fall above zero.
         if not av < cv < 0:
             return None
         # The intervening centre must have pulled both lines toward zero.
@@ -158,8 +162,11 @@ def wave_events(bars: list[Kline], macd: dict[str, list[float]]) -> list[BC]:
                 events.append(active)
             active.evidence = evidence
             active.msg = (f"MACD 波段{'底' if direction == 'down' else '顶'}背离："
-                          f"C/A 柱面积={evidence['area_ratio']:.2f}，价格突破前段极值，"
-                          "段内 DIF、DEA 极值改善；未据此认定中枢或一类买卖点。")
+                          f"C/A {'绿' if direction == 'down' else '红'}柱面积={evidence['area_ratio']:.2f}，"
+                          f"价格突破前段{'低' if direction == 'down' else '高'}点，"
+                          + ("段内 DIF、DEA 谷值抬高且在零轴下方；" if direction == 'down'
+                             else "段内 DIF、DEA 峰值降低且在零轴上方；")
+                          + "未据此认定中枢或一类买卖点。")
             if closed:
                 active.status = "confirmed"
                 active.confirmed_index = now

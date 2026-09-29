@@ -33,6 +33,14 @@ test('missing legacy evidence does not invent confirmation', () => {
   assert.equal(centreState(), '辅助重叠区')
 })
 
+test('special inclusion explains boundary exception without labelling it an ordinary fractal', () => {
+  const lines = segmentEvidence({end_date: '2026-01-05',
+    evidence: {case: 'boundary_inclusion_break', special_inclusion: true, start_pen: 0, end_pen: 2},
+  })
+  assert.match(lines[0], /第 71、78 课/)
+  assert.match(lines[0], /分界两侧不合并/)
+})
+
 test('centre relation history distinguishes current candidate from original separation', () => {
   const lines = centreEvidence({zd: 18, zg: 20, dd: 14, gg: 25,
     relation_at_formation: 'separated_up', relation_current: 'expansion_candidate',

@@ -5,10 +5,12 @@ Pen overlap zones stay separate for backwards-compatible auxiliary display.
 """
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from math import isfinite
 from numbers import Integral
 
+from easy_tdx.chanlun.anchors import extreme_index
 from easy_tdx.chanlun.types import XD, Direction
 
 
@@ -31,6 +33,7 @@ class StructuralCentre:
     transitions: list[dict] = field(default_factory=list)
     relation_current: str = 'initial'
     relation_history: list[dict] = field(default_factory=list)
+    member_admissions: list[dict] = field(default_factory=list)
 
 
 def _relation(centre: StructuralCentre, prior: StructuralCentre) -> str:
@@ -76,23 +79,40 @@ def _transition(centre: StructuralCentre, state: str, segment: XD) -> None:
                                'segment_index': segment.index})
 
 
-def _include(centre: StructuralCentre, segment: XD) -> None:
+def _admission(segment: XD, witness: XD, reason: str) -> dict:
+    return {'segment_index': segment.index, 'segment_confirmed_index': segment.confirmed_index,
+            'admitted_index': witness.confirmed_index,
+            'admission_segment_index': witness.index, 'reason': reason}
+
+
+def _include(centre: StructuralCentre, segment: XD, witness: XD, reason: str) -> None:
     if segment.index not in centre.member_segments:
         centre.member_segments.append(segment.index)
+        centre.member_admissions.append(_admission(segment, witness, reason))
         centre.dd = min(centre.dd, segment.low)
         centre.gg = max(centre.gg, segment.high)
 
 
-def confirmed_segment_prefix(segments: list[XD], bar_count: int | None = None) -> list[XD]:
-    """Stop at the first invalid link; never silently bridge an incomplete chain."""
-    available: list[XD] = []
+def _valid_index(value: object) -> bool:
+    return isinstance(value, Integral) and not isinstance(value, bool) and value >= 0
+
+
+def _iter_confirmed_segments(segments: Iterable[XD], bar_count: int | None = None) -> Iterator[XD]:
+    """Stop at the first invalid link on BOTH merged and raw candle timelines.
+
+    A matching merged ordinal and price alone cannot identify a shared endpoint:
+    separate copies must also agree on their raw extreme and merged-tail index.
+    Missing source candles retain the common extreme_index fallback convention.
+    """
+    previous: XD | None = None
+    previous_end: int | None = None
     for segment in segments:
         known = segment.confirmed_index
-        if (not isinstance(known, Integral) or isinstance(known, bool) or known < 0
-                or (bar_count is not None and known >= bar_count)):
+        if not _valid_index(known) or (bar_count is not None and known >= bar_count):
             break
-        if (not isinstance(segment.index, Integral) or isinstance(segment.index, bool)
-                or segment.index < 0):
+        if not all(_valid_index(value) for value in (
+                segment.index, segment.start.k.index, segment.end.k.index,
+                segment.start.k.k_index, segment.end.k.k_index)):
             break
         start, end = segment.start.val, segment.end.val
         if (not all(isfinite(value) for value in (start, end, segment.low, segment.high))
@@ -102,77 +122,107 @@ def confirmed_segment_prefix(segments: list[XD], bar_count: int | None = None) -
                 or start == end
                 or segment.direction != (Direction.UP if end > start else Direction.DOWN)):
             break
-        if available:
-            previous = available[-1]
+        raw_start, raw_end = extreme_index(segment.start), extreme_index(segment.end)
+        if (not _valid_index(raw_start) or not _valid_index(raw_end)
+                or not (raw_start <= segment.start.k.k_index < raw_end
+                        <= segment.end.k.k_index <= known)):
+            break
+        if previous is not None:
             connected = (previous.end.k.index == segment.start.k.index
-                         and previous.end.val == segment.start.val)
+                         and previous.end.val == segment.start.val
+                         and previous.end.k.k_index == segment.start.k.k_index
+                         and previous_end == raw_start)
             if (not connected or segment.index != previous.index + 1
                     or previous.direction == segment.direction
                     or segment.confirmed_index < previous.confirmed_index):
                 break
-        available.append(segment)
-    return available
+        previous, previous_end = segment, raw_end
+        yield segment
 
 
-def find_structural_centres(segments: list[XD]) -> list[StructuralCentre]:
-    """First-three fixed core; exit requires a completed first opposite return.
+def confirmed_segment_prefix(segments: list[XD], bar_count: int | None = None) -> list[XD]:
+    """Materialize the full valid prefix; retain the public batch/list contract."""
+    return list(_iter_confirmed_segments(segments, bar_count))
 
-Unknown/disconnected input terminates the chain instead of bridging missing data.
-The first departure is held separately and is folded into the envelope only if
-its return re-enters the core. A boundary touch on return is accepted (>= / <=).
-"""
-    available = confirmed_segment_prefix(segments)
-    centres: list[StructuralCentre] = []
-    cursor = 0
-    while cursor + 3 <= len(available):
-        seed = available[cursor:cursor + 3]
-        zd, zg = max(s.low for s in seed), min(s.high for s in seed)
-        if zd >= zg:
-            cursor += 1
-            continue
-        centre = StructuralCentre(len(centres), zd, zg, min(s.low for s in seed),
-                                  max(s.high for s in seed), [s.index for s in seed],
-                                  [s.index for s in seed], seed[-1].confirmed_index)
-        prior = centres[-1] if centres else None
-        if prior:
-            centre.relation_at_formation = _relation(centre, prior)
-        _transition(centre, 'formed', seed[-1])
-        _record_relation(centre, prior, seed[-1])
-        pending: int | None = None
-        j = cursor + 3
-        while j < len(available):
-            current = available[j]
+
+def iter_structural_steps(segments: Iterable[XD]) -> Iterator[
+    tuple[XD, StructuralCentre | None, StructuralCentre | None]
+]:
+    """Advance the base lifecycle exactly once per accepted confirmed segment.
+
+    Yield (current segment, active/just-exited centre, previous exited centre).
+    Centre objects are live, not snapshots: consumers must read/copy evidence
+    before advancing. No unfinished or disconnected input is bridged. Core and
+    boundary-touch rules are identical to the batch interface below. Validate
+    each link immediately before use, so an early-stopping partition search
+    never scans an unused suffix. Inputs must remain unchanged during iteration.
+    """
+    centre: StructuralCentre | None = None
+    prior: StructuralCentre | None = None
+    pending: XD | None = None
+    seed: list[XD] = []
+    for current in _iter_confirmed_segments(segments):
+        if centre is None:
+            seed = (seed + [current])[-3:]
+            if len(seed) == 3:
+                zd, zg = max(s.low for s in seed), min(s.high for s in seed)
+                if zd < zg:
+                    centre = StructuralCentre(
+                        prior.index + 1 if prior else 0, zd, zg,
+                        min(s.low for s in seed), max(s.high for s in seed),
+                        [s.index for s in seed], [s.index for s in seed],
+                        current.confirmed_index,
+                    )
+                    centre.member_admissions = [
+                        _admission(s, current, 'seed_formation') for s in seed]
+                    if prior:
+                        centre.relation_at_formation = _relation(centre, prior)
+                    _transition(centre, 'formed', current)
+                    _record_relation(centre, prior, current)
+                    seed = []
+        else:
             if pending is not None:
-                departure = available[pending]
+                departure = pending
                 up = departure.direction == Direction.UP
                 stayed_out = (current.direction != departure.direction
-                              and (current.low >= zg if up else current.high <= zd))
+                              and (current.low >= centre.zg if up else current.high <= centre.zd))
                 if stayed_out:
                     centre.return_segment = current.index
                     centre.exited_index = current.confirmed_index
                     _transition(centre, 'exited', current)
-                    _record_relation(centre, prior, current)
-                    break
-                _include(centre, departure)
-                centre.departure_segment = None
-                centre.departure_direction = None
+                else:
+                    _include(centre, departure, current, 'failed_departure_return')
+                    centre.departure_segment = None
+                    centre.departure_direction = None
                 pending = None
-            outward = ((current.direction == Direction.UP and current.end.val > zg)
-                       or (current.direction == Direction.DOWN and current.end.val < zd))
-            if outward:
-                pending = j
-                centre.departure_segment = current.index
-                centre.departure_direction = current.direction.value
-                _transition(centre, 'departed', current)
-            else:
-                _include(centre, current)
-                _transition(centre, 'extended', current)
+            if centre.state != 'exited':
+                outward = ((current.direction == Direction.UP and current.end.val > centre.zg)
+                           or (current.direction == Direction.DOWN
+                               and current.end.val < centre.zd))
+                if outward:
+                    pending = current
+                    centre.departure_segment = current.index
+                    centre.departure_direction = current.direction.value
+                    _transition(centre, 'departed', current)
+                else:
+                    _include(centre, current, current, 'extension')
+                    _transition(centre, 'extended', current)
             _record_relation(centre, prior, current)
-            j += 1
-        centres.append(centre)
-        if centre.state != 'exited':
-            break
-        # The departure connects centres. The completed return can start the next
-        # triple; including the departure would force both envelopes to overlap.
-        cursor = j
+        yield current, centre, prior
+        if centre is not None and centre.state == 'exited':
+            # The return starts the next seed; the departure remains a connector.
+            prior, centre = centre, None
+            seed = [current]
+
+
+def find_structural_centres(segments: list[XD]) -> list[StructuralCentre]:
+    """First-three fixed core; exit needs the first completed opposite return.
+
+    A return touching the core boundary is accepted (>= / <=). Collect the live
+    objects only here, where callers explicitly request their final batch state.
+    """
+    centres: list[StructuralCentre] = []
+    for _, centre, _ in iter_structural_steps(segments):
+        if centre is not None and (not centres or centres[-1] is not centre):
+            centres.append(centre)
     return centres

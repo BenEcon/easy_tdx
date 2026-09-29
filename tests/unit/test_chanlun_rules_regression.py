@@ -187,3 +187,43 @@ def test_completed_pen_prefix_replay_randomized():
                 return [(s.start.k.index, s.end.k.index, s.confirmed_index) for s in items]
             assert signature(find_xds(lines[:n])) == signature(
                 [s for s in final if s.confirmed_index <= cutoff]), (prices, n)
+
+
+def test_feature_evidence_uses_original_pen_ids_after_slicing():
+    lines = lines_from_prices([0, 10, 5, 12, 7, 9, 4])
+    for line in lines:
+        line.index += 40
+    segment, = find_xds(lines)
+    evidence = segment.evidence
+    assert evidence['start_pen'] == 40
+    assert evidence['end_pen'] == 42
+    assert evidence['feature_pen_indices'] == [41, 43, 45]
+    assert evidence['supporting_pen'] == 45
+
+
+def test_endpoint_pruning_preserves_exhaustive_earliest_confirmation():
+    import random
+    from easy_tdx.chanlun.xd import _endpoint, _initial_overlap
+
+    rng = random.Random(928)
+    for _ in range(30):
+        prices = [100]
+        for i in range(45):
+            prices.append(prices[-1] + (1 if i % 2 == 0 else -1) * rng.randint(1, 12))
+        lines = lines_from_prices(prices)
+        # Include equal-time ties and non-monotonic synthetic known times so
+        # pruning cannot rely on the natural ordering of the real pipeline.
+        for line in lines:
+            line.confirmed_index = rng.choice([200, 250, 300])
+        candidates = [(start, _endpoint(lines, start)) for start in range(len(lines) - 2)
+                      if _initial_overlap(lines, start)]
+        candidates = [(start, end) for start, end in candidates if end is not None]
+        found = find_xds(lines)
+        if not candidates:
+            assert not found
+            continue
+        start, endpoint = min(candidates, key=lambda pair: (pair[1][1], pair[0]))
+        assert found[0].start is lines[start].start
+        assert found[0].end is lines[endpoint[0] - 1].end
+        assert found[0].confirmed_index == endpoint[1]
+        assert found[0].evidence == endpoint[2]

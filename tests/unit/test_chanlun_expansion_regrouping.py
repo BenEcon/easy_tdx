@@ -6,12 +6,16 @@ from random import Random
 import pytest
 
 from easy_tdx.chanlun.analyser import ChanlunResult
-from easy_tdx.chanlun.expansion_regrouping import expansion_regrouping
+from easy_tdx.chanlun.expansion_regrouping import _partition, expansion_regrouping
 from easy_tdx.chanlun.types import Kline
 from tests.unit.test_chanlun_structure import segments
 
 PRICES = [100, 109, 102, 115, 110, 116, 111, 114, 101, 113, 101, 110,
           99, 104, 102, 117, 116, 120, 113]
+
+LATER_VALID_PRICES = [100, 110, 100, 113, 100, 113, 110, 113, 111, 117,
+                      105, 108, 102, 106, 93, 98, 87, 88, 73, 77,
+                      63, 72, 69, 82, 76, 77, 75, 84, 70, 83, 81]
 
 
 def test_partition_keeps_connectors_and_does_not_use_envelope_as_core():
@@ -26,6 +30,112 @@ def test_partition_keeps_connectors_and_does_not_use_envelope_as_core():
     assert not event['higher_level_confirmed']
     assert not event['natural_type_complete']
     assert all(not part['natural_type_complete'] for part in event['parts'])
+    assert event['partition_selection'] == 'geometric_fallback_with_conflicts'
+
+
+@pytest.mark.parametrize('sign', [1, -1])
+@pytest.mark.parametrize('offset', [0, 17])
+def test_later_endpoint_consistent_partition_preferred_without_future_data(sign, offset):
+    items = segments([sign * price for price in LATER_VALID_PRICES])
+    for item in items:
+        item.index += offset
+    original = deepcopy(items)
+    result = expansion_regrouping(items)
+    event = next(e for e in result['candidates']
+                 if e['source_segment_indices'] == list(range(offset + 15, offset + 26)))
+    assert event['partition_selection'] == 'endpoint_consistent_preferred'
+    # The earlier 3/5/3 split has a middle start of 73 but an internal low of 63.
+    # A later 5/3/3 split passes all six endpoint checks on the SAME source span.
+    assert [p['source_segment_indices'] for p in event['parts']] == [
+        list(range(offset + 15, offset + 20)),
+        list(range(offset + 20, offset + 23)),
+        list(range(offset + 23, offset + 26)),
+    ]
+    assert event['candidate_core'] == ([75, 82] if sign == 1 else [-82, -75])
+    assert event['known_index'] == items[25].confirmed_index
+    audit = next(a for a in result['completion_audits'] if a['candidate_id'] == event['id'])
+    assert all(p['start_is_extreme'] and p['end_is_extreme'] for p in audit['parts'])
+    assert all('same_level_completion_unproven' in p['blocking_reasons'] for p in audit['parts'])
+    assert not audit['eligible_for_recursive_input']
+    assert not event['natural_type_complete'] and not event['higher_level_confirmed']
+    for size in range(26, len(items) + 1):
+        assert next(e for e in expansion_regrouping(items[:size])['candidates']
+                    if e['id'] == event['id']) == event
+    before = expansion_regrouping(items, event['known_index'])
+    assert all(not e['parts'] for e in before['candidates'] if e['id'] == event['id'])
+    at = expansion_regrouping(items, event['known_index'] + 1)
+    assert next(e for e in at['candidates'] if e['id'] == event['id']) == event
+    items[26].confirmed_index = None
+    assert next(e for e in expansion_regrouping(items)['candidates']
+                if e['id'] == event['id']) == event
+    items[26].confirmed_index = original[26].confirmed_index
+    assert items == original
+
+
+def test_api_preferred_partition_still_cannot_generate_recursive_signals():
+    items = segments(LATER_VALID_PRICES)
+    bars = [Kline(i, datetime(2026, 1, 1) + timedelta(minutes=i), 100, 100, 125, 60, 1)
+            for i in range(items[-1].confirmed_index + 1)]
+    result = ChanlunResult(frequency='5min', klines=bars, xds=items).to_dict()
+    event = next(e for e in result['expansion_regrouping']['candidates']
+                 if e['partition_selection'] == 'endpoint_consistent_preferred')
+    assert event['known_date'] == bars[event['known_index']].date.strftime('%Y-%m-%d %H:%M')
+    assert not result['structure_metadata']['recursive_levels_ready']
+    assert not result['mmds']
+
+
+def test_selection_matches_exhaustive_geometry_and_endpoint_ranking():
+    """Independent exhaustive oracle: preferred class first, then earliest cuts."""
+    from easy_tdx.chanlun.structure import find_structural_centres
+
+    random = Random(2201)
+    samples = [segments(PRICES)[:11], segments(LATER_VALID_PRICES)[15:26]]
+    for _ in range(160):
+        prices = [100]
+        for i in range(random.randint(9, 25)):
+            prices.append(prices[-1] + (1 if i % 2 == 0 else -1) * random.randint(1, 15))
+        samples.append(segments(prices))
+    observed = set()
+    for items in samples:
+        ranked = []
+        for first in range(3, len(items) - 5):
+            for second in range(first + 3, len(items) - 2):
+                chunks = [items[:first], items[first:second], items[second:]]
+                directions = []
+                endpoints = []
+                for chunk in chunks:
+                    start, end = chunk[0].start.val, chunk[-1].end.val
+                    if start == end:
+                        break
+                    direction = 'up' if start < end else 'down'
+                    centres = find_structural_centres(chunk)
+                    if (chunk[0].direction.value != direction
+                            or chunk[-1].direction.value != direction
+                            or len(centres) != 1 or len(centres[0].member_segments) >= 9):
+                        break
+                    directions.append(direction)
+                    low, high = min(s.low for s in chunk), max(s.high for s in chunk)
+                    extreme_pair = (low, high) if direction == 'up' else (high, low)
+                    endpoints.append((start, end) == extreme_pair)
+                if len(directions) != 3 or not (directions[0] == directions[2] != directions[1]):
+                    continue
+                overlap_low = max(min(s.low for s in c) for c in chunks)
+                overlap_high = min(max(s.high for s in c) for c in chunks)
+                if overlap_low >= overlap_high:
+                    continue
+                ranked.append((not all(endpoints), first, second))
+        selected = _partition(items)
+        if not ranked:
+            assert selected is None
+            observed.add('none')
+            continue
+        conflict, first, second = min(ranked)
+        observed.add('fallback' if conflict else 'preferred')
+        assert [p['source_segment_indices'] for p in selected] == [
+            [s.index for s in items[:first]], [s.index for s in items[first:second]],
+            [s.index for s in items[second:]],
+        ]
+    assert observed == {'none', 'fallback', 'preferred'}
 
 
 def test_waits_for_both_exits_and_stays_frozen_afterwards():

@@ -7,22 +7,26 @@ K线合并 → 分型识别 → 笔计算 → 中枢计算 → 线段 → 买卖
 
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from typing import Any
 
 import pandas as pd
 
+from easy_tdx.chanlun.anchors import extreme_date
 from easy_tdx.chanlun.beichi import check_bi_beichi  # noqa: F401
 from easy_tdx.chanlun.bi import find_bis
 from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.decomposition import decompose_base_chain
+from easy_tdx.chanlun.divergence_signals import indicator_events, wave_events
 from easy_tdx.chanlun.expansion_regrouping import expansion_regrouping
 from easy_tdx.chanlun.extension_recursion import extension_hierarchy
-from easy_tdx.chanlun.divergence_signals import indicator_events, wave_events
 from easy_tdx.chanlun.fractal import find_fractals
+from easy_tdx.chanlun.input_data import prepare_frame, require_chronological
 from easy_tdx.chanlun.kline_merge import merge_klines
 from easy_tdx.chanlun.macd import calc_macd  # noqa: F401
+from easy_tdx.chanlun.regrouping_versions import regrouping_versions
 from easy_tdx.chanlun.mmd import find_mmds  # noqa: F401
 from easy_tdx.chanlun.structure import StructuralCentre, find_structural_centres
 from easy_tdx.chanlun.structure_signals import (
@@ -30,8 +34,8 @@ from easy_tdx.chanlun.structure_signals import (
     structure_signals,
     to_chart_signals,
 )
-from easy_tdx.chanlun.types import BC, BI, FX, MMD, XD, ZS, CLKline, FXType, Kline
-from easy_tdx.chanlun.xd import find_xds  # noqa: F401
+from easy_tdx.chanlun.types import BC, BI, FX, MMD, XD, ZS, CLKline, Kline
+from easy_tdx.chanlun.xd import find_unfinished_xd, find_xds
 from easy_tdx.chanlun.zs import find_zss
 
 
@@ -42,9 +46,7 @@ def _df_to_klines(df: pd.DataFrame) -> list[Kline]:
     """
     klines: list[Kline] = []
     for i, row in enumerate(df.itertuples()):
-        dt = getattr(row, "datetime", None) or getattr(row, "date", None)
-        if dt is None:
-            continue
+        dt = row.datetime
         row_any: Any = row  # avoid pandas-stubs vs bare pandas type mismatch
         vol = getattr(row, "vol", 0.0) or 0.0
         klines.append(
@@ -73,6 +75,7 @@ class ChanlunResult:
     bis: list[BI] = field(default_factory=list)
     zss: list[ZS] = field(default_factory=list)
     xds: list[XD] = field(default_factory=list)
+    unfinished_xd: XD | None = None
     mmds: list[MMD] = field(default_factory=list)
     bcs: list[BC] = field(default_factory=list)
     macd: dict[str, list[float]] = field(default_factory=dict)
@@ -98,24 +101,41 @@ class ChanlunResult:
         可能来自区间内更早的一根。图表若直接使用 CLKline.date，会让端点价格
         落在错误蜡烛上。这里按分型类型回溯原始 K 线并吸附到真实极值位置。
         """
-        price_field = "high" if fx.fx_type == FXType.DING else "low"
-        tolerance = max(1e-8, abs(fx.val) * 1e-9)
-        matches = [
-            kline for kline in fx.k.klines
-            if abs(float(getattr(kline, price_field)) - fx.val) <= tolerance
-        ]
-        return matches[-1].date if matches else fx.k.date
+        return extreme_date(fx)
 
     def to_dict(self) -> dict[str, Any]:
-        """将结果转为可序列化的字典（用于 JSON 输出）。"""
+        """Export an independent JSON-ready snapshot, including nested evidence.
+
+        Callers may annotate the payload before encoding or cache an earlier
+        export. Neither may share mutable evidence with this result or another
+        export. Copy the small evidence trees, not the full candle/line graph.
+        """
+        segments_by_id = {segment.index: segment for segment in self.xds}
+        pending = self.unfinished_xd
+        unfinished = None if pending is None else {
+            'index': pending.index, 'direction': pending.direction.value,
+            'start_date': self._fmt_dt(self._fx_dt(pending.start)),
+            'end_date': self._fmt_dt(self._fx_dt(pending.end)),
+            'start_value': round(pending.start.val, 2),
+            'end_value': round(pending.end.val, 2),
+            'high': round(pending.high, 2), 'low': round(pending.low, 2),
+            'confirmed_index': None, 'confirmed_date': None, 'done': False,
+            'evidence': deepcopy(pending.evidence),
+        }
         decomposition = decompose_base_chain(self.xds, len(self.klines))
         for block in decomposition['blocks']:
             block['known_date'] = self._fmt_dt(self.klines[block['known_index']].date)
+            for key in ('start', 'end'):
+                block[f'{key}_date'] = self._fmt_dt(self.klines[block[f'{key}_index']].date)
         hierarchy = extension_hierarchy(self.xds, len(self.klines))
 
         def date_proof(proof: dict) -> None:
             for key in ('start', 'end', 'known'):
                 proof[f'{key}_date'] = self._fmt_dt(self.klines[proof[f'{key}_index']].date)
+            for admission in proof.get('member_admissions', []):
+                for key in ('segment_confirmed', 'admitted'):
+                    admission[f'{key}_date'] = self._fmt_dt(
+                        self.klines[admission[f'{key}_index']].date)
             for child in proof['children']:
                 date_proof(child)
 
@@ -128,12 +148,43 @@ class ChanlunResult:
             for part in event['parts']:
                 for key in ('start', 'end', 'known'):
                     part[f'{key}_date'] = self._fmt_dt(self.klines[part[f'{key}_index']].date)
-        for audit in regrouping['completion_audits']:
+        def date_audit(audit: dict) -> None:
             audit['as_of_date'] = self._fmt_dt(self.klines[audit['as_of_index']].date)
             for part in audit['parts']:
                 known = part['opposite_known_index']
                 part['opposite_known_date'] = (self._fmt_dt(self.klines[known].date)
                                                if known is not None else None)
+                if part['opposite_evidence'] is not None:
+                    evidence = part['opposite_evidence']
+                    for key in ('start', 'end', 'known'):
+                        evidence[f'{key}_date'] = self._fmt_dt(
+                            self.klines[evidence[f'{key}_index']].date)
+        for audit in regrouping['completion_audits']:
+            date_audit(audit)
+        versions = regrouping_versions(self.xds, len(self.klines))
+
+        def date_cover(cover: dict) -> None:
+            cover['as_of_date'] = self._fmt_dt(self.klines[cover['as_of_index']].date)
+            for item in cover['blocks'] + cover['conflicts']:
+                item['known_date'] = self._fmt_dt(self.klines[item['known_index']].date)
+
+        for case in versions['cases']:
+            date_cover(case['mixed_source_cover'])
+            date_audit(case['completion_audit'])
+            for key in ('formation_known', 'as_of'):
+                case[f'{key}_date'] = self._fmt_dt(self.klines[case[f'{key}_index']].date)
+            for revision in case['revisions']:
+                date_cover(revision['mixed_source_cover'])
+                date_audit(revision['completion_audit'])
+                revision['known_date'] = self._fmt_dt(
+                    self.klines[revision['known_index']].date)
+                for part in revision['parts']:
+                    for centre in part.get('centre_chain', []):
+                        centre['formed_date'] = self._fmt_dt(
+                            self.klines[centre['formed_index']].date)
+                    for key in ('start', 'end', 'known'):
+                        part[f'{key}_date'] = self._fmt_dt(
+                            self.klines[part[f'{key}_index']].date)
         return {
             "code": self.code,
             "frequency": self.frequency,
@@ -143,26 +194,33 @@ class ChanlunResult:
             "bi_count": len(self.bis),
             "zs_count": len(self.zss),
             "xd_count": len(self.xds),
+            "unfinished_xd": unfinished,
             "mmd_count": len(self.mmds),
             "bc_count": len(self.bcs),
             "base_decomposition": decomposition,
             "extension_hierarchy": hierarchy,
             "expansion_regrouping": regrouping,
+            "regrouping_versions": versions,
             "structure_metadata": {
                 "version": "segment-centres-v1-preview",
                 "display_frequency": self.frequency,
                 "base_unit": "confirmed_segment",
                 "recursive_levels_ready": False,
+                "initial_unresolved_bars": (self.cklines[0].klines[0].index
+                                            if self.cklines and self.cklines[0].klines else 0),
                 "extension_regrouping_ready": True,
+                "current_regrouping_revisable": True,
                 "legacy_zss_source": "pen_overlap_auxiliary",
                 "signals_source": "confirmed_segment_base_v1",
                 "structural_signals_scope": "base_layer_research_preview",
+                "trend_signal_level_policy": "unpromoted_centres_at_confirmation_v1",
                 "centre_relation_scope": "committed_base_members_not_recursive_types",
             },
             "structural_centres": [
                 {**asdict(centre),
                  "relation_history": [
-                     {**event, "known_date": self._fmt_dt(self.klines[event['known_index']].date)}
+                     {**deepcopy(event),
+                      "known_date": self._fmt_dt(self.klines[event['known_index']].date)}
                      for event in centre.relation_history],
                  "transitions": [
                      {**transition,
@@ -171,8 +229,8 @@ class ChanlunResult:
                  "line_count": len(centre.member_segments),
                  "done": centre.state == 'exited',
                  "start_date": self._fmt_dt(self._fx_dt(
-                     self.xds[centre.seed_segments[0]].start)),
-                 "end_date": self._fmt_dt(self._fx_dt(self.xds[
+                     segments_by_id[centre.seed_segments[0]].start)),
+                 "end_date": self._fmt_dt(self._fx_dt(segments_by_id[
                      centre.return_segment if centre.return_segment is not None else
                      centre.departure_segment if centre.departure_segment is not None else
                      centre.member_segments[-1]].end)),
@@ -233,7 +291,7 @@ class ChanlunResult:
                     "confirmed_date": self._fmt_dt(self.klines[xd.confirmed_index].date)
                     if xd.confirmed_index is not None and xd.confirmed_index < len(self.klines)
                     else None,
-                    "evidence": xd.evidence,
+                    "evidence": deepcopy(xd.evidence),
                 }
                 for xd in self.xds
             ],
@@ -244,7 +302,7 @@ class ChanlunResult:
                     "msg": mmd.msg,
                     "source": mmd.source,
                     "confirmed_index": mmd.confirmed_index,
-                    "evidence": mmd.evidence,
+                    "evidence": deepcopy(mmd.evidence),
                     "confirmed_date": self._fmt_dt(self.klines[mmd.confirmed_index].date)
                     if mmd.confirmed_index is not None else None,
                 }
@@ -265,7 +323,7 @@ class ChanlunResult:
                     "reference_index": bc.reference_index,
                     "confirmed_index": bc.confirmed_index,
                     "direction": bc.direction,
-                    "evidence": bc.evidence,
+                    "evidence": deepcopy(bc.evidence),
                     "intervals": {
                         key: self._fmt_dt(self.klines[int(value)].date)
                         for key, value in bc.evidence.items()
@@ -320,62 +378,73 @@ class ChanlunAnalyser:
 
         Returns:
             ChanlunResult 包含所有缠论计算结果
+
+        Raises:
+            ChanlunInputError: 时间缺失/重复/倒序或价格、成交量不合法。
+                不自动跳行或重排，以免与外部图表和因子行号错位。
+                失败时保留上次成功的结果；显式空输入仍清空结果。
         """
-        self._prev_df = df.copy()
-        # Reusing an analyser with empty input must not retain earlier structures.
-        self._result = ChanlunResult(code=self._result.code, frequency=self._result.frequency)
+        # Build off-state: rejected input or a failed calculation must not destroy
+        # the last valid snapshot or poison the base for the next incremental update.
+        frame = prepare_frame(df)
+        require_chronological(frame)
+        result = ChanlunResult(code=self._result.code, frequency=self._result.frequency)
         # Step 1: DataFrame → Kline 列表
-        klines = _df_to_klines(df)
-        self._result.klines = klines
+        klines = _df_to_klines(frame)
+        result.klines = klines
 
         if not klines:
-            return self._result
+            self._prev_df, self._result = frame, result
+            return result
 
         # Step 2: K线包含处理
         cklines = merge_klines(klines)
-        self._result.cklines = cklines
+        result.cklines = cklines
 
         # Step 3: 分型识别
         fractals = find_fractals(cklines, self._config)
-        self._result.fractals = fractals
+        result.fractals = fractals
 
         # Step 4: 笔计算
         bis = find_bis(fractals, self._config)
-        self._result.bis = bis
+        result.bis = bis
 
         # Step 5: 中枢计算
         zss = find_zss(bis, self._config)
-        self._result.zss = zss
+        result.zss = zss
 
         # Step 6: MACD 计算
         closes = [k.close for k in klines]
-        self._result.macd = calc_macd(
+        result.macd = calc_macd(
             closes, self._config.macd_fast, self._config.macd_slow, self._config.macd_signal
         )
 
         # Step 7: 线段计算
         # The last pen may extend. Do not let it confirm a permanent segment.
         xds = find_xds([bi for bi in bis if bi.confirmed_index is not None], self._config)
-        self._result.xds = xds
-        self._result.structural_centres = find_structural_centres(xds)
-        self._result.structural_signals = structure_signals(xds, klines, self._result.macd)
+        result.xds = xds
+        result.unfinished_xd = find_unfinished_xd(bis, xds)
+        result.structural_centres = find_structural_centres(xds)
+        result.structural_signals = structure_signals(xds, klines, result.macd)
 
         # Step 8: 买卖点识别
         # One-class signals must share the exact structural divergence evidence.
-        self._result.mmds, structural_bcs = to_chart_signals(self._result.structural_signals, xds)
-        self._result.bcs = sorted(
-            indicator_events(klines, self._result.macd)
-            + wave_events(klines, self._result.macd) + structural_bcs,
+        result.mmds, structural_bcs = to_chart_signals(result.structural_signals, xds)
+        result.bcs = sorted(
+            indicator_events(klines, result.macd)
+            + wave_events(klines, result.macd) + structural_bcs,
             key=lambda event: event.signal_index if event.signal_index is not None else -1,
         )
 
-        return self._result
+        self._prev_df, self._result = frame, result
+        return result
 
     def append_klines(self, df_new: pd.DataFrame) -> ChanlunResult:
         """增量追加 K 线数据并重新计算。
 
-        将新数据追加到之前处理过的 DataFrame 后面，
-        然后在完整数据上重新执行缠论计算管道。
+        按交易时间合并新数据；同一时间以本次最后提供的整根 K 线为准，
+        排序后在完整数据上重新执行缠论计算管道。支持历史补洞和修订。
+        修订旧行情可能合理地改变历史结构，这不是历史数据版本回放。
 
         相比手动拼接 + process_klines 的优势：
         - API 更简洁，无需用户管理 DataFrame 拼接
@@ -389,18 +458,19 @@ class ChanlunAnalyser:
 
         Raises:
             RuntimeError: 如果之前没有调用过 process_klines
+            ChanlunInputError: 新数据不合法；上次成功结果保持不变。
         """
         if self._prev_df is None:
             msg = "请先调用 process_klines() 初始化，再使用 append_klines()"
             raise RuntimeError(msg)
 
-        # 拼接旧数据 + 新数据
-        combined = pd.concat([self._prev_df, df_new], ignore_index=True)
-
-        # 去重（防止重复追加）
-        if "datetime" in combined.columns:
-            combined = combined.drop_duplicates(subset=["datetime"], keep="last")
-            combined = combined.reset_index(drop=True)
+        # Normalise each batch BEFORE deduplication (date aliases/string dates
+        # represent the same timestamp). Corrections replace a whole candle.
+        incoming = prepare_frame(df_new)
+        combined = pd.concat([self._prev_df, incoming], ignore_index=True)
+        if not combined.empty:
+            combined = (combined.drop_duplicates(subset=['datetime'], keep='last')
+                        .sort_values('datetime', kind='stable').reset_index(drop=True))
 
         return self.process_klines(combined)
 

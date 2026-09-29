@@ -6,6 +6,7 @@ import ChanlunChart from '../components/ChanlunChart.vue'
 import ConfirmationReplay from '../components/ConfirmationReplay.vue'
 import DecompositionInspector from '../components/DecompositionInspector.vue'
 import ExtensionHierarchyInspector from '../components/ExtensionHierarchyInspector.vue'
+import ExpansionInspector from '../components/ExpansionInspector.vue'
 import ChartFrame from '../components/ChartFrame.vue'
 import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
@@ -13,6 +14,7 @@ import NumberStepper from '../components/NumberStepper.vue'
 import { movingAverageColor } from '../moving-averages'
 import { divergenceEvidence, divergenceName, signalEvidence } from '../divergence-evidence'
 import { divergenceFocus, type DivergenceFocus } from '../divergence-focus'
+import { expansionFocus } from '../expansion-focus'
 import { centreEvidence, centreState, segmentEvidence, segmentsConnected } from '../structure-evidence'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
 import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchRecentBars, formatError } from '../api'
@@ -24,7 +26,7 @@ import { useMarketPreferences } from '../market-preferences'
 
 const route = useRoute()
 const code = useSelectedStock()
-const maSettings = ref([5, 10, 20, 30, 60, 120].map(period => ({ period, enabled: period !== 30 && period !== 120 })))
+const maSettings = ref([5, 10, 20, 30, 60, 120].map(period => ({ period, enabled: period === 5 || period === 10 })))
 const maPeriods = computed(() => [...new Set(maSettings.value.filter(item => item.enabled).map(item => item.period))].sort((a, b) => a - b))
 function setMAPeriod(index: number, value: number) {
   if (Number.isFinite(value)) maSettings.value[index]!.period = Math.max(1, Math.min(800, Math.round(value)))
@@ -152,7 +154,18 @@ const focusToolbar = ref<HTMLElement>()
 watch(result, () => { focusedDivergence.value = null }, { flush: 'sync' })
 async function locateDivergence(item: ChanlunDivergence) {
   const focus = divergenceFocus(item, bars.value.length, `${divergenceName(item)} · ${item.curr_date ?? ''}${item.status === 'candidate' ? ' · 候选未确认' : ''}`)
-  if (!focus) return
+  if (focus) await showStructureFocus(focus)
+}
+async function locateExpansion(candidateId: string) {
+  // Resolve from the CURRENT result, never from an event payload retained before replay.
+  const candidates = result.value?.expansion_regrouping?.candidates ?? []
+  const index = candidates.findIndex(candidate => candidate.id === candidateId)
+  if (index < 0) return
+  const focus = expansionFocus(candidates[index]!, bars.value.length, `跨中枢候选 ${index + 1} · 自然完成待证`)
+  if (focus) await showStructureFocus(focus)
+}
+async function showStructureFocus(focus: DivergenceFocus) {
+  if (replayBusy.value || loading.value || industryLoading.value) return
   if (industryView.value === 'industry') industryView.value = 'stock'
   focusedDivergence.value = focus
   await nextTick()
@@ -527,6 +540,7 @@ onMounted(async () => {
 
         <section class="chart-workspace">
           <p v-if="result.structure_metadata" class="structure-scope">线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。</p>
+          <p v-if="result.structure_metadata?.initial_unresolved_bars" class="structure-scope">开头 {{ result.structure_metadata.initial_unresolved_bars }} 根 K 线缺少前置方向，仅保留行情，不推定包含方向。</p>
           <div v-if="snapshotBars.length" class="replay-toolbar" :aria-busy="replayBusy || industryLoading">
             <strong>{{ replayActive ? '历史回放' : '快照末尾' }}</strong>
             <button :disabled="replayBusy || loading || industryLoading || bars.length <= 1" aria-label="回放上一根 K 线" @click="seekReplay(bars.length - 1)">上一根</button>
@@ -544,9 +558,9 @@ onMounted(async () => {
               <button v-for="mode in [{ value: 'stock', label: '个股' }, { value: 'industry', label: '行业' }, { value: 'compare', label: '上下对比' }]" :key="mode.value" :class="{ active: industryView === mode.value }" @click="industryView = mode.value">{{ mode.label }}</button>
             </div>
           </div>
-          <div v-if="focusedDivergence && industryView !== 'industry'" ref="focusToolbar" class="focus-toolbar" tabindex="-1" aria-label="背驰区间核验">
+          <div v-if="focusedDivergence && industryView !== 'industry'" ref="focusToolbar" class="focus-toolbar" tabindex="-1" aria-label="图表区间核验">
             <strong>{{ focusedDivergence.title }}</strong>
-            <span>{{ focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
+            <span>{{ focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
             <button @click="focusedDivergence = null">清除区间定位</button>
           </div>
           <ChartFrame v-if="industryView !== 'industry'" :title="`个股 · ${result.code}`" description="均线与缠论结构叠加；可在下方选择技术指标。">
@@ -555,6 +569,7 @@ onMounted(async () => {
                 <span class="legend-bi">笔</span>
                 <span class="legend-zs">中枢</span>
                 <span class="legend-xd">线段</span>
+                <span v-if="layers.xds && result.unfinished_xd" class="legend-pending">候选未确认</span>
                 <span class="legend-bc">背驰</span>
               </div>
             </template>
@@ -624,7 +639,7 @@ onMounted(async () => {
               <header>
                 <div>
                   <h4>最近的线段</h4>
-                  <p>端点按时间顺序连接，价格统一保留两位小数。</p>
+                  <p>实线为已确认，虚线仅提示候选方向，不参与中枢和买卖点计算。</p>
                 </div>
                 <span :class="['sequence-status', { valid: segmentSequenceValid }]">
                   <i></i>{{ !result.xds.length ? '暂无确认线段' : segmentSequenceValid ? '端点连接一致' : '连接待核验' }}
@@ -641,6 +656,7 @@ onMounted(async () => {
                   </span>
                   <div>
                     <strong>线段 {{ xd.index + 1 }}</strong>
+                    <small v-if="xd.evidence?.special_inclusion">特殊包含 · 第 71、78 课</small>
                     <small>{{ xd.start_date }} → {{ xd.end_date }}</small>
                   </div>
                   <span class="segment-price">
@@ -653,10 +669,16 @@ onMounted(async () => {
                   </details>
                 </article>
               </div>
-              <p v-else class="no-data">当前窗口尚未形成有效线段。</p>
+              <p v-else class="no-data">当前窗口尚未形成已确认线段。</p>
+              <p v-if="result.unfinished_xd" class="unfinished-segment">
+                <span aria-hidden="true">┄</span> 候选{{ result.unfinished_xd.direction === 'up' ? '向上' : '向下' }}线段 ·
+                {{ segmentValue(result.unfinished_xd, 'start').toFixed(2) }} → {{ segmentValue(result.unfinished_xd, 'end').toFixed(2) }}
+                <small>端点可能延伸或失效，确认后以实线显示；不是价格预测。</small>
+              </p>
             </section>
             <DecompositionInspector :data="result.base_decomposition" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <ExtensionHierarchyInspector :data="result.extension_hierarchy" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
+            <ExpansionInspector :data="result.expansion_regrouping" :versions="result.regrouping_versions" :total="snapshotBars.length" :visible-count="bars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" @locate="locateExpansion" />
           </div>
 
           <div v-else-if="activeTab === 'signals'" class="event-list">
@@ -702,6 +724,8 @@ onMounted(async () => {
 .focus-toolbar button { margin-left: auto; min-height: 28px; padding: 4px 9px; font-size: 11px; }
 .focus-toolbar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .structure-evidence { grid-column: 1 / -1; min-width: 0; font-size: 11px; color: var(--text-muted); line-height: 1.7; }
+.unfinished-segment { margin-top: 12px; font-size: 11px; color: #a88cdb; line-height: 1.8; font-variant-numeric: tabular-nums; }
+.unfinished-segment small { display: block; color: var(--text-muted); font-size: 10px; }
 .structure-evidence summary { cursor: pointer; color: var(--accent); padding: 4px 0; }
 .structure-evidence p { margin: 5px 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .structure-evidence summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
@@ -1073,7 +1097,8 @@ onMounted(async () => {
 .section-bar { display: flex; align-items: center; justify-content: space-between; min-height: 42px; padding: 0 2px 8px; }
 .section-bar h3 { font-size: 12px; font-weight: 620; }
 .section-bar p { margin-top: 2px; color: var(--text-dim); font-size: 9px; }
-.chart-legend { display: flex; gap: 12px; color: var(--text-dim); font-size: 9px; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 8px 12px; color: var(--text-dim); font-size: 9px; }
+.chart-legend .legend-pending::before { height: 0; width: 12px; border-top: 1px dashed #a88cdb; border-radius: 0; vertical-align: 3px; }
 .chart-legend span::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 2px; vertical-align: -1px; }
 .legend-bi::before { background: #79b9ef; }.legend-zs::before { background: #4a9eff; }.legend-xd::before { background: #a88cdb; }.legend-bc::before { background: transparent; border: 1px solid #d9a3ff; transform: rotate(45deg); }
 

@@ -50,7 +50,7 @@ function featureLines(features: ChanlunFeature[], label: string): string[] {
 export function segmentEvidence(segment: ChanlunSegment): string[] {
   const evidence = segment.evidence
   if (!evidence) return ['此结果未提供特征序列依据，请重新分析。']
-  const rule = evidence.case === 'gap_reverse_fractal' ? '存在缺口，等待反向特征序列分型确认' : evidence.case === 'no_gap_fractal' ? '无缺口，特征序列分型确认' : '确认方式未提供'
+  const rule = evidence.case === 'boundary_inclusion_break' ? '特殊包含（第 71、78 课）：分界两侧不合并，反向三笔及后续突破确认' : evidence.case === 'gap_reverse_fractal' ? '存在缺口，等待反向特征序列分型确认' : evidence.case === 'no_gap_fractal' ? '无缺口，特征序列分型确认' : '确认方式未提供'
   return [
     `确认方式：${rule}`,
     `极值端点：${segment.end_date}；确认时间：${segment.confirmed_date ?? '未提供'}`,

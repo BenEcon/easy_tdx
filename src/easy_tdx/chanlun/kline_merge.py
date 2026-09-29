@@ -69,9 +69,12 @@ def merge_klines(klines: list[Kline]) -> list[CLKline]:
             if len(result) >= 2:
                 direction = "up" if prev.high > result[-2].high else "down"
             else:
-                # 只有第一根，根据前一根 K 线本身的阴阳判断方向
-                # 阳线（close >= open）→ 向上，阴线 → 向下
-                direction = "up" if prev.close >= prev.open else "down"
+                # No preceding non-contained pair exists (lesson 65). Do not
+                # invent direction from candle colour or backfill from future
+                # bars. Restart the structural window at the current raw bar;
+                # the analyser retains the complete original chart separately.
+                result[0] = _to_clkline(k, index=0)
+                continue
 
             if direction == "up":
                 # 向上合并：取高高

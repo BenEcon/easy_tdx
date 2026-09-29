@@ -35,10 +35,11 @@ const props = defineProps<{
 }>()
 
 const container = ref<HTMLDivElement>()
-let nextIndicatorId = 1
 const indicators = ref<Array<{ id: number; type: TechnicalIndicator; params: IndicatorParams; rows: Array<Record<string, unknown>> }>>([
-  { id: 0, type: 'macd', params: { ...getIndicatorDefinition('macd').defaultParams }, rows: [] },
+  { id: 0, type: 'volume', params: { ...getIndicatorDefinition('volume').defaultParams }, rows: [] },
+  { id: 1, type: 'macd', params: { ...getIndicatorDefinition('macd').defaultParams }, rows: [] },
 ])
+let nextIndicatorId = indicators.value.length
 const panels = computed(() => indicators.value.filter(item => indicatorUsesPanel(item.type)))
 const chartHeight = computed(() => 470 + panels.value.length * 155)
 function addIndicator() {
@@ -112,11 +113,13 @@ function buildOption(): echarts.EChartsCoreOption {
 
   const xdSegments: Array<{
     index: number
+    pending: boolean
     direction: 'up' | 'down'
     points: Array<[string, number]>
   }> = []
   if (props.layers.xds) {
-    for (const xd of props.result.xds) {
+    const lines = [...props.result.xds, ...(props.result.unfinished_xd ? [props.result.unfinished_xd] : [])]
+    for (const xd of lines) {
       const start = resolveDate(xd.start_date)
       const end = resolveDate(xd.end_date)
       if (!start || !end) continue
@@ -124,6 +127,7 @@ function buildOption(): echarts.EChartsCoreOption {
       const endValue = xd.end_value ?? (xd.direction === 'up' ? xd.high : xd.low)
       xdSegments.push({
         index: xd.index,
+        pending: xd === props.result.unfinished_xd,
         direction: xd.direction,
         points: [[start, startValue], [end, endValue]],
       })
@@ -281,7 +285,7 @@ function buildOption(): echarts.EChartsCoreOption {
           position: axis ? 'insideTop' : 'top', padding: axis ? [4, 0] : 0 },
           itemStyle: { color: 'rgba(74,158,255,.06)', borderColor: 'rgba(116,184,255,.65)', borderWidth: 1, borderType: 'dashed' },
           data: props.focus.ranges.map(range => [
-            { name: range.label, xAxis: range.start }, { xAxis: range.end },
+            { name: props.focus?.scope === 'expansion' ? `重组 ${range.label}` : range.label, xAxis: range.start }, { xAxis: range.end },
           ]),
         },
       })
@@ -310,13 +314,13 @@ function buildOption(): echarts.EChartsCoreOption {
 
   for (const segment of xdSegments) {
     series.push({
-      name: '线段',
+      name: segment.pending ? '候选线段（未确认）' : '线段',
       type: 'line',
       data: segment.points,
       showSymbol: true,
       symbol: 'circle',
-      symbolSize: 4,
-      lineStyle: { color: '#a88cdb', width: 1.8, opacity: 0.84 },
+      symbolSize: segment.pending ? 3 : 4,
+      lineStyle: { color: '#a88cdb', width: 1.8, opacity: segment.pending ? 0.58 : 0.84, type: segment.pending ? 'dashed' : 'solid' },
       itemStyle: { color: '#c8b3ec', borderColor: '#251f31', borderWidth: 0.8 },
       emphasis: {
         focus: 'series',

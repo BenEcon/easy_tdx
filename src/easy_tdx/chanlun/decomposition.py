@@ -6,6 +6,7 @@ must recompute a historical prefix: open ownership can change as bars arrive.
 """
 from __future__ import annotations
 
+from easy_tdx.chanlun.anchors import extreme_index
 from easy_tdx.chanlun.structure import confirmed_segment_prefix, find_structural_centres
 from easy_tdx.chanlun.types import XD
 
@@ -35,14 +36,15 @@ def decompose_base_chain(segments: list[XD], bar_count: int | None = None) -> di
             block = previous
             block['segment_indices'].append(segment.index)
             block['known_index'] = max(block['known_index'], known)
-            block['end_index'] = segment.end.k.k_index
+            block['end_index'] = extreme_index(segment.end)
             block['high'] = max(block['high'], segment.high)
             block['low'] = min(block['low'], segment.low)
         else:
             blocks.append({
                 'role': role, 'centre_index': centre, 'ownership_frozen': frozen,
                 'segment_indices': [segment.index], 'known_index': known,
-                'start_index': segment.start.k.k_index, 'end_index': segment.end.k.k_index,
+                'start_index': extreme_index(segment.start),
+                'end_index': extreme_index(segment.end),
                 'high': segment.high, 'low': segment.low,
                 'recursive_type_complete': False,
             })

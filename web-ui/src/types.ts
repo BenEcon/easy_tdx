@@ -118,6 +118,7 @@ export interface ChanlunSegment {
     supporting_pen?: number
     features?: ChanlunFeature[]
     reverse_features?: ChanlunFeature[]
+    special_inclusion?: boolean
   }
 }
 
@@ -163,6 +164,12 @@ export interface BaseDecomposition {
   }[]
 }
 
+export interface CentreAdmission {
+  segment_index: number; segment_confirmed_index: number; admitted_index: number
+  admission_segment_index?: number
+  segment_confirmed_date?: string; admitted_date?: string; reason: string
+}
+
 export interface ExtensionProof {
   id: string; level: number; source_segment_indices: number[]
   start_index: number; end_index: number; known_index: number
@@ -170,6 +177,7 @@ export interface ExtensionProof {
   zd: number; zg: number; low: number; high: number
   children: ExtensionProof[]; child_ranges: number[][]
   natural_type_complete: false
+  member_admissions?: CentreAdmission[]
 }
 
 export interface ExtensionHierarchy {
@@ -178,10 +186,112 @@ export interface ExtensionHierarchy {
   highest_proven_level: number; proofs: ExtensionProof[]
 }
 
+export interface ExpansionPart {
+  component_kind?: 'consolidation_candidate' | 'trend_candidate'
+  centre_chain?: {
+    seed_segment_indices: number[]; formed_index: number; formed_date?: string
+    zd: number; zg: number; low: number; high: number
+  }[]
+  source_segment_indices: number[]; seed_segment_indices: number[]
+  start_index: number; end_index: number; known_index: number
+  start_date?: string; end_date?: string; known_date?: string
+  start_value: number; end_value: number; direction: 'up' | 'down'
+  low: number; high: number; zd: number; zg: number
+  natural_type_complete: false
+}
+
+export interface ExpansionCandidate {
+  id: string; centre_indices: number[]; envelope_overlap: number[]
+  status: string; known_index: number | null; known_date?: string | null
+  source_segment_indices: number[]; parts: ExpansionPart[]
+  candidate_core: number[] | null; partition_selection?: string | null
+  natural_type_complete: false; higher_level_confirmed: false
+}
+
+export interface ExpansionPartAudit {
+  part_index: number; source_segment_indices: number[]
+  start_extreme: number; end_extreme: number
+  start_is_extreme: boolean; end_is_extreme: boolean
+  opposite_segment_index: number | null; opposite_known_index: number | null
+  opposite_known_date?: string | null; status: string; blocking_reasons: string[]
+  natural_type_complete: false
+  opposite_evidence?: {
+    segment_index: number; direction: 'up' | 'down'
+    start_index: number; end_index: number; known_index: number
+    start_value: number; end_value: number; source_part_index: number | null
+    start_date?: string; end_date?: string; known_date?: string
+  } | null
+}
+
+export interface ExpansionAudit {
+  candidate_id: string; as_of_index: number; as_of_date?: string
+  parts: ExpansionPartAudit[]; eligible_for_recursive_input: false
+}
+
+export interface ExpansionRegrouping {
+  rule: string; scope: string; accepted_segment_count: number; rejected_suffix_count: number
+  candidates: ExpansionCandidate[]; completion_audits?: ExpansionAudit[]
+}
+
+export interface MixedSourceCover {
+  rule: string; interpretation_id: string; as_of_index: number; as_of_date?: string
+  source_segment_indices: number[]; status: 'covered' | 'blocked'
+  natural_type_complete: false; eligible_for_recursive_input: false
+  joint_regrouping_required: boolean
+  blocks: {
+    kind: 'extension_proof' | 'base_run'; proof_id: string | null; level: number
+    source_segment_indices: number[]; known_index: number; known_date?: string
+    low: number; high: number; natural_type_complete: false
+    crosses_role_boundary: boolean
+    role_spans: { role: string; source_segment_indices: number[] }[]
+  }[]
+  conflicts: {
+    reason: string; proof_id: string; source_segment_indices: number[]
+    known_index: number; known_date?: string
+  }[]
+}
+
+export interface RegroupingRevision {
+  completion_audit?: VersionCompletionAudit
+  mixed_source_cover?: MixedSourceCover
+  id: string; version: number; supersedes: string | null
+  known_index: number; known_date?: string; reason: string; status: string
+  source_segment_indices: number[]; parts: ExpansionPart[]
+  candidate_core: number[] | null; higher_proof_ids: string[]
+  natural_type_complete: false; eligible_for_recursive_input: false
+  retained_prefix_segment_indices?: number[]; prefix_role?: string
+  start_change?: {
+    previous_start_segment_index: number; current_start_segment_index: number
+    detached_segment_indices: number[]; reincorporated_segment_indices: number[]
+  } | null
+}
+
+export interface RegroupingCase {
+  completion_audit?: VersionCompletionAudit
+  mixed_source_cover?: MixedSourceCover
+  candidate_id: string; formation_known_index: number; formation_known_date?: string
+  as_of_index: number; as_of_date?: string; current_revision_id: string
+  revisions: RegroupingRevision[]; pending_segment_indices: number[]
+  origin_start_segment_index?: number; start_anchor_segment_indices?: number[]
+}
+
+export interface VersionCompletionAudit {
+  rule: string; interpretation_id: string; as_of_index: number; as_of_date?: string
+  parts: ExpansionPartAudit[]; blocking_reasons: string[]
+  natural_type_complete: false; eligible_for_recursive_input: false
+}
+
+export interface RegroupingVersions {
+  rule: string; scope: string; history_policy: string; natural_type_recursion_ready: false
+  accepted_segment_count: number; rejected_suffix_count: number; cases: RegroupingCase[]
+}
+
 export interface ChanlunResult {
+  regrouping_versions?: RegroupingVersions
+  expansion_regrouping?: ExpansionRegrouping
   extension_hierarchy?: ExtensionHierarchy
   base_decomposition?: BaseDecomposition
-  structure_metadata?: { signals_source: string; recursive_levels_ready: boolean }
+  structure_metadata?: { signals_source: string; recursive_levels_ready: boolean; initial_unresolved_bars?: number }
   structural_centres?: (ChanlunCenter & { state: string; formed_date: string; exited_date: string | null })[]
   code: string
   frequency: string
@@ -196,6 +306,7 @@ export interface ChanlunResult {
   bis: ChanlunBi[]
   zss: ChanlunCenter[]
   xds: ChanlunSegment[]
+  unfinished_xd?: ChanlunSegment | null
   mmds: ChanlunSignal[]
   bcs: ChanlunDivergence[]
 }

@@ -7,6 +7,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from easy_tdx.chanlun.input_data import ChanlunInputError
 from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
 from easy_tdx.web.deps import get_client, get_mac_client_optional
 from easy_tdx.web.schemas import ChanlunRequest
@@ -70,7 +71,10 @@ async def industry_analyze(
     df = await mac_client.get_stock_kline(int(board["market"]), req.board_code, period, 0, req.count, times, adjust=Adjust.NONE)
     if df.empty:
         raise HTTPException(404, "该行业在所选周期暂无行情")
-    result = ChanlunAnalyser(code=req.board_code, frequency=req.category).process_klines(df)
+    try:
+        result = ChanlunAnalyser(code=req.board_code, frequency=req.category).process_klines(df)
+    except ChanlunInputError as exc:
+        raise HTTPException(502, f'行业行情数据异常：{exc}') from exc
     return {"bars": DataFrameResponse.from_dataframe(df).data, "result": result.to_dict()}
 
 
@@ -114,6 +118,9 @@ async def chanlun_analyze(
     }
     freq = frequency_map.get(req.category.upper(), req.category)
     analyser = ChanlunAnalyser(code=symbol, frequency=freq)
-    result = analyser.process_klines(df)
+    try:
+        result = analyser.process_klines(df)
+    except ChanlunInputError as exc:
+        raise HTTPException(502, f'股票行情数据异常：{exc}') from exc
 
     return result.to_dict()
