@@ -14,16 +14,19 @@ import {
 } from '../technical-indicators'
 import type { Bar, ChanlunResult } from '../types'
 import TechnicalIndicatorPicker from './TechnicalIndicatorPicker.vue'
-import { movingAverageColor } from '../moving-averages'
+import { movingAverageColor, movingAverageSelection } from '../moving-averages'
 import { divergenceEvidence, divergenceName } from '../divergence-evidence'
 import type { DivergenceFocus } from '../divergence-focus'
 import { chartBarIndex, priceAxisPadding } from '../chart-position'
 import { ChartViewportMemory } from '../chart-viewport'
+import { structureLineWidth, emphasizedLineWidth, type ChanlunLineWidths } from '../chanlun-line-width'
 
 const props = defineProps<{
   bars: Bar[]
   focus?: DivergenceFocus | null
   maPeriods?: number[]
+  maAvailablePeriods?: number[]
+  lineWidths?: ChanlunLineWidths
   result: ChanlunResult
   layers: {
     bis: boolean
@@ -33,6 +36,8 @@ const props = defineProps<{
     bcs: boolean
   }
 }>()
+const emit = defineEmits<{ 'update:maPeriods': [periods: number[]] }>()
+const availableMA = computed(() => [...new Set(props.maAvailablePeriods ?? props.maPeriods ?? [])].sort((a, b) => a - b))
 
 const container = ref<HTMLDivElement>()
 const indicators = ref<Array<{ id: number; type: TechnicalIndicator; params: IndicatorParams; rows: Array<Record<string, unknown>> }>>([
@@ -301,12 +306,12 @@ function buildOption(): echarts.EChartsCoreOption {
       symbol: 'circle',
       symbolSize: 3,
       connectNulls: false,
-      lineStyle: { color: '#79b9ef', width: 1.35, opacity: 0.78 },
+      lineStyle: { color: '#79b9ef', width: structureLineWidth('bi', props.lineWidths?.bi), opacity: 0.78 },
       itemStyle: { color: '#a6d4f8', borderColor: '#1a2630', borderWidth: 0.8 },
       emphasis: {
         focus: 'series',
         scale: 1.45,
-        lineStyle: { color: '#9bcefa', width: 2, opacity: 1 },
+        lineStyle: { color: '#9bcefa', width: emphasizedLineWidth('bi', props.lineWidths?.bi), opacity: 1 },
       },
       z: 5,
     })
@@ -320,12 +325,12 @@ function buildOption(): echarts.EChartsCoreOption {
       showSymbol: true,
       symbol: 'circle',
       symbolSize: segment.pending ? 3 : 4,
-      lineStyle: { color: '#a88cdb', width: 1.8, opacity: segment.pending ? 0.58 : 0.84, type: segment.pending ? 'dashed' : 'solid' },
+      lineStyle: { color: '#a88cdb', width: structureLineWidth('xd', props.lineWidths?.xd), opacity: segment.pending ? 0.58 : 0.84, type: segment.pending ? 'dashed' : 'solid' },
       itemStyle: { color: '#c8b3ec', borderColor: '#251f31', borderWidth: 0.8 },
       emphasis: {
         focus: 'series',
         scale: 1.35,
-        lineStyle: { color: '#c0a7eb', width: 2.6, opacity: 1 },
+        lineStyle: { color: '#c0a7eb', width: emphasizedLineWidth('xd', props.lineWidths?.xd), opacity: 1 },
       },
       tooltip: {
         valueFormatter: (value: number | string) => price2(value),
@@ -345,7 +350,7 @@ function buildOption(): echarts.EChartsCoreOption {
       return { ...series, name, xAxisIndex: axis, yAxisIndex: axis }
     })
   })
-  const averages = [...new Set(props.maPeriods ?? [])].sort((a, b) => a - b).map(period => ({
+  const averages = availableMA.value.map(period => ({
     name: `MA${period}`, type: 'line', showSymbol: false, connectNulls: false,
     data: props.bars.map((_, i) => i + 1 < period ? null : props.bars.slice(i + 1 - period, i + 1).reduce((sum, bar) => sum + bar.close, 0) / period),
     lineStyle: { width: 1.2, color: movingAverageColor(period) },
@@ -416,6 +421,10 @@ function buildOption(): echarts.EChartsCoreOption {
         type: 'scroll', top: 0, right: 28,
         show: averages.length > 0,
         data: averages.map(item => item.name),
+        selected: movingAverageSelection(availableMA.value, props.maPeriods ?? []),
+        inactiveColor: '#626977',
+        pageIconColor: '#9298a4', pageIconInactiveColor: '#363943',
+        pageTextStyle: { color: '#858b98' },
         itemWidth: 12, itemHeight: 3, itemGap: 12, icon: 'roundRect',
         textStyle: { color: '#9298a4', fontSize: 10 },
       },
@@ -508,7 +517,15 @@ function buildOption(): echarts.EChartsCoreOption {
 
 function render() {
   if (!container.value || !props.bars.length) return
-  chart ??= echarts.init(container.value, 'dark')
+  if (!chart) {
+    chart = echarts.init(container.value, 'dark')
+    chart.on('legendselectchanged', (event: unknown) => {
+      const { name, selected } = event as { name: string; selected: Record<string, boolean> }
+      if (availableMA.value.some(period => name === `MA${period}`)) {
+        emit('update:maPeriods', availableMA.value.filter(period => selected[`MA${period}`] !== false))
+      }
+    })
+  }
   const current = (chart.getOption() ?? {}) as { dataZoom?: unknown[]; legend?: Array<{selected?: Record<string, boolean>}> }
   const identity = `${props.result.code}:${props.result.frequency}`
   const sameSnapshot = renderedBars === props.bars && renderedIdentity === identity
@@ -525,7 +542,7 @@ function render() {
   if (sameSnapshot) {
     const selected = Object.assign({}, ...((current.legend ?? []).map(legend => legend.selected ?? {})))
     for (const legend of option.legend as Array<Record<string, unknown>>) {
-      legend.selected = selected
+      legend.selected = { ...selected, ...movingAverageSelection(availableMA.value, props.maPeriods ?? []) }
     }
   }
   renderedBars = props.bars
@@ -575,7 +592,7 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-watch(() => [props.result, props.layers, props.maPeriods, props.focus], render, { deep: true })
+watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths], render, { deep: true })
 watch(() => [props.bars, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
 </script>
 

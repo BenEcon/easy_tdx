@@ -6,15 +6,21 @@ import ChanlunChart from '../components/ChanlunChart.vue'
 import ConfirmationReplay from '../components/ConfirmationReplay.vue'
 import DecompositionInspector from '../components/DecompositionInspector.vue'
 import ExtensionHierarchyInspector from '../components/ExtensionHierarchyInspector.vue'
+import EngineeringTrendInspector from '../components/EngineeringTrendInspector.vue'
+import LayeredOwnershipInspector from '../components/LayeredOwnershipInspector.vue'
+import ReleasedRecursionInspector from '../components/ReleasedRecursionInspector.vue'
+import ReleaseResearchDesk from '../components/ReleaseResearchDesk.vue'
 import ExpansionInspector from '../components/ExpansionInspector.vue'
 import ChartFrame from '../components/ChartFrame.vue'
 import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
-import { movingAverageColor } from '../moving-averages'
+import { createMovingAverageSettings, movingAverageColor } from '../moving-averages'
+import { DEFAULT_LINE_WIDTHS, MIN_LINE_WIDTH, MAX_LINE_WIDTH, LINE_WIDTH_STEP, structureLineWidth, type StructureLine } from '../chanlun-line-width'
 import { divergenceEvidence, divergenceName, signalEvidence } from '../divergence-evidence'
 import { divergenceFocus, type DivergenceFocus } from '../divergence-focus'
 import { expansionFocus } from '../expansion-focus'
+import { releasedFocus, type ReleaseFocusMode } from '../released-focus'
 import { centreEvidence, centreState, segmentEvidence, segmentsConnected } from '../structure-evidence'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
 import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchRecentBars, formatError } from '../api'
@@ -26,8 +32,19 @@ import { useMarketPreferences } from '../market-preferences'
 
 const route = useRoute()
 const code = useSelectedStock()
-const maSettings = ref([5, 10, 20, 30, 60, 120].map(period => ({ period, enabled: period === 5 || period === 10 })))
+const lineWidths = ref({ ...DEFAULT_LINE_WIDTHS })
+const lineWidthOptions: Array<{ key: StructureLine; label: string; color: string }> = [
+  { key: 'bi', label: '笔', color: '#79b9ef' },
+  { key: 'xd', label: '线段', color: '#a88cdb' },
+]
+const defaultLineWidths = computed(() => lineWidthOptions.every(item => lineWidths.value[item.key] === DEFAULT_LINE_WIDTHS[item.key]))
+const maSettings = ref(createMovingAverageSettings())
 const maPeriods = computed(() => [...new Set(maSettings.value.filter(item => item.enabled).map(item => item.period))].sort((a, b) => a - b))
+const maAvailablePeriods = computed(() => maSettings.value.map(item => item.period))
+function setVisibleMA(periods: number[]) {
+  const enabled = new Set(periods)
+  maSettings.value.forEach(item => { item.enabled = enabled.has(item.period) })
+}
 function setMAPeriod(index: number, value: number) {
   if (Number.isFinite(value)) maSettings.value[index]!.period = Math.max(1, Math.min(800, Math.round(value)))
 }
@@ -179,6 +196,10 @@ async function jumpToConfirmation(position: number) {
     replaySlider.value?.scrollIntoView({ block: 'center' })
     replaySlider.value?.focus({ preventScroll: true })
   }
+}
+async function locateReleased(id: string, mode: ReleaseFocusMode) {
+  const focus = releasedFocus(result.value?.released_movement_recursion, id, bars.value.length, mode)
+  if (focus) await showStructureFocus(focus)
 }
 const { adjustMode } = useMarketPreferences()
 watch([category, count, adjustMode], () => {
@@ -396,14 +417,14 @@ onMounted(async () => {
         <div class="ma-settings">
           <div v-for="(item, index) in maSettings" :key="index" class="ma-setting" :class="{ enabled: item.enabled }">
             <label class="ma-toggle">
-              <input v-model="item.enabled" type="checkbox" :aria-label="`显示第 ${index + 1} 条均线`" />
+              <input v-model="item.enabled" type="checkbox" :aria-label="`显示 MA${item.period}`" />
               <i :style="{ background: movingAverageColor(item.period) }" aria-hidden="true"></i>
-              <span>均线 {{ index + 1 }}</span>
+              <span>MA{{ item.period }}</span>
             </label>
             <NumberStepper :model-value="item.period" :min="1" :max="800" :step="1" compact :aria-label="`第 ${index + 1} 条均线周期`" @update:model-value="setMAPeriod(index, $event)" />
           </div>
         </div>
-        <p class="ma-help">输入周期后生效；相同周期合并显示。</p>
+        <p class="ma-help">默认显示 MA5、MA10；其他均线勾选后显示。周期可修改，相同周期合并。</p>
       </details>
 
       <section class="inspector-section layer-section">
@@ -412,6 +433,19 @@ onMounted(async () => {
           <span>{{ item.label }}</span>
           <input v-model="layers[item.key]" type="checkbox" />
         </label>
+      </section>
+
+      <section class="inspector-section line-width-section" aria-label="结构线宽">
+        <div class="line-width-heading">
+          <h3>线条粗细</h3>
+          <button type="button" class="line-width-reset" :disabled="defaultLineWidths" @click="lineWidths = { ...DEFAULT_LINE_WIDTHS }">恢复默认</button>
+        </div>
+        <div v-for="item in lineWidthOptions" :key="item.key" class="line-width-row">
+          <span class="line-width-label"><i :style="{ borderTopColor: item.color, borderTopWidth: `${lineWidths[item.key]}px` }" aria-hidden="true"></i>{{ item.label }}</span>
+          <NumberStepper :model-value="lineWidths[item.key]" :min="MIN_LINE_WIDTH" :max="MAX_LINE_WIDTH" :step="LINE_WIDTH_STEP" compact :aria-label="`${item.label}线宽`" @update:model-value="lineWidths[item.key] = structureLineWidth(item.key, $event)" />
+          <span class="line-width-unit">px</span>
+        </div>
+        <p class="ma-help">0.5–6 px · 即时生效，个股与行业同步。</p>
       </section>
 
       <div class="method-note">
@@ -542,12 +576,18 @@ onMounted(async () => {
           <p v-if="result.structure_metadata" class="structure-scope">线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。</p>
           <p v-if="result.structure_metadata?.initial_unresolved_bars" class="structure-scope">开头 {{ result.structure_metadata.initial_unresolved_bars }} 根 K 线缺少前置方向，仅保留行情，不推定包含方向。</p>
           <div v-if="snapshotBars.length" class="replay-toolbar" :aria-busy="replayBusy || industryLoading">
-            <strong>{{ replayActive ? '历史回放' : '快照末尾' }}</strong>
-            <button :disabled="replayBusy || loading || industryLoading || bars.length <= 1" aria-label="回放上一根 K 线" @click="seekReplay(bars.length - 1)">上一根</button>
-            <input ref="replaySlider" v-model.number="replayPosition" type="range" min="1" :max="snapshotBars.length" :disabled="replayBusy || loading || industryLoading" aria-label="K 线回放位置" @change="seekReplay(replayPosition)" />
-            <button :disabled="replayBusy || loading || industryLoading || !replayActive" aria-label="回放下一根 K 线" @click="seekReplay(bars.length + 1)">下一根</button>
-            <span role="status">{{ replayBusy ? '重新计算…' : `${replayDate} · ${bars.length}/${snapshotBars.length}` }}</span>
-            <button :disabled="replayBusy || loading || industryLoading || !replayActive" @click="seekReplay(snapshotBars.length)">返回末尾</button>
+            <div class="replay-main">
+              <div class="replay-controls">
+                <strong>{{ replayActive ? '历史回放' : '快照末尾' }}</strong>
+                <button :disabled="replayBusy || loading || industryLoading || bars.length <= 1" aria-label="回放上一根 K 线" @click="seekReplay(bars.length - 1)">上一根</button>
+                <input ref="replaySlider" v-model.number="replayPosition" type="range" min="1" :max="snapshotBars.length" :disabled="replayBusy || loading || industryLoading" aria-label="K 线回放位置" @change="seekReplay(replayPosition)" />
+                <button :disabled="replayBusy || loading || industryLoading || !replayActive" aria-label="回放下一根 K 线" @click="seekReplay(bars.length + 1)">下一根</button>
+              </div>
+              <div class="replay-position">
+                <span role="status">{{ replayBusy ? '重新计算…' : `${replayDate} · ${bars.length}/${snapshotBars.length}` }}</span>
+                <button :disabled="replayBusy || loading || industryLoading || !replayActive" @click="seekReplay(snapshotBars.length)">返回末尾</button>
+              </div>
+            </div>
             <small>按当前快照回放，不代表历史当天的数据版本；个股与行业以个股所选 K 线时间为共同截止点。</small>
           </div>
           <div class="industry-toolbar">
@@ -560,7 +600,7 @@ onMounted(async () => {
           </div>
           <div v-if="focusedDivergence && industryView !== 'industry'" ref="focusToolbar" class="focus-toolbar" tabindex="-1" aria-label="图表区间核验">
             <strong>{{ focusedDivergence.title }}</strong>
-            <span>{{ focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
+            <span>{{ focusedDivergence.scope === 'released' ? '当前工程结构依据 · 反向确认不计入价格来源' : focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
             <button @click="focusedDivergence = null">清除区间定位</button>
           </div>
           <ChartFrame v-if="industryView !== 'industry'" :title="`个股 · ${result.code}`" description="均线与缠论结构叠加；可在下方选择技术指标。">
@@ -573,7 +613,7 @@ onMounted(async () => {
                 <span class="legend-bc">背驰</span>
               </div>
             </template>
-            <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" :focus="focusedDivergence" />
+            <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
           </ChartFrame>
           <template v-if="industryView !== 'stock'">
             <p v-if="industryLoading" role="status">正在加载行业结构…</p>
@@ -581,7 +621,7 @@ onMounted(async () => {
             <p v-else-if="industryAlignment?.status === 'unavailable'" class="structure-scope" role="status">行业快照在 {{ replayDate }} 及以前没有行情，未补造数据。可向后回放或扩大历史窗口。</p>
             <p v-else-if="industryAlignment" class="structure-scope">共同截止：{{ replayDate }} · 行业最新：{{ industryAlignment.industry_as_of?.replace(' 00:00:00', '') }}{{ industryAlignment.status === 'earlier' ? '（行业数据早于截止时间）' : '（时间已对齐）' }}</p>
             <ChartFrame v-if="industryData && !industryLoading && !industryError" :title="`行业 · ${industries.find(item => item.value === industryCode)?.label}`" description="行业指数 · 不复权；与个股按共同截止时间重新计算。">
-              <ChanlunChart :bars="industryData.bars" :result="industryData.result" :layers="layers" :ma-periods="maPeriods" />
+              <ChanlunChart :bars="industryData.bars" :result="industryData.result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" @update:ma-periods="setVisibleMA" />
             </ChartFrame>
           </template>
         </section>
@@ -678,6 +718,10 @@ onMounted(async () => {
             </section>
             <DecompositionInspector :data="result.base_decomposition" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <ExtensionHierarchyInspector :data="result.extension_hierarchy" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
+            <EngineeringTrendInspector :data="result.engineering_movement_hierarchy ?? result.engineering_trend_hierarchy" :historical="!!result.layered_movement_ownership" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
+            <ReleasedRecursionInspector :data="result.released_movement_recursion" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" @locate="locateReleased" />
+            <ReleaseResearchDesk :code="result.code" :category="category" :bars="bars" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
+            <LayeredOwnershipInspector :data="result.recursive_movement_ownership ?? result.layered_movement_ownership" :historical="!!result.released_movement_recursion" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <ExpansionInspector :data="result.expansion_regrouping" :versions="result.regrouping_versions" :total="snapshotBars.length" :visible-count="bars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" @locate="locateExpansion" />
           </div>
 
@@ -731,12 +775,16 @@ onMounted(async () => {
 .structure-evidence summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 .center-row { flex-wrap: wrap; padding: 8px 0; row-gap: 0; }
 .center-row > .structure-evidence { flex-basis: 100%; }
-.replay-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 0; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.replay-toolbar { display: grid; gap: 8px; padding: 12px 0; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+.replay-main { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 24px; }
+.replay-controls { display: grid; grid-template-columns: auto auto minmax(60px, 1fr) auto; align-items: center; gap: 10px; flex: 1 1 330px; min-width: 0; }
+.replay-position { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px 12px; margin-left: auto; }
+.replay-position [role="status"] { white-space: nowrap; }
 .replay-toolbar strong { font-size: 11px; font-weight: 500; white-space: nowrap; }
 .replay-toolbar button { min-height: 28px; padding: 3px 9px; font-size: 11px; white-space: nowrap; transition: background .15s ease; }
-.replay-toolbar input { flex: 1 1 120px; min-width: 90px; max-width: 320px; accent-color: var(--accent); }
+.replay-toolbar input { width: 100%; min-width: 0; margin: 0; accent-color: var(--accent); cursor: pointer; }
 .replay-toolbar span { font-variant-numeric: tabular-nums; }
-.replay-toolbar small { flex-basis: 100%; color: var(--text-dim); line-height: 1.5; }
+.replay-toolbar small { color: var(--text-dim); line-height: 1.6; }
 .replay-toolbar :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .replay-toolbar button { transition: none; } }
 .structure-scope { margin: 0; padding: 10px 14px; color: #a0a5b0; font-size: 12px; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,.07); }
@@ -833,6 +881,16 @@ onMounted(async () => {
 
 .layer-section { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
 .layer-section h3 { grid-column: 1 / -1; }
+.line-width-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.inspector-section .line-width-heading h3 { margin: 0; }
+.line-width-reset { padding: 3px 0 3px 8px; border: 0; background: transparent; color: var(--text-muted); font-size: 10px; cursor: pointer; }
+.line-width-reset:hover:not(:disabled) { color: var(--text); }
+.line-width-reset:disabled { opacity: .35; cursor: default; }
+.line-width-reset:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+.line-width-row { display: grid; grid-template-columns: minmax(0, 1fr) 84px 16px; align-items: center; gap: 8px; min-height: 38px; }
+.line-width-label { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text-muted); }
+.line-width-label i { width: 20px; flex: 0 0 20px; border-top-style: solid; border-radius: 2px; }
+.line-width-unit { font-size: 10px; color: var(--text-dim); }
 .layer-row {
   display: flex;
   align-items: center;

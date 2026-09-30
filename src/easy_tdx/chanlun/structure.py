@@ -97,7 +97,8 @@ def _valid_index(value: object) -> bool:
     return isinstance(value, Integral) and not isinstance(value, bool) and value >= 0
 
 
-def _iter_confirmed_segments(segments: Iterable[XD], bar_count: int | None = None) -> Iterator[XD]:
+def _iter_confirmed_segments(segments: Iterable[XD], bar_count: int | None = None,
+                             audit: list | None = None) -> Iterator[XD]:
     """Stop at the first invalid link on BOTH merged and raw candle timelines.
 
     A matching merged ordinal and price alone cannot identify a shared endpoint:
@@ -106,13 +107,21 @@ def _iter_confirmed_segments(segments: Iterable[XD], bar_count: int | None = Non
     """
     previous: XD | None = None
     previous_end: int | None = None
-    for segment in segments:
+    def reject(reason, **values):
+        if audit is not None:
+            audit.append({'position': position, 'source_index': repr(segment.index),
+                          'reason': reason, 'values': {k: repr(v) for k, v in values.items()}})
+    for position, segment in enumerate(segments):
         known = segment.confirmed_index
         if not _valid_index(known) or (bar_count is not None and known >= bar_count):
+            reject('confirmation_unavailable', confirmed_index=known, bar_count=bar_count)
             break
         if not all(_valid_index(value) for value in (
                 segment.index, segment.start.k.index, segment.end.k.index,
                 segment.start.k.k_index, segment.end.k.k_index)):
+            reject('invalid_source_indices', segment_index=segment.index,
+                   start_merged=segment.start.k.index, end_merged=segment.end.k.index,
+                   start_tail=segment.start.k.k_index, end_tail=segment.end.k.k_index)
             break
         start, end = segment.start.val, segment.end.val
         if (not all(isfinite(value) for value in (start, end, segment.low, segment.high))
@@ -121,11 +130,18 @@ def _iter_confirmed_segments(segments: Iterable[XD], bar_count: int | None = Non
                 or not segment.low <= min(start, end) <= max(start, end) <= segment.high
                 or start == end
                 or segment.direction != (Direction.UP if end > start else Direction.DOWN)):
+            reject('invalid_source_geometry', start=start, end=end, low=segment.low,
+                   high=segment.high, direction=segment.direction, confirmed_index=known,
+                   start_merged=segment.start.k.index, end_merged=segment.end.k.index,
+                   end_tail=segment.end.k.k_index)
             break
         raw_start, raw_end = extreme_index(segment.start), extreme_index(segment.end)
         if (not _valid_index(raw_start) or not _valid_index(raw_end)
                 or not (raw_start <= segment.start.k.k_index < raw_end
                         <= segment.end.k.k_index <= known)):
+            reject('invalid_raw_anchor_order', raw_start=raw_start, raw_end=raw_end,
+                   start_tail=segment.start.k.k_index, end_tail=segment.end.k.k_index,
+                   confirmed_index=known)
             break
         if previous is not None:
             connected = (previous.end.k.index == segment.start.k.index
@@ -135,14 +151,20 @@ def _iter_confirmed_segments(segments: Iterable[XD], bar_count: int | None = Non
             if (not connected or segment.index != previous.index + 1
                     or previous.direction == segment.direction
                     or segment.confirmed_index < previous.confirmed_index):
+                reject('source_chain_disconnected', connected=connected,
+                       consecutive=segment.index == previous.index + 1,
+                       alternating=previous.direction != segment.direction,
+                       chronological=segment.confirmed_index >= previous.confirmed_index)
                 break
         previous, previous_end = segment, raw_end
         yield segment
 
 
-def confirmed_segment_prefix(segments: list[XD], bar_count: int | None = None) -> list[XD]:
+def confirmed_segment_prefix(segments: list[XD], bar_count: int | None = None,
+                             *, audit: list | None = None) -> list[XD]:
     """Materialize the full valid prefix; retain the public batch/list contract."""
-    return list(_iter_confirmed_segments(segments, bar_count))
+    return list(_iter_confirmed_segments(segments, bar_count,
+                                        **({'audit': audit} if audit is not None else {})))
 
 
 def iter_structural_steps(segments: Iterable[XD]) -> Iterator[

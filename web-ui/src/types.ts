@@ -209,6 +209,7 @@ export interface ExpansionCandidate {
 }
 
 export interface ExpansionPartAudit {
+  engineering_completion?: HistoricalEngineeringCompletion | null
   part_index: number; source_segment_indices: number[]
   start_extreme: number; end_extreme: number
   start_is_extreme: boolean; end_is_extreme: boolean
@@ -221,6 +222,15 @@ export interface ExpansionPartAudit {
     start_value: number; end_value: number; source_part_index: number | null
     start_date?: string; end_date?: string; known_date?: string
   } | null
+}
+
+export interface HistoricalEngineeringCompletion {
+  rule: string; movement_rule: string; status: 'historical_engineering_match'
+  movement_id: string; kind: 'trend' | 'consolidation'; level: 1; direction: 'up' | 'down'
+  source_segment_indices: number[]; start_index: number; end_index: number
+  start_value: number; end_value: number; known_index: number; known_date?: string
+  as_of_index: number; opposite_id: string; macd_evidence: Record<string, number>
+  natural_type_complete: false; eligible_for_recursive_input: false
 }
 
 export interface ExpansionAudit {
@@ -286,7 +296,155 @@ export interface RegroupingVersions {
   accepted_segment_count: number; rejected_suffix_count: number; cases: RegroupingCase[]
 }
 
+export interface EngineeringTrend {
+  kind?: 'trend' | 'consolidation'
+  id: string; level: number; direction: 'up' | 'down'; engineering_complete: true
+  start_index: number; end_index: number; known_index: number
+  start_date?: string; end_date?: string; known_date?: string; divergence_known_date?: string
+  start_value: number; end_value: number; source_segment_indices: number[]
+  child_ids: string[]; opposite_id: string; macd_evidence: Record<string, number>
+  centres: { source_unit_indices: number[]; zd: number; zg: number; low: number; high: number }[]
+}
+
+export interface EngineeringTrendHierarchy {
+  scope: 'engineering_trends_only'; highest_completed_trend_level: number
+  natural_type_recursion_ready: false; accepted_segment_count: number; rejected_suffix_count: number
+  levels: { level: number; input_count: number; input_chain_count: number
+    types: EngineeringTrend[]; unresolved_input_ids: string[] }[]
+  remaining_input_ids: string[]
+  structure_layers?: RecursiveStructureLayer[]
+}
+
+export interface EngineeringMovementHierarchy extends Omit<EngineeringTrendHierarchy,
+  'scope' | 'highest_completed_trend_level'> {
+  scope: 'engineering_mixed_movements'
+  highest_completed_movement_level: number
+}
+
+export interface InternalMovement extends EngineeringTrend {
+  owner_id: string; eligible_for_internal_recursion: true; eligible_for_external_recursion: false
+  original_known_index?: number; original_known_date?: string
+  ownership_known_index?: number; ownership_known_date?: string
+  current_owner_id?: string
+  current_owner_known_index?: number; current_owner_known_date?: string
+  ownership_transfers?: { from_owner_id: string; to_owner_id: string; known_index: number; known_date?: string }[]
+}
+
+export interface ReleasedPlacement {
+  accepted: boolean; reason: string | null; known_index: number; known_date?: string
+  conflicts: { reason: string; domain_id: string }[]
+  enclosing_domain_ids: string[]; released_domain_ids: string[]
+  eligible_for_external_recursion: boolean
+}
+
+export interface ReleasedMovement extends EngineeringTrend {
+  opposite_start_index?: number; opposite_end_index?: number
+  rule: string; theory_equivalence_claim: false
+  original_known_index: number; original_known_date?: string
+  required_domain_ids: string[]; current_placement: ReleasedPlacement
+  eligible_for_external_recursion: boolean; on_frontier: boolean
+  represented_by_id: string | null; eligible_for_trading: false
+}
+
+export interface ReleasedDomain {
+  id: string; input_level: number; required_parent_level: number
+  known_index: number; known_date?: string; source_segment_indices: number[]
+  claim_kinds: string[]; released_by_id: string | null
+  context_known_index: number; source_unit_ids: string[]
+  member_admissions: { source_segment_indices: number[]; admitted_index: number }[]
+  status: 'retained' | 'released_by_parent'
+}
+
+export interface ReleasedRecursion {
+  rule: string; scope: string; as_of_index: number | null; as_of_date?: string
+  accepted_segment_count: number; rejected_suffix_count: number
+  highest_completed_level: number; highest_external_level: number
+  levels: { level: number; types: ReleasedMovement[] }[]
+  domains: ReleasedDomain[]; frontier_ids: string[]
+  external_frontier_ids: string[]; internal_frontier_ids: string[]; deferred_ids: string[]
+  unresolved_segment_indices: number[]
+  source_cover: { movement_id: string | null; level: number
+    status: 'external_completed' | 'internal_completed' | 'unresolved'
+    source_segment_indices: number[]; start_index: number; end_index: number }[]
+  theory_equivalence_claim: false; eligible_for_trading: false
+}
+
+export interface NestedOwnership {
+  id: string; parent_owner_id: string; input_level: number; known_index: number; known_date?: string
+  source_segment_indices: number[]; source_unit_ids: string[]
+  claim_kinds: ('promotion' | 'expansion')[]
+  natural_type_complete: false; eligible_for_external_recursion: false
+  member_admissions: { unit_id: string; admitted_index: number; admitted_date?: string }[]
+  lifecycle_events?: OwnershipLifecycleEvent[]
+}
+
+export interface OwnershipLifecycleEvent {
+  id: string; known_index: number; known_date?: string
+  kind: 'formed' | 'expanded' | 'merged'; previous_owner_ids: string[]
+  first_source_segment_index: number; last_source_segment_index: number
+  source_unit_count: number; added_unit_ids: string[]
+}
+
+export interface OwnershipVersion {
+  id: string; known_index: number; known_date?: string; source_segment_indices: number[]
+  previous_owner_ids: string[]; highest_completed_internal_level: number
+  natural_type_complete: false; eligible_for_external_recursion: false
+  levels: { level: number; types: InternalMovement[] }[]
+  frontier_ids: string[]; unresolved_segment_indices: number[]
+  claims: { key: string; kind: 'promotion' | 'expansion'; sources: number[] }[]
+  nested_owners?: NestedOwnership[]
+  blocked_ownership_candidates?: BlockedOwnershipCandidate[]
+}
+
+export interface BlockedOwnershipCandidate {
+  reason: string; source_unit_ids: string[]; original_known_index: number; original_known_date?: string
+  ownership_conflict?: {
+    input_level: number; source_segment_indices: number[]; source_domains: number[][]
+    opposite: { unit_id: string; source_segment_indices: number[]; known_index: number
+      known_date?: string; owner_source_segment_indices: number[] | null }
+  }
+}
+
+export interface LayeredMovementOwnership {
+  rule: string; natural_type_recursion_ready: false; versions: OwnershipVersion[]
+  current_owner_ids: string[]; external_m1_ids: string[]; external_unresolved_segment_indices: number[]
+  history_format?: 'summary_v1'
+  history_summaries?: Pick<OwnershipVersion, 'id' | 'known_index' | 'known_date' | 'source_segment_indices' | 'highest_completed_internal_level'>[]
+}
+
+export interface RecursiveStructureLayer {
+  input_level: number
+  chains: {
+    id: string; input_ids: string[]; as_of_index: number; as_of_date?: string
+    centres: {
+      id: string; state: string; zd: number; zg: number; low: number; high: number
+      formed_index: number; formed_date?: string; exited_index: number | null; exited_date?: string | null
+      source_unit_ids: string[]; source_segment_indices: number[]
+      departure_id: string | null; return_id: string | null; relation_current: string
+      transitions: { state: string; unit_id: string; known_index: number; known_date?: string }[]
+      member_admissions: RecursiveAdmission[]
+    }[]
+    extension_proofs: RecursiveExtensionProof[]
+  }[]
+}
+
+export interface RecursiveAdmission {
+  unit_id: string; witness_id: string; unit_confirmed_index: number; unit_confirmed_date?: string
+  admitted_index: number; admitted_date?: string; reason: string
+}
+
+export interface RecursiveExtensionProof {
+  id: string; input_level: number; relative_depth: number; known_index: number; known_date?: string
+  zd: number; zg: number; source_unit_ids: string[]; source_segment_indices: number[]
+  member_admissions: RecursiveAdmission[]; children: RecursiveExtensionProof[]
+}
+
 export interface ChanlunResult {
+  released_movement_recursion?: ReleasedRecursion
+  engineering_movement_hierarchy?: EngineeringMovementHierarchy
+  layered_movement_ownership?: LayeredMovementOwnership
+  recursive_movement_ownership?: LayeredMovementOwnership
+  engineering_trend_hierarchy?: EngineeringTrendHierarchy
   regrouping_versions?: RegroupingVersions
   expansion_regrouping?: ExpansionRegrouping
   extension_hierarchy?: ExtensionHierarchy

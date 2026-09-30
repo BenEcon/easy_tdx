@@ -81,6 +81,28 @@ def centre_extension_proof(centre: StructuralCentre, by_id: dict[int, XD],
     return proof
 
 
+def promoted_member_times(segments: list[XD], bar_count: int | None = None) -> dict[int, int]:
+    """Earliest time each member belongs to a proven promoted centre.
+
+    The first nine members prove promotion, but do not bound its later ownership.
+    Every admitted member is protected from a fresh same-level local restart at
+    max(promotion time, admission time). A pending departure or an external return
+    is NOT an owned member. Final membership must never backdate this guard.
+    This is the engineering recursion's conservative level policy, not a claim
+    that lower-level structures cannot exist inside a higher-level centre.
+    """
+    available = confirmed_segment_prefix(segments, bar_count)
+    by_id = {item.index: item for item in available}
+    times = {}
+    for centre in find_structural_centres(available):
+        proof = centre_extension_proof(centre, by_id)
+        if proof is None:
+            continue
+        for entry in centre.member_admissions:
+            times[entry['segment_index']] = max(proof['known_index'], entry['admitted_index'])
+    return times
+
+
 def extension_hierarchy(segments: list[XD], bar_count: int | None = None) -> dict:
     """Return immutable formation proofs at their earliest committed-prefix time.
 

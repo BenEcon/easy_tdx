@@ -8,10 +8,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from easy_tdx.chanlun.input_data import ChanlunInputError
+from easy_tdx.chanlun.ownership_history import OwnershipHistoryMode
 from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
 from easy_tdx.web.deps import get_client, get_mac_client_optional
-from easy_tdx.web.schemas import ChanlunRequest
 from easy_tdx.web.routers.chanlun_replay import router as replay_router
+from easy_tdx.web.schemas import ChanlunRequest
 
 router = APIRouter(tags=["chanlun"])
 router.include_router(replay_router)
@@ -55,6 +56,7 @@ class IndustryRequest(BaseModel):
 async def industry_analyze(
     req: IndustryRequest,
     mac_client: Any | None = Depends(get_mac_client_optional),
+    ownership_history: OwnershipHistoryMode = 'full',
 ) -> dict[str, Any]:
     from easy_tdx.chanlun import ChanlunAnalyser
     from easy_tdx.mac.enums import Adjust
@@ -68,14 +70,16 @@ async def industry_analyze(
     if board is None:
         raise HTTPException(404, "未找到该股票对应的行业")
     period, times = period_times_from_category(category_from_str(req.category))
-    df = await mac_client.get_stock_kline(int(board["market"]), req.board_code, period, 0, req.count, times, adjust=Adjust.NONE)
+    df = await mac_client.get_stock_kline(
+        int(board["market"]), req.board_code, period, 0, req.count, times, adjust=Adjust.NONE)
     if df.empty:
         raise HTTPException(404, "该行业在所选周期暂无行情")
     try:
         result = ChanlunAnalyser(code=req.board_code, frequency=req.category).process_klines(df)
     except ChanlunInputError as exc:
         raise HTTPException(502, f'行业行情数据异常：{exc}') from exc
-    return {"bars": DataFrameResponse.from_dataframe(df).data, "result": result.to_dict()}
+    return {"bars": DataFrameResponse.from_dataframe(df).data,
+            "result": result.to_dict(ownership_history=ownership_history)}
 
 
 @router.post("/chanlun/analyze")
@@ -83,6 +87,7 @@ async def chanlun_analyze(
     req: ChanlunRequest,
     client: Any = Depends(get_client),
     mac_client: Any | None = Depends(get_mac_client_optional),
+    ownership_history: OwnershipHistoryMode = 'full',
 ) -> dict[str, Any]:
     """执行缠论分析。
 
@@ -123,4 +128,4 @@ async def chanlun_analyze(
     except ChanlunInputError as exc:
         raise HTTPException(502, f'股票行情数据异常：{exc}') from exc
 
-    return result.to_dict()
+    return result.to_dict(ownership_history=ownership_history)

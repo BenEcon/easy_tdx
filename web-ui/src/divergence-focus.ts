@@ -1,11 +1,11 @@
 import type { ChanlunDivergence } from './types'
 
 export interface DivergenceFocus {
-  scope?: 'expansion'
+  scope?: 'expansion' | 'released'
   title: string
   mode: 'ranges' | 'points'
   points: { label: string; index: number }[]
-  ranges: { label: 'A' | 'B' | 'C'; start: number; end: number }[]
+  ranges: { label: string; start: number; end: number }[]
   start: number
   end: number
 }

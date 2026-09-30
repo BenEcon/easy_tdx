@@ -20,14 +20,22 @@ from easy_tdx.chanlun.bi import find_bis
 from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.decomposition import decompose_base_chain
 from easy_tdx.chanlun.divergence_signals import indicator_events, wave_events
+from easy_tdx.chanlun.engineering_completion import link_engineering_completions
+from easy_tdx.chanlun.engineering_trends import (
+    engineering_movement_hierarchy,
+    engineering_trend_hierarchy,
+)
 from easy_tdx.chanlun.expansion_regrouping import expansion_regrouping
 from easy_tdx.chanlun.extension_recursion import extension_hierarchy
 from easy_tdx.chanlun.fractal import find_fractals
 from easy_tdx.chanlun.input_data import prepare_frame, require_chronological
 from easy_tdx.chanlun.kline_merge import merge_klines
+from easy_tdx.chanlun.layered_ownership import layered_movement_ownership
 from easy_tdx.chanlun.macd import calc_macd  # noqa: F401
-from easy_tdx.chanlun.regrouping_versions import regrouping_versions
 from easy_tdx.chanlun.mmd import find_mmds  # noqa: F401
+from easy_tdx.chanlun.ownership_history import OwnershipHistoryMode
+from easy_tdx.chanlun.regrouping_versions import regrouping_versions
+from easy_tdx.chanlun.released_recursion import released_movement_snapshot
 from easy_tdx.chanlun.structure import StructuralCentre, find_structural_centres
 from easy_tdx.chanlun.structure_signals import (
     StructuralSignal,
@@ -103,13 +111,18 @@ class ChanlunResult:
         """
         return extreme_date(fx)
 
-    def to_dict(self) -> dict[str, Any]:
+    def to_dict(self, *, ownership_history: OwnershipHistoryMode = 'full') -> dict[str, Any]:
         """Export an independent JSON-ready snapshot, including nested evidence.
 
         Callers may annotate the payload before encoding or cache an earlier
         export. Neither may share mutable evidence with this result or another
         export. Copy the small evidence trees, not the full candle/line graph.
+
+        Opt-in summary delivery keeps complete current ownership records and
+        every historical address; omitted detail requires original-bar replay.
         """
+        if ownership_history not in ('full', 'summary'):
+            raise ValueError('ownership_history must be full or summary')
         segments_by_id = {segment.index: segment for segment in self.xds}
         pending = self.unfinished_xd
         unfinished = None if pending is None else {
@@ -128,6 +141,40 @@ class ChanlunResult:
             for key in ('start', 'end'):
                 block[f'{key}_date'] = self._fmt_dt(self.klines[block[f'{key}_index']].date)
         hierarchy = extension_hierarchy(self.xds, len(self.klines))
+        trend_hierarchy = engineering_trend_hierarchy(self.xds, self.klines, self.macd)
+        movement_hierarchy = engineering_movement_hierarchy(self.xds, self.klines, self.macd)
+        ownership = layered_movement_ownership(
+            self.xds, self.klines, self.macd, movement_hierarchy,
+            ownership_history=ownership_history)
+        recursive_ownership = layered_movement_ownership(
+            self.xds, self.klines, self.macd, movement_hierarchy, nested=True,
+            ownership_history=ownership_history)
+        released_recursion = released_movement_snapshot(self.xds, self.klines, self.macd)
+        for view in (trend_hierarchy, movement_hierarchy):
+            for level in view['levels']:
+                for trend in level['types']:
+                    for key in ('start', 'end', 'known', 'divergence_known'):
+                        trend[f'{key}_date'] = self._fmt_dt(self.klines[trend[f'{key}_index']].date)
+        def date_recursive_structure(value: Any) -> None:
+            if isinstance(value, list):
+                for child in value:
+                    date_recursive_structure(child)
+            elif isinstance(value, dict):
+                for key, child in list(value.items()):
+                    if key in ('start_index', 'end_index', 'known_index', 'formed_index',
+                               'exited_index', 'admitted_index', 'unit_confirmed_index',
+                               'as_of_index', 'original_known_index', 'ownership_known_index',
+                               'context_known_index', 'divergence_known_index',
+                               'current_owner_known_index'):
+                        value[key.replace('_index', '_date')] = (
+                            self._fmt_dt(self.klines[child].date) if child is not None else None)
+                    else:
+                        date_recursive_structure(child)
+        date_recursive_structure(trend_hierarchy['structure_layers'])
+        date_recursive_structure(movement_hierarchy['structure_layers'])
+        date_recursive_structure(ownership)
+        date_recursive_structure(recursive_ownership)
+        date_recursive_structure(released_recursion)
 
         def date_proof(proof: dict) -> None:
             for key in ('start', 'end', 'known'):
@@ -159,9 +206,13 @@ class ChanlunResult:
                     for key in ('start', 'end', 'known'):
                         evidence[f'{key}_date'] = self._fmt_dt(
                             self.klines[evidence[f'{key}_index']].date)
+                linked = part.get('engineering_completion')
+                if linked is not None:
+                    linked['known_date'] = self._fmt_dt(self.klines[linked['known_index']].date)
         for audit in regrouping['completion_audits']:
             date_audit(audit)
-        versions = regrouping_versions(self.xds, len(self.klines))
+        versions = link_engineering_completions(
+            regrouping_versions(self.xds, len(self.klines)), movement_hierarchy)
 
         def date_cover(cover: dict) -> None:
             cover['as_of_date'] = self._fmt_dt(self.klines[cover['as_of_index']].date)
@@ -199,6 +250,11 @@ class ChanlunResult:
             "bc_count": len(self.bcs),
             "base_decomposition": decomposition,
             "extension_hierarchy": hierarchy,
+            "engineering_trend_hierarchy": trend_hierarchy,
+            "engineering_movement_hierarchy": movement_hierarchy,
+            "layered_movement_ownership": ownership,
+            "recursive_movement_ownership": recursive_ownership,
+            "released_movement_recursion": released_recursion,
             "expansion_regrouping": regrouping,
             "regrouping_versions": versions,
             "structure_metadata": {
@@ -206,6 +262,10 @@ class ChanlunResult:
                 "display_frequency": self.frequency,
                 "base_unit": "confirmed_segment",
                 "recursive_levels_ready": False,
+                "engineering_trend_recursion_ready": True,
+                "engineering_trend_recursion_rule": trend_hierarchy['rule'],
+                "engineering_movement_recursion_ready": True,
+                "engineering_movement_recursion_rule": movement_hierarchy['rule'],
                 "initial_unresolved_bars": (self.cklines[0].klines[0].index
                                             if self.cklines and self.cklines[0].klines else 0),
                 "extension_regrouping_ready": True,

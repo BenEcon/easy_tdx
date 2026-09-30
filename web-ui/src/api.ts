@@ -32,6 +32,26 @@ import type {
 
 const BASE = '/api/v1'
 
+type ResearchRequest = { code: string; category: Category; bars: Bar[]; visible_count: number }
+export function replayExhaustive(req: ResearchRequest & {cursor?: string | null; page_size?: number}, signal?: AbortSignal) {
+  return request<import('./exhaustive-research').SearchPage>('/chanlun/replay/exhaustive', {method: 'POST', body: JSON.stringify(req), signal})
+}
+export function replayCandidateAudit(req: ResearchRequest & {solution_token?: string; offset?: number}, signal?: AbortSignal) {
+  return request<import('./exhaustive-research').CandidateAudit>('/chanlun/replay/candidate-audit', {method: 'POST', body: JSON.stringify(req), signal})
+}
+
+export function replayReleaseHistory(req: { code: string; category: Category; bars: Bar[]; visible_count: number; start_count: number }, signal?: AbortSignal) {
+  return request<import('./release-review').ReleaseHistoryBatch>('/chanlun/replay/release-history', {
+    method: 'POST', body: JSON.stringify(req), signal,
+  })
+}
+
+export function replayReleaseComparison(req: { code: string; category: Category; bars: Bar[]; visible_count: number }, signal?: AbortSignal) {
+  return request<import('./release-review').ReleaseComparison>('/chanlun/replay/release-comparison', {
+    method: 'POST', body: JSON.stringify(req), signal,
+  })
+}
+
 export interface DataRowsResponse {
   data: Array<Record<string, unknown>>
   count: number
@@ -591,7 +611,7 @@ export async function fetchRecentBars(
 
 /** 执行完整缠论管道：K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰。 */
 export function analyzeIndustry(req: { stock_market: string; stock_code: string; board_code: string; category: Category; count: number }): Promise<{ bars: Bar[]; result: ChanlunResult }> {
-  return request('/chanlun/industry', { method: 'POST', body: JSON.stringify(req) })
+  return request('/chanlun/industry?ownership_history=summary', { method: 'POST', body: JSON.stringify(req) })
 }
 
 export function fetchStockIndustries(market: string, code: string): Promise<DataRowsResponse> {
@@ -599,7 +619,7 @@ export function fetchStockIndustries(market: string, code: string): Promise<Data
 }
 
 export function replayChanlun(req: { code: string; category: Category; bars: Bar[]; visible_count: number }): Promise<ChanlunResult> {
-  return request('/chanlun/replay', { method: 'POST', body: JSON.stringify(req) })
+  return request('/chanlun/replay?ownership_history=summary', { method: 'POST', body: JSON.stringify(req) })
 }
 
 export function replayChanlunComparison(req: {
@@ -610,7 +630,7 @@ export function replayChanlunComparison(req: {
   industry: { bars: Bar[]; result: ChanlunResult } | null
   alignment: { as_of: string; industry_as_of: string | null; status: 'aligned' | 'earlier' | 'unavailable' }
 }> {
-  return request('/chanlun/replay/compare', { method: 'POST', body: JSON.stringify(req) })
+  return request('/chanlun/replay/compare?ownership_history=summary', { method: 'POST', body: JSON.stringify(req) })
 }
 
 export async function analyzeChanlun(req: {
@@ -621,7 +641,7 @@ export async function analyzeChanlun(req: {
   start?: number
   adjust?: AdjustMode
 }): Promise<ChanlunResult> {
-  const resp = await fetch(`${BASE}/chanlun/analyze`, {
+  const resp = await fetch(`${BASE}/chanlun/analyze?ownership_history=summary`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...req, start: req.start ?? 0 }),

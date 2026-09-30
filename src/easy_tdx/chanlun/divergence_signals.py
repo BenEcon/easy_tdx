@@ -81,17 +81,29 @@ def indicator_events(bars: list[Kline], macd: dict[str, list[float]]) -> list[BC
 
 
 def segment_evidence(bars: list[Kline], macd: dict[str, list[float]],
-                     a: tuple[int, int], c: tuple[int, int], direction: str) -> dict | None:
+                     a: tuple[int, int], c: tuple[int, int], direction: str,
+                     *, audit: list | None = None) -> dict | None:
     """Compare complete, non-overlapping legs, not prices on selected dates."""
     a0, a1 = a
     c0, c1 = c
-    if not (0 <= a0 <= a1 < c0 <= c1 < len(bars)):
+    def gate(name, passed, **values):
+        if audit is not None:
+            audit.append({'gate': name, 'passed': bool(passed), 'values': values})
+        return passed
+    if not gate('ordered_complete_intervals', 0 <= a0 <= a1 < c0 <= c1 < len(bars),
+                a_start=a0, a_end=a1, c_start=c0, c_end=c1, bar_count=len(bars)):
         return None
     # Partial indicator windows must not look like smaller complete MACD areas.
+    complete = True
     for key in ('dif', 'dea', 'hist'):
         values = macd.get(key, [])
-        if len(values) <= c1 or not all(isfinite(value) for value in values[a0:c1 + 1]):
-            return None
+        valid = len(values) > c1 and all(isfinite(value) for value in values[a0:c1 + 1])
+        if not gate(f'{key}_finite_coverage', valid, length=len(values), required_end=c1):
+            complete = False
+            if audit is None:
+                return None
+    if not complete:
+        return None
     down = direction == "down"
     sign = 1 if down else -1
     price_key = "low" if down else "high"
@@ -99,22 +111,34 @@ def segment_evidence(bars: list[Kline], macd: dict[str, list[float]],
     pc = min(sign * getattr(k, price_key) for k in bars[c0:c1 + 1])
     area_a = sum(max(0, -sign * h) for h in macd["hist"][a0:a1 + 1])
     area_c = sum(max(0, -sign * h) for h in macd["hist"][c0:c1 + 1])
-    if pc >= pa - 1e-6 or not (0 < area_c < area_a):
+    price_ok = gate('strict_price_extreme', pc < pa - 1e-6,
+                    a_price=sign * pa, c_price=sign * pc, tolerance=1e-6)
+    area_ok = gate('shrinking_same_colour_area', 0 < area_c < area_a,
+                   a_area=area_a, c_area=area_c)
+    passed = price_ok and area_ok
+    if not passed and audit is None:
         return None
     evidence = {"a_start": a0, "a_end": a1, "c_start": c0, "c_end": c1,
-                "a_area": area_a, "c_area": area_c, "area_ratio": area_c / area_a}
+                "a_area": area_a, "c_area": area_c,
+                "area_ratio": area_c / area_a if area_a else None}
     for line in ("dif", "dea"):
         av = min(sign * v for v in macd[line][a0:a1 + 1])
         cv = min(sign * v for v in macd[line][c0:c1 + 1])
         # Bottom: troughs rise below zero. Top: peaks fall above zero.
-        if not av < cv < 0:
+        line_ok = gate(f'{line}_extreme_and_zero_axis', av < cv < 0,
+                       a_extreme=sign * av, c_extreme=sign * cv, direction=direction)
+        if not line_ok and audit is None:
             return None
         # The intervening centre must have pulled both lines toward zero.
-        if max(sign * v for v in macd[line][a1:c0 + 1]) <= av:
+        pullback = max(sign * v for v in macd[line][a1:c0 + 1])
+        pullback_ok = gate(f'{line}_centre_pullback', pullback > av,
+                           a_extreme=sign * av, pullback=sign * pullback)
+        passed = passed and line_ok and pullback_ok
+        if not pullback_ok and audit is None:
             return None
         evidence[f"a_{line}_extreme"] = sign * av
         evidence[f"c_{line}_extreme"] = sign * cv
-    return evidence
+    return evidence if passed else None
 
 
 def wave_events(bars: list[Kline], macd: dict[str, list[float]]) -> list[BC]:
