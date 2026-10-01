@@ -113,7 +113,7 @@ function latencyText(ms: number | null): string {
     </aside>
 
     <main class="report-panel">
-      <table class="host-table">
+      <div class="host-table-scroll"><table class="host-table">
         <thead>
           <tr>
             <th>服务器 IP</th>
@@ -157,7 +157,7 @@ function latencyText(ms: number | null): string {
             </td>
           </tr>
         </tbody>
-      </table>
+      </table></div>
     </main>
   </div>
 </template>

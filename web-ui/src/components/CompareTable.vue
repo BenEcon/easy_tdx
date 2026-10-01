@@ -33,6 +33,7 @@ function fmt(row: Row, v: number | undefined): string {
 </script>
 
 <template>
+  <div class="responsive-table-scroll" tabindex="0" role="region" aria-label="指标对比表，可横向滚动">
   <table class="compare-table">
     <thead>
       <tr>
@@ -49,6 +50,7 @@ function fmt(row: Row, v: number | undefined): string {
       </tr>
     </tbody>
   </table>
+  </div>
 </template>
 
 <style scoped>

@@ -4,6 +4,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import echarts from '../echarts-setup'
+import { useChartResize } from '../chart-resize'
 import type { OptimizeHeatmap } from '../types'
 
 const props = defineProps<{
@@ -37,13 +38,15 @@ function buildOption(): echarts.EChartsCoreOption {
         return `${x_name}=${xv}, ${y_name}=${yv}<br/>收益: ${retStr}`
       },
     },
-    grid: { left: '12%', right: '5%', top: 20, bottom: 60 },
-    xAxis: { type: 'category', data: x.map(String), name: x_name, splitArea: { show: true } },
+    grid: { left: 8, right: 16, top: 35, bottom: 85, outerBoundsMode: 'same', outerBoundsContain: 'axisLabel' },
+    xAxis: { type: 'category', data: x.map(String), name: x_name, nameLocation: 'middle', nameGap: 28, splitArea: { show: true } },
     yAxis: { type: 'category', data: y.map(String), name: y_name, splitArea: { show: true } },
     visualMap: {
       min,
       max,
       calculable: true,
+      itemWidth: 16,
+      itemHeight: 110,
       orient: 'horizontal',
       left: 'center',
       bottom: 0,
@@ -66,13 +69,12 @@ function resize() {
 }
 onMounted(() => {
   render()
-  window.addEventListener('resize', resize)
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', resize)
   chart?.dispose()
   chart = null
 })
+useChartResize(container, resize)
 watch(() => props.heatmap, render)
 </script>
 

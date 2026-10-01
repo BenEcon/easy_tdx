@@ -5,6 +5,7 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ChartFrame from '../components/ChartFrame.vue'
+import { useMobileSettings } from '../mobile-settings'
 import AdjustPicker from '../components/AdjustPicker.vue'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
@@ -23,6 +24,7 @@ import { detectMarket } from '../market'
 import { getLastStockCode } from '../stock-history'
 
 const store = useBacktestStore()
+const { mobile, settingsOpen } = useMobileSettings(() => Boolean(store.portfolioResult))
 const route = useRoute()
 const { adjustMode } = useMarketPreferences()
 
@@ -175,7 +177,10 @@ async function onSave() {
 
 <template>
   <div class="portfolio-view">
-    <aside class="config-panel">
+    <button v-if="mobile" class="mobile-inspector-toggle" type="button" :aria-expanded="settingsOpen" aria-controls="portfolio-settings" @click="settingsOpen = !settingsOpen">
+      <span>组合设置</span><span>{{ settingsOpen ? '收起' : '展开' }}</span>
+    </button>
+    <aside v-show="!mobile || settingsOpen" id="portfolio-settings" class="config-panel">
       <section class="panel-section">
         <h3>标的列表</h3>
         <StocksPicker v-model="stocks" :category="category" />

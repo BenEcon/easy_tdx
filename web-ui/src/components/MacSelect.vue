@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T extends string | number">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId } from 'vue'
+import { floatingMenuPosition } from '../floating-menu'
 
 const model = defineModel<T>({ required: true })
 
@@ -48,19 +49,16 @@ function updatePosition() {
   if (!el) return
 
   const rect = el.getBoundingClientRect()
-  const viewportPadding = 10
-  const gap = 6
   const desiredHeight = Math.min(props.options.length * 44 + 12, 248)
-  const roomBelow = window.innerHeight - rect.bottom - viewportPadding
-  const roomAbove = rect.top - viewportPadding
-  const opensAbove = roomBelow < Math.min(desiredHeight, 180) && roomAbove > roomBelow
-  const maxHeight = Math.max(120, Math.min(desiredHeight, opensAbove ? roomAbove - gap : roomBelow - gap))
-  const width = Math.max(rect.width, 176)
-  const left = Math.min(Math.max(viewportPadding, rect.left), window.innerWidth - width - viewportPadding)
+  const visual = window.visualViewport
+  const { left, top, width, maxHeight, opensAbove } = floatingMenuPosition(rect, {
+    width: visual?.width ?? window.innerWidth, height: visual?.height ?? window.innerHeight,
+    left: visual?.offsetLeft ?? 0, top: visual?.offsetTop ?? 0,
+  }, desiredHeight)
 
   menuStyle.value = {
     left: `${left}px`,
-    top: opensAbove ? `${Math.max(viewportPadding, rect.top - maxHeight - gap)}px` : `${rect.bottom + gap}px`,
+    top: `${top}px`,
     width: `${width}px`,
     maxHeight: `${maxHeight}px`,
     transformOrigin: opensAbove ? 'bottom center' : 'top center',
@@ -158,12 +156,16 @@ onMounted(() => {
   document.addEventListener('pointerdown', onPointerDown, true)
   window.addEventListener('resize', onViewportChange)
   window.addEventListener('scroll', onViewportChange, true)
+  window.visualViewport?.addEventListener('resize', onViewportChange)
+  window.visualViewport?.addEventListener('scroll', onViewportChange)
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('pointerdown', onPointerDown, true)
   window.removeEventListener('resize', onViewportChange)
   window.removeEventListener('scroll', onViewportChange, true)
+  window.visualViewport?.removeEventListener('resize', onViewportChange)
+  window.visualViewport?.removeEventListener('scroll', onViewportChange)
 })
 </script>
 

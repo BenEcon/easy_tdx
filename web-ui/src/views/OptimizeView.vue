@@ -6,6 +6,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import ChartFrame from '../components/ChartFrame.vue'
+import { useMobileSettings } from '../mobile-settings'
 import GradeBadge from '../components/GradeBadge.vue'
 import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
@@ -21,6 +22,7 @@ import type { Category, ExecutionMode } from '../types'
 import { useBacktestStore } from '../stores/backtest'
 
 const store = useBacktestStore()
+const { mobile, settingsOpen } = useMobileSettings(() => Boolean(store.optimizeResult || store.optimizeAllResult))
 const router = useRouter()
 
 // SymbolPicker 实例引用，用于触发取行情
@@ -215,7 +217,10 @@ const rankingGrades = computed<GradeResult[]>(() =>
 
 <template>
   <div class="optimize-view">
-    <aside class="config-panel">
+    <button v-if="mobile" class="mobile-inspector-toggle" type="button" :aria-expanded="settingsOpen" aria-controls="optimize-settings" @click="settingsOpen = !settingsOpen">
+      <span>寻优设置</span><span>{{ settingsOpen ? '收起' : '展开' }}</span>
+    </button>
+    <aside v-show="!mobile || settingsOpen" id="optimize-settings" class="config-panel">
       <section class="panel-section">
         <h3>行情数据</h3>
         <SymbolPicker
@@ -367,6 +372,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
 
         <section class="report-section">
           <h3>策略排名（按总收益降序）</h3>
+          <div class="responsive-table-scroll" tabindex="0" role="region" aria-label="策略排名，可横向滚动">
           <table class="opt-table">
             <thead>
               <tr>
@@ -412,6 +418,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
               </tr>
             </tbody>
           </table>
+          </div>
         </section>
       </div>
     </main>

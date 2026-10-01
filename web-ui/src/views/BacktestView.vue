@@ -7,6 +7,7 @@ import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ChartFrame from '../components/ChartFrame.vue'
+import { useMobileSettings } from '../mobile-settings'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
 import KlineChart from '../components/KlineChart.vue'
@@ -25,6 +26,7 @@ import type { Category, ExecutionMode, SavedStrategy, SavedStrategyCreate } from
 import { useBacktestStore } from '../stores/backtest'
 
 const store = useBacktestStore()
+const { mobile, settingsOpen } = useMobileSettings(() => Boolean(store.result))
 const { adjustMode } = useMarketPreferences()
 const route = useRoute()
 
@@ -231,7 +233,10 @@ async function onSave() {
 <template>
   <div class="backtest-view">
     <!-- 左栏：配置 -->
-    <aside class="config-panel">
+    <button v-if="mobile" class="mobile-inspector-toggle" type="button" :aria-expanded="settingsOpen" aria-controls="backtest-settings" @click="settingsOpen = !settingsOpen">
+      <span>分析设置</span><span>{{ settingsOpen ? '收起' : '展开' }}</span>
+    </button>
+    <aside v-show="!mobile || settingsOpen" id="backtest-settings" class="config-panel">
       <section class="panel-section">
         <h3>行情数据</h3>
         <SymbolPicker

@@ -19,6 +19,8 @@ import { divergenceEvidence, divergenceName } from '../divergence-evidence'
 import type { DivergenceFocus } from '../divergence-focus'
 import { chartBarIndex, priceAxisPadding } from '../chart-position'
 import { ChartViewportMemory } from '../chart-viewport'
+import { useMobileViewport } from '../mobile-viewport'
+import { provisionalCandle } from '../provisional-bars'
 import { structureLineWidth, emphasizedLineWidth, type ChanlunLineWidths } from '../chanlun-line-width'
 
 const props = defineProps<{
@@ -34,10 +36,18 @@ const props = defineProps<{
     xds: boolean
     mmds: boolean
     bcs: boolean
+    consolidations?: boolean
   }
 }>()
 const emit = defineEmits<{ 'update:maPeriods': [periods: number[]] }>()
 const availableMA = computed(() => [...new Set(props.maAvailablePeriods ?? props.maPeriods ?? [])].sort((a, b) => a - b))
+const mobile = useMobileViewport()
+function toggleMobileMA(period: number) {
+  const selected = new Set(props.maPeriods ?? [])
+  if (selected.has(period)) selected.delete(period)
+  else selected.add(period)
+  emit('update:maPeriods', availableMA.value.filter(value => selected.has(value)))
+}
 
 const container = ref<HTMLDivElement>()
 const indicators = ref<Array<{ id: number; type: TechnicalIndicator; params: IndicatorParams; rows: Array<Record<string, unknown>> }>>([
@@ -87,7 +97,7 @@ function buildOption(): echarts.EChartsCoreOption {
     const normalized = normalizedDate(bar.datetime)
     return intraday ? normalized : normalized.slice(0, 10)
   })
-  const ohlc = props.bars.map((bar) => [bar.open, bar.close, bar.low, bar.high])
+  const ohlc = props.bars.map((bar) => provisionalCandle([bar.open, bar.close, bar.low, bar.high], bar.is_closed))
   const hasIndicator = panels.value.length > 0
   const axisIndices = Array.from({ length: panels.value.length + 1 }, (_, i) => i)
 
@@ -274,6 +284,24 @@ function buildOption(): echarts.EChartsCoreOption {
     },
   ]
 
+  if (props.layers.consolidations) {
+    series.push({
+      name: '三笔盘整', type: 'line', data: [], silent: true,
+      markArea: {
+        silent: true,
+        itemStyle: { color: 'rgba(137,173,198,.035)', borderColor: 'rgba(155,189,211,.65)', borderWidth: 1, borderType: 'dashed' },
+        label: { color: '#9dbbce', fontSize: 10, position: 'insideBottomLeft' },
+        data: (props.result.pen_consolidations ?? []).flatMap((area, i) => {
+          const start = resolveDate(area.start_date), end = resolveDate(area.end_date)
+          return start && end ? [[
+            { name: `盘整 ${i + 1}${area.confirmed ? '' : ' · 暂态'}`, xAxis: start, yAxis: area.lower },
+            { xAxis: end, yAxis: area.upper },
+          ]] : []
+        }),
+      },
+    })
+  }
+
   if (props.focus) {
     // Independent overlays keep centre areas and indicator colors unchanged.
     for (const axis of axisIndices) {
@@ -419,7 +447,7 @@ function buildOption(): echarts.EChartsCoreOption {
     legend: [
       {
         type: 'scroll', top: 0, right: 28,
-        show: averages.length > 0,
+        show: averages.length > 0 && !mobile.value,
         data: averages.map(item => item.name),
         selected: movingAverageSelection(availableMA.value, props.maPeriods ?? []),
         inactiveColor: '#626977',
@@ -560,7 +588,11 @@ async function refreshIndicator() {
   try {
     await Promise.all(indicators.value.map(async item => {
       try {
-        const rows = await calculateIndicatorRows(props.bars, item.type, item.params)
+        // The primary MACD is the exact series used to compute these signals.
+        const macd = props.result.macd
+        const rows = item.type === 'macd' && macd?.dif.length === props.bars.length
+          ? props.bars.map((_, i) => ({ MACD_DIF: macd.dif[i], MACD_DEA: macd.dea[i], MACD_HIST: macd.hist[i] }))
+          : await calculateIndicatorRows(props.bars, item.type, item.params)
         if (requestId === indicatorRequest) item.rows = rows
       } catch (error) {
         if (requestId === indicatorRequest) {
@@ -592,16 +624,21 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths], render, { deep: true })
-watch(() => [props.bars, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
+watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths, mobile.value], render, { deep: true })
+watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
 </script>
 
 <template>
   <div class="market-chart-shell">
+    <div v-if="mobile && availableMA.length" class="mobile-ma-controls" role="group" aria-label="均线显示开关">
+      <button v-for="period in availableMA" :key="period" type="button" :aria-pressed="(maPeriods ?? []).includes(period)" @click="toggleMobileMA(period)">
+        <i :style="{ background: movingAverageColor(period) }" aria-hidden="true"></i>MA{{ period }}
+      </button>
+    </div>
     <div
       ref="container"
       class="chanlun-chart"
-      :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px` }"
+      :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px`, '--chanlun-chart-height': `${chartHeight}px` }"
     ></div>
     <div class="indicator-heading"><span>技术指标 · 可同时显示多个</span><button @click="addIndicator">＋ 添加指标</button></div>
     <div v-for="(item, index) in indicators" :key="item.id" class="indicator-entry">
@@ -610,6 +647,7 @@ watch(() => [props.bars, indicators.value.map(item => [item.id, item.type, item.
       v-model="item.type"
       v-model:params="item.params"
       :loading="indicatorLoading"
+      :locked-params="item.type === 'macd'"
     />
     </div>
     <p v-if="indicatorError" role="alert">{{ indicatorError }}</p>

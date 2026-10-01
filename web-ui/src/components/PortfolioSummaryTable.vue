@@ -17,6 +17,7 @@ function num(v: number, d = 2): string {
 </script>
 
 <template>
+  <div class="responsive-table-scroll" tabindex="0" role="region" aria-label="组合绩效表，可横向滚动">
   <table class="summary-table">
     <thead>
       <tr>
@@ -43,6 +44,7 @@ function num(v: number, d = 2): string {
       </tr>
     </tbody>
   </table>
+  </div>
 </template>
 
 <style scoped>

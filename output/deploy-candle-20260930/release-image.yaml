@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:candle-alignment-20260930

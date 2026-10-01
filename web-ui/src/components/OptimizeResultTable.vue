@@ -19,6 +19,7 @@ function num(v: number | null, d = 2): string {
 </script>
 
 <template>
+  <div class="responsive-table-scroll" tabindex="0" role="region" aria-label="寻优结果表，可横向滚动">
   <table class="opt-table">
     <thead>
       <tr>
@@ -47,6 +48,7 @@ function num(v: number | null, d = 2): string {
       </tr>
     </tbody>
   </table>
+  </div>
 </template>
 
 <style scoped>

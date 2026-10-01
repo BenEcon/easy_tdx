@@ -33,6 +33,8 @@ export interface StrategiesResponse {
 // ── OHLCV 行情（GET /api/v1/bars） ────────────────────────────────────────────
 
 export interface Bar {
+  period_end?: string
+  is_closed?: boolean
   datetime: string
   open: number
   high: number
@@ -440,6 +442,12 @@ export interface RecursiveExtensionProof {
 }
 
 export interface ChanlunResult {
+  macd?: { dif: number[]; dea: number[]; hist: number[] }
+  pen_consolidations?: Array<{
+    pen_indices: number[]; start_date: string; end_date: string
+    lower: number; upper: number; confirmed: boolean
+    source: string; eligible_for_trading: false
+  }>
   released_movement_recursion?: ReleasedRecursion
   engineering_movement_hierarchy?: EngineeringMovementHierarchy
   layered_movement_ownership?: LayeredMovementOwnership
@@ -472,7 +480,7 @@ export interface ChanlunResult {
 // ── 回测请求（POST /api/v1/backtest/run） ─────────────────────────────────────
 
 export type ExecutionMode = 'next_open' | 'next_close'
-export type Category = 'DAY' | 'WEEK' | 'MONTH' | 'MIN_5' | 'MIN_15' | 'MIN_30' | 'MIN_60'
+export type Category = 'DAY' | 'WEEK' | 'MONTH' | 'MIN_1' | 'MIN_5' | 'MIN_15' | 'MIN_30' | 'MIN_60'
 
 export interface BacktestRequest {
   strategy: string

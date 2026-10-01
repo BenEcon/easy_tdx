@@ -14,7 +14,7 @@ export interface StockHistoryItem {
   usedAt: string
 }
 
-const CATEGORIES: Category[] = ['DAY', 'WEEK', 'MONTH', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60']
+const CATEGORIES: Category[] = ['DAY', 'WEEK', 'MONTH', 'MIN_1', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60']
 const stockHistory = ref<StockHistoryItem[]>([])
 const lastStock = ref<StockHistoryItem | null>(null)
 const { currentUser } = useAuth()

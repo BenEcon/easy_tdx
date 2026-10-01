@@ -29,6 +29,11 @@ export function divergenceEvidence(item: ChanlunDivergence): string[] {
   const e = item.evidence ?? {}
   const dates = item.intervals ?? {}
   const lines: string[] = []
+  if (item.type === 'macd') lines.push('参照：一次反向波动后确认的最近局部高／低点，不要求先成笔，不跳过中间极值。')
+  if (item.type === 'macd_wave') {
+    lines.push('A、C 波段双线整段同侧，触及或跨过零轴则整段排除；同时核验最近局部极值的双线背离。')
+    if (Number.isFinite(e.nearest_pivot_price)) lines.push(`最近局部极值价格：${e.nearest_pivot_price!.toFixed(2)}`)
+  }
   for (const segment of ['a', 'b', 'c']) {
     if (dates[`${segment}_start`]) lines.push(`${segment.toUpperCase()} 段：${dates[`${segment}_start`]} — ${dates[`${segment}_end`]}`)
   }

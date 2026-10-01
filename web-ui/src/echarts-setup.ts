@@ -15,6 +15,7 @@ import {
   VisualMapComponent,
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
+import { installCandleAlignment } from './candlestick-alignment'
 
 echarts.use([
   CanvasRenderer,
@@ -31,6 +32,7 @@ echarts.use([
   MarkAreaComponent,
   MarkLineComponent,
   VisualMapComponent,
+  installCandleAlignment,
 ])
 
 // A股惯例：红涨绿跌
@@ -45,10 +47,11 @@ echarts.registerTheme('dark', {
   title: { textStyle: { color: '#f5f5f7' }, subtextStyle: { color: '#a6a6ad' } },
   legend: { textStyle: { color: '#a6a6ad' } },
   tooltip: {
+    confine: true,
     backgroundColor: 'rgba(31,32,37,0.94)',
     borderColor: 'rgba(255,255,255,0.12)',
     textStyle: { color: '#f5f5f7' },
-    extraCssText: 'backdrop-filter: blur(18px); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,.38);',
+    extraCssText: 'backdrop-filter: blur(18px); border-radius: 10px; box-shadow: 0 14px 34px rgba(0,0,0,.38); max-width: min(360px, calc(100vw - 40px)); white-space: normal; overflow-wrap: anywhere;',
   },
   categoryAxis: {
     axisLine: { lineStyle: { color: 'rgba(255,255,255,0.09)' } },

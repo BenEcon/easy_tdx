@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useMobileViewport } from './mobile-viewport'
+import { useVisibleViewport } from './visible-viewport'
 import { useRoute, useRouter } from 'vue-router'
 import { logout, updatePreferences, useAuth } from './auth'
 
@@ -17,6 +19,20 @@ function loadSidebarState(): boolean {
 }
 
 const sidebarCollapsed = ref(loadSidebarState())
+const mobile = useMobileViewport()
+useVisibleViewport()
+const mobileNav = ref<HTMLDialogElement | null>(null)
+const mobileNavOpen = ref(false)
+function closeMobileNav() {
+  mobileNav.value?.close()
+  mobileNavOpen.value = false
+}
+function openMobileNav() {
+  mobileNav.value?.showModal()
+  mobileNavOpen.value = true
+}
+watch(() => route.fullPath, closeMobileNav)
+watch(mobile, value => { if (!value) closeMobileNav() })
 let preferencesReady = false
 let preferenceTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -108,7 +124,7 @@ async function handleLogout() {
   <RouterView v-if="isAuthLayout" />
   <div v-else class="app-viewport">
     <div class="app-window">
-      <aside class="app-sidebar" :class="{ collapsed: sidebarCollapsed }">
+      <aside v-show="!mobile" class="app-sidebar" :class="{ collapsed: sidebarCollapsed }">
         <div class="sidebar-topbar">
           <div class="window-controls" aria-hidden="true">
             <span class="traffic-light close"></span>
@@ -177,14 +193,27 @@ async function handleLogout() {
         </RouterLink>
       </aside>
 
+      <dialog ref="mobileNav" class="mobile-navigation" aria-labelledby="mobile-nav-title" @close="mobileNavOpen = false" @click="($event.target === mobileNav) && closeMobileNav()">
+        <div class="mobile-navigation-body">
+          <header><strong id="mobile-nav-title">股票分析</strong><button type="button" aria-label="关闭导航" @click="closeMobileNav">关闭</button></header>
+          <nav aria-label="手机主要导航">
+            <section v-for="group in navGroups" :key="group.label">
+              <p class="nav-label">{{ group.label }}</p>
+              <RouterLink v-for="item in group.items" :key="item.to" :to="item.to" class="nav-item" active-class="active" @click="closeMobileNav">{{ item.label }}</RouterLink>
+            </section>
+          </nav>
+        </div>
+      </dialog>
+
       <section class="app-workspace">
         <header class="workspace-toolbar">
+          <button v-if="mobile" class="mobile-menu-button" type="button" aria-label="打开导航" aria-haspopup="dialog" :aria-expanded="mobileNavOpen" @click="openMobileNav">☰</button>
           <div class="page-heading">
             <h1>{{ pageTitle }}</h1>
             <p>{{ pageSubtitle }}</p>
           </div>
           <div class="toolbar-account">
-            <RouterLink to="/account" class="account-chip">
+            <RouterLink to="/account" class="account-chip" aria-label="个人账户">
               <span class="chip-avatar">{{ currentUser?.username.slice(0, 1).toUpperCase() }}</span>
               <span>{{ currentUser?.username }}</span>
               <small v-if="currentUser?.role === 'admin'">ADMIN</small>
@@ -645,5 +674,27 @@ async function handleLogout() {
   .app-window { animation: none; }
   .route-enter-active,
   .route-leave-active { transition: none; }
+}
+
+.mobile-navigation { margin: 0; padding: 0; width: min(300px, 88vw); height: 100dvh; max-height: 100dvh; max-width: 100vw; border: 0; border-right: 1px solid var(--border); color: var(--text); background: var(--bg-panel); }
+.mobile-navigation::backdrop { background: rgba(0,0,0,.6); }
+.mobile-navigation-body { height: 100%; overflow: auto; overscroll-behavior: contain; padding: max(16px, env(safe-area-inset-top)) 14px max(20px, env(safe-area-inset-bottom)); }
+.mobile-navigation header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.mobile-navigation nav section + section { margin-top: 16px; }
+.mobile-navigation .nav-item { min-height: 44px; font-size: 14px; }
+.mobile-navigation header button, .mobile-menu-button { min-width: 44px; min-height: 44px; }
+@media (max-width: 760px), (max-width: 980px) and (max-height: 500px) {
+  .app-viewport { padding: 0; height: 100dvh; }
+  .app-window { min-width: 0; animation: none; }
+  .workspace-toolbar { height: auto; min-height: 60px; flex: 0 0 auto; gap: 8px; padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left)); }
+  .page-heading { flex: 1; min-width: 0; }
+  .page-heading h1 { font-size: 15px; }
+  .page-heading p { display: none; }
+  .account-chip { min-height: 44px; padding: 5px; }
+  .account-chip > span:not(.chip-avatar), .account-chip small { display: none; }
+  .account-chip .chip-avatar { width: 30px; height: 30px; font-size: 12px; }
+  .logout-button { width: 40px; min-height: 44px; }
+  .toolbar-account { gap: 2px; }
+  .app-main { overflow-y: auto; overscroll-behavior-y: contain; padding-bottom: env(safe-area-inset-bottom); }
 }
 </style>

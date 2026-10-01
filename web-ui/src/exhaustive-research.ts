@@ -73,6 +73,8 @@ export const gates: Record<string, string> = {
   ordered_complete_intervals: 'A / C 区间完整且有序', dif_finite_coverage: 'DIF 数据完整', dea_finite_coverage: 'DEA 数据完整',
   hist_finite_coverage: '柱体数据完整', strict_price_extreme: '价格严格创新极值', shrinking_same_colour_area: '同色柱面积缩小',
   dif_extreme_and_zero_axis: 'DIF 极值与零轴条件', dif_centre_pullback: 'DIF 中枢回拉',
+  dif_whole_leg_zero_axis: 'DIF：A、C 整段不触及或跨越零轴',
+  dea_whole_leg_zero_axis: 'DEA：A、C 整段不触及或跨越零轴',
   dea_extreme_and_zero_axis: 'DEA 极值与零轴条件', dea_centre_pullback: 'DEA 中枢回拉',
 }
 const fields: Record<string, string> = {

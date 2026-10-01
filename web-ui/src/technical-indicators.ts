@@ -1,6 +1,7 @@
 import { computeIndicators } from './api'
 import type { Bar } from './types'
 import { INDICATOR_LINE_COLORS, movingAverageColor } from './moving-averages'
+import { provisionalColumn } from './provisional-bars'
 
 export type TechnicalIndicator = string
 export type IndicatorParams = Record<string, number>
@@ -113,7 +114,7 @@ export function buildIndicatorSeries(
   if (definition.code === 'VOLUME') {
     return [{
       name: '成交量', type: 'bar', xAxisIndex, yAxisIndex,
-      data: bars.map((bar) => bar.vol), barMaxWidth: 8,
+      data: bars.map((bar) => provisionalColumn(bar.vol, bar.is_closed, bar.close >= bar.open)), barMaxWidth: 8,
       itemStyle: {
         color: (params: { dataIndex: number }) => bars[params.dataIndex].close >= bars[params.dataIndex].open
           ? 'rgba(255,94,104,.62)' : 'rgba(48,209,123,.62)',
@@ -149,6 +150,7 @@ export function buildIndicatorSeries(
       animationDuration: 260,
     }
     if (output === definition.histogramOutput) {
+      shared.data = data.map((value, i) => value === null ? null : provisionalColumn(value, bars[i]?.is_closed, value >= 0))
       shared.barMaxWidth = 7
       shared.itemStyle = {
         color: (params: { value: number }) => params.value >= 0

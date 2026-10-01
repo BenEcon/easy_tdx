@@ -4,6 +4,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import echarts from '../echarts-setup'
+import { useChartResize } from '../chart-resize'
 import { fmt2 } from '../format'
 import type { BacktestResult } from '../types'
 
@@ -39,8 +40,8 @@ function buildOption(): echarts.EChartsCoreOption {
       trigger: 'axis',
       valueFormatter: (v: number | string) => fmt2(Number(v)),
     },
-    legend: { top: 0, data: seriesData.map((s) => s.name) },
-    grid: { left: '8%', right: '5%', top: 30, bottom: 50 },
+    legend: { type: 'scroll', top: 0, left: 8, right: 8, data: seriesData.map((s) => s.name), formatter: (name: string) => name.length > 18 ? `${name.slice(0, 18)}…` : name },
+    grid: { left: 8, right: 12, top: 55, bottom: 35, outerBoundsMode: 'same', outerBoundsContain: 'axisLabel' },
     xAxis: {
       type: 'category',
       data: allDates,
@@ -78,13 +79,12 @@ function resize() {
 }
 onMounted(() => {
   render()
-  window.addEventListener('resize', resize)
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', resize)
   chart?.dispose()
   chart = null
 })
+useChartResize(container, resize)
 watch(() => props.items, render)
 </script>
 

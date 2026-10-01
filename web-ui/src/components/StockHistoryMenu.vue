@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { floatingMenuPosition } from '../floating-menu'
 
 import { clearStockHistory, deleteStockHistory, useStockHistory } from '../stock-history'
 import { detectMarket, marketLabel } from '../market'
@@ -17,23 +18,13 @@ function updatePosition() {
   const el = trigger.value
   if (!el) return
   const rect = el.getBoundingClientRect()
-  const viewportPadding = 10
-  const gap = 6
-  const width = Math.min(292, window.innerWidth - viewportPadding * 2)
-  const desiredHeight = 298
-  const roomBelow = window.innerHeight - rect.bottom - viewportPadding
-  const roomAbove = rect.top - viewportPadding
-  const opensAbove = roomBelow < Math.min(desiredHeight, 190) && roomAbove > roomBelow
-  const availableRoom = opensAbove ? roomAbove - gap : roomBelow - gap
-  const maxHeight = Math.max(120, Math.min(desiredHeight, availableRoom, window.innerHeight - viewportPadding * 2))
-  const preferredLeft = rect.right - width
-  const left = Math.min(
-    Math.max(viewportPadding, preferredLeft),
-    window.innerWidth - width - viewportPadding,
+  const viewport = window.visualViewport
+  const { left, top, width, maxHeight, opensAbove } = floatingMenuPosition(
+    { left: rect.right - 292, top: rect.top, bottom: rect.bottom, width: 292 },
+    { width: viewport?.width ?? window.innerWidth, height: viewport?.height ?? window.innerHeight,
+      left: viewport?.offsetLeft ?? 0, top: viewport?.offsetTop ?? 0 },
+    298,
   )
-  const top = opensAbove
-    ? Math.max(viewportPadding, rect.top - maxHeight - gap)
-    : Math.min(rect.bottom + gap, window.innerHeight - maxHeight - viewportPadding)
 
   menuStyle.value = {
     left: `${left}px`,
@@ -85,12 +76,16 @@ onMounted(() => {
   document.addEventListener('keydown', onDocumentKeydown)
   window.addEventListener('resize', onViewportChange)
   window.addEventListener('scroll', onViewportChange, true)
+  window.visualViewport?.addEventListener('resize', onViewportChange)
+  window.visualViewport?.addEventListener('scroll', onViewportChange)
 })
 onBeforeUnmount(() => {
   document.removeEventListener('click', onDocumentClick)
   document.removeEventListener('keydown', onDocumentKeydown)
   window.removeEventListener('resize', onViewportChange)
   window.removeEventListener('scroll', onViewportChange, true)
+  window.visualViewport?.removeEventListener('resize', onViewportChange)
+  window.visualViewport?.removeEventListener('scroll', onViewportChange)
 })
 </script>
 

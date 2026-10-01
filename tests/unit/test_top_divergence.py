@@ -127,7 +127,7 @@ def test_all_prefixes_are_exact_top_bottom_mirrors(factory, detector):
                 assert top.confirmed_index > top.signal_index
             for key, value in top.evidence.items():
                 other = bottom.evidence[key]
-                if key in ('price', 'previous_price'):
+                if key in ('price', 'previous_price', 'nearest_pivot_price'):
                     assert value + other == pytest.approx(100)
                 elif 'dif' in key or 'dea' in key:
                     assert value == pytest.approx(-other)

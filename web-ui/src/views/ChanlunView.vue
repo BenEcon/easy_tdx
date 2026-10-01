@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ChanlunChart from '../components/ChanlunChart.vue'
+import MultiPeriodResearch from '../components/MultiPeriodResearch.vue'
 import ConfirmationReplay from '../components/ConfirmationReplay.vue'
 import DecompositionInspector from '../components/DecompositionInspector.vue'
 import ExtensionHierarchyInspector from '../components/ExtensionHierarchyInspector.vue'
@@ -23,14 +24,17 @@ import { expansionFocus } from '../expansion-focus'
 import { releasedFocus, type ReleaseFocusMode } from '../released-focus'
 import { centreEvidence, centreState, segmentEvidence, segmentsConnected } from '../structure-evidence'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
-import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchRecentBars, formatError } from '../api'
+import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchBarSnapshot, formatError, type BarSnapshot } from '../api'
 import { detectMarket, marketLabel } from '../market'
 import { useSelectedStock, recordStockHistory } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
 import type { Bar, Category, ChanlunResult, ChanlunDivergence } from '../types'
 import { useMarketPreferences } from '../market-preferences'
+import { useMobileViewport } from '../mobile-viewport'
 
 const route = useRoute()
+const mobile = useMobileViewport()
+const mobileSettingsOpen = ref(true)
 const code = useSelectedStock()
 const lineWidths = ref({ ...DEFAULT_LINE_WIDTHS })
 const lineWidthOptions: Array<{ key: StructureLine; label: string; color: string }> = [
@@ -106,6 +110,14 @@ const result = ref<ChanlunResult | null>(null)
 const bars = ref<Bar[]>([])
 const snapshotBars = ref<Bar[]>([])
 const snapshotResult = ref<ChanlunResult | null>(null)
+const snapshotMetadata = ref<BarSnapshot['metadata'] | null>(null)
+const researchAsOf = computed(() => {
+  const last = bars.value.at(-1)
+  if (!last) return ''
+  const end = (last.period_end ?? last.datetime).replace('T', ' ').slice(0, 19)
+  const observed = snapshotMetadata.value?.observed_at.slice(0, 19)
+  return observed && observed < end ? observed : end
+})
 const replayPosition = ref(1)
 const replayBusy = ref(false)
 const replaySlider = ref<HTMLInputElement | null>(null)
@@ -113,6 +125,7 @@ const replayActive = computed(() => bars.value.length < snapshotBars.value.lengt
 const replayDate = computed(() => (bars.value.at(-1)?.datetime ?? '').replace('T', ' ').replace(/ 00:00:00$/, ''))
 let replayVersion = 0
 function clearReplay() {
+  snapshotMetadata.value = null
   replayVersion++
   replayBusy.value = false
   snapshotBars.value = []
@@ -168,7 +181,10 @@ async function seekReplay(position: number) {
 const activeTab = ref<'structure' | 'signals' | 'divergence'>('structure')
 const focusedDivergence = ref<DivergenceFocus | null>(null)
 const focusToolbar = ref<HTMLElement>()
-watch(result, () => { focusedDivergence.value = null }, { flush: 'sync' })
+watch(result, (value, previous) => {
+  focusedDivergence.value = null
+  if (mobile.value && value && !previous) mobileSettingsOpen.value = false
+}, { flush: 'sync' })
 async function locateDivergence(item: ChanlunDivergence) {
   const focus = divergenceFocus(item, bars.value.length, `${divergenceName(item)} · ${item.curr_date ?? ''}${item.status === 'candidate' ? ' · 候选未确认' : ''}`)
   if (focus) await showStructureFocus(focus)
@@ -218,6 +234,7 @@ const reviewSignalDate = computed(() => String(route.query.signalDate || '日期
 const reviewSourceName = computed(() => String(route.query.strategyName || route.query.strategyLabel || '缠论买卖点'))
 
 interface LayerState {
+  consolidations: boolean
   bis: boolean
   zss: boolean
   xds: boolean
@@ -226,6 +243,7 @@ interface LayerState {
 }
 
 const layers = ref<LayerState>({
+  consolidations: true,
   bis: true,
   zss: true,
   xds: true,
@@ -234,6 +252,7 @@ const layers = ref<LayerState>({
 })
 
 const layerOptions: Array<{ key: keyof LayerState; label: string }> = [
+  { key: 'consolidations', label: '三笔盘整' },
   { key: 'bis', label: '笔' },
   { key: 'zss', label: '中枢' },
   { key: 'xds', label: '线段' },
@@ -242,6 +261,7 @@ const layerOptions: Array<{ key: keyof LayerState; label: string }> = [
 ]
 
 const categories: Array<{ value: Category; label: string }> = [
+  { value: 'MIN_1', label: '1 分钟' },
   { value: 'DAY', label: '日线' },
   { value: 'WEEK', label: '周线' },
   { value: 'MONTH', label: '月线' },
@@ -337,7 +357,8 @@ async function runAnalysis() {
   industryError.value = ''
   try {
     const market = detectMarket(code.value)
-    const nextBars = await fetchRecentBars(market, code.value, category.value, count.value, adjustMode.value)
+    const snapshot = await fetchBarSnapshot(market, code.value, category.value, count.value, adjustMode.value)
+    const nextBars = snapshot.bars
     if (version !== analysisVersion) return
     if (!nextBars.length) throw new Error('所选范围暂无行情')
     const nextResult = await replayChanlun({
@@ -346,6 +367,7 @@ async function runAnalysis() {
     })
     if (version !== analysisVersion) return
     bars.value = nextBars
+    snapshotMetadata.value = snapshot.metadata
     result.value = nextResult
     snapshotBars.value = nextBars
     snapshotResult.value = nextResult
@@ -382,7 +404,10 @@ onMounted(async () => {
 
 <template>
   <div class="chanlun-view">
-    <aside class="analysis-inspector">
+    <button v-if="mobile" type="button" class="mobile-inspector-toggle" :aria-expanded="mobileSettingsOpen" aria-controls="chanlun-inspector" @click="mobileSettingsOpen = !mobileSettingsOpen">
+      <span>分析设置 · {{ code }}</span><span>{{ mobileSettingsOpen ? '收起' : '展开' }}</span>
+    </button>
+    <aside v-show="!mobile || mobileSettingsOpen" id="chanlun-inspector" class="analysis-inspector">
       <div class="inspector-title">
         <span class="inspector-symbol">⌘</span>
         <div>
@@ -573,6 +598,13 @@ onMounted(async () => {
         </section>
 
         <section class="chart-workspace">
+          <details v-if="snapshotMetadata" class="snapshot-provenance">
+            <summary>数据口径 · {{ snapshotMetadata.source }} · 实际 {{ snapshotMetadata.actual_adjust }} · MACD 12 / 26 / 9</summary>
+            <p v-if="snapshotMetadata.actual_adjust !== snapshotMetadata.requested_adjust" role="alert">所选复权方式未生效：请求 {{ snapshotMetadata.requested_adjust }}，实际为 {{ snapshotMetadata.actual_adjust }}。请恢复行情源后重查。</p>
+            <p>采集于 {{ snapshotMetadata.observed_at }} · 行情窗口 {{ snapshotBars.length }} 根；EMA 从窗口首根开始预热。</p>
+            <p>{{ snapshotMetadata.volume_policy }}。{{ snapshotMetadata.completion_note }}</p>
+          </details>
+          <p v-if="bars.some(bar => bar.is_closed === false)" class="structure-scope">虚线空心柱表示尚未确认收盘的 K 线、成交量及 MACD 柱；当前结构和信号仍可能随本周期行情变化。</p>
           <p v-if="result.structure_metadata" class="structure-scope">线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。</p>
           <p v-if="result.structure_metadata?.initial_unresolved_bars" class="structure-scope">开头 {{ result.structure_metadata.initial_unresolved_bars }} 根 K 线缺少前置方向，仅保留行情，不推定包含方向。</p>
           <div v-if="snapshotBars.length" class="replay-toolbar" :aria-busy="replayBusy || industryLoading">
@@ -615,6 +647,11 @@ onMounted(async () => {
             </template>
             <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
           </ChartFrame>
+          <details v-if="layers.consolidations && result.pen_consolidations?.length" class="snapshot-provenance">
+            <summary>最近 {{ result.pen_consolidations.length }} 组三笔盘整 · 不等同于中枢</summary>
+            <p v-for="(area, i) in result.pen_consolidations" :key="area.pen_indices.join('-')">盘整 {{ i + 1 }} · {{ area.lower.toFixed(2) }}—{{ area.upper.toFixed(2) }} · 笔 {{ area.pen_indices.map(n => n + 1).join(' / ') }} · {{ area.confirmed ? '三笔已确认' : '含未确认末笔，区间可变化' }}</p>
+          </details>
+          <MultiPeriodResearch v-if="snapshotMetadata" :code="code" :adjust="adjustMode" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" />
           <template v-if="industryView !== 'stock'">
             <p v-if="industryLoading" role="status">正在加载行业结构…</p>
             <p v-else-if="industryError" role="alert">{{ industryError }} <button @click="loadIndustry">重试</button></p>
@@ -762,6 +799,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.snapshot-provenance { margin: 10px 0; color: var(--text-muted); font-size: 11px; line-height: 1.6; }
+.snapshot-provenance summary { cursor: pointer; }
+.snapshot-provenance p { margin: 6px 0; }
+.snapshot-provenance [role="alert"] { color: #e6af81; }
 .focus-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; padding: 10px 12px; font-size: 11px; border-left: 2px solid var(--accent); background: rgba(74,158,255,.04); }
 .focus-toolbar strong { font-weight: 550; }
 .focus-toolbar span { color: var(--text-dim); }

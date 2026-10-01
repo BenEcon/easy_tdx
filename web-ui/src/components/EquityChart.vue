@@ -5,6 +5,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import echarts from '../echarts-setup'
+import { useChartResize } from '../chart-resize'
 import { fmt2 } from '../format'
 import type { EquityPoint } from '../types'
 
@@ -35,7 +36,7 @@ function buildOption(): echarts.EChartsCoreOption {
       valueFormatter: (v: number | string) => fmt2(Number(v)),
     },
     legend: { data: ['净值', '回撤%'], top: 0 },
-    grid: { left: '8%', right: '8%', top: 30, bottom: 50 },
+    grid: { left: 8, right: 8, top: 42, bottom: 35, outerBoundsMode: 'same', outerBoundsContain: 'axisLabel' },
     xAxis: {
       type: 'category',
       data: dates,
@@ -50,7 +51,7 @@ function buildOption(): echarts.EChartsCoreOption {
         scale: true,
         position: 'left',
         splitLine: { lineStyle: { color: '#2a2e3a' } },
-        axisLabel: { formatter: (v: number) => fmt2(v) },
+        axisLabel: { formatter: (v: number) => Math.abs(v) >= 100000000 ? `${fmt2(v / 100000000)}亿` : Math.abs(v) >= 10000 ? `${fmt2(v / 10000)}万` : fmt2(v) },
       },
       {
         type: 'value',
@@ -90,13 +91,12 @@ function resize() {
 
 onMounted(() => {
   render()
-  window.addEventListener('resize', resize)
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', resize)
   chart?.dispose()
   chart = null
 })
+useChartResize(container, resize)
 watch(() => props.equity, render)
 </script>
 

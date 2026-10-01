@@ -577,6 +577,8 @@ function normalizeBar(row: Record<string, unknown>): Bar {
   const raw = (row.datetime ?? row.date) as string | undefined
   if (!raw) throw new Error('行情数据缺少 datetime/date 字段')
   return {
+    period_end: typeof row.period_end === 'string' ? row.period_end : undefined,
+    is_closed: typeof row.is_closed === 'boolean' ? row.is_closed : undefined,
     datetime: raw.slice(0, 19).replace(' ', 'T'),
     open: Number(row.open),
     high: Number(row.high),
@@ -595,6 +597,15 @@ export async function fetchRecentBars(
   count: number,
   adjust: AdjustMode = 'QFQ',
 ): Promise<Bar[]> {
+  return (await fetchBarSnapshot(market, code, category, count, adjust)).bars
+}
+
+export interface BarSnapshot {
+  bars: Bar[]
+  metadata: { source: string; requested_adjust: string; actual_adjust: string; observed_at: string; category: string; completion_note: string; volume_policy: string; historical_data_vintage: boolean }
+}
+
+export async function fetchBarSnapshot(market: string, code: string, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ'): Promise<BarSnapshot> {
   const params = new URLSearchParams({
     market,
     code,
@@ -605,8 +616,8 @@ export async function fetchRecentBars(
   })
   const resp = await fetch(`${BASE}/bars?${params}`)
   if (!resp.ok) await throwError(resp)
-  const body = (await resp.json()) as { data: Record<string, unknown>[] }
-  return body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime))
+  const body = (await resp.json()) as { data: Record<string, unknown>[]; metadata: BarSnapshot['metadata'] }
+  return { bars: body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime)), metadata: body.metadata }
 }
 
 /** 执行完整缠论管道：K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰。 */

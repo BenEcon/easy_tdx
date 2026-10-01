@@ -837,7 +837,8 @@ const comboGrade = computed(() =>
           </div>
 
           <p v-if="holdings.length === 0" class="empty-text">无持仓数据</p>
-          <table v-else class="holdings-table">
+          <div v-else class="responsive-table-scroll" tabindex="0" role="region" aria-label="持仓明细，可横向滚动">
+          <table class="holdings-table">
             <thead>
               <tr>
                 <th>策略</th>
@@ -874,6 +875,7 @@ const comboGrade = computed(() =>
               </tr>
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </section>
