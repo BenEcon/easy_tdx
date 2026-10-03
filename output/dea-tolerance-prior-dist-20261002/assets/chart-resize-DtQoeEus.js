@@ -1,0 +1,1 @@
+import{Xt as e,Zt as t}from"./index-BXBsRR79.js";function n(n,r){let i,a=0,o=()=>{cancelAnimationFrame(a),a=requestAnimationFrame(r)};t(()=>{i=new ResizeObserver(o),n.value&&i.observe(n.value),window.addEventListener(`resize`,o)}),e(()=>{i?.disconnect(),cancelAnimationFrame(a),window.removeEventListener(`resize`,o)})}export{n as t};

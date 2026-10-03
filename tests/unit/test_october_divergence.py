@@ -31,7 +31,10 @@ def test_nearest_swing_replaces_older_more_extreme_reference(top):
     macd['dif'][5] = .7 if top else -.7
     macd['dea'][5] = .6 if top else -.6
     event, = indicator_events(bars, macd)
-    assert (event.signal_index, event.reference_index, event.confirmed_index) == (5, 3, 6)
+    assert (event.signal_index, event.reference_index, event.confirmed_index) == (5, 3, None)
+    # Oct 2: next-bar DEA equals the reference, invalidating the pending
+    # candidate despite a price rebound; no completed reverse pen exists.
+    assert event.status == 'superseded' and event.invalidated_index == 6
 
 
 def test_document_no_new_low_and_both_lines_required():
@@ -49,7 +52,7 @@ def test_document_no_new_low_and_both_lines_required():
 @pytest.mark.parametrize('line', ['dif', 'dea'])
 @pytest.mark.parametrize('index', [1, 5])
 @pytest.mark.parametrize('value', [0, .1])
-def test_whole_wave_cross_or_touch_zero_is_excluded(top, line, index, value):
+def test_axis_redefinition_only_trims_a_not_c(top, line, index, value):
     bars, macd = fixture([25, 24, 20, 22, 23, 19, 19.5, 21],
                         [.1, -2, -2, -1, -.5, -1.5, -1.4, -1.3],
                         [.1, -1.8, -1.7, -1.2, -.9, -1.3, -1.2, -1.1])
@@ -60,13 +63,21 @@ def test_whole_wave_cross_or_touch_zero_is_excluded(top, line, index, value):
     audit = []
     assert segment_evidence(bars, macd, (1, 2), (5, 6), 'up' if top else 'down', audit=audit, whole_leg_axis=True) is None
     assert any(g['gate'] == f'{line}_whole_leg_zero_axis' and not g['passed'] for g in audit)
-    assert not wave_events(bars, macd)
+    if index == 1:
+        event, = wave_events(bars, macd)
+        assert event.evidence['original_a_start'] == 1
+        assert event.evidence['a_start'] == 2
+        assert event.confirmed_index == 7
+    else:
+        assert not wave_events(bars, macd)
 
 
-def test_wave_cannot_bypass_nearest_pivot_condition():
+def test_wave_is_independent_of_nearest_pivot_condition():
     bars, macd = fixture([25, 24, 20, 22, 18, 23, 19, 19.5, 21],
                         [.1, -2, -2, -1, -.5, -.5, -1.5, -1.4, -1.3],
                         [.1, -1.8, -1.7, -1.2, -.9, -.9, -1.3, -1.2, -1.1])
     macd['hist'] = [.2, -2, -1, .3, .2, .1, -.5, -.2, .1]
     assert segment_evidence(bars, macd, (1, 2), (6, 7), 'down') is not None
-    assert not wave_events(bars, macd)  # 19 does not break the more recent low 18.
+    event, = wave_events(bars, macd)
+    assert event.signal_index == 6 and event.confirmed_index == 8
+    assert not [e for e in indicator_events(bars, macd) if e.signal_index == 6]

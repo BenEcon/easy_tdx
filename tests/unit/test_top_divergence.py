@@ -31,11 +31,11 @@ def test_top_new_high_supersession_and_exact_price_date():
     bars, macd = top_fixture()
     events = indicator_events(bars, macd)
     assert [(e.signal_index, e.reference_index, e.confirmed_index, e.status) for e in events] == [
-        (3, 1, 4, 'confirmed'), (5, 3, None, 'superseded'), (6, 3, 7, 'confirmed')]
+        (3, 1, None, 'superseded'), (5, 3, None, 'superseded'), (6, 3, None, 'candidate')]
     assert all(e.direction == 'up' and '非缠论一卖' in e.msg for e in events)
     payload = ChanlunResult(klines=bars, bcs=events).to_dict()['bcs']
     assert payload[-1]['curr_date'] == '2026-01-07'
-    assert payload[-1]['confirmed_date'] == '2026-01-08'
+    assert payload[-1]['confirmed_date'] is None  # no completed reverse pen
     assert payload[-1]['prev_date'] == '2026-01-04'
 
 
@@ -65,7 +65,7 @@ def test_top_wave_red_area_and_confirmation_after_price_high():
     bars, macd = wave_fixture()
     event, = wave_events(bars, macd)
     assert (event.direction, event.signal_index, event.detected_index,
-            event.confirmed_index) == ('up', 5, 6, 7)
+            event.confirmed_index) == ('up', 5, 5, 7)
     assert event.evidence['area_ratio'] == pytest.approx(.7 / 3)
     assert event.evidence['a_dif_extreme'] == 2
     assert event.evidence['c_dif_extreme'] == 1.5

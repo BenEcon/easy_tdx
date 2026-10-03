@@ -19,22 +19,25 @@ class DivergenceSignalsTest(unittest.TestCase):
              "hist": [.2, -2, -1, .3, .2, -.5, -.2, .1]}
         event = wave_events(ks, m)[0]
         self.assertEqual(event.signal_index, 5)
-        self.assertEqual(event.detected_index, 6)
+        self.assertEqual(event.detected_index, 5)
         self.assertEqual(event.confirmed_index, 7)
         self.assertAlmostEqual(event.evidence['area_ratio'], .7 / 3)
         prefix = wave_events(ks[:7], {k: v[:7] for k, v in m.items()})
         self.assertEqual(prefix[0].status, 'candidate')
         self.assertIsNone(prefix[0].confirmed_index)
-        # No signal from an incomplete, still-expanding green wave.
-        self.assertFalse(wave_events(ks[:6], {k: v[:6] for k, v in m.items()}))
+        # Oct 2: growing C may prompt, but must not confirm itself.
+        early = wave_events(ks[:6], {k: v[:6] for k, v in m.items()})
+        self.assertEqual(early[0].status, 'candidate')
+        self.assertIsNone(early[0].confirmed_index)
 
-    def test_wave_can_confirm_without_prior_candidate_and_skips_truncated_a(self):
+    def test_wave_replaces_early_candidate_and_skips_truncated_a(self):
         ks = bars([25, 24, 20, 22, 23, 19, 18, 21])
         m = {"dif": [.1, -2, -2, -1, -.5, -1.5, -1.4, -1.3],
              "dea": [.1, -1.8, -1.7, -1.2, -.9, -1.3, -1.2, -1.1],
              "hist": [.2, -2, -1, .3, .2, -.1, -.2, .1]}
-        event = wave_events(ks, m)[0]
-        self.assertEqual((event.signal_index, event.detected_index, event.confirmed_index), (6, 7, 7))
+        replaced, event = wave_events(ks, m)
+        self.assertEqual((replaced.signal_index, replaced.status, replaced.invalidated_index), (5, 'superseded', 6))
+        self.assertEqual((event.signal_index, event.detected_index, event.confirmed_index), (6, 6, 7))
         self.assertFalse(wave_events(ks[1:], {k: v[1:] for k, v in m.items()}))
 
     def test_wave_invalidates_candidate_if_area_grows(self):
@@ -68,10 +71,12 @@ class DivergenceSignalsTest(unittest.TestCase):
              "hist": [.1] * 8}
         events = indicator_events(ks, m)
         low = {e.signal_index: e for e in events if e.direction == "down"}
-        self.assertEqual(low[3].confirmed_index, 4)
+        self.assertIsNone(low[3].confirmed_index)
+        self.assertEqual(low[3].status, 'superseded')
         self.assertEqual(low[5].status, "superseded")
         self.assertIsNone(low[5].confirmed_index)
-        self.assertEqual(low[6].confirmed_index, 7)
+        self.assertIsNone(low[6].confirmed_index)
+        self.assertEqual(low[6].status, 'candidate')
         self.assertEqual(low[6].reference_index, 3)
         # Positive histogram is allowed; a price pivot cannot confirm itself.
         prefix = indicator_events(ks[:4], {k: v[:4] for k, v in m.items()})
@@ -107,7 +112,8 @@ class DivergenceSignalsTest(unittest.TestCase):
              "hist": [-.1] * 5}
         top = [e for e in indicator_events(ks, m) if e.direction == "up"]
         self.assertEqual(top[0].signal_index, 3)
-        self.assertEqual(top[0].confirmed_index, 4)
+        self.assertIsNone(top[0].confirmed_index)
+        self.assertEqual(top[0].status, 'candidate')
 
 
 if __name__ == '__main__':

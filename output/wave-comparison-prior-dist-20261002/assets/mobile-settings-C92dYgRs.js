@@ -1,0 +1,1 @@
+import{an as e,kt as t,un as n}from"./index-k07Regek.js";function r(r){let i=t(),a=n(!r());return e(r,(e,t)=>{i.value&&e&&!t&&(a.value=!1)}),{mobile:i,settingsOpen:a}}export{r as t};

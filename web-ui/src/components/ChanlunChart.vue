@@ -16,6 +16,7 @@ import type { Bar, ChanlunResult } from '../types'
 import TechnicalIndicatorPicker from './TechnicalIndicatorPicker.vue'
 import { movingAverageColor, movingAverageSelection } from '../moving-averages'
 import { divergenceEvidence, divergenceName } from '../divergence-evidence'
+import { divergenceMarker, macdPrompts } from '../divergence-marker'
 import type { DivergenceFocus } from '../divergence-focus'
 import { chartBarIndex, priceAxisPadding } from '../chart-position'
 import { ChartViewportMemory } from '../chart-viewport'
@@ -204,30 +205,43 @@ function buildOption(): echarts.EChartsCoreOption {
       })
     : []
 
+  const macdPromptSlots = new Set<string>()
+  const macdPoints = props.layers.mmds ? macdPrompts(props.result.bcs).flatMap(item => {
+    const index = chartBarIndex(props.bars, item.curr_date, item.signal_index)
+    if (index === null) return []
+    const slot = `${index}:${item.direction}`
+    if (macdPromptSlots.has(slot)) return []
+    macdPromptSlots.add(slot)
+    const buy = item.direction === 'down'
+    const price = buy ? props.bars[index]!.low : props.bars[index]!.high
+    return [{
+      name: `M1 · MACD ${buy ? '买入' : '卖出'}提示`, value: 'M1',
+      date: dates[index], price, coord: [index, price],
+      message: `仅为 MACD 波段提示，不等同于缠论结构一${buy ? '买' : '卖'}。<br/>极值：${item.curr_date}；实际确认：${item.confirmed_date}`,
+      symbol: 'roundRect', symbolSize: [20, 13], symbolOffset: [0, buy ? 25 : -25],
+      itemStyle: { color: buy ? '#e65b6b' : '#39ad79', borderWidth: 0 },
+      label: { show: true, formatter: 'M1', color: '#fff', fontSize: 7, fontWeight: 700 },
+    }]
+  }) : []
+  const divergenceSlots = new Map<string, number>()
   const divergencePoints = props.layers.bcs
     ? props.result.bcs.filter((item) => item.bc && item.status !== 'superseded').flatMap((item) => {
         const index = chartBarIndex(props.bars, item.curr_date, item.signal_index)
         if (index === null) return []
         const date = dates[index]!
         const bar = props.bars[index]!
+        const slotKey = `${index}:${item.direction}`
+        const slot = divergenceSlots.get(slotKey) ?? 0
+        divergenceSlots.set(slotKey, slot + 1)
         return [{
+          ...divergenceMarker(item),
           name: divergenceName(item),
           value: item.type.toUpperCase(),
           date,
           price: item.direction === 'down' ? bar.low : bar.high,
           message: `${item.status === 'candidate' ? '候选 · 尚未确认' : '已确认（不保证反转）'}；对照：${item.prev_date ?? '—'}<br/>${divergenceEvidence(item).join('<br/>')}`,
           coord: [index, item.direction === 'down' ? bar.low : bar.high],
-          symbolOffset: [0, item.direction === 'down' ? 23 : -23],
-          symbol: 'diamond',
-          symbolSize: 9,
-          itemStyle: {
-            color: item.status === 'candidate' ? 'transparent' : 'rgba(191,90,242,.7)',
-            borderColor: '#d9a3ff',
-            borderWidth: 1.5,
-            shadowBlur: 3,
-            shadowColor: 'rgba(191,90,242,.2)',
-          },
-          label: { show: false },
+          symbolOffset: [0, (item.direction === 'down' ? 1 : -1) * ((macdPromptSlots.has(slotKey) ? 40 : 23) + slot * 13)],
         }]
       })
     : []
@@ -267,7 +281,7 @@ function buildOption(): echarts.EChartsCoreOption {
         },
       },
       markPoint: {
-        data: [...signalPoints, ...divergencePoints],
+        data: [...signalPoints, ...macdPoints, ...divergencePoints],
         tooltip: {
           triggerOn: 'mousemove|click',
           formatter: (params: { data?: { name?: string; date?: string; price?: number; message?: string } }) => {
@@ -640,6 +654,8 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
       class="chanlun-chart"
       :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px`, '--chanlun-chart-height': `${chartHeight}px` }"
     ></div>
+    <p v-if="layers.bcs" class="macd-prompt-note">圆形：双线 · 菱形：波段／结构 · 空心：候选（含初步确认） · 实心：最终确认</p>
+    <p v-if="layers.mmds && macdPrompts(result.bcs).length" class="macd-prompt-note">M1 为 MACD 波段提示，非缠论结构一类点；标记位于极值日，实际确认日见提示详情。</p>
     <div class="indicator-heading"><span>技术指标 · 可同时显示多个</span><button @click="addIndicator">＋ 添加指标</button></div>
     <div v-for="(item, index) in indicators" :key="item.id" class="indicator-entry">
     <button class="remove-indicator" :aria-label="`移除第 ${index + 1} 个指标`" @click="indicators.splice(index, 1)">移除</button>
@@ -655,6 +671,7 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
 </template>
 
 <style scoped>
+.macd-prompt-note { margin: 4px 0 8px; color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .indicator-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0 4px; font-size: 11px; color: var(--text-muted); }
 .indicator-heading button, .remove-indicator { padding: 5px 9px; font-size: 11px; border: 1px solid var(--border); border-radius: 7px; background: rgba(255,255,255,.03); color: var(--text-muted); cursor: pointer; }
 .indicator-entry { position: relative; border-bottom: 1px solid var(--border); padding-right: 52px; }

@@ -75,6 +75,8 @@ export const gates: Record<string, string> = {
   dif_extreme_and_zero_axis: 'DIF 极值与零轴条件', dif_centre_pullback: 'DIF 中枢回拉',
   dif_whole_leg_zero_axis: 'DIF：A、C 整段不触及或跨越零轴',
   dea_whole_leg_zero_axis: 'DEA：A、C 整段不触及或跨越零轴',
+  dif_whole_abc_zero_axis: 'DIF：A、B、C 全段不触及或跨越零轴',
+  dea_whole_abc_zero_axis: 'DEA：A、B、C 全段不触及或跨越零轴',
   dea_extreme_and_zero_axis: 'DEA 极值与零轴条件', dea_centre_pullback: 'DEA 中枢回拉',
 }
 const fields: Record<string, string> = {

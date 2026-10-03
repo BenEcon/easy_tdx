@@ -39,14 +39,14 @@ def test_data_provenance_and_precision(market):
 @pytest.mark.parametrize('through,day,kind,status,confirmation', [
     ('2026-07-09', '2026-07-09', 'macd', 'candidate', None),
     ('2026-07-14', '2026-07-14', 'macd', None, None),
-    ('2026-07-14', '2026-07-14', 'macd_wave', None, None),
-    ('2026-07-15', '2026-07-14', 'macd_wave', None, None),
+    ('2026-07-14', '2026-07-14', 'macd_wave', 'candidate', None),
+    ('2026-07-15', '2026-07-14', 'macd_wave', 'confirmed', '2026-07-15'),
     ('2026-07-20', '2026-07-20', 'macd', 'candidate', None),
-    ('2026-07-21', '2026-07-20', 'macd', 'confirmed', '2026-07-21'),
+    ('2026-07-21', '2026-07-20', 'macd', 'candidate', None),
     ('2026-07-24', '2026-07-24', 'macd', 'candidate', None),
     ('2026-07-27', '2026-07-24', 'macd', 'superseded', None),
     ('2026-07-27', '2026-07-27', 'macd', 'candidate', None),
-    ('2026-07-28', '2026-07-27', 'macd', 'confirmed', '2026-07-28'),
+    ('2026-07-28', '2026-07-27', 'macd', 'candidate', None),
 ])
 def test_real_prefix_event_lifecycle(market, through, day, kind, status, confirmation):
     _, data = analyse(market, through)
@@ -66,9 +66,11 @@ def test_real_structure_and_macd_baseline(market):
     assert (data['bi_count'], data['xd_count'], data['zs_count']) == (52, 6, 10)
     assert result.macd['dif'][745] > result.macd['dif'][734]
     assert result.macd['dea'][745] < result.macd['dea'][734]
-    # Oct 1 rule: the entire original A colour wave crosses zero; do not trim
-    # its positive beginning just to preserve the old July 14 wave marker.
-    assert not any(e['type'] == 'macd_wave' and e['curr_date'] == '2026-07-14' for e in data['bcs'])
+    # Oct 2 revised rule: a documented same-axis A suffix is now permitted.
+    wave = next(e for e in data['bcs'] if e['type'] == 'macd_wave' and e['curr_date'] == '2026-07-14')
+    assert wave['confirmed_date'] == '2026-07-15'
+    assert wave['intervals']['original_a_start'] == '2026-05-28'
+    assert wave['intervals']['a_start'] == '2026-06-08'
     a = [i for i, b in enumerate(market['bars']) if '2026-05-28' <= b['datetime'][:10] <= '2026-07-02']
     for line in ('dif', 'dea'):
         assert min(result.macd[line][i] for i in a) < 0 < max(result.macd[line][i] for i in a)

@@ -18,7 +18,8 @@ import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
 import { createMovingAverageSettings, movingAverageColor } from '../moving-averages'
 import { DEFAULT_LINE_WIDTHS, MIN_LINE_WIDTH, MAX_LINE_WIDTH, LINE_WIDTH_STEP, structureLineWidth, type StructureLine } from '../chanlun-line-width'
-import { divergenceEvidence, divergenceName, signalEvidence } from '../divergence-evidence'
+import { divergenceEvidence, divergenceName, signalEvidence, waveFailureSummary, waveDiagnosticLines, waveComparisonName, waveComparisonLines } from '../divergence-evidence'
+import { macdPrompts } from '../divergence-marker'
 import { divergenceFocus, type DivergenceFocus } from '../divergence-focus'
 import { expansionFocus } from '../expansion-focus'
 import { releasedFocus, type ReleaseFocusMode } from '../released-focus'
@@ -107,6 +108,9 @@ const count = ref(600)
 const loading = ref(false)
 const error = ref('')
 const result = ref<ChanlunResult | null>(null)
+const macdPromptItems = computed(() => macdPrompts(result.value?.bcs ?? []))
+const blockedWaves = computed(() => (result.value?.wave_diagnostics ?? []).filter(item => item.status === 'blocked').slice().reverse())
+const auditedWaves = computed(() => (result.value?.wave_diagnostics ?? []).slice().reverse())
 const bars = ref<Bar[]>([])
 const snapshotBars = ref<Bar[]>([])
 const snapshotResult = ref<ChanlunResult | null>(null)
@@ -642,7 +646,8 @@ onMounted(async () => {
                 <span class="legend-zs">中枢</span>
                 <span class="legend-xd">线段</span>
                 <span v-if="layers.xds && result.unfinished_xd" class="legend-pending">候选未确认</span>
-                <span class="legend-bc">背驰</span>
+                <span class="legend-bc">底背离／背驰</span>
+                <span class="legend-top">顶背离／背驰</span>
               </div>
             </template>
             <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
@@ -774,14 +779,43 @@ onMounted(async () => {
                 <ConfirmationReplay :index="signal.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="signalLabel(signal.type)" @seek="jumpToConfirmation" />
               </details>
             </div>
-            <p v-if="result.mmds.length === 0" class="no-data">当前窗口没有识别到买卖点。</p>
+            <p v-if="result.mmds.length === 0" class="no-data">当前窗口没有识别到结构性买卖点。</p>
+            <template v-if="macdPromptItems.length">
+              <p class="macd-prompt-caption">MACD 提示 · 独立于结构性买卖点，不参与一类点策略判断</p>
+              <div v-for="(item, index) in macdPromptItems.slice().reverse()" :key="`macd-prompt-${index}`" class="event-row macd-prompt-row">
+                <span class="event-tag" :class="item.direction === 'down' ? 'buy' : 'sell'">M1 · {{ item.direction === 'down' ? '买入提示' : '卖出提示' }}</span>
+                <time>极值 {{ item.curr_date }}</time>
+                <small>实际确认 {{ item.confirmed_date }}</small>
+                <ConfirmationReplay :index="item.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="MACD M1 提示" @seek="jumpToConfirmation" />
+              </div>
+            </template>
           </div>
 
           <div v-else class="event-list">
+            <details v-if="auditedWaves.length" class="wave-diagnostics">
+              <summary>波段核验与规则对照 <span>{{ blockedWaves.length }} 组未通过</span></summary>
+              <p class="wave-diagnostics-note">按每组 ABC 的最新核验展示。面积缩小与 DIF、DEA 段内极值改善须同时满足；下方放宽对照不改变图上信号，不进入策略。</p>
+              <details v-for="item in auditedWaves" :key="`${item.direction}-${item.c_start}`" class="wave-diagnostic-row">
+                <summary>
+                  <span>{{ item.direction === 'down' ? '底' : '顶' }}背离 · C {{ item.dates.c_start }} — {{ item.dates.c_end }}</span>
+                  <small>{{ item.status === 'confirmed' ? '默认规则 · 已确认' : item.status === 'candidate' ? '默认规则 · 候选未确认' : item.first_candidate_index == null ? '默认规则 · 未形成候选' : '默认规则 · 曾有候选后失效' }}</small>
+                  <p v-if="item.status === 'blocked'">{{ waveFailureSummary(item) }}</p>
+                </summary>
+                <p v-for="line in waveDiagnosticLines(item)" :key="line">{{ line }}</p>
+                <div v-if="item.comparisons?.length" class="wave-comparisons">
+                  <p>完整 A、等价及二者组合沿用原对照。新增 DEA 容差单独比较，不与前三项叠加：仅允许 DEA 不利偏差 ≤ 5%，面积缩小、DIF 改善、价格突破、完整 ABC 同侧及 B 回拉仍须通过，不改变正式信号。</p>
+                  <details v-for="comparison in item.comparisons" :key="comparison.mode">
+                    <summary>{{ waveComparisonName(comparison) }}<small>{{ comparison.passed ? (comparison.closed ? '结束复核通过 · 仅对照' : '暂时满足 · C 未结束') : '仍未通过' }}</small></summary>
+                    <p v-if="!comparison.passed">{{ waveFailureSummary(comparison) }}</p>
+                    <p v-for="line in waveComparisonLines(comparison)" :key="line">{{ line }}</p>
+                  </details>
+                </div>
+              </details>
+            </details>
             <div v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="event-row">
-              <span class="event-tag divergence">{{ divergenceName(bc) }}</span>
+              <span class="event-tag divergence" :class="[bc.direction === 'up' ? 'top' : 'bottom', bc.status]">{{ divergenceName(bc) }}</span>
               <time>{{ bc.curr_date || '时间未知' }}</time>
-              <small>{{ bc.status === 'candidate' ? '候选 · 尚未确认' : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${bc.confirmed_date || '—'}` }} · 对照 {{ bc.prev_date || '—' }}</small>
+              <small>{{ bc.status === 'candidate' ? (bc.preliminary_date ? '曾满足初步条件 · 等待走势完成' : '候选 · 尚未确认') : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${bc.confirmed_date || '—'}` }} · 对照 {{ bc.prev_date || '—' }}</small>
               <p>{{ formatMessage(bc.msg) }}</p>
               <details class="divergence-evidence">
                 <summary>查看判定依据</summary>
@@ -790,7 +824,7 @@ onMounted(async () => {
                 <ConfirmationReplay v-if="bc.status === 'confirmed'" :index="bc.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" @seek="jumpToConfirmation" />
               </details>
             </div>
-            <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有确认背驰。</p>
+            <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有背离／背驰候选或确认事件。{{ blockedWaves.length ? '请展开波段核验查看原因。' : '可增加历史窗口后重新核验。' }}</p>
           </div>
         </section>
       </div>
@@ -799,6 +833,14 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.macd-prompt-caption { padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
+.event-row.macd-prompt-row > :last-child { grid-column: 1 / -1; }
+.event-row.macd-prompt-row > time, .event-row.macd-prompt-row > small { white-space: nowrap; }
+.chart-legend .legend-top::before { background: #61dfa0; border-radius: 50%; }
+.chart-legend .legend-bc::before { background: #cf8ff5; border: 0; border-radius: 50%; transform: none; }
+.event-tag.divergence.top { color: #61dfa0; background: rgba(48,209,123,.09); border-color: rgba(48,209,123,.25); }
+.event-tag.divergence.candidate { background: transparent; border-style: dashed; }
+.event-tag.divergence.superseded { color: var(--text-muted); background: transparent; border-color: var(--border); }
 .snapshot-provenance { margin: 10px 0; color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .snapshot-provenance summary { cursor: pointer; }
 .snapshot-provenance p { margin: 6px 0; }
@@ -1248,6 +1290,18 @@ onMounted(async () => {
 .event-row > p, .divergence-evidence { grid-column: 1 / -1; }
 .divergence-evidence { padding-bottom: 10px; color: var(--text-muted); font-size: 10px; line-height: 1.8; }
 .divergence-evidence summary { cursor: pointer; color: var(--accent); }
+.wave-diagnostics { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; font-size: 12px; color: var(--text-secondary); }
+.wave-diagnostics > summary { cursor: pointer; padding: 8px 0; }
+.wave-diagnostics > summary > span { float: right; color: var(--text-muted); font-size: 11px; }
+.wave-diagnostics-note, .wave-diagnostic-row > p { font-size: 11px; line-height: 1.8; color: var(--text-muted); overflow-wrap: anywhere; }
+.wave-diagnostic-row { padding: 12px 0; border-bottom: 1px solid var(--border); }
+.wave-diagnostic-row summary { cursor: pointer; line-height: 1.7; }
+.wave-diagnostic-row summary small { display: block; color: var(--text-muted); }
+.wave-diagnostic-row summary p { margin: 4px 0 0; font-size: 11px; overflow-wrap: anywhere; }
+.wave-diagnostics summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+.wave-comparisons { margin-top: 12px; padding-left: 12px; border-left: 1px solid var(--border); }
+.wave-comparisons details { margin: 10px 0; }
+.wave-comparisons p { color: var(--text-muted); font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
 .event-tag { width: fit-content; padding: 4px 8px; border: 1px solid transparent; border-radius: 999px; font-size: 9px; font-weight: 620; }
 .event-tag.buy { color: #ff858d; background: rgba(255,94,104,.09); border-color: rgba(255,94,104,.13); }.event-tag.sell { color: #61dfa0; background: rgba(48,209,123,.09); border-color: rgba(48,209,123,.13); }.event-tag.divergence { color: #d9a3ff; background: rgba(191,90,242,.1); border-color: rgba(191,90,242,.14); }
 .event-row time { color: var(--text-dim); font-family: var(--font-mono); font-size: 9px; }

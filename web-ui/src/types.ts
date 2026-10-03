@@ -135,6 +135,12 @@ export interface ChanlunSignal {
 }
 
 export interface ChanlunDivergence {
+  preliminary_index?: number | null
+  preliminary_date?: string | null
+  invalidated_index?: number | null
+  invalidated_date?: string | null
+  failure_reason?: string
+  failure_audit?: WaveAudit
   signal_index?: number | null
   reference_index?: number | null
   type: 'bi' | 'pz' | 'qs' | 'macd' | 'macd_wave'
@@ -441,7 +447,33 @@ export interface RecursiveExtensionProof {
   member_admissions: RecursiveAdmission[]; children: RecursiveExtensionProof[]
 }
 
+export interface WaveCheck {
+  gate: string; passed: boolean
+  values: Record<string, number | string | boolean | null>
+  dates?: Record<string, string>
+}
+export interface WaveAudit {
+  dates: Record<string, string>
+  checks: WaveCheck[]
+  closed: boolean
+}
+export interface WaveComparison extends WaveAudit {
+  mode: 'full_a' | 'equal_price' | 'full_a_equal_price' | 'dea_tolerance'
+  research_only: true
+  passed: boolean
+}
+export interface WaveDiagnostic extends WaveAudit {
+  direction: 'up' | 'down'
+  status: 'blocked' | 'candidate' | 'confirmed'
+  closed: boolean
+  c_start: number
+  first_candidate_index: number | null
+  comparisons?: WaveComparison[]
+  rejections: Array<{ from_date: string; through_date: string; gates: string[] }>
+}
+
 export interface ChanlunResult {
+  wave_diagnostics?: WaveDiagnostic[]
   macd?: { dif: number[]; dea: number[]; hist: number[] }
   pen_consolidations?: Array<{
     pen_indices: number[]; start_date: string; end_date: string

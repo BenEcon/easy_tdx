@@ -1,0 +1,1 @@
+function e(e){return e==null||!Number.isFinite(e)?`-`:e.toFixed(2)}export{e as t};
