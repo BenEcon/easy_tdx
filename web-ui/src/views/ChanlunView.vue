@@ -34,7 +34,7 @@ import { centreEvidence, centreState, segmentEvidence, segmentsConnected } from 
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
 import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchResearchSnapshot, formatError, type BarSnapshot } from '../api'
 import { detectMarket, marketLabel } from '../market'
-import { useSelectedStock, recordStockHistory } from '../stock-history'
+import { useSelectedStock, recordStockHistory, stockDisplayName } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
 import type { Bar, Category, ChanlunResult, ChanlunDivergence } from '../types'
 import { useMarketPreferences } from '../market-preferences'
@@ -51,7 +51,7 @@ const code = computed({get: () => isStock.value ? stockCode.value : selectedTarg
 const target = computed<ResearchTarget>(() => isStock.value
   ? {kind:'stock',code:stockCode.value,market:detectMarket(stockCode.value)} : selectedTarget.value)
 const targetKey = computed(() => targetIdentity(target.value))
-const targetTitle = computed(() => `${targetKindLabel[target.value.kind]} · ${code.value}${target.value.name ? `-${target.value.name}` : ''}`)
+const targetTitle = computed(() => `${targetKindLabel[target.value.kind]} · ${isStock.value ? stockDisplayName(code.value) : `${code.value}${target.value.name ? `-${target.value.name}` : ''}`}`)
 const lineWidths = ref({ ...DEFAULT_LINE_WIDTHS })
 const candleFillTransparency = ref(DEFAULT_CANDLE_TRANSPARENCY)
 const lineWidthOptions: Array<{ key: StructureLine; label: string; color: string }> = [
@@ -692,19 +692,19 @@ onMounted(async () => {
             <span>{{ focusedDivergence.scope === 'reverse-pen' ? '局部确认用笔 · 保存首次成笔证据，不替换全局结构笔' : focusedDivergence.scope === 'released' ? '当前工程结构依据 · 反向确认不计入价格来源' : focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
             <button @click="focusedDivergence = null">清除区间定位</button>
           </div>
-          <ChartFrame v-if="industryView !== 'industry'" :title="targetTitle" description="均线与缠论结构叠加；可在下方选择技术指标。">
+          <ChartFrame v-if="industryView !== 'industry'" class="chanlun-price-frame" :title="targetTitle" description="均线与缠论结构叠加；可在下方选择技术指标。">
             <template #actions>
               <div class="chart-legend">
                 <span class="legend-bi">笔</span>
-                <span v-if="layers.consolidations" class="legend-live-area">盘整进行中</span>
+                <span v-if="layers.consolidations" class="legend-live-area"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3"/><path d="M8 5v3l2 1.5"/></svg>盘整进行中</span>
                 <span v-if="layers.nextPen" class="legend-next-pen">下一笔参考 · 未成笔</span>
                 <span class="legend-zs">中枢</span>
                 <span class="legend-xd">线段</span>
                 <span v-if="layers.xds && result.unfinished_xd" class="legend-pending">候选未确认</span>
                 <span class="legend-bc">底背离／背驰</span>
                 <span class="legend-top">顶背离／背驰</span>
-                <label class="history-toggle"><input v-model="showDivergenceHistory" type="checkbox" :disabled="!layers.bcs" />显示失效历史</label>
               </div>
+              <label class="history-toggle"><input v-model="showDivergenceHistory" type="checkbox" :disabled="!layers.bcs" /><span>显示失效历史</span></label>
             </template>
             <ChanlunChart :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
           </ChartFrame>
@@ -897,7 +897,9 @@ onMounted(async () => {
 
 <style scoped>
 .target-note { font-size: 10px; line-height: 1.6; color: var(--text-muted); margin: 0; }
-.history-toggle { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; color: var(--text-muted); font-size: 10px; cursor: pointer; white-space: nowrap; }
+.history-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 28px; box-sizing: border-box; margin: 0; padding: 0 8px; border: 1px solid rgba(255,255,255,.08); border-radius: 6px; background: rgba(255,255,255,.025); color: var(--text-muted); font-size: 10px; line-height: 1; cursor: pointer; white-space: nowrap; transition: background .15s; }
+.history-toggle:hover { background: rgba(255,255,255,.05); }
+.history-toggle:has(input:disabled) { opacity: .45; cursor: default; }
 .history-toggle input { flex: 0 0 13px; width: 13px; height: 13px; min-height: 13px; margin: 0; padding: 0; accent-color: var(--accent); }
 .macd-prompt-caption { padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .event-row.macd-prompt-row > :last-child { grid-column: 1 / -1; }
@@ -1326,11 +1328,17 @@ onMounted(async () => {
 .section-bar { display: flex; align-items: center; justify-content: space-between; min-height: 42px; padding: 0 2px 8px; }
 .section-bar h3 { font-size: 12px; font-weight: 620; }
 .section-bar p { margin-top: 2px; color: var(--text-dim); font-size: 9px; }
-.chart-legend { display: flex; flex-wrap: wrap; gap: 8px 12px; color: var(--text-dim); font-size: 9px; }
-.chart-legend .legend-live-area::before { background: rgba(210,169,108,.075); border: 1px dashed #d2a96c; }
+.chanlun-price-frame :deep(.chart-frame-header) { flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.chanlun-price-frame :deep(.chart-frame-actions) { flex: 1 1 540px; flex-wrap: wrap; gap: 8px; min-width: 0; justify-content: flex-end; }
+.chanlun-price-frame :deep(.chart-expand-button) { height: 28px; min-height: 28px; padding: 0 8px; line-height: 1; margin: 0; }
+.chart-legend { display: flex; flex: 1 1 350px; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--text-dim); font-size: 10px; }
+.chart-legend > span { display: inline-flex; align-items: center; min-height: 28px; gap: 5px; white-space: nowrap; line-height: 1; }
+.chart-legend .legend-live-area::before { display: none; }
+.legend-live-area svg { width: 13px; height: 13px; flex: none; fill: rgba(210,169,108,.06); stroke: #c4a16e; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; }
+.legend-live-area path { fill: none; }
 .chart-legend .legend-next-pen::before { height: 0; width: 12px; border-top: 1px dashed #d2a96c; border-radius: 0; vertical-align: 3px; }
 .chart-legend .legend-pending::before { height: 0; width: 12px; border-top: 1px dashed #a88cdb; border-radius: 0; vertical-align: 3px; }
-.chart-legend span::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 2px; vertical-align: -1px; }
+.chart-legend span::before { content: ''; display: block; flex: none; width: 7px; height: 7px; border-radius: 2px; }
 .legend-bi::before { background: #79b9ef; }.legend-zs::before { background: #4a9eff; }.legend-xd::before { background: #a88cdb; }.legend-bc::before { background: transparent; border: 1px solid #d9a3ff; transform: rotate(45deg); }
 
 .detail-workspace { overflow: hidden; min-height: 220px; }
