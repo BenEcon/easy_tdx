@@ -12,9 +12,9 @@ const emit = defineEmits<{ seek: [position: number] }>()
 <template>
   <details class="recursive-centres">
     <summary><strong>高层中枢进程</strong><span>已确认走势的中枢与延伸证据</span></summary>
-    <p>即使下一层走势尚未完成，也保留本层中枢进程。每条连续链独立计算，{{ prefix }}1、{{ prefix }}2 为工程递归层级，不代表图表周期。</p>
-    <p v-if="!layers">此快照未包含高层中枢进程，请重新分析。</p>
-    <p v-else-if="!layers.length">尚无已确认走势可供高层中枢使用。</p>
+    <dl class="research-copy"><div><dt>进程保留</dt><dd>即使下一层走势尚未完成，也保留本层中枢进程。</dd></div><div><dt>计算范围</dt><dd>每条连续链独立计算，{{ prefix }}1、{{ prefix }}2 为工程递归层级，不代表图表周期。</dd></div></dl>
+    <p v-if="!layers" class="research-empty">此快照未包含高层中枢进程，请重新分析。</p>
+    <p v-else-if="!layers.length" class="research-empty">尚无已确认走势可供高层中枢使用。</p>
     <section v-for="layer in layers" :key="layer.input_level" :aria-label="`${prefix}${layer.input_level} 来源中枢`">
       <h4>{{ prefix }}{{ layer.input_level }} 来源中枢 <span>{{ layer.chains.length }} 条独立连续链</span></h4>
       <section v-for="(chain, chainIndex) in layer.chains" :key="chain.id" class="chain">
@@ -22,7 +22,7 @@ const emit = defineEmits<{ seek: [position: number] }>()
         <p v-if="!chain.centres.length">尚未形成三单元共同重叠区。</p>
         <details v-for="(centre, index) in chain.centres" :key="centre.id" class="centre-row">
           <summary><strong>中枢 {{ index + 1 }}</strong><span>{{ centreState(centre.state) }} · 形成于 {{ centre.formed_date ?? '日期未提供' }}</span></summary>
-          <dl>
+          <dl class="research-facts">
             <dt>固定核心</dt><dd>{{ value(centre.zd) }}–{{ value(centre.zg) }}</dd>
             <dt>已纳入外围</dt><dd>{{ value(centre.low) }}–{{ value(centre.high) }}</dd>
             <dt>当前关系</dt><dd>{{ recursiveRelation(centre.relation_current) }}</dd>
@@ -52,7 +52,7 @@ const emit = defineEmits<{ seek: [position: number] }>()
         </details>
       </section>
     </section>
-    <p class="boundary">中枢形成、回试退出、延伸证明都不等于盘整结束；本区不新增买卖点，也不把这些中枢直接当成已完成走势继续递归。</p>
+    <p class="boundary research-caveat"><strong>使用边界</strong><span>中枢形成、回试退出、延伸证明都不等于盘整结束；本区不新增买卖点，也不把这些中枢直接当成已完成走势继续递归。</span></p>
   </details>
 </template>
 

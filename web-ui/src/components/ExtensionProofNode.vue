@@ -15,10 +15,13 @@ const emit = defineEmits<{ seek: [position: number] }>()
       <span>{{ proof.zd.toFixed(2) }}–{{ proof.zg.toFixed(2) }}</span>
     </summary>
     <div class="proof-body">
-      <p>{{ proof.start_date }} → {{ proof.end_date }} · 本项证明可知于 {{ proof.known_date }}</p>
-      <p>基础线段 {{ proof.source_segment_indices.map(i => i + 1).join('、') }}</p>
-      <p>三个子区间：{{ proof.child_ranges.map(([low, high]) => `${low!.toFixed(2)}–${high!.toFixed(2)}`).join(' / ') }}</p>
-      <p>区间交集为中枢核心；外围 {{ proof.low.toFixed(2) }}–{{ proof.high.toFixed(2) }}。重组来源不代表自然走势已结束。</p>
+      <dl class="research-copy">
+        <div><dt>覆盖时间</dt><dd>{{ proof.start_date }} → {{ proof.end_date }}</dd></div>
+        <div><dt>实际可知</dt><dd>{{ proof.known_date }}</dd></div>
+        <div><dt>基础线段</dt><dd>{{ proof.source_segment_indices.map(i => i + 1).join('、') }}</dd></div>
+        <div><dt>三个子区间</dt><dd>{{ proof.child_ranges.map(([low, high]) => `${low!.toFixed(2)}–${high!.toFixed(2)}`).join(' / ') }}</dd></div>
+        <div><dt>重叠与外围</dt><dd>区间交集为中枢核心；外围 {{ proof.low.toFixed(2) }}–{{ proof.high.toFixed(2) }}。重组来源不代表自然走势已结束。</dd></div>
+      </dl>
       <ConfirmationReplay :index="proof.known_index" :total="total" :busy="busy" :label="`${root ? '升级证明' : '重组来源'} L${proof.level}`" @seek="emit('seek', $event)" />
       <details v-if="proof.member_admissions?.length" class="admission-details">
         <summary>来源接纳时间 · {{ proof.member_admissions.length }} 条线段</summary>

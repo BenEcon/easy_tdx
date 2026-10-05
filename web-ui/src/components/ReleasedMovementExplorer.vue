@@ -32,13 +32,13 @@ function descend(id: string) {
       <button v-for="(id, i) in path" :key="id" :disabled="busy || i === path.length - 1"
         @click="path = path.slice(0, i + 1)">M{{ evidence!.records.get(id)!.level }} · {{ range(evidence!.records.get(id)!.source_segment_indices) }}</button>
     </nav>
-    <p>{{ record.start_date ?? `#${record.start_index}` }} → {{ record.end_date ?? `#${record.end_index}` }} · {{ record.eligible_for_external_recursion ? '当前外部可用' : '内部依据／仍受约束' }}</p>
+    <dl class="research-copy"><div><dt>走势范围</dt><dd>{{ record.start_date ?? `#${record.start_index}` }} → {{ record.end_date ?? `#${record.end_index}` }}</dd></div><div><dt>当前状态</dt><dd>{{ record.eligible_for_external_recursion ? '当前外部可用' : '内部依据／仍受约束' }}</dd></div></dl>
     <div v-if="locatable" class="actions">
       <button v-for="item in modes" :key="item.mode"
         :disabled="busy || !releasedFocus(data, record.id, total, item.mode)"
         @click="emit('locate', record.id, item.mode)">{{ item.label }}</button>
     </div>
-    <p>反向确认只作证据，不并入父走势价格来源。{{ locatable ? '定位同步作用于价格和已开启的指标面板，不改变回放日期。' : '研究方案只在本区查看，不覆盖主图。' }}</p>
+    <p class="research-caveat"><strong>查看口径</strong><span>反向确认只作证据，不并入父走势价格来源。{{ locatable ? '定位同步作用于价格和已开启的指标面板，不改变回放日期。' : '研究方案只在本区查看，不覆盖主图。' }}</span></p>
     <div class="children">
       <div v-for="child in children" :key="child.id" class="child">
         <span v-if="!child.value">基础线段 {{ Number(child.id.split(':')[1]) + 1 }}</span>
@@ -53,11 +53,9 @@ function descend(id: string) {
       </div>
     </div>
     <ConfirmationReplay :index="record.original_known_index" :total="total" :busy="busy" label="本结构局部完成" @seek="emit('seek', $event)" />
-    <details v-if="blockers.length"><summary>距离对外准入还缺什么 · {{ blockers.length }} 项</summary>
+    <details v-if="blockers.length" class="reading-disclosure"><summary>距离对外准入还缺什么 · {{ blockers.length }} 项</summary>
       <div v-for="item in blockers" :key="item.domainId" class="blocker">
-        <p>归属范围：{{ range(item.sources) }}；最低父层级 M{{ item.requiredLevel }}，本结构 M{{ item.currentLevel }}。</p>
-        <p>{{ item.missingSources.length ? `尚未覆盖基础线段 ${item.missingSources.map(s => s + 1).join('、')}` : '已覆盖该区全部价格来源，仍须核验层级及确认依赖' }}。</p>
-        <p>依赖路径：{{ item.path.map(node => `M${node.level}（${range(node.sources)}）`).join(' → ') }}</p>
+        <dl class="research-copy"><div><dt>归属范围</dt><dd>{{ range(item.sources) }}；最低父层级 M{{ item.requiredLevel }}，本结构 M{{ item.currentLevel }}。</dd></div><div><dt>覆盖缺口</dt><dd>{{ item.missingSources.length ? `尚未覆盖基础线段 ${item.missingSources.map(s => s + 1).join('、')}` : '已覆盖该区全部价格来源，仍须核验层级及确认依赖' }}。</dd></div><div><dt>依赖路径</dt><dd>{{ item.path.map(node => `M${node.level}（${range(node.sources)}）`).join(' → ') }}</dd></div></dl>
       </div>
       <p>这些条目已具备局部结构、MACD 和反向确认依据，缺口在归属准入；不能误报为“缺 MACD”。未形成候选的原始来源不据此推断唯一失败原因。</p>
     </details>

@@ -27,13 +27,13 @@ const rows = computed(() => (props.data?.candidates ?? []).map(candidate => {
 </script>
 
 <template>
-  <details class="expansion-inspector">
+  <details class="expansion-inspector research-panel">
     <summary class="section-heading">
       <strong>跨中枢候选核验</strong>
       <span>{{ data ? `${rows.length} 项候选 · 不用于高层级信号` : '未提供候选依据' }}</span>
     </summary>
-    <p class="scope">本区检查跨中枢的连续重组。分区 A/B/C 不是 MACD 柱色分段；切分成立、端点一致均不代表自然走势完成。</p>
-    <p v-if="data?.rejected_suffix_count" class="scope">{{ data.rejected_suffix_count }} 条未确认或无效后缀未参与计算。</p>
+    <div class="research-panel-body">
+    <dl class="research-copy"><div><dt>核验范围</dt><dd>本区检查跨中枢的连续重组。分区 A/B/C 不是 MACD 柱色分段。</dd></div><div><dt>完成边界</dt><dd>切分成立、端点一致均不代表自然走势完成。</dd></div><div v-if="data?.rejected_suffix_count"><dt>排除项</dt><dd>{{ data.rejected_suffix_count }} 条未确认或无效后缀未参与计算。</dd></div></dl>
     <ol v-if="rows.length" class="candidate-list">
       <li v-for="({ candidate, audit, parts, locatable }, index) in rows" :key="candidate.id">
         <details class="candidate">
@@ -92,7 +92,8 @@ const rows = computed(() => (props.data?.candidates ?? []).map(candidate => {
         </details>
       </li>
     </ol>
-    <p v-else class="scope">{{ data ? '当前快照没有符合准入条件的跨中枢候选，不强行重组。' : '此结果未包含跨中枢核验数据，请重新分析。' }}</p>
+    <p v-else class="scope research-empty">{{ data ? '当前快照没有符合准入条件的跨中枢候选，不强行重组。' : '此结果未包含跨中枢核验数据，请重新分析。' }}</p>
+    </div>
   </details>
 </template>
 
@@ -129,7 +130,6 @@ dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
 .locate-action button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (max-width: 700px) {
   .facts { grid-template-columns: minmax(0, 1fr); }
-  .section-heading span { display: block; margin-left: 16px; }
   .candidate-heading small { flex-basis: 100%; margin-left: 16px; }
   .part-heading span { flex-basis: 100%; margin-left: 0; }
   .candidate-content { padding-right: 0; padding-left: 16px; }

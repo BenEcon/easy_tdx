@@ -8,8 +8,9 @@ const emit = defineEmits<{ seek: [position: number] }>()
 </script>
 
 <template>
-  <details class="decomposition-inspector">
+  <details class="decomposition-inspector research-panel">
     <summary><strong>走势分解审核</strong><span>{{ decompositionCoverage(data) }}</span></summary>
+    <div class="research-panel-body">
     <p class="scope">这是基础线段的归属分解。“归属固定”不代表走势类型完成，未用于高层级递归。</p>
     <ol v-if="data?.blocks.length">
       <li v-for="(block, index) in data.blocks" :key="`${block.role}-${block.segment_indices[0]}`">
@@ -17,12 +18,15 @@ const emit = defineEmits<{ seek: [position: number] }>()
           <summary>
             <span class="ordinal">{{ index + 1 }}</span>
             <strong>{{ decompositionRole(block.role) }}</strong>
-            <span>{{ decompositionRange(block.segment_indices) }}</span>
-            <small>{{ block.ownership_frozen ? '归属固定' : '仍可演化' }}</small>
+            <span class="block-source">{{ decompositionRange(block.segment_indices) }}</span>
+            <small class="block-status" :class="{ pending: !block.ownership_frozen }">{{ block.ownership_frozen ? '归属固定' : '仍可演化' }}</small>
           </summary>
           <div class="block-evidence">
-            <p v-if="block.centre_index !== null">关联中枢 {{ block.centre_index + 1 }}</p>
-            <p>价格范围 {{ block.low.toFixed(2) }}–{{ block.high.toFixed(2) }} · 本次归属可知于 {{ block.known_date ?? '未提供' }}</p>
+            <dl class="block-facts">
+              <div><dt>价格范围</dt><dd>{{ block.low.toFixed(2) }}–{{ block.high.toFixed(2) }}</dd></div>
+              <div><dt>归属可知于</dt><dd>{{ block.known_date ?? '未提供' }}</dd></div>
+              <div v-if="block.centre_index !== null"><dt>关联中枢</dt><dd>中枢 {{ block.centre_index + 1 }}</dd></div>
+            </dl>
             <p v-if="block.role === 'pending_departure'">等待回试确认；回到中枢时可能重新纳入中枢组成段。</p>
             <p v-else-if="block.role === 'unassigned'">当前证据尚不足以归入中枢或连接段，保留原始线段。</p>
             <ConfirmationReplay :index="block.known_index" :total="total" :busy="busy" :label="`分解 ${index + 1} 归属`" @seek="emit('seek', $event)" />
@@ -31,6 +35,7 @@ const emit = defineEmits<{ seek: [position: number] }>()
       </li>
     </ol>
     <p v-else class="scope">{{ data ? '当前没有可审核的已确认线段。' : '此结果未包含分解依据，请重新分析。' }}</p>
+    </div>
   </details>
 </template>
 
@@ -53,5 +58,4 @@ li summary small { margin-left: auto; white-space: nowrap; }
 .block-evidence { padding: 0 12px 10px 32px; overflow-wrap: anywhere; }
 .block-evidence p { margin: 5px 0; line-height: 1.7; font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { li summary::before { transition: none; } }
-@media (max-width: 600px) { .decomposition-inspector > summary span { display: block; margin-left: 16px; } }
 </style>

@@ -6,7 +6,11 @@ import ChanlunChart from '../components/ChanlunChart.vue'
 import ChanlunTargetPicker from '../components/ChanlunTargetPicker.vue'
 import { targetIdentity, targetKindLabel, type ResearchTarget } from '../chanlun-target'
 import MultiPeriodResearch from '../components/MultiPeriodResearch.vue'
+import '../research-panels.css'
+import PenConsolidationPanel from '../components/PenConsolidationPanel.vue'
+import { structureDate } from '../structure-display'
 import ConfirmationReplay from '../components/ConfirmationReplay.vue'
+import EvidenceReading from '../components/EvidenceReading.vue'
 import DecompositionInspector from '../components/DecompositionInspector.vue'
 import ExtensionHierarchyInspector from '../components/ExtensionHierarchyInspector.vue'
 import EngineeringTrendInspector from '../components/EngineeringTrendInspector.vue'
@@ -256,6 +260,7 @@ const reviewSignalDate = computed(() => String(route.query.signalDate || '日期
 const reviewSourceName = computed(() => String(route.query.strategyName || route.query.strategyLabel || '缠论买卖点'))
 
 interface LayerState {
+  nextPen: boolean
   consolidations: boolean
   bis: boolean
   zss: boolean
@@ -265,6 +270,7 @@ interface LayerState {
 }
 
 const layers = ref<LayerState>({
+  nextPen: false,
   consolidations: true,
   bis: true,
   zss: false,
@@ -280,6 +286,7 @@ const layerOptions: Array<{ key: keyof LayerState; label: string }> = [
   { key: 'xds', label: '线段' },
   { key: 'mmds', label: '买卖点' },
   { key: 'bcs', label: '背离 / 背驰' },
+  { key: 'nextPen', label: '下一笔参考' },
 ]
 
 const categories: Array<{ value: Category; label: string }> = [
@@ -484,6 +491,7 @@ onMounted(async () => {
           <span>{{ item.label }}</span>
           <input v-model="layers[item.key]" type="checkbox" />
         </label>
+        <p v-if="layers.nextPen" class="ma-help">虚线连接末笔端点与其后的反向极值，尚未成笔，端点可变；无反向区间或原笔继续延伸时不显示。不预测未来价格。</p>
       </section>
 
       <section class="inspector-section line-width-section" aria-label="结构线宽">
@@ -624,11 +632,17 @@ onMounted(async () => {
         </section>
 
         <section class="chart-workspace">
-          <details v-if="snapshotMetadata" class="snapshot-provenance">
-            <summary>数据口径 · {{ snapshotMetadata.source }} · 实际 {{ snapshotMetadata.actual_adjust }} · MACD 12 / 26 / 9</summary>
-            <p v-if="snapshotMetadata.actual_adjust !== snapshotMetadata.requested_adjust" role="alert">所选复权方式未生效：请求 {{ snapshotMetadata.requested_adjust }}，实际为 {{ snapshotMetadata.actual_adjust }}。请恢复行情源后重查。</p>
-            <p>采集于 {{ snapshotMetadata.observed_at }} · 行情窗口 {{ snapshotBars.length }} 根；EMA 从窗口首根开始预热。</p>
-            <p>{{ snapshotMetadata.volume_policy }}。{{ snapshotMetadata.completion_note }}</p>
+          <details v-if="snapshotMetadata" class="snapshot-provenance research-panel">
+            <summary><strong>数据口径</strong><span>{{ snapshotMetadata.source }} · {{ snapshotMetadata.actual_adjust }}</span></summary>
+            <div class="research-panel-body">
+              <p v-if="snapshotMetadata.actual_adjust !== snapshotMetadata.requested_adjust" class="provenance-warning" role="alert">所选复权方式未生效：请求 {{ snapshotMetadata.requested_adjust }}，实际为 {{ snapshotMetadata.actual_adjust }}。请恢复行情源后重查。</p>
+              <dl class="provenance-facts">
+                <div><dt>行情窗口</dt><dd>{{ snapshotBars.length }} 根</dd></div>
+                <div><dt>MACD 参数</dt><dd>12 / 26 / 9</dd></div>
+                <div><dt>采集时间</dt><dd>{{ snapshotMetadata.observed_at }}</dd></div>
+              </dl>
+              <p>EMA 从窗口首根开始预热。{{ snapshotMetadata.volume_policy }}。{{ snapshotMetadata.completion_note }}</p>
+            </div>
           </details>
           <p v-if="bars.some(bar => bar.is_closed === false)" class="structure-scope">虚线空心柱表示尚未确认收盘的 K 线、成交量及 MACD 柱；当前结构和信号仍可能随本周期行情变化。</p>
           <p v-if="result.structure_metadata" class="structure-scope">线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。</p>
@@ -665,6 +679,8 @@ onMounted(async () => {
             <template #actions>
               <div class="chart-legend">
                 <span class="legend-bi">笔</span>
+                <span v-if="layers.consolidations" class="legend-live-area">盘整进行中</span>
+                <span v-if="layers.nextPen" class="legend-next-pen">下一笔参考 · 未成笔</span>
                 <span class="legend-zs">中枢</span>
                 <span class="legend-xd">线段</span>
                 <span v-if="layers.xds && result.unfinished_xd" class="legend-pending">候选未确认</span>
@@ -675,10 +691,7 @@ onMounted(async () => {
             </template>
             <ChanlunChart :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
           </ChartFrame>
-          <details v-if="layers.consolidations && result.pen_consolidations?.length" class="snapshot-provenance">
-            <summary>最近 {{ result.pen_consolidations.length }} 组三笔盘整 · 不等同于中枢</summary>
-            <p v-for="(area, i) in result.pen_consolidations" :key="area.pen_indices.join('-')">盘整 {{ i + 1 }} · {{ area.lower.toFixed(2) }}—{{ area.upper.toFixed(2) }} · 笔 {{ area.pen_indices.map(n => n + 1).join(' / ') }} · {{ area.confirmed ? '三笔已确认' : '含未确认末笔，区间可变化' }}</p>
-          </details>
+          <PenConsolidationPanel v-if="layers.consolidations && result.pen_consolidations?.length" :areas="result.pen_consolidations" />
           <MultiPeriodResearch v-if="snapshotMetadata" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" />
           <template v-if="industryView !== 'stock'">
             <p v-if="industryLoading" role="status">正在加载行业结构…</p>
@@ -711,9 +724,9 @@ onMounted(async () => {
               <div v-for="bi in result.bis.slice(-8).reverse()" :key="bi.index" class="data-row">
                 <span class="direction" :class="bi.direction">{{ bi.direction === 'up' ? '↗' : '↘' }}</span>
                 <div class="row-primary">
-                  <strong>{{ bi.start_date }} → {{ bi.end_date }}</strong>
+                  <strong>{{ structureDate(bi.start_date) }} → {{ structureDate(bi.end_date) }}</strong>
                   <small>{{ bi.direction === 'up' ? '向上笔' : '向下笔' }} · {{ (bi.structurally_confirmed ?? bi.done) ? '已确认' : '进行中' }}</small>
-                  <small v-if="bi.confirmed_date">确认于 {{ bi.confirmed_date }}</small>
+                  <small v-if="bi.confirmed_date">确认于 {{ structureDate(bi.confirmed_date) }}</small>
                 </div>
                 <span class="range">{{ bi.low.toFixed(2) }}–{{ bi.high.toFixed(2) }}</span>
               </div>
@@ -726,15 +739,17 @@ onMounted(async () => {
                 <span class="center-index">{{ zs.index + 1 }}</span>
                 <div class="row-primary">
                   <strong>{{ zs.zd.toFixed(2) }} — {{ zs.zg.toFixed(2) }}</strong>
-                  <small>{{ zs.start_date }} → {{ zs.end_date || '延续中' }}</small>
+                  <small>{{ structureDate(zs.start_date) }} → {{ zs.end_date ? structureDate(zs.end_date) : '延续中' }}</small>
                   <small>{{ centreState(zs.state) }}</small>
                 </div>
                 <span class="range">{{ zs.line_count }} {{ result.structural_centres ? '段' : '笔' }}</span>
                 <details v-if="zs.state" class="structure-evidence">
                   <summary>中枢 {{ zs.index + 1 }} · 确认依据</summary>
-                  <p v-for="(line, index) in centreEvidence(zs)" :key="index">{{ line }}</p>
+                  <div class="structure-evidence-body">
+                  <EvidenceReading :lines="centreEvidence(zs)" />
                   <ConfirmationReplay :index="zs.formed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="`中枢 ${zs.index + 1} 形成`" @seek="jumpToConfirmation" />
                   <ConfirmationReplay :index="zs.exited_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="`中枢 ${zs.index + 1} 退出`" @seek="jumpToConfirmation" />
+                  </div>
                 </details>
               </div>
               <p v-if="displayCentres.length === 0" class="no-data">当前窗口尚未形成已确认线段构成的基础中枢。</p>
@@ -762,24 +777,26 @@ onMounted(async () => {
                   <div>
                     <strong>线段 {{ xd.index + 1 }}</strong>
                     <small v-if="xd.evidence?.special_inclusion">特殊包含 · 第 71、78 课</small>
-                    <small>{{ xd.start_date }} → {{ xd.end_date }}</small>
+                    <small>{{ structureDate(xd.start_date) }} → {{ structureDate(xd.end_date) }}</small>
                   </div>
                   <span class="segment-price">
                     {{ segmentValue(xd, 'start').toFixed(2) }} → {{ segmentValue(xd, 'end').toFixed(2) }}
                   </span>
                   <details class="structure-evidence">
                     <summary>线段 {{ xd.index + 1 }} · 确认依据</summary>
-                    <p v-for="(line, index) in segmentEvidence(xd)" :key="index">{{ line }}</p>
+                    <div class="structure-evidence-body">
+                    <EvidenceReading :lines="segmentEvidence(xd)" />
                     <ConfirmationReplay :index="xd.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="`线段 ${xd.index + 1}`" @seek="jumpToConfirmation" />
+                    </div>
                   </details>
                 </article>
               </div>
               <p v-else class="no-data">当前窗口尚未形成已确认线段。</p>
-              <p v-if="result.unfinished_xd" class="unfinished-segment">
-                <span aria-hidden="true">┄</span> 候选{{ result.unfinished_xd.direction === 'up' ? '向上' : '向下' }}线段 ·
-                {{ segmentValue(result.unfinished_xd, 'start').toFixed(2) }} → {{ segmentValue(result.unfinished_xd, 'end').toFixed(2) }}
+              <div v-if="result.unfinished_xd" class="unfinished-segment">
+                <strong><i aria-hidden="true"></i>候选{{ result.unfinished_xd.direction === 'up' ? '向上' : '向下' }}线段</strong>
+                <span>{{ segmentValue(result.unfinished_xd, 'start').toFixed(2) }} → {{ segmentValue(result.unfinished_xd, 'end').toFixed(2) }}</span>
                 <small>端点可能延伸或失效，确认后以实线显示；不是价格预测。</small>
-              </p>
+              </div>
             </section>
             <DecompositionInspector :data="result.base_decomposition" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <ExtensionHierarchyInspector :data="result.extension_hierarchy" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
@@ -793,12 +810,12 @@ onMounted(async () => {
           <div v-else-if="activeTab === 'signals'" class="event-list">
             <div v-for="(signal, index) in result.mmds.slice().reverse()" :key="`${signal.type}-${signal.date}-${index}`" class="event-row">
               <span class="event-tag" :class="signal.type.includes('buy') ? 'buy' : 'sell'">{{ signalLabel(signal.type) }}</span>
-              <time>{{ signal.date || '时间未知' }}</time>
-              <small v-if="signal.confirmed_date">确认于 {{ signal.confirmed_date }}</small>
+              <time>{{ signal.date ? structureDate(signal.date) : '时间未知' }}</time>
+              <small v-if="signal.confirmed_date">确认于 {{ structureDate(signal.confirmed_date) }}</small>
               <p>{{ formatMessage(signal.msg) }}</p>
               <details v-if="signal.source === 'confirmed_segment_base_v1'" class="divergence-evidence">
                 <summary>查看结构依据</summary>
-                <p v-for="line in signalEvidence(signal)" :key="line">{{ line }}</p>
+                <EvidenceReading :lines="signalEvidence(signal)" />
                 <ConfirmationReplay :index="signal.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="signalLabel(signal.type)" @seek="jumpToConfirmation" />
               </details>
             </div>
@@ -807,16 +824,17 @@ onMounted(async () => {
               <p class="macd-prompt-caption">MACD 提示 · 独立于结构性买卖点，不参与一类点策略判断</p>
               <div v-for="(item, index) in macdPromptItems.slice().reverse()" :key="`macd-prompt-${index}`" class="event-row macd-prompt-row">
                 <span class="event-tag" :class="item.direction === 'down' ? 'buy' : 'sell'">M1 · {{ item.direction === 'down' ? '买入提示' : '卖出提示' }}</span>
-                <time>极值 {{ item.curr_date }}</time>
-                <small>实际确认 {{ item.confirmed_date }}</small>
+                <time>极值 {{ structureDate(item.curr_date) }}</time>
+                <small>实际确认 {{ structureDate(item.confirmed_date) }}</small>
                 <ConfirmationReplay :index="item.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="MACD M1 提示" @seek="jumpToConfirmation" />
               </div>
             </template>
           </div>
 
           <div v-else class="event-list">
-            <details v-if="auditedWaves.length" class="wave-diagnostics">
-              <summary>背离核验与规则对照 <span>{{ blockedWaves.length }} 组未通过</span></summary>
+            <details v-if="auditedWaves.length" class="wave-diagnostics research-panel">
+              <summary><strong>背离核验与规则对照</strong><span>{{ blockedWaves.length }} 组未通过</span></summary>
+              <div class="research-panel-body">
               <p class="wave-diagnostics-note">标准使用有效 A；非标准使用完整 A，保留 DIF 改善、B/C 同侧与 B 回拉；特殊对照前一 A 的指标极值；双线对照最近局部极值。各自记录依据，不互相覆盖。</p>
               <details v-for="item in auditedWaves" :key="`${item.family}-${item.direction}-${item.c_start ?? item.dates.b_start}`" class="wave-diagnostic-row">
                 <summary>
@@ -834,11 +852,12 @@ onMounted(async () => {
                   </details>
                 </div>
               </details>
+              </div>
             </details>
             <div v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="event-row">
               <span class="event-tag divergence" :class="[bc.direction === 'up' ? 'top' : 'bottom', bc.status, { nonstandard: bc.type === 'macd_wave_nonstandard' }]">{{ divergenceName(bc) }}</span>
-              <time>{{ bc.curr_date || '时间未知' }}</time>
-              <small>{{ bc.status === 'candidate' ? (bc.preliminary_date ? '曾满足初步条件 · 等待走势完成' : '候选 · 尚未确认') : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${bc.confirmed_date || '—'}` }} · 对照 {{ bc.prev_date || '—' }}</small>
+              <time>{{ bc.curr_date ? structureDate(bc.curr_date) : '时间未知' }}</time>
+              <small>{{ bc.status === 'candidate' ? (bc.preliminary_date ? '曾满足初步条件 · 等待走势完成' : '候选 · 尚未确认') : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${structureDate(bc.confirmed_date)}` }} · 对照 {{ structureDate(bc.prev_date) }}</small>
               <p>{{ formatMessage(bc.msg) }}</p>
               <details class="divergence-evidence">
                 <summary>查看判定依据</summary>
@@ -881,13 +900,23 @@ onMounted(async () => {
 .focus-toolbar button { margin-left: auto; min-height: 28px; padding: 4px 9px; font-size: 11px; }
 .focus-toolbar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .structure-evidence { grid-column: 1 / -1; min-width: 0; font-size: 11px; color: var(--text-muted); line-height: 1.7; }
-.unfinished-segment { margin-top: 12px; font-size: 11px; color: #a88cdb; line-height: 1.8; font-variant-numeric: tabular-nums; }
-.unfinished-segment small { display: block; color: var(--text-muted); font-size: 10px; }
-.structure-evidence summary { cursor: pointer; color: var(--accent); padding: 4px 0; }
+.unfinished-segment { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 16px; margin-top: 12px; padding: 14px 0 0; border-top: 1px dashed rgba(168,140,219,.22); font-size: 11px; color: #b9a7d4; line-height: 1.8; font-variant-numeric: tabular-nums; }
+.unfinished-segment strong { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+.unfinished-segment i { width: 16px; border-top: 1px dashed currentColor; }
+.unfinished-segment small { grid-column: 1 / -1; color: var(--text-muted); font-size: 10px; }
+.structure-evidence summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; color: #aabbd1; padding: 10px 0; min-height: 38px; list-style: none; border-top: 1px solid rgba(255,255,255,.04); transition: color 150ms ease; }
+.structure-evidence summary::-webkit-details-marker { display: none; }
+.structure-evidence summary::marker { content: ''; }
+.structure-evidence summary::after { content: ''; flex: 0 0 5px; width: 5px; height: 5px; margin-right: 3px; border-right: 1px solid #91a2bb; border-bottom: 1px solid #91a2bb; transform: rotate(-45deg); transition: transform 150ms ease; }
+.structure-evidence[open] > summary::after { transform: rotate(45deg); }
+.structure-evidence summary:hover { color: #d2deed; }
+.structure-evidence-body { padding: 1px 0 10px; }
+.structure-evidence :deep(.confirmation-replay) { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 6px; margin: 12px 0 0; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.05); }
+.structure-evidence :deep(.confirmation-replay > span) { margin: 0; color: #92a0b2; font-size: 10px; }
+.structure-evidence :deep(.confirmation-replay > button) { background: rgba(255,255,255,.025); border-color: rgba(162,184,213,.13); box-shadow: none; font-size: 10px; min-height: 30px; padding: 5px 8px; }
 .structure-evidence p { margin: 5px 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .structure-evidence summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
-.center-row { flex-wrap: wrap; padding: 8px 0; row-gap: 0; }
-.center-row > .structure-evidence { flex-basis: 100%; }
+.center-row { row-gap: 8px; }
 .replay-toolbar { display: grid; gap: 8px; padding: 12px 0; font-size: 11px; color: var(--text-muted); border-bottom: 1px solid var(--border); }
 .replay-main { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 24px; }
 .replay-controls { display: grid; grid-template-columns: auto auto minmax(60px, 1fr) auto; align-items: center; gap: 10px; flex: 1 1 330px; min-width: 0; }
@@ -900,7 +929,14 @@ onMounted(async () => {
 .replay-toolbar small { color: var(--text-dim); line-height: 1.6; }
 .replay-toolbar :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .replay-toolbar button { transition: none; } }
-.structure-scope { margin: 0; padding: 10px 14px; color: #a0a5b0; font-size: 12px; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,.07); }
+.structure-scope { margin: 0; padding: 8px 16px; color: #a0a5b0; font-size: 11px; line-height: 1.85; border-left: 2px solid rgba(145,161,185,.25); }
+.structure-scope + .structure-scope { padding-top: 0; }
+.structure-scope + .replay-toolbar { margin-top: 16px; }
+.snapshot-provenance.research-panel { border-top: 0; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+.provenance-facts { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 20px; margin: 10px 0 18px; }
+.provenance-facts dt { color: var(--text-dim); font-size: 11px; margin-bottom: 7px; }
+.provenance-facts dd { margin: 0; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text); }
+.research-panel-body .provenance-warning { color: #e3bd87; }
 .detail-stock-label { padding: 12px 14px 0; font-size: 11px; color: var(--text-dim); }
 .chart-workspace :deep(.chart-frame + .chart-frame) { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
 .ma-heading { display: flex; align-items: center; gap: 8px; min-height: 24px; cursor: pointer; list-style: none; }
@@ -994,6 +1030,7 @@ onMounted(async () => {
 
 .layer-section { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
 .layer-section h3 { grid-column: 1 / -1; }
+.layer-section > .ma-help { grid-column: 1 / -1; }
 .line-width-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .inspector-section .line-width-heading h3 { margin: 0; }
 .line-width-reset { padding: 3px 0 3px 8px; border: 0; background: transparent; color: var(--text-muted); font-size: 10px; cursor: pointer; }
@@ -1065,11 +1102,7 @@ onMounted(async () => {
   flex: 1;
   min-width: 0;
   overflow-y: auto;
-  background:
-    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
-    var(--bg);
-  background-size: 34px 34px;
+  background: var(--bg);
 }
 .analysis-workspace > .error-banner { margin: 18px 20px 0; padding: 10px 13px; border-radius: var(--radius); }
 .review-context {
@@ -1255,10 +1288,12 @@ onMounted(async () => {
 .structure-state { display: flex; align-items: flex-start; gap: 8px; margin-top: 11px; }
 .structure-state p { color: var(--text-muted); font-size: 10px; line-height: 1.5; }
 .state-dot { width: 6px; height: 6px; flex: 0 0 auto; margin-top: 4px; border-radius: 50%; background: #5aa9ff; box-shadow: 0 0 0 4px rgba(10,132,255,.1); }
-.summary-metrics { display: grid; grid-template-columns: repeat(4, minmax(68px, 1fr)); gap: 6px; padding: 9px; }
-.summary-item { display: flex; min-height: 44px; align-items: center; justify-content: center; flex-direction: column; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.035); border-radius: 8px; }
-.summary-item strong { color: #e9e9ed; font-family: var(--font-mono); font-size: 15px; font-weight: 590; font-variant-numeric: tabular-nums; }
-.summary-item span { margin-top: 2px; color: var(--text-dim); font-size: 9px; }
+.summary-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; padding: 12px; }
+.summary-item { display: flex; min-height: 56px; align-items: center; justify-content: center; flex-direction: column; border-right: 1px solid rgba(255,255,255,.055); }
+.summary-item:nth-child(4n) { border-right: 0; }
+.summary-item:nth-child(n+5) { border-top: 1px solid rgba(255,255,255,.055); }
+.summary-item strong { color: #e9e9ed; font-family: var(--font-mono); font-size: 17px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.summary-item span { margin-top: 4px; color: var(--text-muted); font-size: 11px; }
 
 .chart-workspace,
 .detail-workspace {
@@ -1272,6 +1307,8 @@ onMounted(async () => {
 .section-bar h3 { font-size: 12px; font-weight: 620; }
 .section-bar p { margin-top: 2px; color: var(--text-dim); font-size: 9px; }
 .chart-legend { display: flex; flex-wrap: wrap; gap: 8px 12px; color: var(--text-dim); font-size: 9px; }
+.chart-legend .legend-live-area::before { background: rgba(210,169,108,.075); border: 1px dashed #d2a96c; }
+.chart-legend .legend-next-pen::before { height: 0; width: 12px; border-top: 1px dashed #d2a96c; border-radius: 0; vertical-align: 3px; }
 .chart-legend .legend-pending::before { height: 0; width: 12px; border-top: 1px dashed #a88cdb; border-radius: 0; vertical-align: 3px; }
 .chart-legend span::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 5px; border-radius: 2px; vertical-align: -1px; }
 .legend-bi::before { background: #79b9ef; }.legend-zs::before { background: #4a9eff; }.legend-xd::before { background: #a88cdb; }.legend-bc::before { background: transparent; border: 1px solid #d9a3ff; transform: rotate(45deg); }
@@ -1283,45 +1320,45 @@ onMounted(async () => {
 .detail-tabs button.active { color: var(--text); background: rgba(255,255,255,.075); border-color: var(--border); }
 .detail-tabs button span { margin-left: 5px; color: var(--text-dim); font-family: var(--font-mono); font-size: 9px; }
 
-.structure-columns { display: grid; grid-template-columns: 1fr 1fr; }
+.structure-columns { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); container-type: inline-size; }
 .data-list { min-width: 0; padding: 15px 16px 18px; }
 .data-list + .data-list { border-left: 1px solid var(--border); }
-.data-list h4 { margin-bottom: 10px; color: var(--text-dim); font-size: 9px; font-weight: 650; letter-spacing: .06em; }
-.data-row { display: flex; align-items: center; gap: 10px; min-height: 44px; border-bottom: 1px solid rgba(255,255,255,.055); }
+.data-list h4 { margin-bottom: 12px; color: var(--text); font-size: 13px; font-weight: 600; }
+.data-row { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; align-items: start; gap: 8px 10px; min-height: 68px; padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
 .data-row:last-child { border-bottom: 0; }
 .direction { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 7px; font-size: 14px; }
 .direction.up { color: var(--up); background: rgba(255,94,104,.1); }.direction.down { color: var(--down); background: rgba(48,209,123,.1); }
 .center-index { display: grid; place-items: center; width: 24px; height: 24px; color: #64adff; background: var(--accent-soft); border-radius: 7px; font-family: var(--font-mono); font-size: 10px; }
 .row-primary { display: flex; min-width: 0; flex: 1; flex-direction: column; }
-.row-primary strong { overflow: hidden; text-overflow: ellipsis; color: var(--text-muted); font-family: var(--font-mono); font-size: 10px; font-weight: 520; white-space: nowrap; }
-.row-primary small { margin-top: 2px; overflow: hidden; text-overflow: ellipsis; color: var(--text-dim); font-size: 9px; white-space: nowrap; }
-.range { color: var(--text-muted); font-family: var(--font-mono); font-size: 9px; }
+.row-primary strong { color: var(--text); font-size: 12px; font-weight: 500; line-height: 1.7; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.row-primary small { margin-top: 4px; color: var(--text-muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.range { color: #c2ccda; font-family: var(--font-mono); font-size: 11px; padding-top: 3px; font-variant-numeric: tabular-nums; }
 
 .segment-list { grid-column: 1 / -1; padding: 15px 16px 17px; border-top: 1px solid var(--border); }
 .segment-list > header { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 11px; }
-.segment-list h4 { color: var(--text-muted); font-size: 10px; font-weight: 650; letter-spacing: .04em; }
-.segment-list header p { margin-top: 2px; color: var(--text-dim); font-size: 9px; }
-.sequence-status { display: inline-flex; min-height: 24px; align-items: center; gap: 7px; padding: 0 9px; color: #ffb84d; background: rgba(255,159,10,.08); border: 1px solid rgba(255,159,10,.18); border-radius: 999px; font-size: 9px; white-space: nowrap; }
-.sequence-status i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px rgba(255,159,10,.1); }
-.sequence-status.valid { color: #56d98d; background: rgba(48,209,88,.07); border-color: rgba(48,209,88,.17); }
-.sequence-status.valid i { box-shadow: 0 0 0 3px rgba(48,209,88,.09); }
-.segment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 7px; }
-.segment-card { display: grid; min-width: 0; min-height: 52px; align-items: center; grid-template-columns: 28px minmax(0,1fr) auto; gap: 9px; padding: 7px 10px; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.045); border-radius: 9px; }
+.segment-list h4 { color: var(--text); font-size: 13px; font-weight: 600; }
+.segment-list header p { margin-top: 6px; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
+.sequence-status { display: inline-flex; min-height: 24px; align-items: center; gap: 7px; color: #cbb38b; font-size: 10px; white-space: nowrap; }
+.sequence-status i { width: 5px; height: 5px; border-radius: 50%; border: 1px solid currentColor; }
+.sequence-status.valid { color: #a7c6b7; }
+.sequence-status.valid i { background: currentColor; }
+.segment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 0 28px; }
+.segment-card { container-type: inline-size; display: grid; min-width: 0; min-height: 72px; align-items: start; grid-template-columns: 28px minmax(0,1fr); gap: 8px 10px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
 .segment-direction { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 7px; font-size: 14px; }
 .segment-direction.up { color: var(--up); background: rgba(255,94,104,.09); }
 .segment-direction.down { color: var(--down); background: rgba(48,209,123,.09); }
 .segment-card > div { display: flex; min-width: 0; flex-direction: column; }
-.segment-card strong { color: var(--text-muted); font-size: 10px; font-weight: 580; }
-.segment-card small { margin-top: 2px; overflow: hidden; color: var(--text-dim); font-family: var(--font-mono); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
-.segment-price { color: #c8c9d0; font-family: var(--font-mono); font-size: 9px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.segment-card strong { color: var(--text); font-size: 12px; font-weight: 550; }
+.segment-card small { margin-top: 6px; color: var(--text-muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.segment-price { grid-column: 2; color: #c8c9d0; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 .event-list { padding: 8px 14px 16px; }
-.event-row { display: grid; align-items: center; grid-template-columns: 82px 112px 1fr; gap: 12px; min-height: 48px; padding: 0 8px; border-bottom: 1px solid rgba(255,255,255,.05); transition: background-color 120ms ease; }
+.event-row { display: grid; align-items: center; grid-template-columns: minmax(100px,auto) minmax(0,1fr); gap: 10px 16px; min-height: 48px; padding: 20px 8px; border-bottom: 1px solid rgba(255,255,255,.05); transition: background-color 120ms ease; }
 .event-row:hover { background: rgba(255,255,255,.022); }
 .event-row:last-child { border-bottom: 0; }
-.event-row > small { grid-column: 2 / -1; color: var(--text-dim); font-size: 10px; }
+.event-row > small { grid-column: 1 / -1; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
 .event-row > p, .divergence-evidence { grid-column: 1 / -1; }
-.divergence-evidence { padding-bottom: 10px; color: var(--text-muted); font-size: 10px; line-height: 1.8; }
+.divergence-evidence { padding-bottom: 4px; color: var(--text-muted); font-size: 12px; line-height: 1.85; overflow-wrap: anywhere; }
 .divergence-evidence summary { cursor: pointer; color: var(--accent); }
 .wave-diagnostics { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; font-size: 12px; color: var(--text-secondary); }
 .wave-diagnostics > summary { cursor: pointer; padding: 8px 0; }
@@ -1335,11 +1372,36 @@ onMounted(async () => {
 .wave-comparisons { margin-top: 12px; padding-left: 12px; border-left: 1px solid var(--border); }
 .wave-comparisons details { margin: 10px 0; }
 .wave-comparisons p { color: var(--text-muted); font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
-.event-tag { width: fit-content; padding: 4px 8px; border: 1px solid transparent; border-radius: 999px; font-size: 9px; font-weight: 620; }
+.event-tag { width: fit-content; padding: 4px 8px; border: 1px solid transparent; border-radius: 5px; font-size: 11px; font-weight: 550; }
 .event-tag.buy { color: #ff858d; background: rgba(255,94,104,.09); border-color: rgba(255,94,104,.13); }.event-tag.sell { color: #61dfa0; background: rgba(48,209,123,.09); border-color: rgba(48,209,123,.13); }.event-tag.divergence { color: #d9a3ff; background: rgba(191,90,242,.1); border-color: rgba(191,90,242,.14); }
-.event-row time { color: var(--text-dim); font-family: var(--font-mono); font-size: 9px; }
-.event-row p { color: var(--text-muted); font-size: 10px; }
-.no-data { padding: 24px 0; color: var(--text-dim); font-size: 10px; text-align: center; }
+.event-row time { color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; text-align: right; overflow-wrap: anywhere; }
+.event-row p { color: var(--text-muted); font-size: 12px; line-height: 1.85; overflow-wrap: anywhere; }
+.no-data { padding: 28px 12px; color: var(--text-muted); font-size: 12px; line-height: 1.8; text-align: center; }
+
+@container (max-width: 780px) {
+  .data-list { grid-column: 1 / -1; }
+  .data-list + .data-list { border-left: 0; border-top: 1px solid var(--border); }
+  .segment-grid { grid-template-columns: 1fr; }
+  .segment-list > header { flex-wrap: wrap; }
+}
+@container (max-width: 400px) {
+  .structure-evidence :deep(.confirmation-replay) { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px; }
+  .structure-evidence :deep(.confirmation-replay > span) { grid-column: 1 / -1; }
+  .structure-evidence :deep(.confirmation-replay > button) { white-space: normal; min-height: 36px; }
+  .unfinished-segment { grid-template-columns: minmax(0,1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .structure-evidence summary, .structure-evidence summary::after { transition: none; }
+}
+@media (max-width: 760px) {
+  .provenance-facts { grid-template-columns: 1fr 1fr; gap: 18px; }
+  .provenance-facts > :last-child { grid-column: 1 / -1; }
+  .segment-list > header { flex-wrap: wrap; gap: 8px; }
+  .data-row { grid-template-columns: 24px minmax(0,1fr); }
+  .data-row > .range { grid-column: 2; padding: 0; }
+  .segment-card { grid-template-columns: 28px minmax(0,1fr); }
+  .segment-price { grid-column: 2; }
+}
 
 @keyframes spin { to { transform: rotate(360deg); } }
 

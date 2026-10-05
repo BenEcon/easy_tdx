@@ -52,18 +52,19 @@ async function load(mode: 'history' | 'comparison') {
 </script>
 
 <template>
-  <details class="research-desk">
+  <details class="research-desk research-panel">
     <summary><strong>归属时间轴与分解研究</strong><span>按需计算 · 不改变默认分析</span></summary>
+    <div class="research-panel-body">
     <ExhaustiveResearch :code="code" :category="category" :bars="bars" :total="total" :busy="busy || pending" @seek="emit('seek', $event)" />
-    <p>使用当前复权快照逐根截断、重新识别笔和线段，再计算归属。不是交易日当时保存的数据版本，也不把最新结果倒填过去。</p>
+    <dl class="research-copy"><div><dt>重建方式</dt><dd>使用当前复权快照逐根截断、重新识别笔和线段，再计算归属。</dd></div><div><dt>数据版本</dt><dd>不是交易日当时保存的数据版本，也不把最新结果倒填过去。</dd></div></dl>
     <div class="actions">
       <button :disabled="busy || pending || through === bars.length" @click="load('history')">{{ through === bars.length ? '时间轴已完成' : through ? '继续重建时间轴' : '重建归属时间轴' }}</button>
       <button :disabled="busy || pending" @click="load('comparison')">比较研究分解</button>
       <button v-if="pending" @click="cancel">停止加载</button>
       <span aria-live="polite">{{ through }} / {{ bars.length }} 根已重建{{ pending ? ' · 计算中' : '' }}</span>
     </div>
-    <p v-if="error" role="alert">{{ error }}</p>
-    <details v-if="through"><summary>逐日状态变化 · {{ events.length }} 项{{ through < bars.length ? '（尚未加载完整）' : '' }}</summary>
+    <p v-if="error" class="research-error" role="alert">{{ error }}</p>
+    <details v-if="through" class="reading-disclosure"><summary>逐日状态变化 · {{ events.length }} 项{{ through < bars.length ? '（尚未加载完整）' : '' }}</summary>
       <p v-if="!events.length">已核验区间没有完成走势或归属区的状态变化，不代表剩余区间也没有变化。</p>
       <div class="timeline">
         <details v-for="(event, i) in events" :key="`${event.id}-${event.index}-${i}`">
@@ -76,14 +77,15 @@ async function load(mode: 'history' | 'comparison') {
       </div>
     </details>
     <section v-if="comparison">
-      <p>只比较三种确定性的候选选择顺序，未穷举所有合法结合律分解。每种结果均重新执行高层结构、MACD、反向确认与归属门槛；较晚可用优先仅用于当前截面的研究，不预知后续行情。结果可能完全一致。</p>
+      <dl class="research-copy"><div><dt>比较范围</dt><dd>只比较三种确定性的候选选择顺序，未穷举所有合法结合律分解。</dd></div><div><dt>独立核验</dt><dd>每种结果均重新执行高层结构、MACD、反向确认与归属门槛；较晚可用优先仅用于当前截面的研究，不预知后续行情。结果可能完全一致。</dd></div></dl>
       <div class="policies" role="group" aria-label="研究选择顺序">
         <button v-for="variant in comparison.variants" :key="variant.policy" :aria-pressed="policy === variant.policy" @click="policy = variant.policy">{{ policies[variant.policy] }}</button>
       </div>
       <p v-if="selected">当前方案：{{ policies[selected.policy] }} · 外部 {{ selected.snapshot.external_frontier_ids.length }} 条，最高 M{{ selected.snapshot.highest_external_level }}，未解决基础来源 {{ selected.snapshot.unresolved_segment_indices.length }} 条。</p>
-      <p>此处回放按钮重算对应日期的默认分析，不将研究方案写入主图或交易策略。</p>
+      <p class="research-caveat"><strong>回放口径</strong><span>此处回放按钮重算对应日期的默认分析，不将研究方案写入主图或交易策略。</span></p>
       <ReleasedRecursionInspector v-if="selected" :data="selected.snapshot" :total="total" :busy="busy || pending" :locatable="false" @seek="emit('seek', $event)" />
     </section>
+    </div>
   </details>
 </template>
 

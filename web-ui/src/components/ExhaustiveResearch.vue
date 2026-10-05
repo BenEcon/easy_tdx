@@ -53,9 +53,10 @@ async function trace(offset = 0, token?: string) {
 }
 </script>
 <template>
-  <details class="exhaustive">
+  <details class="exhaustive research-panel">
     <summary><strong>完整分解搜索与失败追踪</strong><span>固定工程规则 · 当前有限行情</span></summary>
-    <p>固定当前笔、线段和中枢规则，穷举各层互不重叠的候选组合；每个分支重新计算高层、反向确认与归属。包含保留未完成来源的分解，不宣称覆盖原著所有解释，不用于交易。</p>
+    <div class="research-panel-body">
+    <dl class="research-copy"><div><dt>搜索范围</dt><dd>固定当前笔、线段和中枢规则，穷举各层互不重叠的候选组合；每个分支重新计算高层、反向确认与归属。</dd></div><div><dt>使用边界</dt><dd>包含保留未完成来源的分解，不宣称覆盖原著所有解释，不用于交易。</dd></div></dl>
     <div class="actions">
       <button :disabled="busy || working || progress.complete" @click="next(true)">{{ page ? '继续穷举' : '开始穷举' }}</button>
       <button v-if="working" @click="stop">停止计算</button>
@@ -63,8 +64,8 @@ async function trace(offset = 0, token?: string) {
       <button v-if="page" :disabled="working" @click="reset">重新开始</button>
       <span role="status">{{ progress.complete ? '穷举完成' : working ? '计算中 · 尚未完成' : page ? '已暂停 · 尚未完成' : '尚未开始' }}{{ page ? ` · 已枚举 ${progress.emitted} 个分解` : '' }}</span>
     </div>
-    <p>组合数量可能指数增长；停止后可从已完成批次续接。只有待搜索分支全部耗尽才标记完成，服务器重启可能使检查点失效。</p>
-    <p v-if="error" role="alert">{{ error }}</p>
+    <p class="research-caveat"><strong>完成与续接</strong><span>组合数量可能指数增长；停止后可从已完成批次续接。只有待搜索分支全部耗尽才标记完成，服务器重启可能使检查点失效。</span></p>
+    <p v-if="error" class="research-error" role="alert">{{ error }}</p>
     <section v-if="page">
       <div class="actions">
         <button :disabled="working || busy || pageIndex === 0" @click="search(0)">首批</button>
@@ -81,7 +82,7 @@ async function trace(offset = 0, token?: string) {
       <p>已接纳 {{ audit.input.accepted_segment_count }} 条基础线段；扫描 {{ audit.total_attempts }} 个类型／起止窗口。相同来源的不同类型分别检查。</p>
       <p v-if="!audit.total_attempts">尚无可扫描的已确认基础结构，不能据此认定 MACD 条件失败。</p>
       <p v-for="(r, i) in audit.input.input_rejections" :key="i">输入第 {{ r.position + 1 }} 项：{{ reasons[r.reason] ?? r.reason }}。其后 {{ audit.input.rejected_suffix_count }} 项（含本项）未进入连续来源链，后续候选条件未检查。</p>
-      <details><summary>原因汇总</summary><p v-for="(count, reason) in audit.summary" :key="reason">{{ reasons[reason] ?? reason }}：{{ count }}</p></details>
+      <details class="reading-disclosure"><summary>原因汇总</summary><dl class="audit-reasons"><div v-for="(count, reason) in audit.summary" :key="reason"><dt>{{ reasons[reason] ?? reason }}</dt><dd>{{ count }}</dd></div></dl></details>
       <details v-if="audit.input.chain_boundaries.length"><summary>递归链断点 · {{ audit.input.chain_boundaries.length }} 处</summary><p v-for="(boundary, i) in audit.input.chain_boundaries" :key="i">M{{ boundary.level }} · 来源 {{ boundary.left_source + 1 }} → {{ boundary.right_source + 1 }}：{{ reasons[boundary.reason] ?? boundary.reason }}。所有跨此断点的候选窗口未评估。</p></details>
       <div class="attempts">
         <details v-for="(row, i) in audit.attempts" :key="audit.offset + i">
@@ -100,6 +101,7 @@ async function trace(offset = 0, token?: string) {
       </div>
       <div class="actions"><button :disabled="busy || working || audit.offset === 0" @click="trace(Math.max(0, audit.offset - 50), auditToken)">上一页记录</button><span>{{ audit.total_attempts ? audit.offset + 1 : 0 }}–{{ audit.offset + audit.attempts.length }} / {{ audit.total_attempts }}</span><button :disabled="busy || working || audit.next_offset === null" @click="trace(audit.next_offset!, auditToken)">下一页记录</button></div>
     </section>
+    </div>
   </details>
 </template>
 <style scoped>

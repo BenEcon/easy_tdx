@@ -24,6 +24,7 @@ import { ChartViewportMemory } from '../chart-viewport'
 import { useMobileViewport } from '../mobile-viewport'
 import { provisionalCandle } from '../provisional-bars'
 import { structureLineWidth, emphasizedLineWidth, type ChanlunLineWidths } from '../chanlun-line-width'
+import { consolidationAppearance, nextPenPreview } from '../structure-preview'
 
 const props = defineProps<{
   bars: Bar[]
@@ -40,6 +41,7 @@ const props = defineProps<{
     mmds: boolean
     bcs: boolean
     consolidations?: boolean
+    nextPen?: boolean
   }
 }>()
 const emit = defineEmits<{ 'update:maPeriods': [periods: number[]] }>()
@@ -311,7 +313,7 @@ function buildOption(): echarts.EChartsCoreOption {
         data: (props.result.pen_consolidations ?? []).flatMap((area, i) => {
           const start = resolveDate(area.start_date), end = resolveDate(area.end_date)
           return start && end ? [[
-            { name: `盘整 ${i + 1}${area.confirmed ? '' : ' · 暂态'}`, xAxis: start, yAxis: area.lower },
+            { name: `盘整 ${i + 1}${area.confirmed ? '' : ' · 进行中'}`, xAxis: start, yAxis: area.lower, ...consolidationAppearance(area.confirmed) },
             { xAxis: end, yAxis: area.upper },
           ]] : []
         }),
@@ -369,6 +371,18 @@ function buildOption(): echarts.EChartsCoreOption {
         lineStyle: { color: '#9bcefa', width: emphasizedLineWidth('bi', props.lineWidths?.bi), opacity: 1 },
       },
       z: 5,
+    })
+  }
+
+  const preview = props.layers.nextPen ? nextPenPreview(props.bars, props.result.bis) : null
+  if (preview) {
+    series.push({
+      name: '下一笔参考（未成笔）', type: 'line', silent: true, tooltip: { show: false },
+      data: [[dates[preview.start], preview.startPrice], [dates[preview.end], preview.endPrice]],
+      symbol: 'emptyCircle', symbolSize: 5,
+      lineStyle: { color: '#d2a96c', width: structureLineWidth('bi', props.lineWidths?.bi), type: 'dashed', opacity: .9 },
+      itemStyle: { color: '#d2a96c' },
+      z: 7,
     })
   }
 
@@ -671,6 +685,7 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
       class="chanlun-chart"
       :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px`, '--chanlun-chart-height': `${chartHeight}px` }"
     ></div>
+    <p v-if="layers.nextPen" class="macd-prompt-note">琥珀虚线＝下一笔参考（未成笔）· 仅使用当前可见行情，端点可变，不预测未来。</p>
     <p v-if="layers.bcs" class="macd-prompt-note">圆形＝双线 · 菱形＝标准 · 三角形＝非标准 · 大菱形＝特殊 · 底紫顶绿 · 彩色空心＝候选 · 实心＝确认<span v-if="showDivergenceHistory"> · 灰色空心＝已失效／被替代</span></p>
     <p v-if="layers.mmds && macdPrompts(result.bcs).length" class="macd-prompt-note">M1 为 MACD 波段提示，非缠论结构一类点；标记位于极值日，实际确认日见提示详情。</p>
     <div class="indicator-heading"><span>技术指标 · 可同时显示多个</span><button @click="addIndicator">＋ 添加指标</button></div>

@@ -20,12 +20,12 @@ const emit = defineEmits<{ seek: [position: number] }>()
 </script>
 
 <template>
-  <details class="ownership-inspector">
-    <summary><strong>{{ historical ? '旧分层归属与内部递归' : '分层归属与内部递归' }}</strong><span>{{ owners.length }} 个归属区 · 独立解释</span></summary>
-    <p>升级或扩展范围内的完成结构保留在内部。父级须独立满足完成条件，并在当前输入中替代子级；同一来源不再作为外部独立输入。</p>
-    <p v-if="data?.rule === 'layered_recursive_ownership_v2'">已启用逐层归属：内部再次升级或扩展时继续在对应归属区内核验，不跨区拼接。</p>
-    <p v-if="!data">此快照尚无分层归属结果，请重新分析。</p>
-    <p v-else-if="!owners.length">当前没有升级或扩展归属冲突，沿用外部工程输入。</p>
+  <details class="ownership-inspector research-panel">
+    <summary><strong>分层归属与内部递归<span v-if="historical" class="research-version">旧解释</span></strong><span>{{ owners.length }} 个归属区 · 独立解释</span></summary>
+    <div class="research-panel-body">
+    <dl class="research-copy"><div><dt>内部保留</dt><dd>升级或扩展范围内的完成结构保留在内部。</dd></div><div><dt>父级替代</dt><dd>父级须独立满足完成条件，并在当前输入中替代子级；同一来源不再作为外部独立输入。</dd></div><div v-if="data?.rule === 'layered_recursive_ownership_v2'"><dt>逐层归属</dt><dd>已启用逐层归属：内部再次升级或扩展时继续在对应归属区内核验，不跨区拼接。</dd></div></dl>
+    <p v-if="!data" class="research-empty">此快照尚无分层归属结果，请重新分析。</p>
+    <p v-else-if="!owners.length" class="research-empty">当前没有升级或扩展归属冲突，沿用外部工程输入。</p>
     <section v-for="owner in owners" :key="owner.id" class="owner">
       <h4>{{ range(owner.source_segment_indices) }} <span>归属区 · 非已完成走势</span></h4>
       <p>{{ owner.claims.some(c => c.kind === 'promotion') ? '含升级证明' : '扩展归属' }} · 更新于 {{ owner.known_date ?? `#${owner.known_index}` }} · {{ owner.unresolved_segment_indices.length }} 段尚未被内部完成结构覆盖</p>
@@ -59,14 +59,14 @@ const emit = defineEmits<{ seek: [position: number] }>()
           <section v-for="(item, index) in blocked.get(owner.id)" :key="index" class="history-row">
             <template v-if="item.evidence">
               <div class="event-heading"><strong>{{ item.evidence.reason }}</strong><span>{{ range(item.evidence.sources) }}</span></div>
-              <dl>
+              <dl class="research-facts">
                 <dt>输入层级</dt><dd>{{ item.evidence.inputLevel ? `内部 M${item.evidence.inputLevel}` : '基础线段' }}；不代表日线或周线</dd>
                 <dt>原局部完成</dt><dd>{{ item.candidate.original_known_date ?? `#${item.evidence.original}` }}；不等于本版准入</dd>
                 <dt>本版核验</dt><dd>{{ owner.known_date ?? `#${item.evidence.asOf}` }}；当前未纳入</dd>
               </dl>
               <details class="children"><summary>查看归属冲突依据</summary>
                 <template v-if="item.conflict">
-                  <dl>
+                  <dl class="research-facts">
                     <dt>来源涉及归属</dt><dd>{{ item.conflict.source_domains.length ? item.conflict.source_domains.map(s => range(s)).join('；') : '未进入内层归属区' }}</dd>
                     <dt>反向确认来源</dt><dd>{{ internalSource(item.conflict.opposite.unit_id) }}</dd>
                     <dt>确认结构可知</dt><dd>{{ item.conflict.opposite.known_date ?? `#${item.conflict.opposite.known_index}` }}</dd>
@@ -89,12 +89,12 @@ const emit = defineEmits<{ seek: [position: number] }>()
       <section v-for="level in owner.levels" :key="level.level">
         <h5>内部 M{{ level.level }} <span>{{ level.types.length }} 条工程完成结构</span></h5>
         <details v-for="record in level.types" :key="record.id" class="movement">
-          <summary>
+          <summary class="research-record-heading">
             <strong>{{ record.direction === 'up' ? '向上' : '向下' }}{{ record.kind === 'consolidation' ? '盘整' : '趋势' }}</strong>
             <span>{{ range(record.source_segment_indices) }}</span>
             <small>{{ internalStatus(owner, record.id) }}</small>
           </summary>
-          <dl>
+          <dl class="research-facts">
             <dt>价格区间</dt><dd>{{ value(record.start_value) }} → {{ value(record.end_value) }}</dd>
             <template v-if="record.current_owner_id">
               <dt>当前归属</dt><dd>{{ ownerLabel(owner, record.current_owner_id) }}；不作为外部独立输入</dd>
@@ -127,7 +127,8 @@ const emit = defineEmits<{ seek: [position: number] }>()
         <ConfirmationReplay :index="version.known_index" :total="total" :busy="busy" label="归属版本" @seek="emit('seek', $event)" />
       </div>
     </details>
-    <p v-if="data" class="boundary">本路径外部独立 M1：{{ data.external_m1_ids.length }} 条。{{ historical ? '此处保留原内部隔离规则；最新跨域准入请查看“全域走势递归”，不要混合两种解释的来源。' : '内部父级完成不等于整个归属区完成，完整自然递归仍待验证。' }}不新增交易信号。</p>
+    <p v-if="data" class="boundary research-caveat"><strong>使用边界</strong><span>本路径外部独立 M1：{{ data.external_m1_ids.length }} 条。{{ historical ? '此处保留原内部隔离规则；最新跨域准入请查看“全域走势递归”，不要混合两种解释的来源。' : '内部父级完成不等于整个归属区完成，完整自然递归仍待验证。' }}不新增交易信号。</span></p>
+    </div>
   </details>
 </template>
 
@@ -158,5 +159,5 @@ dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
 .review-snapshot { margin: 6px 0 4px; min-height: 28px; padding: 4px 8px; font-size: 10px; }
 .review-snapshot:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .boundary { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
-@media (max-width: 600px) { .ownership-inspector > summary span, .movement > summary span, small { display: block; margin-left: 16px; } h4 span, h5 span { display: block; margin-left: 0; } dl { grid-template-columns: 84px minmax(0, 1fr); gap: 7px; } }
+@media (max-width: 600px) { .movement > summary span, small { display: block; margin-left: 16px; } h4 span, h5 span { display: block; margin-left: 0; } dl { grid-template-columns: 84px minmax(0, 1fr); gap: 7px; } }
 </style>

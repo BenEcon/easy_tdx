@@ -96,36 +96,60 @@ function exportSnapshot() {
 </script>
 
 <template>
-  <details class="multi-study">
-    <summary>多周期研究 <span>量价与动能观察，不生成正式买卖点</span></summary>
+  <details class="multi-study research-panel">
+    <summary><strong>多周期研究</strong><span>量价与动能观察 · 不生成正式买卖点</span></summary>
+    <div class="research-panel-body">
     <div class="study-tools">
-      <fieldset><legend>观察周期</legend><label v-for="period in periods" :key="period.value"><input v-model="selected" type="checkbox" :value="period.value">{{ period.label }}</label></fieldset>
+      <fieldset class="study-periods">
+        <legend>观察周期 <span>已选 {{ selected.length }} 个</span></legend>
+        <label v-for="period in periods" :key="period.value" :class="{ selected: selected.includes(period.value) }">
+          <input v-model="selected" type="checkbox" :value="period.value">
+          <span class="period-check" aria-hidden="true">✓</span><span>{{ period.label }}</span>
+        </label>
+      </fieldset>
       <div class="study-controls">
-        <label>放量阈值 <NumberStepper v-model="volumeMultiple" aria-label="放量阈值" :min="1" :max="10" :step=".25" compact /> 倍</label>
-        <label>收口分位 <NumberStepper v-model="squeezePercent" aria-label="收口分位" :min="1" :max="99" :step="1" compact /> %</label>
-        <button :disabled="loading || busy || !selected.length || !asOf" @click="run">{{ loading ? '逐周期核验中…' : '更新研究' }}</button>
+        <div class="study-parameters">
+          <label><span>放量阈值</span><NumberStepper v-model="volumeMultiple" aria-label="放量阈值" :min="1" :max="10" :step=".25" compact /><span class="parameter-unit">倍</span></label>
+          <label><span>收口分位</span><NumberStepper v-model="squeezePercent" aria-label="收口分位" :min="1" :max="99" :step="1" compact /><span class="parameter-unit">%</span></label>
+        </div>
+        <div class="study-actions">
+        <button class="primary" :disabled="loading || busy || !selected.length || !asOf" @click="run">{{ loading ? '逐周期核验中…' : '更新研究' }}</button>
         <button :disabled="!study || loading" @click="exportSnapshot">保存研究快照</button>
+        </div>
       </div>
-      <p>共同截止：{{ asOf || '请先查询标的' }} · 只使用此前完整 K 线；主图周期复用原快照和预热起点，不重复拉取。未收盘柱不参与本表。</p>
-      <p>MA 5/10 · MAVOL 5/10 · MACD 12/26/9 · BOLL 20/2；成交量对照前 20 根，收口对照此前最多 120 根带宽分位。阈值是研究设置，并非已验证胜率。</p>
+      <div class="study-context"><span>共同截止</span><time>{{ asOf || '请先查询标的' }}</time><span>仅使用已收盘 K 线</span></div>
+      <details class="study-method reading-disclosure">
+        <summary>计算口径与参数说明</summary>
+        <dl class="research-copy">
+          <div><dt>数据范围</dt><dd>只使用共同截止前的完整 K 线，未收盘柱不参与本表。</dd></div>
+          <div><dt>快照与预热</dt><dd>主图周期复用原快照和预热起点，不重复拉取。</dd></div>
+          <div><dt>指标参数</dt><dd><dl class="parameter-reference"><div><dt>MA</dt><dd>5 / 10</dd></div><div><dt>MAVOL</dt><dd>5 / 10</dd></div><div><dt>MACD</dt><dd>12 / 26 / 9</dd></div><div><dt>BOLL</dt><dd>20 / 2</dd></div></dl></dd></div>
+          <div><dt>对照窗口</dt><dd>成交量对照前 <strong>20 根</strong>；收口对照此前最多 <strong>120 根</strong>带宽分位。</dd></div>
+        </dl>
+        <p class="research-caveat"><strong>使用边界</strong><span>阈值是研究设置，并非已验证胜率。</span></p>
+      </details>
     </div>
     <p v-for="error in errors" :key="error" class="study-error" role="alert">{{ error }}</p>
+    <p v-if="!study && !errors.length" class="study-empty" role="status">{{ loading ? '正在按共同截止时间核验所选周期…' : '选择观察周期，更新后查看量价、动能与结构对照。' }}</p>
+    <p v-if="goodRows.length" class="study-scroll-hint">横向滑动查看全部指标</p>
     <div v-if="goodRows.length" class="study-scroll" tabindex="0" aria-label="多周期对照表，可横向滚动">
       <table>
-        <thead><tr><th>周期 / 数据截止</th><th>价格 / 均线</th><th>成交量均线</th><th>MACD</th><th>背离 / 结构</th></tr></thead>
+        <thead><tr><th scope="col">周期 / 数据截止</th><th scope="col">价格 / 均线</th><th scope="col">成交量均线</th><th scope="col">MACD</th><th scope="col">背离 / 结构</th></tr></thead>
         <tbody><tr v-for="row in goodRows" :key="row.category">
-          <th>{{ label(row.category) }}<small>{{ row.last_date }}</small><small>{{ row.bar_count }} 根<span v-if="row.warmup_warning"> · 预热不足</span></small></th>
-          <td><strong>{{ fmt(row.price) }}</strong><small>MA5 {{ fmt(row.ma5) }} / MA10 {{ fmt(row.ma10) }}</small><small>价格在 MA5 {{ relation(row.price, row.ma5) }} / MA10 {{ relation(row.price, row.ma10) }}</small><small>{{ row.pairs.ma.state }} · 快 {{ signed(row.pairs.ma.fast_slope) }} 慢 {{ signed(row.pairs.ma.slow_slope) }}</small></td>
-          <td>{{ row.pairs.volume.state }}<small>快 {{ signed(row.pairs.volume.fast_slope) }} 慢 {{ signed(row.pairs.volume.slow_slope) }}</small><small>MAVOL5 {{ volume(row.pairs.volume.fast) }}<br>MAVOL10 {{ volume(row.pairs.volume.slow) }}</small></td>
-          <td>{{ row.axis }} · {{ row.pairs.macd.state }}<small>{{ row.histogram }} · DIF {{ signed(row.pairs.macd.fast_slope) }} DEA {{ signed(row.pairs.macd.slow_slope) }}</small><small>DIF {{ row.dif_toward_zero ? '靠近零轴' : '未靠近零轴' }} / DEA {{ row.dea_toward_zero ? '靠近零轴' : '未靠近零轴' }}</small></td>
-          <td>{{ states[row.structure.state] ?? row.structure.state }}<small>{{ row.structure.confirmed_pens }} 确认笔 / {{ row.structure.segments }} 线段 / {{ row.structure.centres }} 中枢</small><small v-for="(event, i) in row.divergences" :key="i">{{ event.date }} · {{ event.direction === 'up' ? '顶' : '底' }}背离 · {{ event.status === 'candidate' ? '候选' : '已确认' }}</small><small v-if="!row.divergences.length">暂无有效背离记录</small></td>
+          <th scope="row"><span class="study-period-name">{{ label(row.category) }}</span><small>{{ row.last_date }}</small><small>{{ row.bar_count }} 根<span v-if="row.warmup_warning"> · 预热不足</span></small></th>
+          <td><strong class="study-price">{{ fmt(row.price) }}</strong><dl class="study-metrics"><dt>MA5</dt><dd>{{ fmt(row.ma5) }}</dd><dt>MA10</dt><dd>{{ fmt(row.ma10) }}</dd></dl><small>价格在 MA5 {{ relation(row.price, row.ma5) }} / MA10 {{ relation(row.price, row.ma10) }}</small><small>{{ row.pairs.ma.state }} · 快 {{ signed(row.pairs.ma.fast_slope) }} 慢 {{ signed(row.pairs.ma.slow_slope) }}</small></td>
+          <td><span class="study-cell-title">{{ row.pairs.volume.state }}</span><dl class="study-metrics"><dt>MAVOL5</dt><dd>{{ volume(row.pairs.volume.fast) }}</dd><dt>MAVOL10</dt><dd>{{ volume(row.pairs.volume.slow) }}</dd></dl><small>快 {{ signed(row.pairs.volume.fast_slope) }} 慢 {{ signed(row.pairs.volume.slow_slope) }}</small></td>
+          <td><span class="study-cell-title">{{ row.axis }}</span><small>{{ row.pairs.macd.state }} · {{ row.histogram }}</small><dl class="study-metrics"><dt>DIF {{ signed(row.pairs.macd.fast_slope) }}</dt><dd>{{ row.dif_toward_zero ? '靠近零轴' : '未靠近零轴' }}</dd><dt>DEA {{ signed(row.pairs.macd.slow_slope) }}</dt><dd>{{ row.dea_toward_zero ? '靠近零轴' : '未靠近零轴' }}</dd></dl></td>
+          <td><span class="study-cell-title">{{ states[row.structure.state] ?? row.structure.state }}</span><small>{{ row.structure.confirmed_pens }} 确认笔 / {{ row.structure.segments }} 线段 / {{ row.structure.centres }} 中枢</small><small v-for="(event, i) in row.divergences" :key="i" class="study-event"><span>{{ event.direction === 'up' ? '顶' : '底' }}背离 · {{ event.status === 'candidate' ? '候选' : '已确认' }}</span><time>{{ event.date }}</time></small><small v-if="!row.divergences.length">暂无有效背离记录</small></td>
         </tr></tbody>
       </table>
     </div>
     <div v-if="study" class="study-notes">
-      <p v-for="conflict in study.conflicts" :key="conflict">{{ conflict }}</p>
-      <template v-for="row in goodRows" :key="row.category"><p v-for="note in row.observations" :key="note"><strong>{{ label(row.category) }}</strong> · {{ note }}</p></template>
-      <p>{{ study.policy }}。当前调整后快照不等于历史当天的数据版本；缺失的旧分钟行情不作推断。</p>
+      <h4>观察与分歧</h4>
+      <p v-for="conflict in study.conflicts" :key="conflict" class="study-conflict">{{ conflict }}</p>
+      <div v-for="row in goodRows.filter(r => r.observations.length)" :key="row.category" class="study-observation"><strong>{{ label(row.category) }}</strong><div><p v-for="note in row.observations" :key="note">{{ note }}</p></div></div>
+      <p class="study-policy">{{ study.policy }}。当前调整后快照不等于历史当天的数据版本；缺失的旧分钟行情不作推断。</p>
+    </div>
     </div>
   </details>
 </template>

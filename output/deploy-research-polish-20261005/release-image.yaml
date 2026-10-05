@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:research-polish-20261005
