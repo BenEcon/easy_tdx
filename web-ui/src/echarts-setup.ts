@@ -6,6 +6,7 @@ import { BarChart, CandlestickChart, HeatmapChart, LineChart } from 'echarts/cha
 import {
   DataZoomComponent,
   GridComponent,
+  GraphicComponent,
   LegendComponent,
   MarkAreaComponent,
   MarkLineComponent,
@@ -24,6 +25,7 @@ echarts.use([
   BarChart,
   HeatmapChart,
   GridComponent,
+  GraphicComponent,
   TooltipComponent,
   LegendComponent,
   TitleComponent,

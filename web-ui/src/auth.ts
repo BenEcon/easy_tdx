@@ -58,9 +58,12 @@ export async function refreshCurrentUser(): Promise<void> {
 }
 
 export function updatePreferences(patch: Record<string, unknown>): Promise<void> {
-  preferenceQueue = preferenceQueue.then(async () => {
+  const owner = currentUser.value?.id
+  preferenceQueue = preferenceQueue.catch(() => undefined).then(async () => {
+    if (!owner || currentUser.value?.id !== owner) return
     const preferences = { ...(currentUser.value?.preferences ?? {}), ...patch }
-    currentUser.value = await saveAccountPreferences(preferences)
+    const user = await saveAccountPreferences(preferences)
+    if (currentUser.value?.id === owner) currentUser.value = user
   })
   return preferenceQueue
 }

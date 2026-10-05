@@ -5,7 +5,6 @@ import echarts, { DOWN_COLOR, UP_COLOR } from '../echarts-setup'
 import { clickTooltipOptions, installClickChartTooltip } from '../click-chart-tooltip'
 import {
   buildIndicatorSeries,
-  calculateIndicatorRows,
   compactNumber,
   getIndicatorDefinition,
   indicatorUsesPanel,
@@ -28,16 +27,23 @@ import { consolidationAppearance, nextPenPreview } from '../structure-preview'
 import { candleFill } from '../candle-fill'
 import { consolidationHits } from '../consolidation-hit'
 import StructureInfoPopover from './StructureInfoPopover.vue'
-import { markerHit } from '../marker-hit'
+import { signalName, structuralSignalDetail, macdSignalDetail, type ChartSignalDetail } from '../chart-signal-detail'
+import { barWindow, overlappingBars, nearestMarkers, timeLinkGraphic, type PlotRect, type TimeWindow, type MarkerCandidate } from '../chart-research-link'
+import { useResearchPreferences } from '../research-preferences'
+import { researchIndicatorRows } from '../research-indicators'
 
 const props = defineProps<{
   bars: Bar[]
+  periodCategory?: string
   focus?: DivergenceFocus | null
   showDivergenceHistory?: boolean
   maPeriods?: number[]
   maAvailablePeriods?: number[]
   lineWidths?: ChanlunLineWidths
   candleTransparency?: number
+  linkedCursor?: TimeWindow | null
+  linkedZoom?: TimeWindow | null
+  indicatorConfig?: Array<{ type: string; params: IndicatorParams }>
   result: ChanlunResult
   layers: {
     bis: boolean
@@ -49,7 +55,10 @@ const props = defineProps<{
     nextPen?: boolean
   }
 }>()
-const emit = defineEmits<{ 'update:maPeriods': [periods: number[]] }>()
+const emit = defineEmits<{ 'update:maPeriods': [periods: number[]]; cursor: [range: TimeWindow | null]; zoom: [range: TimeWindow]; viewport: [range: TimeWindow]; inspect: [date: string] }>()
+const preferences = useResearchPreferences()
+const objectHover = computed(() => preferences.settings.value.objectHover)
+const linkedLabel = ref('')
 const availableMA = computed(() => [...new Set(props.maAvailablePeriods ?? props.maPeriods ?? [])].sort((a, b) => a - b))
 const mobile = useMobileViewport()
 function toggleMobileMA(period: number) {
@@ -63,12 +72,37 @@ const container = ref<HTMLDivElement>()
 const consolidationPopover = ref<InstanceType<typeof StructureInfoPopover>>()
 type RenderedDivergence = { divergence: ChanlunDivergence; coord: number[]; symbolOffset: number[]; symbolSize: number }
 let renderedDivergences: RenderedDivergence[] = []
-type StructureHit = { key: string; divergences?: ChanlunDivergence[]; areas?: number[] }
+type RenderedSignal = { details: ChartSignalDetail[]; coord: Array<string | number>; symbolOffset: number[]; symbolSize: number[] }
+let renderedSignals: RenderedSignal[] = []
+const availableSignals = computed(() => !props.layers.mmds ? [] : [
+  ...props.result.mmds.flatMap(signal => {
+    const index = chartBarIndex(props.bars, signal.date)
+    return index === null ? [] : [structuralSignalDetail(signal, signal.type.includes('buy') ? props.bars[index]!.low : props.bars[index]!.high)]
+  }),
+  ...macdPrompts(props.result.bcs).flatMap(item => {
+    const index = chartBarIndex(props.bars, item.curr_date, item.signal_index)
+    return index === null ? [] : [macdSignalDetail(item, item.direction === 'down' ? props.bars[index]!.low : props.bars[index]!.high)]
+  }),
+])
+type ObjectChoice = { title: string; signal?: ChartSignalDetail; divergence?: ChanlunDivergence }
+let markerCandidates: MarkerCandidate<{ key: string; objects: ObjectChoice[] }>[] | null = null
+type StructureHit = { key: string; objects?: ObjectChoice[]; signals?: ChartSignalDetail[]; divergences?: ChanlunDivergence[]; areas?: number[] }
 let hoverKey = ''
 let dismissedHoverKey = ''
 let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
 function cancelHoverClose() { clearTimeout(hoverCloseTimer); hoverCloseTimer = undefined }
 function onPopoverClosed() { cancelHoverClose(); dismissedHoverKey = hoverKey; hoverKey = '' }
+function clearObjectPreview() {
+  if (consolidationPopover.value?.isPinned()) return
+  cancelHoverClose()
+  consolidationPopover.value?.hide(false)
+  hoverKey = ''; dismissedHoverKey = ''
+}
+function releaseObjectModifier(event: KeyboardEvent) {
+  if (!objectHover.value && (event.key === 'Meta' || !event.metaKey)) clearObjectPreview()
+}
+function blurObjectPreview() { clearObjectPreview() }
+watch(objectHover, () => { cancelHoverClose(); consolidationPopover.value?.hide(false); hoverKey = ''; dismissedHoverKey = '' })
 function leaveStructure() {
   if (consolidationPopover.value?.isPinned() || hoverCloseTimer !== undefined) return
   hoverCloseTimer = setTimeout(() => {
@@ -77,6 +111,7 @@ function leaveStructure() {
     hoverKey = ''; dismissedHoverKey = ''
   }, 180)
 }
+function leaveChart() { cursorKey = ''; emit('cursor', null); leaveStructure() }
 function showConsolidations(indices: number[], x: number, y: number, preview = false) {
   clickTooltip?.hide()
   const areas = props.result.pen_consolidations ?? []
@@ -87,13 +122,20 @@ function structureHit(event: MouseEvent): StructureHit | null {
   const rect = container.value.getBoundingClientRect()
   const x = (event.clientX - rect.left) * chart.getWidth() / rect.width
   const y = (event.clientY - rect.top) * chart.getHeight() / rect.height
-  // Markers sit above/below candle extrema and may extend beyond the price grid.
-  // Read the same records and offsets used to draw them, including history marks.
-  const hitsByPoint = renderedDivergences.map((point, index) => ({ point, index })).filter(({point}) =>
-    markerHit(chart!.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, point.coord) as number[], point.symbolOffset, point.symbolSize, x, y))
-  if (hitsByPoint.length) {
-    return { key: `points:${hitsByPoint.map(item => item.index).join(',')}`, divergences: hitsByPoint.slice().reverse().map(({point}) => point.divergence) }
-  }
+  const markers = markerCandidates ??= [
+    ...renderedSignals.map((point, index) => {
+      const pixel = chart!.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, point.coord) as number[]
+      return { center: pixel.map((value, i) => value + point.symbolOffset[i]!), size: point.symbolSize,
+        value: { key: `signal:${index}`, objects: point.details.map(signal => ({ title: `${signal.title} · ${signal.date}`, signal })) } }
+    }),
+    ...renderedDivergences.map((point, index) => {
+      const pixel = chart!.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, point.coord) as number[]
+      return { center: pixel.map((value, i) => value + point.symbolOffset[i]!), size: [point.symbolSize, point.symbolSize],
+        value: { key: `divergence:${index}`, objects: [{ title: `${divergenceName(point.divergence)} · ${point.divergence.curr_date}`, divergence: point.divergence }] } }
+    }),
+  ]
+  const hitsByPoint = nearestMarkers(markers, x, y)
+  if (hitsByPoint.length) return { key: hitsByPoint.map(item => item.key).join(','), objects: hitsByPoint.flatMap(item => item.objects) }
   if (!props.layers.consolidations || !chart.containPixel({ gridIndex: 0 }, [x, y])) return null
   const bounds = (props.result.pen_consolidations ?? []).flatMap((area, index) => {
     const start = chartBarIndex(props.bars, area.start_date), end = chartBarIndex(props.bars, area.end_date)
@@ -108,7 +150,9 @@ function structureHit(event: MouseEvent): StructureHit | null {
 function showStructure(hit: StructureHit, event: MouseEvent, preview: boolean) {
   cancelHoverClose()
   clickTooltip?.hide()
-  if (hit.divergences) void consolidationPopover.value?.showDivergences(hit.divergences, event.clientX, event.clientY, preview)
+  if (hit.objects) void consolidationPopover.value?.showObjects(hit.objects, event.clientX, event.clientY, preview)
+  else if (hit.signals) void consolidationPopover.value?.showSignals(hit.signals, event.clientX, event.clientY, preview)
+  else if (hit.divergences) void consolidationPopover.value?.showDivergences(hit.divergences, event.clientX, event.clientY, preview)
   else showConsolidations(hit.areas!, event.clientX, event.clientY, preview)
 }
 function onConsolidationContext(event: MouseEvent) {
@@ -119,7 +163,9 @@ function onConsolidationContext(event: MouseEvent) {
   showStructure(hit, event, false)
 }
 function onStructureHover(event: PointerEvent) {
-  if (event.pointerType !== 'mouse' || event.buttons || clickTooltip?.isActive() || consolidationPopover.value?.isPinned()) return
+  emitCursor(event)
+  if (!objectHover.value && !event.metaKey) { clearObjectPreview(); return }
+  if (event.pointerType !== 'mouse' || event.buttons || (clickTooltip?.isActive() && !event.metaKey) || consolidationPopover.value?.isPinned()) return
   const hit = structureHit(event)
   if (!hit) { leaveStructure(); return }
   cancelHoverClose()
@@ -128,9 +174,16 @@ function onStructureHover(event: PointerEvent) {
   hoverKey = hit.key
   showStructure(hit, event, true)
 }
-function onChartClick() {
+function onChartClick(event: MouseEvent) {
+  const hit = objectHover.value ? structureHit(event) : null
+  if (hit) { hoverKey = ''; dismissedHoverKey = ''; showStructure(hit, event, false); return }
   cancelHoverClose()
   consolidationPopover.value?.hide(false)
+}
+function browseSignals(event: MouseEvent) {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  clickTooltip?.hide()
+  void consolidationPopover.value?.showSignals(availableSignals.value.slice().reverse(), rect.left, rect.bottom)
 }
 function browseConsolidations(event: MouseEvent) {
   const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
@@ -142,14 +195,13 @@ function browseDivergences(event: MouseEvent) {
   void consolidationPopover.value?.showDivergences(visibleDivergences(props.result.bcs, props.showDivergenceHistory)
     .filter(item => chartBarIndex(props.bars, item.curr_date, item.signal_index) !== null).slice().reverse(), rect.left, rect.bottom)
 }
-const indicators = ref<Array<{ id: number; type: TechnicalIndicator; params: IndicatorParams; rows: Array<Record<string, unknown>> }>>([
-  { id: 0, type: 'volume', params: { ...getIndicatorDefinition('volume').defaultParams }, rows: [] },
-  { id: 1, type: 'macd', params: { ...getIndicatorDefinition('macd').defaultParams }, rows: [] },
-])
+const indicators = ref<Array<{ id: number; type: TechnicalIndicator; params: IndicatorParams; rows: Array<Record<string, unknown>> }>>(
+  (props.indicatorConfig ?? preferences.settings.value.indicators).map((item, id) => ({ ...item, params: { ...item.params }, id, rows: [] })))
 let nextIndicatorId = indicators.value.length
 const panels = computed(() => indicators.value.filter(item => indicatorUsesPanel(item.type)))
 const chartHeight = computed(() => 470 + panels.value.length * 155)
 function addIndicator() {
+  if (indicators.value.length >= 8) return
   const type = (['kdj', 'rsi', 'volume', 'boll'] as TechnicalIndicator[]).find(type => !indicators.value.some(item => item.type === type)) ?? 'macd'
   indicators.value.push({ id: nextIndicatorId++, type, params: { ...getIndicatorDefinition(type).defaultParams }, rows: [] })
 }
@@ -162,6 +214,86 @@ const viewportMemory = new ChartViewportMemory()
 let renderedBars: Bar[] | null = null
 let renderedIdentity = ''
 let viewportScope = {}
+let cursorKey = ''
+let linkedGraphicIds: string[] = []
+function emitCursor(event: PointerEvent) {
+  if (!chart || !container.value) return
+  const rect = container.value.getBoundingClientRect()
+  const point = [(event.clientX - rect.left) * chart.getWidth() / rect.width, (event.clientY - rect.top) * chart.getHeight() / rect.height]
+  if (!chart.containPixel({ gridIndex: 0 }, point)) { if (cursorKey) { cursorKey = ''; emit('cursor', null) }; return }
+  const index = Math.round((chart.convertFromPixel({ xAxisIndex: 0, yAxisIndex: 0 }, point) as number[])[0]!)
+  const bar = props.bars[index]
+  if (bar && cursorKey !== bar.datetime) { cursorKey = bar.datetime; emit('cursor', barWindow(bar, props.periodCategory ?? props.result.frequency)) }
+}
+function zoomWindow(): TimeWindow | null {
+  const zoom = (chart?.getOption().dataZoom as Array<{ start?: number; end?: number; startValue?: number; endValue?: number }> | undefined)?.[0]
+  if (!zoom || !props.bars.length) return null
+  const last = props.bars.length - 1
+  const start = Math.max(0, Math.round(zoom.startValue ?? (zoom.start ?? 0) * last / 100))
+  const end = Math.min(last, Math.round(zoom.endValue ?? (zoom.end ?? 100) * last / 100))
+  return { start: barWindow(props.bars[start]!, props.periodCategory ?? props.result.frequency).start, end: barWindow(props.bars[end]!).end }
+}
+function applyLinkedZoom(range: TimeWindow | null | undefined) {
+  if (!chart || !range) return
+  const indices = overlappingBars(props.bars, range, props.periodCategory ?? props.result.frequency)
+  if (!indices.length) { linkedLabel.value = '联动范围内无对应行情'; return }
+  chart.dispatchAction({ type: 'dataZoom', startValue: indices[0], endValue: indices.at(-1) }, { silent: true })
+  markerCandidates = null
+  const visible = zoomWindow(); if (visible) emit('viewport', visible)
+  consolidationPopover.value?.hide()
+  drawLinkedCursor()
+}
+function drawLinkedCursor(range = props.linkedCursor) {
+  if (!chart) return
+  const indices = range ? overlappingBars(props.bars, range, props.periodCategory ?? props.result.frequency) : []
+  linkedLabel.value = range ? indices.length ? `联动：${range.start} — ${range.end} · 对应 ${indices.length} 根` : '此时间区间无对应行情' : ''
+  const children: Record<string, unknown>[] = []
+  if (indices.length) {
+    for (let panel = 0; panel <= panels.value.length; panel++) {
+      // Read the resolved grid rectangle (including ECharts label/layout adjustments).
+      // Guard this internal adapter so a future engine change simply omits the decoration.
+      const model = (chart as unknown as { getModel?: () => { getComponent: (kind: string, index: number) => { coordinateSystem?: { getRect: () => PlotRect } } | undefined } }).getModel?.()
+      const grid = model?.getComponent('grid', panel)
+      const rect = grid?.coordinateSystem?.getRect()
+      if (!rect) continue
+      const first = indices[0]!, last = indices.at(-1)!
+      const left = chart.convertToPixel({ xAxisIndex: panel }, first) as number
+      const right = chart.convertToPixel({ xAxisIndex: panel }, last) as number
+      const adjacent = chart.convertToPixel({ xAxisIndex: panel }, first < props.bars.length - 1 ? first + 1 : first - 1) as number
+      const halfBand = Number.isFinite(adjacent) ? Math.abs(adjacent - left) / 2 : 0
+      const graphic = timeLinkGraphic(rect, left, right, indices.length, halfBand)
+      if (graphic) children.push({ ...graphic, id: `research-time-link-${panel}`, $action: 'replace' })
+    }
+  }
+  const nextIds = children.map(item => item.id as string)
+  const removed = linkedGraphicIds.filter(id => !nextIds.includes(id)).map(id => ({ id, $action: 'remove' }))
+  // Explicit IDs/removal avoid anonymous group children surviving an empty update.
+  chart.setOption({ graphic: [...removed, ...children] } as never)
+  linkedGraphicIds = nextIds
+}
+function locate(date: string) {
+  const index = chartBarIndex(props.bars, date)
+  if (index === null || !chart) return
+  const visible = zoomWindow()
+  const indices = visible ? overlappingBars(props.bars, visible, props.periodCategory ?? props.result.frequency) : []
+  if (indices.length && (index < indices[0]! || index > indices.at(-1)!)) {
+    const span = indices.at(-1)! - indices[0]!
+    const start = Math.max(0, Math.min(props.bars.length - span - 1, index - Math.floor(span / 2)))
+    chart.dispatchAction({ type: 'dataZoom', startValue: start, endValue: start + span }, { silent: true })
+    markerCandidates = null
+    const range = zoomWindow(); if (range) emit('viewport', range)
+  }
+  drawLinkedCursor(barWindow(props.bars[index]!, props.periodCategory ?? props.result.frequency))
+  container.value?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+}
+defineExpose({ locate, zoomWindow })
+watch(() => props.linkedCursor, () => drawLinkedCursor())
+watch(() => props.linkedZoom, applyLinkedZoom)
+watch(() => props.indicatorConfig ?? preferences.settings.value.indicators, items => {
+  if (JSON.stringify(items) === JSON.stringify(indicators.value.map(({ type, params }) => ({ type, params })))) return
+  indicators.value = items.map(item => ({ ...item, params: { ...item.params }, id: nextIndicatorId++, rows: [] }))
+}, { deep: true })
+watch(() => indicators.value.map(({ type, params }) => ({ type, params })), items => { if (!props.indicatorConfig) preferences.patch({ indicators: items }) }, { deep: true })
 
 function normalizedDate(value: string): string {
   return value.replace('T', ' ').slice(0, 16).replace(/ 00:00$/, '')
@@ -170,18 +302,6 @@ function normalizedDate(value: string): string {
 function price2(value: unknown): string {
   const number = Number(value)
   return Number.isFinite(number) ? number.toFixed(2) : '—'
-}
-
-function signalName(type: string): string {
-  const names: Record<string, string> = {
-    '1buy': '一类买点',
-    '2buy': '二类买点',
-    '3buy': '三类买点',
-    '1sell': '一类卖点',
-    '2sell': '二类卖点',
-    '3sell': '三类卖点',
-  }
-  return names[type] ?? type
 }
 
 function buildOption(): echarts.EChartsCoreOption {
@@ -271,6 +391,7 @@ function buildOption(): echarts.EChartsCoreOption {
           name: signals.map(item => signalName(item.type)).join(' / '),
           value: label,
           signalType: signal.type,
+          details: signals.map(item => structuralSignalDetail(item, isBuy ? bar.low : bar.high)),
           message: signals.map(item => `${item.msg}；确认：${item.confirmed_date ?? '尚未确认'}`).join('<br/>'),
           date,
           price: isBuy ? bar.low : bar.high,
@@ -298,7 +419,8 @@ function buildOption(): echarts.EChartsCoreOption {
     : []
 
   const macdPromptSlots = new Set<string>()
-  const macdPoints = props.layers.mmds ? macdPrompts(props.result.bcs).flatMap(item => {
+  const promptItems = macdPrompts(props.result.bcs)
+  const macdPoints = props.layers.mmds ? promptItems.flatMap(item => {
     const index = chartBarIndex(props.bars, item.curr_date, item.signal_index)
     if (index === null) return []
     const slot = `${index}:${item.direction}`
@@ -309,6 +431,8 @@ function buildOption(): echarts.EChartsCoreOption {
     return [{
       name: `M1 · MACD ${buy ? '买入' : '卖出'}提示`, value: 'M1',
       date: dates[index], price, coord: [index, price],
+      details: promptItems.filter(other => other.direction === item.direction
+        && chartBarIndex(props.bars, other.curr_date, other.signal_index) === index).map(other => macdSignalDetail(other, price)),
       message: `仅为 MACD 波段提示，不等同于缠论结构一${buy ? '买' : '卖'}。<br/>极值：${item.curr_date}；实际确认：${item.confirmed_date}`,
       symbol: 'roundRect', symbolSize: [20, 13], symbolOffset: [0, buy ? 25 : -25],
       itemStyle: { color: buy ? '#e65b6b' : '#39ad79', borderWidth: 0 },
@@ -340,6 +464,7 @@ function buildOption(): echarts.EChartsCoreOption {
     : []
 
   renderedDivergences = divergencePoints as RenderedDivergence[]
+  renderedSignals = [...signalPoints, ...macdPoints]
   const series: Array<Record<string, unknown>> = [
     {
       name: 'K 线',
@@ -675,12 +800,13 @@ function buildOption(): echarts.EChartsCoreOption {
 }
 
 function render() {
+  markerCandidates = null
   consolidationPopover.value?.hide()
   if (!container.value || !props.bars.length) return
   if (!chart) {
     chart = echarts.init(container.value, 'dark')
     clickTooltip = installClickChartTooltip(chart, container.value)
-    chart.on('datazoom', () => consolidationPopover.value?.hide())
+    chart.on('datazoom', () => { markerCandidates = null; consolidationPopover.value?.hide(); const range = zoomWindow(); if (range) { emit('zoom', range); emit('viewport', range) }; drawLinkedCursor() })
     chart.on('legendselectchanged', (event: unknown) => {
       const { name, selected } = event as { name: string; selected: Record<string, boolean> }
       if (availableMA.value.some(period => name === `MA${period}`)) {
@@ -711,8 +837,10 @@ function render() {
   renderedIdentity = identity
   clickTooltip?.hide()
   if (props.focus) chart.clear()
-  chart.setOption(option, true)
-  requestAnimationFrame(() => chart?.resize())
+  chart.setOption(option, { notMerge: !sameSnapshot, replaceMerge: sameSnapshot ? ['series', 'xAxis', 'yAxis', 'grid', 'legend'] : undefined, lazyUpdate: true })
+  drawLinkedCursor()
+  const visible = zoomWindow(); if (visible) emit('viewport', visible)
+  requestAnimationFrame(() => { markerCandidates = null; chart?.resize(); drawLinkedCursor() })
 }
 
 let indicatorRequest = 0
@@ -727,7 +855,7 @@ async function refreshIndicator() {
         const macd = props.result.macd
         const rows = item.type === 'macd' && macd?.dif.length === props.bars.length
           ? props.bars.map((_, i) => ({ MACD_DIF: macd.dif[i], MACD_DEA: macd.dea[i], MACD_HIST: macd.hist[i] }))
-          : await calculateIndicatorRows(props.bars, item.type, item.params)
+          : await researchIndicatorRows(props.bars, item.type, item.params)
         if (requestId === indicatorRequest) item.rows = rows
       } catch (error) {
         if (requestId === indicatorRequest) {
@@ -745,15 +873,20 @@ async function refreshIndicator() {
 }
 
 onMounted(() => {
+  window.addEventListener('keyup', releaseObjectModifier)
+  window.addEventListener('blur', blurObjectPreview)
   render()
   void refreshIndicator()
   if (container.value) {
-    resizeObserver = new ResizeObserver(() => { consolidationPopover.value?.hide(); chart?.resize() })
+    resizeObserver = new ResizeObserver(() => { markerCandidates = null; consolidationPopover.value?.hide(); chart?.resize(); drawLinkedCursor() })
     resizeObserver.observe(container.value)
   }
 })
 
 onBeforeUnmount(() => {
+  window.removeEventListener('keyup', releaseObjectModifier)
+  window.removeEventListener('blur', blurObjectPreview)
+  indicatorRequest++
   cancelHoverClose()
   resizeObserver?.disconnect()
   clickTooltip?.dispose()
@@ -761,7 +894,11 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths, props.candleTransparency, props.showDivergenceHistory, mobile.value], render, { deep: true })
+let renderFrame = 0
+function scheduleRender() { cancelAnimationFrame(renderFrame); renderFrame = requestAnimationFrame(render) }
+onBeforeUnmount(() => cancelAnimationFrame(renderFrame))
+watch(() => [props.result, props.bars], scheduleRender)
+watch(() => [props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths, props.candleTransparency, props.showDivergenceHistory, mobile.value], scheduleRender, { deep: true })
 watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
 </script>
 
@@ -777,17 +914,19 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
       class="chanlun-chart"
       @contextmenu="onConsolidationContext"
       @pointermove="onStructureHover"
-      @pointerleave="leaveStructure"
+      @pointerleave="leaveChart"
       @click="onChartClick"
       :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px`, '--chanlun-chart-height': `${chartHeight}px` }"
     ></div>
+    <p v-if="linkedLabel" class="macd-prompt-note" role="status">{{ linkedLabel }}</p>
     <div v-if="layers.consolidations && result.pen_consolidations?.length" class="consolidation-access"><span>右键盘整矩形，查看区间详情</span><button type="button" @click="browseConsolidations">查看盘整详情</button></div>
     <div v-if="layers.bcs && visibleDivergences(result.bcs, showDivergenceHistory).length" class="consolidation-access"><span>右键背离／背驰标记，查看状态与依据</span><button type="button" @click="browseDivergences">查看背离详情</button></div>
-    <StructureInfoPopover ref="consolidationPopover" @enter="cancelHoverClose" @leave="leaveStructure" @closed="onPopoverClosed" />
+    <div v-if="availableSignals.length" class="consolidation-access"><span>{{ objectHover ? '悬停预览买卖点，点击或右键固定查看' : '右键查看买卖点，或按住 ⌘ 悬停预览' }}</span><button type="button" @click="browseSignals">查看买卖点详情</button></div>
+    <StructureInfoPopover ref="consolidationPopover" :mobile-sheet="preferences.settings.value.mobileSheet" @locate="locate" @inspect="emit('inspect', $event)" @enter="cancelHoverClose" @leave="leaveStructure" @closed="onPopoverClosed" />
     <p v-if="layers.nextPen" class="macd-prompt-note">琥珀虚线＝下一笔参考（未成笔）· 仅使用当前可见行情，端点可变，不预测未来。</p>
     <p v-if="layers.bcs" class="macd-prompt-note">圆形＝双线 · 菱形＝标准 · 三角形＝非标准 · 大菱形＝特殊 · 底紫顶绿 · 彩色空心＝候选 · 实心＝确认<span v-if="showDivergenceHistory"> · 灰色空心＝已失效／被替代</span></p>
     <p v-if="layers.mmds && macdPrompts(result.bcs).length" class="macd-prompt-note">M1 为 MACD 波段提示，非缠论结构一类点；标记位于极值日，实际确认日见提示详情。</p>
-    <div class="indicator-heading"><span>技术指标 · 可同时显示多个</span><button @click="addIndicator">＋ 添加指标</button></div>
+    <div class="indicator-heading"><span>技术指标 · 可同时显示多个</span><button :disabled="indicators.length >= 8" @click="addIndicator">＋ 添加指标</button></div>
     <div v-for="(item, index) in indicators" :key="item.id" class="indicator-entry">
     <button class="remove-indicator" :aria-label="`移除第 ${index + 1} 个指标`" @click="indicators.splice(index, 1)">移除</button>
     <TechnicalIndicatorPicker
@@ -810,8 +949,8 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
 .indicator-heading button, .remove-indicator { padding: 5px 9px; font-size: 11px; border: 1px solid var(--border); border-radius: 7px; background: rgba(255,255,255,.03); color: var(--text-muted); cursor: pointer; }
 .indicator-entry { position: relative; border-bottom: 1px solid var(--border); padding-right: 52px; }
 .remove-indicator { position: absolute; right: 0; top: 13px; }
-:global(.chart-frame:fullscreen) .market-chart-shell, :global(.chart-frame.fallback-expanded) .market-chart-shell { overflow-y: auto; }
-:global(.chart-frame:fullscreen) .chanlun-chart, :global(.chart-frame.fallback-expanded) .chanlun-chart { flex: none !important; }
+:global(.chart-frame:fullscreen .market-chart-shell), :global(.chart-frame.fallback-expanded .market-chart-shell) { overflow-y: auto; }
+:global(.chart-frame:fullscreen .chanlun-chart), :global(.chart-frame.fallback-expanded .chanlun-chart) { flex: none !important; }
 .market-chart-shell {
   width: 100%;
 }
@@ -821,8 +960,8 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
   transition: height 220ms ease;
 }
 .chanlun-chart.has-indicator { height: 585px; }
-:global(.chart-frame:fullscreen) .chanlun-chart,
-:global(.chart-frame.fallback-expanded) .chanlun-chart {
+:global(.chart-frame:fullscreen .chanlun-chart),
+:global(.chart-frame.fallback-expanded .chanlun-chart) {
   height: calc(100vh - 122px);
   min-height: 600px;
 }

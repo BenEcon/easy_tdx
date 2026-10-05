@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { confirmationPosition } from '../confirmation-replay'
 
-const props = defineProps<{ index?: number | null; total: number; busy: boolean; label: string; phase?: string }>()
+const props = defineProps<{ index?: number | null; total: number; busy: boolean; label: string; phase?: string; caption?: string }>()
 const emit = defineEmits<{ seek: [position: number] }>()
 const at = computed(() => confirmationPosition(props.index, props.total))
 const before = computed(() => confirmationPosition(props.index, props.total, true))
@@ -10,7 +10,7 @@ const before = computed(() => confirmationPosition(props.index, props.total, tru
 
 <template>
   <div v-if="at !== null" class="confirmation-replay" :aria-label="`${label}回放核验`">
-    <span>{{ label }}</span>
+    <span>{{ caption || label }}</span>
     <button :disabled="busy || before === null" :aria-label="`${label}：回放到${phase || '确认'}前一根`" @click="before !== null && emit('seek', before)">{{ phase || '确认' }}前一根</button>
     <button :disabled="busy" :aria-label="`${label}：回放到${phase || '确认'}时刻`" @click="at !== null && emit('seek', at)">{{ phase || '确认' }}时刻</button>
   </div>

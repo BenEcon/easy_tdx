@@ -6,11 +6,14 @@ import ChanlunChart from '../components/ChanlunChart.vue'
 import ChanlunTargetPicker from '../components/ChanlunTargetPicker.vue'
 import { targetIdentity, targetKindLabel, type ResearchTarget } from '../chanlun-target'
 import MultiPeriodResearch from '../components/MultiPeriodResearch.vue'
+import MultiPeriodCharts from '../components/MultiPeriodCharts.vue'
+import { periodLabel } from '../period-comparison'
 import '../research-panels.css'
 import PenConsolidationPanel from '../components/PenConsolidationPanel.vue'
 import { structureDate } from '../structure-display'
 import ConfirmationReplay from '../components/ConfirmationReplay.vue'
 import EvidenceReading from '../components/EvidenceReading.vue'
+import ResearchEventRecord from '../components/ResearchEventRecord.vue'
 import DecompositionInspector from '../components/DecompositionInspector.vue'
 import ExtensionHierarchyInspector from '../components/ExtensionHierarchyInspector.vue'
 import EngineeringTrendInspector from '../components/EngineeringTrendInspector.vue'
@@ -22,7 +25,7 @@ import ChartFrame from '../components/ChartFrame.vue'
 import AdjustPicker from '../components/AdjustPicker.vue'
 import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
-import { createMovingAverageSettings, movingAverageColor } from '../moving-averages'
+import { movingAverageColor } from '../moving-averages'
 import { DEFAULT_LINE_WIDTHS, MIN_LINE_WIDTH, MAX_LINE_WIDTH, LINE_WIDTH_STEP, structureLineWidth, type StructureLine } from '../chanlun-line-width'
 import { DEFAULT_CANDLE_TRANSPARENCY, candleTransparency } from '../candle-fill'
 import { divergenceEvidence, divergenceName, signalEvidence, waveFailureSummary, waveDiagnosticLines, waveComparisonName, waveComparisonLines } from '../divergence-evidence'
@@ -39,8 +42,13 @@ import type { StockHistoryItem } from '../stock-history'
 import type { Bar, Category, ChanlunResult, ChanlunDivergence } from '../types'
 import { useMarketPreferences } from '../market-preferences'
 import { useMobileViewport } from '../mobile-viewport'
+import { useResearchPreferences } from '../research-preferences'
 
 const route = useRoute()
+const researchPreferences = useResearchPreferences()
+const objectHover = computed({ get: () => researchPreferences.settings.value.objectHover, set: value => researchPreferences.patch({ objectHover: value }) })
+const mainChart = ref<InstanceType<typeof ChanlunChart>>()
+const multiCharts = ref<InstanceType<typeof MultiPeriodCharts>>()
 const mobile = useMobileViewport()
 const mobileSettingsOpen = ref(true)
 const stockCode = useSelectedStock()
@@ -52,14 +60,20 @@ const target = computed<ResearchTarget>(() => isStock.value
   ? {kind:'stock',code:stockCode.value,market:detectMarket(stockCode.value)} : selectedTarget.value)
 const targetKey = computed(() => targetIdentity(target.value))
 const targetTitle = computed(() => `${targetKindLabel[target.value.kind]} · ${isStock.value ? stockDisplayName(code.value) : `${code.value}${target.value.name ? `-${target.value.name}` : ''}`}`)
-const lineWidths = ref({ ...DEFAULT_LINE_WIDTHS })
-const candleFillTransparency = ref(DEFAULT_CANDLE_TRANSPARENCY)
+const lineWidths = ref({ ...researchPreferences.settings.value.widths })
+const candleFillTransparency = ref(researchPreferences.settings.value.transparency)
 const lineWidthOptions: Array<{ key: StructureLine; label: string; color: string }> = [
   { key: 'bi', label: '笔', color: '#79b9ef' },
   { key: 'xd', label: '线段', color: '#a88cdb' },
 ]
 const defaultLineWidths = computed(() => lineWidthOptions.every(item => lineWidths.value[item.key] === DEFAULT_LINE_WIDTHS[item.key]))
-const maSettings = ref(createMovingAverageSettings())
+const maSettings = ref(researchPreferences.settings.value.ma.map(item => ({ ...item })))
+watch(() => researchPreferences.settings.value, value => {
+  if (JSON.stringify(lineWidths.value) !== JSON.stringify(value.widths)) lineWidths.value = { ...value.widths }
+  if (JSON.stringify(maSettings.value) !== JSON.stringify(value.ma)) maSettings.value = value.ma.map(item => ({ ...item }))
+  candleFillTransparency.value = value.transparency
+}, { deep: true })
+watch([lineWidths, maSettings, candleFillTransparency], () => researchPreferences.patch({ widths: lineWidths.value, ma: maSettings.value, transparency: candleFillTransparency.value }), { deep: true })
 const maPeriods = computed(() => [...new Set(maSettings.value.filter(item => item.enabled).map(item => item.period))].sort((a, b) => a - b))
 const maAvailablePeriods = computed(() => maSettings.value.map(item => item.period))
 function setVisibleMA(periods: number[]) {
@@ -79,22 +93,27 @@ const industryError = ref('')
 const industryLoading = ref(false)
 let analysisVersion = 0
 let industryVersion = 0
+let analysisAbort: AbortController | null = null
+let industryAbort: AbortController | null = null
+let replayAbort: AbortController | null = null
 async function loadIndustry() {
   const version = ++industryVersion
+  industryAbort?.abort(); industryAbort = new AbortController()
+  const signal = industryAbort.signal
   industryData.value = null
   industryAlignment.value = null
   if (!isStock.value || !industryCode.value || industryView.value === 'stock') { industryLoading.value = false; return }
   industryLoading.value = true
   industryError.value = ''
   try {
-    const data = industrySnapshot.value ?? await analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value })
+    const data = industrySnapshot.value ?? await analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value }, signal)
     if (version !== industryVersion) return
     industrySnapshot.value = data
     if (!snapshotResult.value || !bars.value.length) return
     const aligned = await replayChanlunComparison({
       stock: { code: snapshotResult.value.code, category: category.value, bars: snapshotBars.value, visible_count: bars.value.length },
       industry: { code: industryCode.value, bars: data.bars },
-    })
+    }, signal)
     if (version === industryVersion) {
       industryData.value = aligned.industry
       industryAlignment.value = aligned.alignment
@@ -104,6 +123,7 @@ async function loadIndustry() {
 }
 watch([industryCode, industryView], ([nextCode], [previousCode]) => {
   replayVersion++
+  replayAbort?.abort()
   replayBusy.value = false
   replayPosition.value = bars.value.length || 1
   if (nextCode !== previousCode) industrySnapshot.value = null
@@ -147,6 +167,7 @@ const replayActive = computed(() => bars.value.length < snapshotBars.value.lengt
 const replayDate = computed(() => (bars.value.at(-1)?.datetime ?? '').replace('T', ' ').replace(/ 00:00:00$/, ''))
 let replayVersion = 0
 function clearReplay() {
+  analysisAbort?.abort(); industryAbort?.abort(); replayAbort?.abort()
   snapshotMetadata.value = null
   replayVersion++
   replayBusy.value = false
@@ -159,11 +180,13 @@ function clearReplay() {
   industryLoading.value = false
 }
 watch([targetKey, category, count], clearReplay, { flush: 'sync' })
-onBeforeUnmount(() => { analysisVersion++; industryVersion++; replayVersion++ })
+onBeforeUnmount(() => { analysisVersion++; industryVersion++; replayVersion++; analysisAbort?.abort(); industryAbort?.abort(); replayAbort?.abort() })
 async function seekReplay(position: number) {
   if (!snapshotResult.value || replayBusy.value || loading.value || industryLoading.value) return
   const target = Math.max(1, Math.min(snapshotBars.value.length, position))
   const version = ++replayVersion
+  replayAbort?.abort(); replayAbort = new AbortController()
+  const signal = replayAbort.signal
   const restoreFocus = document.activeElement === replaySlider.value
   replayBusy.value = true
   error.value = ''
@@ -173,9 +196,9 @@ async function seekReplay(position: number) {
       bars: snapshotBars.value, visible_count: target,
     }
     const comparison = industryView.value !== 'stock' && industrySnapshot.value
-      ? await replayChanlunComparison({ stock: request, industry: { code: industryCode.value, bars: industrySnapshot.value.bars } })
+      ? await replayChanlunComparison({ stock: request, industry: { code: industryCode.value, bars: industrySnapshot.value.bars } }, signal)
       : null
-    const next = comparison?.stock ?? (target === snapshotBars.value.length ? snapshotResult.value : await replayChanlun(request))
+    const next = comparison?.stock ?? (target === snapshotBars.value.length ? snapshotResult.value : await replayChanlun(request, signal))
     if (version !== replayVersion) return
     result.value = next
     bars.value = snapshotBars.value.slice(0, target)
@@ -382,6 +405,8 @@ async function runAnalysis() {
   clearReplay()
   error.value = ''
   const version = ++analysisVersion
+  analysisAbort = new AbortController()
+  const signal = analysisAbort.signal
   industryData.value = null
   industries.value = []
   industryCode.value = ''
@@ -389,14 +414,14 @@ async function runAnalysis() {
   try {
     const instrument = { ...target.value }
     const market = instrument.market
-    const snapshot = await fetchResearchSnapshot(instrument, category.value, count.value, effectiveAdjust.value)
+    const snapshot = await fetchResearchSnapshot(instrument, category.value, count.value, effectiveAdjust.value, signal)
     const nextBars = snapshot.bars
     if (version !== analysisVersion) return
     if (!nextBars.length) throw new Error('所选范围暂无行情')
     const nextResult = await replayChanlun({
       code: instrument.kind === 'stock' ? `${market}${instrument.code}` : targetIdentity(instrument), category: category.value,
       bars: nextBars, visible_count: nextBars.length,
-    })
+    }, signal)
     if (version !== analysisVersion) return
     bars.value = nextBars
     snapshotMetadata.value = snapshot.metadata
@@ -408,7 +433,7 @@ async function runAnalysis() {
     activeTab.value = 'structure'
     if (!isStock.value) return
     try {
-      const belonging = await fetchStockIndustries(market, code.value)
+      const belonging = await fetchStockIndustries(market, code.value, signal)
       if (version !== analysisVersion) return
       industries.value = belonging.data.map((row) => ({ value: String(row.board_code), label: String(row.board_name) }))
       industryCode.value = industries.value[0]?.value ?? ''
@@ -494,6 +519,10 @@ onMounted(async () => {
           <input v-model="layers[item.key]" type="checkbox" />
         </label>
         <p v-if="layers.nextPen" class="ma-help">虚线连接末笔端点与其后的反向极值，尚未成笔，端点可变；无反向区间或原笔继续延伸时不显示。不预测未来价格。</p>
+        <div class="object-info-control">
+          <label class="layer-row"><span>悬停显示对象信息</span><input v-model="objectHover" type="checkbox" aria-describedby="object-info-help" /></label>
+          <p id="object-info-help" class="ma-help">{{ objectHover ? '移到点或盘整上预览，点击或右键固定。' : '右键打开，或按住 ⌘ Command 悬停预览；松开隐藏。' }} 图下详情按钮仍可使用，设置按账户保存。</p>
+        </div>
       </section>
 
       <section class="inspector-section line-width-section" aria-label="结构线宽">
@@ -692,7 +721,12 @@ onMounted(async () => {
             <span>{{ focusedDivergence.scope === 'reverse-pen' ? '局部确认用笔 · 保存首次成笔证据，不替换全局结构笔' : focusedDivergence.scope === 'released' ? '当前工程结构依据 · 反向确认不计入价格来源' : focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
             <button @click="focusedDivergence = null">清除区间定位</button>
           </div>
-          <ChartFrame v-if="industryView !== 'industry'" class="chanlun-price-frame" :title="targetTitle" description="均线与缠论结构叠加；可在下方选择技术指标。">
+          <MultiPeriodCharts ref="multiCharts" v-if="industryView !== 'industry' && snapshotMetadata" :target="target" :title="targetTitle" :adjust="effectiveAdjust"
+            :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-bars="bars" :primary-metadata="snapshotMetadata"
+            :primary-result="result" :count="count" :layers="layers" :show-divergence-history="showDivergenceHistory"
+            :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency"
+            :focus="focusedDivergence" @update:ma-periods="setVisibleMA" @locate-primary="mainChart?.locate($event)">
+          <ChartFrame class="chanlun-price-frame" :title="`${targetTitle} · ${periodLabel(category)}`" description="均线与缠论结构叠加；可在下方选择技术指标。">
             <template #actions>
               <div class="chart-legend">
                 <span class="legend-bi">笔</span>
@@ -706,8 +740,9 @@ onMounted(async () => {
               </div>
               <label class="history-toggle"><input v-model="showDivergenceHistory" type="checkbox" :disabled="!layers.bcs" /><span>显示失效历史</span></label>
             </template>
-            <ChanlunChart :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
+            <ChanlunChart ref="mainChart" :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" @inspect="multiCharts?.inspectMain($event)" @viewport="multiCharts?.setPrimaryRange($event)" @zoom="multiCharts?.setPrimaryRange($event)" />
           </ChartFrame>
+          </MultiPeriodCharts>
           <PenConsolidationPanel v-if="layers.consolidations && result.pen_consolidations?.length" :areas="result.pen_consolidations" />
           <MultiPeriodResearch v-if="snapshotMetadata" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" />
           <template v-if="industryView !== 'stock'">
@@ -825,40 +860,54 @@ onMounted(async () => {
             <ExpansionInspector :data="result.expansion_regrouping" :versions="result.regrouping_versions" :total="snapshotBars.length" :visible-count="bars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" @locate="locateExpansion" />
           </div>
 
-          <div v-else-if="activeTab === 'signals'" class="event-list">
-            <div v-for="(signal, index) in result.mmds.slice().reverse()" :key="`${signal.type}-${signal.date}-${index}`" class="event-row">
-              <span class="event-tag" :class="signal.type.includes('buy') ? 'buy' : 'sell'">{{ signalLabel(signal.type) }}</span>
-              <time>{{ signal.date ? structureDate(signal.date) : '时间未知' }}</time>
-              <small v-if="signal.confirmed_date">确认于 {{ structureDate(signal.confirmed_date) }}</small>
-              <p>{{ formatMessage(signal.msg) }}</p>
-              <details v-if="signal.source === 'confirmed_segment_base_v1'" class="divergence-evidence">
+          <div v-else-if="activeTab === 'signals'" class="signal-workspace">
+            <details class="signal-records research-panel research-hierarchy" open>
+              <summary><strong>结构性买卖点</strong><span>{{ result.mmds.length }} 条 · 结构依据独立核验</span></summary>
+              <div class="research-panel-body">
+                <p class="event-scope-note">极值日期与确认日期分开记录；展开条目可查看结构依据与确认回放。</p>
+            <ResearchEventRecord v-for="(signal, index) in result.mmds.slice().reverse()" :key="`${signal.type}-${signal.date}-${index}`" class="signal-record"
+              :title="signalLabel(signal.type)" :date="signal.date" :tone="signal.type.includes('buy') ? 'buy' : 'sell'"
+              :state="signal.confirmed_date ? 'confirmed' : 'unrecorded'" :state-label="signal.confirmed_date ? '已确认' : '确认时间未提供'"
+              :metadata="[{label:'确认日期',value:structureDate(signal.confirmed_date)},{label:'识别来源',value:signal.source === 'confirmed_segment_base_v1' ? '已确认线段 · 基础结构' : '原始信号记录'}]"
+              :description="formatMessage(signal.msg)">
+              <details v-if="signal.source === 'confirmed_segment_base_v1'" class="reading-disclosure">
                 <summary>查看结构依据</summary>
+                <div class="audit-evidence-body">
                 <EvidenceReading :lines="signalEvidence(signal)" />
-                <ConfirmationReplay :index="signal.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="signalLabel(signal.type)" @seek="jumpToConfirmation" />
+                <div class="event-replays"><ConfirmationReplay :index="signal.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="signalLabel(signal.type)" caption="结构确认" @seek="jumpToConfirmation" /></div>
+                </div>
               </details>
-            </div>
+            </ResearchEventRecord>
             <p v-if="result.mmds.length === 0" class="no-data">当前窗口没有识别到结构性买卖点。</p>
-            <template v-if="macdPromptItems.length">
-              <p class="macd-prompt-caption">MACD 提示 · 独立于结构性买卖点，不参与一类点策略判断</p>
-              <div v-for="(item, index) in macdPromptItems.slice().reverse()" :key="`macd-prompt-${index}`" class="event-row macd-prompt-row">
-                <span class="event-tag" :class="item.direction === 'down' ? 'buy' : 'sell'">M1 · {{ item.direction === 'down' ? '买入提示' : '卖出提示' }}</span>
-                <time>极值 {{ structureDate(item.curr_date) }}</time>
-                <small>实际确认 {{ structureDate(item.confirmed_date) }}</small>
-                <ConfirmationReplay :index="item.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="MACD M1 提示" @seek="jumpToConfirmation" />
               </div>
-            </template>
+            </details>
+            <details v-if="macdPromptItems.length" class="macd-records research-panel research-hierarchy" open>
+              <summary><strong>MACD M1 提示</strong><span>{{ macdPromptItems.length }} 条 · 非结构性买卖点</span></summary>
+              <div class="research-panel-body">
+                <p class="event-scope-note">独立于结构性买卖点，不参与一类点策略判断。</p>
+              <ResearchEventRecord v-for="(item, index) in macdPromptItems.slice().reverse()" :key="`macd-prompt-${index}`" class="macd-prompt-row"
+                :title="`M1 · ${item.direction === 'down' ? '买入提示' : '卖出提示'}`" :date="item.curr_date" :tone="item.direction === 'down' ? 'buy' : 'sell'" state="confirmed" state-label="提示已确认"
+                :metadata="[{label:'实际确认',value:structureDate(item.confirmed_date)},{label:'提示来源',value:divergenceName(item)}]">
+                <div class="event-replays"><ConfirmationReplay :index="item.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="MACD M1 提示" caption="提示确认" @seek="jumpToConfirmation" /></div>
+              </ResearchEventRecord>
+              </div>
+            </details>
           </div>
 
           <div v-else class="divergence-workspace">
             <details v-if="auditedWaves.length" class="wave-diagnostics research-panel research-hierarchy">
               <summary><strong>背离核验与规则对照</strong><span>{{ blockedWaves.length }} 组未通过</span></summary>
               <div class="research-panel-body">
-              <p class="wave-diagnostics-note">标准使用有效 A；非标准使用完整 A，保留 DIF 改善、B/C 同侧与 B 回拉；特殊对照前一 A 的指标极值；双线对照最近局部极值。各自记录依据，不互相覆盖。</p>
+              <dl class="audit-rule-guide">
+                <div><dt>标准</dt><dd>使用有效 A</dd></div><div><dt>非标准</dt><dd>完整 A · 保留 DIF 改善、B/C 同侧与 B 回拉</dd></div>
+                <div><dt>特殊</dt><dd>对照前一 A 的指标极值</dd></div><div><dt>双线</dt><dd>对照最近局部极值</dd></div>
+              </dl>
+              <p class="audit-history-note">各类分别记录依据，不互相覆盖。核验通过项数仅用于审核，不代表信号强弱或胜率。</p>
               <details v-for="item in auditedWaves" :key="`${item.family}-${item.direction}-${item.c_start ?? item.dates.b_start}`" class="wave-diagnostic-row reading-disclosure">
                 <summary>
                   <strong>{{ item.family === 'double' ? '双线' : item.family === 'special' ? '特殊' : item.family === 'nonstandard' ? '非标准' : '标准' }}{{ item.direction === 'down' ? '底' : '顶' }}背离</strong>
                   <span class="audit-status" :class="item.status">{{ item.status === 'confirmed' ? '已确认' : item.status === 'candidate' ? '候选未确认' : item.first_candidate_index == null ? '未形成候选' : '当前未通过' }}</span>
-                  <span class="audit-period">{{ item.family === 'double' ? item.dates.c_start : item.family === 'special' ? `B ${item.dates.b_start} — ${item.dates.b_end}` : `C ${item.dates.c_start} — ${item.dates.c_end}` }}</span>
+                  <span class="audit-period"><span>{{ item.family === 'double' ? structureDate(item.dates.c_start) : item.family === 'special' ? `B ${structureDate(item.dates.b_start)} — ${structureDate(item.dates.b_end)}` : `C ${structureDate(item.dates.c_start)} — ${structureDate(item.dates.c_end)}` }}</span><span class="audit-check-count">{{ item.checks.filter(check => check.passed).length }} / {{ item.checks.length }} 项通过</span></span>
                   <span v-if="item.status === 'blocked'" class="audit-failure">{{ waveFailureSummary(item) }}</span>
                 </summary>
                 <div class="audit-evidence-body">
@@ -879,18 +928,12 @@ onMounted(async () => {
             <details class="divergence-records research-panel research-hierarchy" open>
               <summary><strong>背离事件记录</strong><span>{{ result.bcs.filter(item => item.bc).length }} 条 · 含候选与失效历史</span></summary>
               <div class="research-panel-body">
-            <article v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="divergence-record">
-              <header class="divergence-record-heading">
-                <strong class="divergence-kind" :class="[bc.direction === 'up' ? 'top' : 'bottom', bc.status, { nonstandard: bc.type === 'macd_wave_nonstandard' }]"><i aria-hidden="true"></i>{{ divergenceName(bc) }}</strong>
-                <span class="audit-status" :class="bc.status">{{ bc.status === 'candidate' ? '候选未确认' : bc.status === 'superseded' ? '已替代 / 失效' : '已确认' }}</span>
-              </header>
-              <dl class="divergence-dates">
-                <div><dt>极值日期</dt><dd>{{ bc.curr_date ? structureDate(bc.curr_date) : '时间未知' }}</dd></div>
-                <div><dt>对照日期</dt><dd>{{ structureDate(bc.prev_date) }}</dd></div>
-                <div v-if="bc.status !== 'candidate' && bc.status !== 'superseded'"><dt>确认日期</dt><dd>{{ structureDate(bc.confirmed_date) }}</dd></div>
-              </dl>
-              <p v-if="bc.status === 'candidate' && bc.preliminary_date" class="audit-history-note">曾满足初步条件 · 等待走势完成</p>
-              <p class="divergence-description">{{ formatMessage(bc.msg) }}</p>
+                <p class="event-scope-note">候选、已确认与失效分别保留；极值出现不代表当时已经确认。</p>
+            <ResearchEventRecord v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="divergence-record"
+              :title="divergenceName(bc)" :date="bc.curr_date" :tone="bc.type === 'macd_wave_nonstandard' ? 'nonstandard' : bc.direction === 'up' ? 'top' : 'bottom'"
+              :state="bc.status || 'confirmed'" :state-label="bc.status === 'candidate' ? '候选未确认' : bc.status === 'superseded' ? '已替代 / 失效' : '已确认'"
+              :metadata="[{label:'对照日期',value:structureDate(bc.prev_date)}, {label:bc.status === 'superseded' ? '失效 / 替代日期' : bc.status === 'candidate' ? '首次提示' : '确认日期',value:structureDate(bc.status === 'superseded' ? bc.invalidated_date : bc.status === 'candidate' ? bc.detected_date : bc.confirmed_date)}]"
+              :note="bc.status === 'candidate' && bc.preliminary_date ? '曾满足初步条件 · 等待走势完成' : undefined" :description="formatMessage(bc.msg)">
               <details class="divergence-evidence reading-disclosure">
                 <summary>查看判定依据</summary>
                 <div class="audit-evidence-body">
@@ -899,15 +942,15 @@ onMounted(async () => {
                 <button v-if="divergenceFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateDivergence(bc)">{{ bc.type === 'macd' ? '定位前后极值' : '定位比较区间' }}</button>
                 <button v-if="reversePenFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateReversePen(bc)">查看局部确认用笔</button>
                 </div>
-                <div class="divergence-replays">
-                <ConfirmationReplay :index="bc.detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="首次提示" @seek="jumpToConfirmation" />
-                <ConfirmationReplay v-if="bc.status === 'confirmed'" :index="bc.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" @seek="jumpToConfirmation" />
-                <ConfirmationReplay v-if="bc.status === 'superseded'" :index="bc.invalidated_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="失效" @seek="jumpToConfirmation" />
-                <ConfirmationReplay v-if="bc.evidence?.replacement_detected_index != null" :index="bc.evidence.replacement_detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="后续替代候选" phase="首次提示" @seek="jumpToConfirmation" />
+                <div class="event-replays">
+                <ConfirmationReplay :index="bc.detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="首次提示" caption="首次提示" @seek="jumpToConfirmation" />
+                <ConfirmationReplay v-if="bc.status === 'confirmed'" :index="bc.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" caption="最终确认" @seek="jumpToConfirmation" />
+                <ConfirmationReplay v-if="bc.status === 'superseded'" :index="bc.invalidated_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="失效" caption="失效 / 替代" @seek="jumpToConfirmation" />
+                <ConfirmationReplay v-if="bc.evidence?.replacement_detected_index != null" :index="bc.evidence.replacement_detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="后续替代候选" phase="首次提示" caption="后续替代候选" @seek="jumpToConfirmation" />
                 </div>
                 </div>
               </details>
-            </article>
+            </ResearchEventRecord>
             <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有背离／背驰候选或确认事件。{{ blockedWaves.length ? '请展开波段核验查看原因。' : '可增加历史窗口后重新核验。' }}</p>
               </div>
             </details>
@@ -924,14 +967,8 @@ onMounted(async () => {
 .history-toggle:hover { background: rgba(255,255,255,.05); }
 .history-toggle:has(input:disabled) { opacity: .45; cursor: default; }
 .history-toggle input { flex: 0 0 13px; width: 13px; height: 13px; min-height: 13px; margin: 0; padding: 0; accent-color: var(--accent); }
-.macd-prompt-caption { padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
-.event-row.macd-prompt-row > :last-child { grid-column: 1 / -1; }
-.event-row.macd-prompt-row > time, .event-row.macd-prompt-row > small { white-space: nowrap; }
 .chart-legend .legend-top::before { background: #61dfa0; border-radius: 50%; }
 .chart-legend .legend-bc::before { background: #cf8ff5; border: 0; border-radius: 50%; transform: none; }
-.event-tag.divergence.top { color: #61dfa0; background: rgba(48,209,123,.09); border-color: rgba(48,209,123,.25); }
-.event-tag.divergence.candidate { background: transparent; border-style: dashed; }
-.event-tag.divergence.superseded { color: var(--text-muted); background: transparent; border-color: var(--border); }
 .snapshot-provenance { margin: 10px 0; color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .snapshot-provenance summary { cursor: pointer; }
 .snapshot-provenance p { margin: 6px 0; }
@@ -980,7 +1017,7 @@ onMounted(async () => {
 .provenance-facts dd { margin: 0; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text); }
 .research-panel-body .provenance-warning { color: #e3bd87; }
 .detail-stock-label { padding: 12px 14px 0; font-size: 11px; color: var(--text-dim); }
-.chart-workspace :deep(.chart-frame + .chart-frame) { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+.chart-workspace :deep(.chart-frame + .chart-frame:not(.expanded)) { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
 .ma-heading { display: flex; align-items: center; gap: 8px; min-height: 24px; cursor: pointer; list-style: none; }
 .ma-heading::-webkit-details-marker { display: none; }
 .inspector-section .ma-heading h3 { margin: 0; }
@@ -1073,6 +1110,7 @@ onMounted(async () => {
 .layer-section { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
 .layer-section h3 { grid-column: 1 / -1; }
 .layer-section > .ma-help { grid-column: 1 / -1; }
+.object-info-control { grid-column: 1 / -1; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
 .line-width-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .inspector-section .line-width-heading h3 { margin: 0; }
 .line-width-reset { padding: 3px 0 3px 8px; border: 0; background: transparent; color: var(--text-muted); font-size: 10px; cursor: pointer; }
@@ -1400,42 +1438,17 @@ onMounted(async () => {
 .segment-card small { margin-top: 6px; color: var(--text-muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
 .segment-price { color: #c8c9d0; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
-.event-list { padding: 8px 14px 16px; }
-.event-row { display: grid; align-items: center; grid-template-columns: minmax(100px,auto) minmax(0,1fr); gap: 10px 16px; min-height: 48px; padding: 20px 8px; border-bottom: 1px solid rgba(255,255,255,.05); transition: background-color 120ms ease; }
-.event-row:hover { background: rgba(255,255,255,.022); }
-.event-row:last-child { border-bottom: 0; }
-.event-row > small { grid-column: 1 / -1; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
-.event-row > p, .divergence-evidence { grid-column: 1 / -1; }
-.divergence-evidence { padding-bottom: 4px; color: var(--text-muted); font-size: 12px; line-height: 1.85; overflow-wrap: anywhere; }
-.divergence-evidence summary { cursor: pointer; color: var(--accent); }
-.divergence-workspace { min-width: 0; }
-.divergence-record { min-width: 0; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
-.divergence-record:last-child { border-bottom: 0; }
-.divergence-record-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
-.divergence-kind { display: inline-flex; align-items: baseline; gap: 9px; color: #cf9fe7; font-size: 12px; font-weight: 550; line-height: 1.8; }
-.divergence-kind i { width: 7px; height: 7px; flex: 0 0 7px; border: 1px solid currentColor; border-radius: 2px; transform: rotate(45deg); background: currentColor; }
-.divergence-kind.top { color: #8ac9ac; }
-.divergence-kind.nonstandard { color: #e3949c; }
-.divergence-kind.candidate i, .divergence-kind.superseded i { background: transparent; }
-.divergence-kind.superseded { color: #9ba4b2; }
+.divergence-workspace, .signal-workspace { min-width: 0; }
 .audit-status { display: inline-flex; align-items: center; gap: 6px; color: #a1abba; font-size: 10px; line-height: 1.8; font-weight: 400; }
 .audit-status::before { content: ''; width: 4px; height: 4px; flex: 0 0 4px; border: 1px solid currentColor; border-radius: 50%; }
 .audit-status.confirmed { color: #a7c6b7; }
 .audit-status.confirmed::before { background: currentColor; }
 .audit-status.candidate { color: #cbb38b; }
-.divergence-dates { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 16px 0 10px; font-variant-numeric: tabular-nums; }
-.divergence-dates > div { min-width: 0; }
-.divergence-dates dt { color: #8996a8; font-size: 10px; margin-bottom: 5px; }
-.divergence-dates dd { margin: 0; color: #c1ccda; font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
-.divergence-description, .audit-history-note, .wave-comparisons > p { color: var(--text-muted); font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; text-align: justify; text-align-last: left; margin: 10px 0; }
-.divergence-record > .divergence-evidence { margin-top: 14px; }
+.audit-history-note, .wave-comparisons > p { color: var(--text-muted); font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; text-align: justify; text-align-last: left; margin: 10px 0; }
 .divergence-workspace .audit-evidence-body { padding-bottom: 12px; }
 .divergence-locate-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.divergence-locate-actions:empty, .divergence-replays:empty { display: none; }
+.divergence-locate-actions:empty { display: none; }
 .divergence-workspace .divergence-locate-actions button { min-height: 30px; font-size: 11px; padding: 5px 10px; background: rgba(255,255,255,.025); box-shadow: none; }
-.divergence-replays { padding-top: 8px; }
-.divergence-replays :deep(.confirmation-replay) { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px; padding: 10px 0; margin: 0; border-top: 1px solid rgba(255,255,255,.04); }
-.divergence-replays :deep(.confirmation-replay button) { background: rgba(255,255,255,.025); box-shadow: none; }
 .wave-diagnostic-row { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
 .wave-diagnostic-row:last-child { border-bottom: 0; }
 .wave-diagnostics .wave-diagnostic-row > summary { display: grid; grid-template-columns: minmax(0,1fr) auto 10px; align-items: baseline; gap: 6px 14px; padding: 12px 0; }
@@ -1443,27 +1456,24 @@ onMounted(async () => {
 .wave-diagnostics .wave-diagnostic-row > summary::before { content: none; }
 .wave-diagnostic-row > summary::after { content: ''; grid-column: 3; grid-row: 1; width: 5px; height: 5px; border-right: 1px solid #91a2bb; border-bottom: 1px solid #91a2bb; transform: rotate(-45deg); transition: transform 150ms ease; }
 .wave-diagnostic-row[open] > summary::after { transform: rotate(45deg); }
-.audit-period { grid-column: 1 / 3; color: #8e9cad; font-size: 10px; line-height: 1.8; font-variant-numeric: tabular-nums; }
+.audit-period { grid-column: 1 / 3; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; color: #8e9cad; font-size: 10px; line-height: 1.8; font-variant-numeric: tabular-nums; }
+.audit-check-count { color: #a3adbc; white-space: nowrap; }
+.audit-rule-guide { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 28px; margin: 8px 0 12px; }
+.audit-rule-guide > div { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.045); font-size: 11px; line-height: 1.8; }
+.audit-rule-guide dt { color: #bcc9d9; }
+.audit-rule-guide dd { margin: 0; color: #97a5b8; }
 .audit-failure { grid-column: 1 / 3; color: #b7a58c; font-size: 11px; line-height: 1.8; }
 .wave-comparisons { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.05); padding-top: 8px; }
 .wave-comparisons > details > summary small { display: block; font-size: 10px; color: var(--text-muted); }
 @container (max-width: 400px) {
-  .divergence-replays :deep(.confirmation-replay) { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
-  .divergence-replays :deep(.confirmation-replay > span) { grid-column: 1 / -1; }
-  .divergence-replays :deep(.confirmation-replay button) { white-space: normal; min-height: 36px; }
+  .audit-rule-guide { grid-template-columns: minmax(0,1fr); }
   .wave-diagnostics .wave-diagnostic-row > summary { grid-template-columns: minmax(0,1fr) 10px; }
   .wave-diagnostic-row > summary::after { grid-column: 2; }
   .wave-diagnostic-row > summary > .audit-status { grid-column: 1; grid-row: 2; }
   .audit-period, .audit-failure { grid-column: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .wave-diagnostic-row > summary::after { transition: none; } }
-.wave-comparisons { margin-top: 12px; padding-left: 12px; border-left: 1px solid var(--border); }
 .wave-comparisons details { margin: 10px 0; }
-.wave-comparisons p { color: var(--text-muted); font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
-.event-tag { width: fit-content; padding: 4px 8px; border: 1px solid transparent; border-radius: 5px; font-size: 11px; font-weight: 550; }
-.event-tag.buy { color: #ff858d; background: rgba(255,94,104,.09); border-color: rgba(255,94,104,.13); }.event-tag.sell { color: #61dfa0; background: rgba(48,209,123,.09); border-color: rgba(48,209,123,.13); }.event-tag.divergence { color: #d9a3ff; background: rgba(191,90,242,.1); border-color: rgba(191,90,242,.14); }
-.event-row time { color: var(--text-muted); font-family: var(--font-mono); font-size: 11px; text-align: right; overflow-wrap: anywhere; }
-.event-row p { color: var(--text-muted); font-size: 12px; line-height: 1.85; overflow-wrap: anywhere; }
 .no-data { padding: 28px 12px; color: var(--text-muted); font-size: 12px; line-height: 1.8; text-align: center; }
 
 @container (max-width: 780px) {

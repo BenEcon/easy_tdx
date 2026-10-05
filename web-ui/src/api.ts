@@ -605,16 +605,16 @@ export interface BarSnapshot {
   metadata: { source: string; requested_adjust: string; actual_adjust: string; observed_at: string; category: string; completion_note: string; volume_policy: string; historical_data_vintage: boolean }
 }
 
-export async function fetchResearchSnapshot(target: import('./chanlun-target').ResearchTarget, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ'): Promise<BarSnapshot> {
-  if (target.kind === 'stock') return fetchBarSnapshot(target.market, target.code, category, count, adjust)
+export async function fetchResearchSnapshot(target: import('./chanlun-target').ResearchTarget, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ', signal?: AbortSignal): Promise<BarSnapshot> {
+  if (target.kind === 'stock') return fetchBarSnapshot(target.market, target.code, category, count, adjust, signal)
   const body = await request<{data: Record<string, unknown>[]; metadata: BarSnapshot['metadata']}>(queryPath('/bars/research', {
     kind: target.kind, code: target.code, market: target.kind === 'index' ? target.market : 'SH',
     board_type: target.boardType ?? 'HY', category, count,
-  }))
+  }), { signal })
   return { bars: body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime)), metadata: body.metadata }
 }
 
-export async function fetchBarSnapshot(market: string, code: string, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ'): Promise<BarSnapshot> {
+export async function fetchBarSnapshot(market: string, code: string, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ', signal?: AbortSignal): Promise<BarSnapshot> {
   const params = new URLSearchParams({
     market,
     code,
@@ -623,34 +623,34 @@ export async function fetchBarSnapshot(market: string, code: string, category: C
     start: '0',
     adjust,
   })
-  const resp = await fetch(`${BASE}/bars?${params}`)
+  const resp = await fetch(`${BASE}/bars?${params}`, { signal })
   if (!resp.ok) await throwError(resp)
   const body = (await resp.json()) as { data: Record<string, unknown>[]; metadata: BarSnapshot['metadata'] }
   return { bars: body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime)), metadata: body.metadata }
 }
 
 /** 执行完整缠论管道：K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰。 */
-export function analyzeIndustry(req: { stock_market: string; stock_code: string; board_code: string; category: Category; count: number }): Promise<{ bars: Bar[]; result: ChanlunResult }> {
-  return request('/chanlun/industry?ownership_history=summary', { method: 'POST', body: JSON.stringify(req) })
+export function analyzeIndustry(req: { stock_market: string; stock_code: string; board_code: string; category: Category; count: number }, signal?: AbortSignal): Promise<{ bars: Bar[]; result: ChanlunResult }> {
+  return request('/chanlun/industry?ownership_history=summary', { method: 'POST', body: JSON.stringify(req), signal })
 }
 
-export function fetchStockIndustries(market: string, code: string): Promise<DataRowsResponse> {
-  return request(queryPath('/chanlun/industries', { market, code }))
+export function fetchStockIndustries(market: string, code: string, signal?: AbortSignal): Promise<DataRowsResponse> {
+  return request(queryPath('/chanlun/industries', { market, code }), { signal })
 }
 
-export function replayChanlun(req: { code: string; category: Category; bars: Bar[]; visible_count: number }): Promise<ChanlunResult> {
-  return request('/chanlun/replay?ownership_history=summary', { method: 'POST', body: JSON.stringify(req) })
+export function replayChanlun(req: { code: string; category: Category; bars: Bar[]; visible_count: number }, signal?: AbortSignal): Promise<ChanlunResult> {
+  return request('/chanlun/replay?ownership_history=summary', { method: 'POST', body: JSON.stringify(req), signal })
 }
 
 export function replayChanlunComparison(req: {
   stock: { code: string; category: Category; bars: Bar[]; visible_count: number }
   industry: { code: string; bars: Bar[] }
-}): Promise<{
+}, signal?: AbortSignal): Promise<{
   stock: ChanlunResult
   industry: { bars: Bar[]; result: ChanlunResult } | null
   alignment: { as_of: string; industry_as_of: string | null; status: 'aligned' | 'earlier' | 'unavailable' }
 }> {
-  return request('/chanlun/replay/compare?ownership_history=summary', { method: 'POST', body: JSON.stringify(req) })
+  return request('/chanlun/replay/compare?ownership_history=summary', { method: 'POST', body: JSON.stringify(req), signal })
 }
 
 export async function analyzeChanlun(req: {

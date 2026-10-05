@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:research-workspace-20261005

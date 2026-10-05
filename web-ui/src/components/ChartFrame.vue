@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+defineOptions({ inheritAttrs: false })
 
 withDefaults(
   defineProps<{
@@ -74,7 +75,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="frame" class="chart-frame" :class="{ expanded, 'fallback-expanded': fallback }">
+  <Teleport to="body" :disabled="!fallback">
+  <div ref="frame" v-bind="$attrs" class="chart-frame" :class="{ expanded, 'fallback-expanded': fallback }">
     <header class="chart-frame-header">
       <div class="chart-frame-heading">
         <h3>{{ title }}</h3>
@@ -103,6 +105,7 @@ onBeforeUnmount(() => {
       <slot></slot>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -179,10 +182,12 @@ onBeforeUnmount(() => {
   position: fixed;
   z-index: 1600;
   inset: 0;
+  margin: 0;
 }
 
 .chart-frame:fullscreen .chart-frame-header,
 .chart-frame.fallback-expanded .chart-frame-header {
+  flex-wrap: wrap;
   min-height: 48px;
   align-items: center;
   padding: 0 0 12px;

@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:period-compare-20261005
