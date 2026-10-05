@@ -25,6 +25,9 @@ import { useMobileViewport } from '../mobile-viewport'
 import { provisionalCandle } from '../provisional-bars'
 import { structureLineWidth, emphasizedLineWidth, type ChanlunLineWidths } from '../chanlun-line-width'
 import { consolidationAppearance, nextPenPreview } from '../structure-preview'
+import { candleFill } from '../candle-fill'
+import { consolidationHits } from '../consolidation-hit'
+import ConsolidationPopover from './ConsolidationPopover.vue'
 
 const props = defineProps<{
   bars: Bar[]
@@ -33,6 +36,7 @@ const props = defineProps<{
   maPeriods?: number[]
   maAvailablePeriods?: number[]
   lineWidths?: ChanlunLineWidths
+  candleTransparency?: number
   result: ChanlunResult
   layers: {
     bis: boolean
@@ -55,6 +59,34 @@ function toggleMobileMA(period: number) {
 }
 
 const container = ref<HTMLDivElement>()
+const consolidationPopover = ref<InstanceType<typeof ConsolidationPopover>>()
+function showConsolidations(indices: number[], x: number, y: number) {
+  clickTooltip?.hide()
+  const areas = props.result.pen_consolidations ?? []
+  void consolidationPopover.value?.show(indices.flatMap(index => areas[index] ? [{ index, area: areas[index]! }] : []), x, y)
+}
+function onConsolidationContext(event: MouseEvent) {
+  if (!chart || !container.value || !props.layers.consolidations) return
+  const rect = container.value.getBoundingClientRect()
+  const x = (event.clientX - rect.left) * chart.getWidth() / rect.width
+  const y = (event.clientY - rect.top) * chart.getHeight() / rect.height
+  if (!chart.containPixel({ gridIndex: 0 }, [x, y])) return
+  const bounds = (props.result.pen_consolidations ?? []).flatMap((area, index) => {
+    const start = chartBarIndex(props.bars, area.start_date), end = chartBarIndex(props.bars, area.end_date)
+    return start === null || end === null ? [] : [{ index,
+      start: chart!.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [start, area.lower]) as number[],
+      end: chart!.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, [end, area.upper]) as number[],
+    }]
+  })
+  const hits = consolidationHits(bounds, x, y)
+  if (!hits.length) return
+  event.preventDefault()
+  showConsolidations(hits, event.clientX, event.clientY)
+}
+function browseConsolidations(event: MouseEvent) {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
+  showConsolidations((props.result.pen_consolidations ?? []).map((_, index) => index).reverse(), rect.left, rect.bottom)
+}
 const indicators = ref<Array<{ id: number; type: TechnicalIndicator; params: IndicatorParams; rows: Array<Record<string, unknown>> }>>([
   { id: 0, type: 'volume', params: { ...getIndicatorDefinition('volume').defaultParams }, rows: [] },
   { id: 1, type: 'macd', params: { ...getIndicatorDefinition('macd').defaultParams }, rows: [] },
@@ -257,8 +289,8 @@ function buildOption(): echarts.EChartsCoreOption {
       type: 'candlestick',
       data: ohlc,
       itemStyle: {
-        color: UP_COLOR,
-        color0: DOWN_COLOR,
+        color: candleFill(UP_COLOR, props.candleTransparency),
+        color0: candleFill(DOWN_COLOR, props.candleTransparency),
         borderColor: '#ff8a92',
         borderColor0: '#6ee0a5',
         borderWidth: 1,
@@ -586,10 +618,12 @@ function buildOption(): echarts.EChartsCoreOption {
 }
 
 function render() {
+  consolidationPopover.value?.hide()
   if (!container.value || !props.bars.length) return
   if (!chart) {
     chart = echarts.init(container.value, 'dark')
     clickTooltip = installClickChartTooltip(chart, container.value)
+    chart.on('datazoom', () => consolidationPopover.value?.hide())
     chart.on('legendselectchanged', (event: unknown) => {
       const { name, selected } = event as { name: string; selected: Record<string, boolean> }
       if (availableMA.value.some(period => name === `MA${period}`)) {
@@ -657,7 +691,7 @@ onMounted(() => {
   render()
   void refreshIndicator()
   if (container.value) {
-    resizeObserver = new ResizeObserver(() => chart?.resize())
+    resizeObserver = new ResizeObserver(() => { consolidationPopover.value?.hide(); chart?.resize() })
     resizeObserver.observe(container.value)
   }
 })
@@ -669,7 +703,7 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths, props.showDivergenceHistory, mobile.value], render, { deep: true })
+watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths, props.candleTransparency, props.showDivergenceHistory, mobile.value], render, { deep: true })
 watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
 </script>
 
@@ -683,8 +717,11 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
     <div
       ref="container"
       class="chanlun-chart"
+      @contextmenu="onConsolidationContext"
       :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px`, '--chanlun-chart-height': `${chartHeight}px` }"
     ></div>
+    <div v-if="layers.consolidations && result.pen_consolidations?.length" class="consolidation-access"><span>右键盘整矩形，查看区间详情</span><button type="button" @click="browseConsolidations">查看盘整详情</button></div>
+    <ConsolidationPopover ref="consolidationPopover" />
     <p v-if="layers.nextPen" class="macd-prompt-note">琥珀虚线＝下一笔参考（未成笔）· 仅使用当前可见行情，端点可变，不预测未来。</p>
     <p v-if="layers.bcs" class="macd-prompt-note">圆形＝双线 · 菱形＝标准 · 三角形＝非标准 · 大菱形＝特殊 · 底紫顶绿 · 彩色空心＝候选 · 实心＝确认<span v-if="showDivergenceHistory"> · 灰色空心＝已失效／被替代</span></p>
     <p v-if="layers.mmds && macdPrompts(result.bcs).length" class="macd-prompt-note">M1 为 MACD 波段提示，非缠论结构一类点；标记位于极值日，实际确认日见提示详情。</p>
@@ -703,6 +740,9 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
 </template>
 
 <style scoped>
+.consolidation-access { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 6px 0; color: var(--text-dim); font-size: 10px; }
+.consolidation-access button { min-height: 30px; padding: 4px 9px; border: 1px solid rgba(162,184,213,.13); border-radius: 6px; background: rgba(255,255,255,.025); color: #aebed3; box-shadow: none; font-size: 10px; }
+.consolidation-access button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .macd-prompt-note { margin: 4px 0 8px; color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .indicator-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 12px 0 4px; font-size: 11px; color: var(--text-muted); }
 .indicator-heading button, .remove-indicator { padding: 5px 9px; font-size: 11px; border: 1px solid var(--border); border-radius: 7px; background: rgba(255,255,255,.03); color: var(--text-muted); cursor: pointer; }

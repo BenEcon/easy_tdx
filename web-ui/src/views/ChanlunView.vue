@@ -24,6 +24,7 @@ import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
 import { createMovingAverageSettings, movingAverageColor } from '../moving-averages'
 import { DEFAULT_LINE_WIDTHS, MIN_LINE_WIDTH, MAX_LINE_WIDTH, LINE_WIDTH_STEP, structureLineWidth, type StructureLine } from '../chanlun-line-width'
+import { DEFAULT_CANDLE_TRANSPARENCY, candleTransparency } from '../candle-fill'
 import { divergenceEvidence, divergenceName, signalEvidence, waveFailureSummary, waveDiagnosticLines, waveComparisonName, waveComparisonLines } from '../divergence-evidence'
 import { macdPrompts } from '../divergence-marker'
 import { divergenceFocus, reversePenFocus, type DivergenceFocus } from '../divergence-focus'
@@ -52,6 +53,7 @@ const target = computed<ResearchTarget>(() => isStock.value
 const targetKey = computed(() => targetIdentity(target.value))
 const targetTitle = computed(() => `${targetKindLabel[target.value.kind]} · ${code.value}${target.value.name ? `-${target.value.name}` : ''}`)
 const lineWidths = ref({ ...DEFAULT_LINE_WIDTHS })
+const candleFillTransparency = ref(DEFAULT_CANDLE_TRANSPARENCY)
 const lineWidthOptions: Array<{ key: StructureLine; label: string; color: string }> = [
   { key: 'bi', label: '笔', color: '#79b9ef' },
   { key: 'xd', label: '线段', color: '#a88cdb' },
@@ -507,6 +509,21 @@ onMounted(async () => {
         <p class="ma-help">0.5–6 px · 即时生效，个股与行业同步。</p>
       </section>
 
+      <section class="inspector-section candle-fill-section" aria-label="蜡烛填充">
+        <div class="line-width-heading">
+          <h3>蜡烛填充</h3>
+          <button type="button" class="line-width-reset" :disabled="candleFillTransparency === DEFAULT_CANDLE_TRANSPARENCY" @click="candleFillTransparency = DEFAULT_CANDLE_TRANSPARENCY">恢复默认</button>
+        </div>
+        <div class="line-width-row">
+          <label for="candle-transparency" class="line-width-label">透明度</label>
+          <NumberStepper :model-value="candleFillTransparency" :min="0" :max="100" :step="1" compact aria-label="蜡烛填充透明度" @update:model-value="candleFillTransparency = candleTransparency($event)" />
+          <span class="line-width-unit">%</span>
+        </div>
+        <input id="candle-transparency" v-model.number="candleFillTransparency" class="candle-fill-slider" type="range" min="0" max="100" step="1" :aria-valuetext="`${candleFillTransparency}% 透明，${100 - candleFillTransparency}% 填充`" />
+        <div class="candle-fill-scale" aria-hidden="true"><span>实心</span><span>空心</span></div>
+        <p class="ma-help">{{ candleFillTransparency }}% 透明 · {{ 100 - candleFillTransparency }}% 填充。仅调整实体，边框与影线不变；未收盘 K 线仍为空心虚线。</p>
+      </section>
+
       <div class="method-note">
         <strong>计算管道</strong>
         <p>K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰</p>
@@ -689,7 +706,7 @@ onMounted(async () => {
                 <label class="history-toggle"><input v-model="showDivergenceHistory" type="checkbox" :disabled="!layers.bcs" />显示失效历史</label>
               </div>
             </template>
-            <ChanlunChart :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
+            <ChanlunChart :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
           </ChartFrame>
           <PenConsolidationPanel v-if="layers.consolidations && result.pen_consolidations?.length" :areas="result.pen_consolidations" />
           <MultiPeriodResearch v-if="snapshotMetadata" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" />
@@ -699,7 +716,7 @@ onMounted(async () => {
             <p v-else-if="industryAlignment?.status === 'unavailable'" class="structure-scope" role="status">行业快照在 {{ replayDate }} 及以前没有行情，未补造数据。可向后回放或扩大历史窗口。</p>
             <p v-else-if="industryAlignment" class="structure-scope">共同截止：{{ replayDate }} · 行业最新：{{ industryAlignment.industry_as_of?.replace(' 00:00:00', '') }}{{ industryAlignment.status === 'earlier' ? '（行业数据早于截止时间）' : '（时间已对齐）' }}</p>
             <ChartFrame v-if="industryData && !industryLoading && !industryError" :title="`行业 · ${industries.find(item => item.value === industryCode)?.label}`" description="行业指数 · 不复权；与个股按共同截止时间重新计算。">
-              <ChanlunChart :bars="industryData.bars" :result="industryData.result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" @update:ma-periods="setVisibleMA" />
+              <ChanlunChart :bars="industryData.bars" :result="industryData.result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" @update:ma-periods="setVisibleMA" />
             </ChartFrame>
           </template>
         </section>
@@ -1041,6 +1058,9 @@ onMounted(async () => {
 .line-width-label { display: flex; align-items: center; gap: 9px; font-size: 12px; color: var(--text-muted); }
 .line-width-label i { width: 20px; flex: 0 0 20px; border-top-style: solid; border-radius: 2px; }
 .line-width-unit { font-size: 10px; color: var(--text-dim); }
+.candle-fill-slider { display: block; width: 100%; min-width: 0; height: 24px; margin: 6px 0 0; padding: 0; accent-color: #83acd5; cursor: pointer; }
+.candle-fill-slider:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.candle-fill-scale { display: flex; justify-content: space-between; color: var(--text-dim); font-size: 10px; }
 .layer-row {
   display: flex;
   align-items: center;
@@ -1342,15 +1362,15 @@ onMounted(async () => {
 .sequence-status i { width: 5px; height: 5px; border-radius: 50%; border: 1px solid currentColor; }
 .sequence-status.valid { color: #a7c6b7; }
 .sequence-status.valid i { background: currentColor; }
-.segment-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 0 28px; }
-.segment-card { container-type: inline-size; display: grid; min-width: 0; min-height: 72px; align-items: start; grid-template-columns: 28px minmax(0,1fr); gap: 8px 10px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
+.segment-grid { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.segment-card { container-type: inline-size; display: grid; min-width: 0; min-height: 72px; align-items: start; grid-template-columns: 28px minmax(0,1fr) auto; gap: 8px 10px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
 .segment-direction { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 7px; font-size: 14px; }
 .segment-direction.up { color: var(--up); background: rgba(255,94,104,.09); }
 .segment-direction.down { color: var(--down); background: rgba(48,209,123,.09); }
 .segment-card > div { display: flex; min-width: 0; flex-direction: column; }
 .segment-card strong { color: var(--text); font-size: 12px; font-weight: 550; }
 .segment-card small { margin-top: 6px; color: var(--text-muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
-.segment-price { grid-column: 2; color: #c8c9d0; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.segment-price { color: #c8c9d0; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
 .event-list { padding: 8px 14px 16px; }
 .event-row { display: grid; align-items: center; grid-template-columns: minmax(100px,auto) minmax(0,1fr); gap: 10px 16px; min-height: 48px; padding: 20px 8px; border-bottom: 1px solid rgba(255,255,255,.05); transition: background-color 120ms ease; }
@@ -1385,6 +1405,8 @@ onMounted(async () => {
   .segment-list > header { flex-wrap: wrap; }
 }
 @container (max-width: 400px) {
+  .segment-card { grid-template-columns: 28px minmax(0,1fr); }
+  .segment-price { grid-column: 2; }
   .structure-evidence :deep(.confirmation-replay) { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px; }
   .structure-evidence :deep(.confirmation-replay > span) { grid-column: 1 / -1; }
   .structure-evidence :deep(.confirmation-replay > button) { white-space: normal; min-height: 36px; }

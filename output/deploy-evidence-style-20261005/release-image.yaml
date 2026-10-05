@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:evidence-style-20261005
