@@ -605,6 +605,15 @@ export interface BarSnapshot {
   metadata: { source: string; requested_adjust: string; actual_adjust: string; observed_at: string; category: string; completion_note: string; volume_policy: string; historical_data_vintage: boolean }
 }
 
+export async function fetchResearchSnapshot(target: import('./chanlun-target').ResearchTarget, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ'): Promise<BarSnapshot> {
+  if (target.kind === 'stock') return fetchBarSnapshot(target.market, target.code, category, count, adjust)
+  const body = await request<{data: Record<string, unknown>[]; metadata: BarSnapshot['metadata']}>(queryPath('/bars/research', {
+    kind: target.kind, code: target.code, market: target.kind === 'index' ? target.market : 'SH',
+    board_type: target.boardType ?? 'HY', category, count,
+  }))
+  return { bars: body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime)), metadata: body.metadata }
+}
+
 export async function fetchBarSnapshot(market: string, code: string, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ'): Promise<BarSnapshot> {
   const params = new URLSearchParams({
     market,

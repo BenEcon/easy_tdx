@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import echarts, { DOWN_COLOR, UP_COLOR } from '../echarts-setup'
+import { clickTooltipOptions, installClickChartTooltip } from '../click-chart-tooltip'
 import {
   buildIndicatorSeries,
   calculateIndicatorRows,
@@ -16,7 +17,7 @@ import type { Bar, ChanlunResult } from '../types'
 import TechnicalIndicatorPicker from './TechnicalIndicatorPicker.vue'
 import { movingAverageColor, movingAverageSelection } from '../moving-averages'
 import { divergenceEvidence, divergenceName } from '../divergence-evidence'
-import { divergenceMarker, macdPrompts } from '../divergence-marker'
+import { divergenceMarker, macdPrompts, visibleDivergences } from '../divergence-marker'
 import type { DivergenceFocus } from '../divergence-focus'
 import { chartBarIndex, priceAxisPadding } from '../chart-position'
 import { ChartViewportMemory } from '../chart-viewport'
@@ -27,6 +28,7 @@ import { structureLineWidth, emphasizedLineWidth, type ChanlunLineWidths } from 
 const props = defineProps<{
   bars: Bar[]
   focus?: DivergenceFocus | null
+  showDivergenceHistory?: boolean
   maPeriods?: number[]
   maAvailablePeriods?: number[]
   lineWidths?: ChanlunLineWidths
@@ -65,6 +67,7 @@ function addIndicator() {
 const indicatorLoading = ref(false)
 const indicatorError = ref('')
 let chart: echarts.ECharts | null = null
+let clickTooltip: ReturnType<typeof installClickChartTooltip> | null = null
 let resizeObserver: ResizeObserver | null = null
 const viewportMemory = new ChartViewportMemory()
 let renderedBars: Bar[] | null = null
@@ -225,7 +228,7 @@ function buildOption(): echarts.EChartsCoreOption {
   }) : []
   const divergenceSlots = new Map<string, number>()
   const divergencePoints = props.layers.bcs
-    ? props.result.bcs.filter((item) => item.bc && item.status !== 'superseded').flatMap((item) => {
+    ? visibleDivergences(props.result.bcs, props.showDivergenceHistory).flatMap((item) => {
         const index = chartBarIndex(props.bars, item.curr_date, item.signal_index)
         if (index === null) return []
         const date = dates[index]!
@@ -234,12 +237,12 @@ function buildOption(): echarts.EChartsCoreOption {
         const slot = divergenceSlots.get(slotKey) ?? 0
         divergenceSlots.set(slotKey, slot + 1)
         return [{
-          ...divergenceMarker(item),
+          ...divergenceMarker(item, props.showDivergenceHistory),
           name: divergenceName(item),
           value: item.type.toUpperCase(),
           date,
           price: item.direction === 'down' ? bar.low : bar.high,
-          message: `${item.status === 'candidate' ? '候选 · 尚未确认' : '已确认（不保证反转）'}；对照：${item.prev_date ?? '—'}<br/>${divergenceEvidence(item).join('<br/>')}`,
+          message: `${item.status === 'superseded' ? '历史候选 · 已失效／被替代' : item.status === 'candidate' ? '候选 · 尚未确认' : '已确认（不保证反转）'}；对照：${item.prev_date ?? '—'}<br/>${divergenceEvidence(item).join('<br/>')}`,
           coord: [index, item.direction === 'down' ? bar.low : bar.high],
           symbolOffset: [0, (item.direction === 'down' ? 1 : -1) * ((macdPromptSlots.has(slotKey) ? 40 : 23) + slot * 13)],
         }]
@@ -283,7 +286,7 @@ function buildOption(): echarts.EChartsCoreOption {
       markPoint: {
         data: [...signalPoints, ...macdPoints, ...divergencePoints],
         tooltip: {
-          triggerOn: 'mousemove|click',
+          ...clickTooltipOptions,
           formatter: (params: { data?: { name?: string; date?: string; price?: number; message?: string } }) => {
             const data = params.data
             if (!data) return ''
@@ -317,6 +320,13 @@ function buildOption(): echarts.EChartsCoreOption {
   }
 
   if (props.focus) {
+    if (props.focus.pen) {
+      const pen = props.focus.pen
+      series.push({name:'局部确认用笔（非全局结构笔）',type:'line',xAxisIndex:0,yAxisIndex:0,
+        data:[[pen.start,pen.startPrice],[pen.end,pen.endPrice]],symbol:'circle',symbolSize:5,
+        lineStyle:{color:'#b4d9ff',width:2,type:'dashed'},itemStyle:{color:'#b4d9ff'},z:12,
+        tooltip:{show:false},silent:true})
+    }
     // Independent overlays keep centre areas and indicator colors unchanged.
     for (const axis of axisIndices) {
       series.push({
@@ -324,7 +334,10 @@ function buildOption(): echarts.EChartsCoreOption {
         data: [], silent: true, tooltip: { show: false },
         markLine: { silent: true, symbol: 'none',
           lineStyle: { color: 'rgba(116,184,255,.75)', width: 1, type: 'dashed' },
-          label: { show: true, formatter: '{b}', color: '#b4d9ff', fontSize: 10, rotate: 0,
+          label: { show: !mobile.value || axis === 0,
+            formatter: mobile.value && props.focus.scope === 'reverse-pen'
+              ? (point: {name: string}) => (({'信号极值':'起点','反向端点':'端点','实际确认':'确认'} as Record<string,string>)[point.name] ?? point.name)
+              : '{b}', color: '#b4d9ff', fontSize: 10, rotate: 0,
             position: axis ? 'insideEndTop' : 'end', distance: 6 },
           data: props.focus.points.map(point => ({name: point.label, xAxis: point.index})),
         },
@@ -409,6 +422,7 @@ function buildOption(): echarts.EChartsCoreOption {
     animationDuration: 420,
     animationEasing: 'cubicOut',
     tooltip: {
+      ...clickTooltipOptions,
       trigger: 'axis',
       confine: true,
       padding: [10, 12],
@@ -561,6 +575,7 @@ function render() {
   if (!container.value || !props.bars.length) return
   if (!chart) {
     chart = echarts.init(container.value, 'dark')
+    clickTooltip = installClickChartTooltip(chart, container.value)
     chart.on('legendselectchanged', (event: unknown) => {
       const { name, selected } = event as { name: string; selected: Record<string, boolean> }
       if (availableMA.value.some(period => name === `MA${period}`)) {
@@ -589,6 +604,7 @@ function render() {
   }
   renderedBars = props.bars
   renderedIdentity = identity
+  clickTooltip?.hide()
   if (props.focus) chart.clear()
   chart.setOption(option, true)
   requestAnimationFrame(() => chart?.resize())
@@ -634,11 +650,12 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
+  clickTooltip?.dispose()
   chart?.dispose()
   chart = null
 })
 
-watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths, mobile.value], render, { deep: true })
+watch(() => [props.result, props.layers, props.maPeriods, props.maAvailablePeriods, props.focus, props.lineWidths, props.showDivergenceHistory, mobile.value], render, { deep: true })
 watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.id, item.type, item.params])], () => void refreshIndicator(), { deep: true })
 </script>
 
@@ -654,7 +671,7 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
       class="chanlun-chart"
       :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px`, '--chanlun-chart-height': `${chartHeight}px` }"
     ></div>
-    <p v-if="layers.bcs" class="macd-prompt-note">圆形：双线 · 菱形：波段／结构 · 空心：候选（含初步确认） · 实心：最终确认</p>
+    <p v-if="layers.bcs" class="macd-prompt-note">圆形＝双线 · 菱形＝标准 · 三角形＝非标准 · 大菱形＝特殊 · 底紫顶绿 · 彩色空心＝候选 · 实心＝确认<span v-if="showDivergenceHistory"> · 灰色空心＝已失效／被替代</span></p>
     <p v-if="layers.mmds && macdPrompts(result.bcs).length" class="macd-prompt-note">M1 为 MACD 波段提示，非缠论结构一类点；标记位于极值日，实际确认日见提示详情。</p>
     <div class="indicator-heading"><span>技术指标 · 可同时显示多个</span><button @click="addIndicator">＋ 添加指标</button></div>
     <div v-for="(item, index) in indicators" :key="item.id" class="indicator-entry">

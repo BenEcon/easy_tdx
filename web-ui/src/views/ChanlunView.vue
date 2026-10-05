@@ -3,6 +3,8 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ChanlunChart from '../components/ChanlunChart.vue'
+import ChanlunTargetPicker from '../components/ChanlunTargetPicker.vue'
+import { targetIdentity, targetKindLabel, type ResearchTarget } from '../chanlun-target'
 import MultiPeriodResearch from '../components/MultiPeriodResearch.vue'
 import ConfirmationReplay from '../components/ConfirmationReplay.vue'
 import DecompositionInspector from '../components/DecompositionInspector.vue'
@@ -20,12 +22,12 @@ import { createMovingAverageSettings, movingAverageColor } from '../moving-avera
 import { DEFAULT_LINE_WIDTHS, MIN_LINE_WIDTH, MAX_LINE_WIDTH, LINE_WIDTH_STEP, structureLineWidth, type StructureLine } from '../chanlun-line-width'
 import { divergenceEvidence, divergenceName, signalEvidence, waveFailureSummary, waveDiagnosticLines, waveComparisonName, waveComparisonLines } from '../divergence-evidence'
 import { macdPrompts } from '../divergence-marker'
-import { divergenceFocus, type DivergenceFocus } from '../divergence-focus'
+import { divergenceFocus, reversePenFocus, type DivergenceFocus } from '../divergence-focus'
 import { expansionFocus } from '../expansion-focus'
 import { releasedFocus, type ReleaseFocusMode } from '../released-focus'
 import { centreEvidence, centreState, segmentEvidence, segmentsConnected } from '../structure-evidence'
 import StockHistoryMenu from '../components/StockHistoryMenu.vue'
-import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchBarSnapshot, formatError, type BarSnapshot } from '../api'
+import { replayChanlun, replayChanlunComparison, analyzeIndustry, fetchStockIndustries, fetchResearchSnapshot, formatError, type BarSnapshot } from '../api'
 import { detectMarket, marketLabel } from '../market'
 import { useSelectedStock, recordStockHistory } from '../stock-history'
 import type { StockHistoryItem } from '../stock-history'
@@ -36,7 +38,15 @@ import { useMobileViewport } from '../mobile-viewport'
 const route = useRoute()
 const mobile = useMobileViewport()
 const mobileSettingsOpen = ref(true)
-const code = useSelectedStock()
+const stockCode = useSelectedStock()
+const selectedTarget = ref<ResearchTarget>({kind:'stock',code:'',market:''})
+const isStock = computed(() => selectedTarget.value.kind === 'stock')
+const code = computed({get: () => isStock.value ? stockCode.value : selectedTarget.value.code,
+  set: (value: string) => { if (isStock.value) stockCode.value = value }})
+const target = computed<ResearchTarget>(() => isStock.value
+  ? {kind:'stock',code:stockCode.value,market:detectMarket(stockCode.value)} : selectedTarget.value)
+const targetKey = computed(() => targetIdentity(target.value))
+const targetTitle = computed(() => `${targetKindLabel[target.value.kind]} · ${code.value}${target.value.name ? `-${target.value.name}` : ''}`)
 const lineWidths = ref({ ...DEFAULT_LINE_WIDTHS })
 const lineWidthOptions: Array<{ key: StructureLine; label: string; color: string }> = [
   { key: 'bi', label: '笔', color: '#79b9ef' },
@@ -67,7 +77,7 @@ async function loadIndustry() {
   const version = ++industryVersion
   industryData.value = null
   industryAlignment.value = null
-  if (!industryCode.value || industryView.value === 'stock') { industryLoading.value = false; return }
+  if (!isStock.value || !industryCode.value || industryView.value === 'stock') { industryLoading.value = false; return }
   industryLoading.value = true
   industryError.value = ''
   try {
@@ -93,7 +103,7 @@ watch([industryCode, industryView], ([nextCode], [previousCode]) => {
   if (nextCode !== previousCode) industrySnapshot.value = null
   void loadIndustry()
 })
-watch(code, () => {
+watch(targetKey, () => {
   analysisVersion++
   industryVersion++
   loading.value = false
@@ -102,6 +112,8 @@ watch(code, () => {
   industries.value = []
   industryCode.value = ''
   industryData.value = null
+  industryView.value = 'stock'
+  error.value = ''
 }, { flush: 'sync' })
 const category = ref<Category>('DAY')
 const count = ref(600)
@@ -140,7 +152,7 @@ function clearReplay() {
   industryAlignment.value = null
   industryLoading.value = false
 }
-watch([code, category, count], clearReplay, { flush: 'sync' })
+watch([targetKey, category, count], clearReplay, { flush: 'sync' })
 onBeforeUnmount(() => { analysisVersion++; industryVersion++; replayVersion++ })
 async function seekReplay(position: number) {
   if (!snapshotResult.value || replayBusy.value || loading.value || industryLoading.value) return
@@ -184,6 +196,7 @@ async function seekReplay(position: number) {
 }
 const activeTab = ref<'structure' | 'signals' | 'divergence'>('structure')
 const focusedDivergence = ref<DivergenceFocus | null>(null)
+const showDivergenceHistory = ref(true)
 const focusToolbar = ref<HTMLElement>()
 watch(result, (value, previous) => {
   focusedDivergence.value = null
@@ -191,6 +204,10 @@ watch(result, (value, previous) => {
 }, { flush: 'sync' })
 async function locateDivergence(item: ChanlunDivergence) {
   const focus = divergenceFocus(item, bars.value.length, `${divergenceName(item)} · ${item.curr_date ?? ''}${item.status === 'candidate' ? ' · 候选未确认' : ''}`)
+  if (focus) await showStructureFocus(focus)
+}
+async function locateReversePen(item: ChanlunDivergence) {
+  const focus = reversePenFocus(item, bars.value.length, `${divergenceName(item)} · 局部反向笔确认`)
   if (focus) await showStructureFocus(focus)
 }
 async function locateExpansion(candidateId: string) {
@@ -222,6 +239,7 @@ async function locateReleased(id: string, mode: ReleaseFocusMode) {
   if (focus) await showStructureFocus(focus)
 }
 const { adjustMode } = useMarketPreferences()
+const effectiveAdjust = computed(() => isStock.value ? adjustMode.value : 'NONE' as const)
 watch([category, count, adjustMode], () => {
   clearReplay()
   analysisVersion++
@@ -249,8 +267,8 @@ interface LayerState {
 const layers = ref<LayerState>({
   consolidations: true,
   bis: true,
-  zss: true,
-  xds: true,
+  zss: false,
+  xds: false,
   mmds: true,
   bcs: true,
 })
@@ -347,7 +365,7 @@ function selectHistory(item: StockHistoryItem) {
 
 async function runAnalysis() {
   if (!/^\d{6}$/.test(code.value)) {
-    error.value = '请输入 6 位证券代码'
+    error.value = isStock.value ? '请输入 6 位证券代码' : '请先选择指数或板块'
     return
   }
 
@@ -360,13 +378,14 @@ async function runAnalysis() {
   industryCode.value = ''
   industryError.value = ''
   try {
-    const market = detectMarket(code.value)
-    const snapshot = await fetchBarSnapshot(market, code.value, category.value, count.value, adjustMode.value)
+    const instrument = { ...target.value }
+    const market = instrument.market
+    const snapshot = await fetchResearchSnapshot(instrument, category.value, count.value, effectiveAdjust.value)
     const nextBars = snapshot.bars
     if (version !== analysisVersion) return
     if (!nextBars.length) throw new Error('所选范围暂无行情')
     const nextResult = await replayChanlun({
-      code: `${market}${code.value}`, category: category.value,
+      code: instrument.kind === 'stock' ? `${market}${instrument.code}` : targetIdentity(instrument), category: category.value,
       bars: nextBars, visible_count: nextBars.length,
     })
     if (version !== analysisVersion) return
@@ -376,8 +395,9 @@ async function runAnalysis() {
     snapshotBars.value = nextBars
     snapshotResult.value = nextResult
     replayPosition.value = nextBars.length
-    recordStockHistory({ code: code.value, category: category.value })
+    if (isStock.value) recordStockHistory({ code: code.value, category: category.value })
     activeTab.value = 'structure'
+    if (!isStock.value) return
     try {
       const belonging = await fetchStockIndustries(market, code.value)
       if (version !== analysisVersion) return
@@ -422,7 +442,8 @@ onMounted(async () => {
 
       <section class="inspector-section">
         <h3>标的与周期</h3>
-        <div class="field code-field">
+        <ChanlunTargetPicker v-model="selectedTarget" />
+        <div v-if="isStock" class="field code-field">
           <div class="code-label-row">
             <label>证券代码</label>
             <StockHistoryMenu @select="selectHistory" />
@@ -438,7 +459,8 @@ onMounted(async () => {
           <label>历史窗口</label>
           <MacSelect v-model="count" :options="countOptions" aria-label="缠论历史窗口" />
         </div>
-        <AdjustPicker />
+        <AdjustPicker v-if="isStock" />
+        <p v-else class="target-note">指数与板块不复权；笔、中枢及背离规则与个股一致。</p>
       </section>
 
       <details class="inspector-section ma-section">
@@ -585,7 +607,7 @@ onMounted(async () => {
         <section class="summary-strip">
           <div class="summary-context">
             <div class="summary-identity">
-              <span class="symbol-name">{{ result.code }}</span>
+              <span class="symbol-name" :title="targetTitle">{{ targetTitle }}</span>
               <span class="frequency">{{ category }}</span>
             </div>
             <div class="structure-state">
@@ -624,9 +646,9 @@ onMounted(async () => {
                 <button :disabled="replayBusy || loading || industryLoading || !replayActive" @click="seekReplay(snapshotBars.length)">返回末尾</button>
               </div>
             </div>
-            <small>按当前快照回放，不代表历史当天的数据版本；个股与行业以个股所选 K 线时间为共同截止点。</small>
+            <small>按当前标的快照回放，不代表历史当天的数据版本；个股与行业对比时采用共同截止点。</small>
           </div>
-          <div class="industry-toolbar">
+          <div v-if="isStock" class="industry-toolbar">
             <span>所属行业</span>
             <MacSelect v-if="industries.length" v-model="industryCode" :options="industries" aria-label="所属行业" />
             <span v-else>{{ industryError || '暂无行业归属数据' }}</span>
@@ -636,10 +658,10 @@ onMounted(async () => {
           </div>
           <div v-if="focusedDivergence && industryView !== 'industry'" ref="focusToolbar" class="focus-toolbar" tabindex="-1" aria-label="图表区间核验">
             <strong>{{ focusedDivergence.title }}</strong>
-            <span>{{ focusedDivergence.scope === 'released' ? '当前工程结构依据 · 反向确认不计入价格来源' : focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
+            <span>{{ focusedDivergence.scope === 'reverse-pen' ? '局部确认用笔 · 保存首次成笔证据，不替换全局结构笔' : focusedDivergence.scope === 'released' ? '当前工程结构依据 · 反向确认不计入价格来源' : focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
             <button @click="focusedDivergence = null">清除区间定位</button>
           </div>
-          <ChartFrame v-if="industryView !== 'industry'" :title="`个股 · ${result.code}`" description="均线与缠论结构叠加；可在下方选择技术指标。">
+          <ChartFrame v-if="industryView !== 'industry'" :title="targetTitle" description="均线与缠论结构叠加；可在下方选择技术指标。">
             <template #actions>
               <div class="chart-legend">
                 <span class="legend-bi">笔</span>
@@ -648,15 +670,16 @@ onMounted(async () => {
                 <span v-if="layers.xds && result.unfinished_xd" class="legend-pending">候选未确认</span>
                 <span class="legend-bc">底背离／背驰</span>
                 <span class="legend-top">顶背离／背驰</span>
+                <label class="history-toggle"><input v-model="showDivergenceHistory" type="checkbox" :disabled="!layers.bcs" />显示失效历史</label>
               </div>
             </template>
-            <ChanlunChart :bars="bars" :result="result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
+            <ChanlunChart :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" />
           </ChartFrame>
           <details v-if="layers.consolidations && result.pen_consolidations?.length" class="snapshot-provenance">
             <summary>最近 {{ result.pen_consolidations.length }} 组三笔盘整 · 不等同于中枢</summary>
             <p v-for="(area, i) in result.pen_consolidations" :key="area.pen_indices.join('-')">盘整 {{ i + 1 }} · {{ area.lower.toFixed(2) }}—{{ area.upper.toFixed(2) }} · 笔 {{ area.pen_indices.map(n => n + 1).join(' / ') }} · {{ area.confirmed ? '三笔已确认' : '含未确认末笔，区间可变化' }}</p>
           </details>
-          <MultiPeriodResearch v-if="snapshotMetadata" :code="code" :adjust="adjustMode" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" />
+          <MultiPeriodResearch v-if="snapshotMetadata" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" />
           <template v-if="industryView !== 'stock'">
             <p v-if="industryLoading" role="status">正在加载行业结构…</p>
             <p v-else-if="industryError" role="alert">{{ industryError }} <button @click="loadIndustry">重试</button></p>
@@ -669,7 +692,7 @@ onMounted(async () => {
         </section>
 
         <section class="detail-workspace">
-          <p class="detail-stock-label">以下结构明细对应个股 {{ result.code }}</p>
+          <p class="detail-stock-label">以下结构明细对应{{ targetTitle }}</p>
           <nav class="detail-tabs" aria-label="缠论结果分类">
             <button :class="{ active: activeTab === 'structure' }" @click="activeTab = 'structure'">
               结构 <span>{{ result.bi_count + displayCentres.length + result.xd_count }}</span>
@@ -793,17 +816,17 @@ onMounted(async () => {
 
           <div v-else class="event-list">
             <details v-if="auditedWaves.length" class="wave-diagnostics">
-              <summary>波段核验与规则对照 <span>{{ blockedWaves.length }} 组未通过</span></summary>
-              <p class="wave-diagnostics-note">按每组 ABC 的最新核验展示。面积缩小与 DIF、DEA 段内极值改善须同时满足；下方放宽对照不改变图上信号，不进入策略。</p>
-              <details v-for="item in auditedWaves" :key="`${item.direction}-${item.c_start}`" class="wave-diagnostic-row">
+              <summary>背离核验与规则对照 <span>{{ blockedWaves.length }} 组未通过</span></summary>
+              <p class="wave-diagnostics-note">标准使用有效 A；非标准使用完整 A，保留 DIF 改善、B/C 同侧与 B 回拉；特殊对照前一 A 的指标极值；双线对照最近局部极值。各自记录依据，不互相覆盖。</p>
+              <details v-for="item in auditedWaves" :key="`${item.family}-${item.direction}-${item.c_start ?? item.dates.b_start}`" class="wave-diagnostic-row">
                 <summary>
-                  <span>{{ item.direction === 'down' ? '底' : '顶' }}背离 · C {{ item.dates.c_start }} — {{ item.dates.c_end }}</span>
-                  <small>{{ item.status === 'confirmed' ? '默认规则 · 已确认' : item.status === 'candidate' ? '默认规则 · 候选未确认' : item.first_candidate_index == null ? '默认规则 · 未形成候选' : '默认规则 · 曾有候选后失效' }}</small>
+                  <span>{{ item.family === 'double' ? '双线' : item.family === 'special' ? '特殊' : item.family === 'nonstandard' ? '非标准' : '标准' }}{{ item.direction === 'down' ? '底' : '顶' }}背离 · {{ item.family === 'double' ? item.dates.c_start : item.family === 'special' ? `B ${item.dates.b_start} — ${item.dates.b_end}` : `C ${item.dates.c_start} — ${item.dates.c_end}` }}</span>
+                  <small>{{ item.status === 'confirmed' ? '已确认' : item.status === 'candidate' ? '候选未确认' : item.first_candidate_index == null ? '未形成候选' : '本段曾产生候选，当前检查未通过；历史状态见事件记录' }}</small>
                   <p v-if="item.status === 'blocked'">{{ waveFailureSummary(item) }}</p>
                 </summary>
                 <p v-for="line in waveDiagnosticLines(item)" :key="line">{{ line }}</p>
                 <div v-if="item.comparisons?.length" class="wave-comparisons">
-                  <p>完整 A、等价及二者组合沿用原对照。新增 DEA 容差单独比较，不与前三项叠加：仅允许 DEA 不利偏差 ≤ 5%，面积缩小、DIF 改善、价格突破、完整 ABC 同侧及 B 回拉仍须通过，不改变正式信号。</p>
+                  <p>以下保留旧版研究对照，不含此次新增的 B 价格限制；与当前三类标记独立。非标准标记完全不使用 DEA 容差。</p>
                   <details v-for="comparison in item.comparisons" :key="comparison.mode">
                     <summary>{{ waveComparisonName(comparison) }}<small>{{ comparison.passed ? (comparison.closed ? '结束复核通过 · 仅对照' : '暂时满足 · C 未结束') : '仍未通过' }}</small></summary>
                     <p v-if="!comparison.passed">{{ waveFailureSummary(comparison) }}</p>
@@ -813,7 +836,7 @@ onMounted(async () => {
               </details>
             </details>
             <div v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="event-row">
-              <span class="event-tag divergence" :class="[bc.direction === 'up' ? 'top' : 'bottom', bc.status]">{{ divergenceName(bc) }}</span>
+              <span class="event-tag divergence" :class="[bc.direction === 'up' ? 'top' : 'bottom', bc.status, { nonstandard: bc.type === 'macd_wave_nonstandard' }]">{{ divergenceName(bc) }}</span>
               <time>{{ bc.curr_date || '时间未知' }}</time>
               <small>{{ bc.status === 'candidate' ? (bc.preliminary_date ? '曾满足初步条件 · 等待走势完成' : '候选 · 尚未确认') : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${bc.confirmed_date || '—'}` }} · 对照 {{ bc.prev_date || '—' }}</small>
               <p>{{ formatMessage(bc.msg) }}</p>
@@ -821,7 +844,11 @@ onMounted(async () => {
                 <summary>查看判定依据</summary>
                 <p v-for="line in divergenceEvidence(bc)" :key="line">{{ line }}</p>
                 <button v-if="divergenceFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateDivergence(bc)">{{ bc.type === 'macd' ? '定位前后极值' : '定位比较区间' }}</button>
+                <button v-if="reversePenFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateReversePen(bc)">查看局部确认用笔</button>
+                <ConfirmationReplay :index="bc.detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="首次提示" @seek="jumpToConfirmation" />
                 <ConfirmationReplay v-if="bc.status === 'confirmed'" :index="bc.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" @seek="jumpToConfirmation" />
+                <ConfirmationReplay v-if="bc.status === 'superseded'" :index="bc.invalidated_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="失效" @seek="jumpToConfirmation" />
+                <ConfirmationReplay v-if="bc.evidence?.replacement_detected_index != null" :index="bc.evidence.replacement_detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="后续替代候选" phase="首次提示" @seek="jumpToConfirmation" />
               </details>
             </div>
             <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有背离／背驰候选或确认事件。{{ blockedWaves.length ? '请展开波段核验查看原因。' : '可增加历史窗口后重新核验。' }}</p>
@@ -833,6 +860,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.target-note { font-size: 10px; line-height: 1.6; color: var(--text-muted); margin: 0; }
+.history-toggle { display: inline-flex; align-items: center; gap: 5px; min-height: 28px; color: var(--text-muted); font-size: 10px; cursor: pointer; white-space: nowrap; }
+.history-toggle input { flex: 0 0 13px; width: 13px; height: 13px; min-height: 13px; margin: 0; padding: 0; accent-color: var(--accent); }
 .macd-prompt-caption { padding-top: 12px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 11px; line-height: 1.6; }
 .event-row.macd-prompt-row > :last-child { grid-column: 1 / -1; }
 .event-row.macd-prompt-row > time, .event-row.macd-prompt-row > small { white-space: nowrap; }
@@ -1216,8 +1246,11 @@ onMounted(async () => {
   padding: 16px 18px;
   border-right: 1px solid var(--border);
 }
-.summary-identity { display: flex; align-items: center; }
-.symbol-name { font-family: var(--font-mono); font-size: 17px; font-weight: 660; letter-spacing: -.02em; }
+.summary-identity { display: flex; flex-wrap: wrap; gap: 6px 0; align-items: center; }
+.symbol-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 660; letter-spacing: -.02em; }
+.chart-workspace :deep(.chart-frame-header) { flex-wrap: wrap; }
+.chart-workspace :deep(.chart-frame-heading) { flex: 1 1 230px; }
+.chart-workspace :deep(.chart-frame-actions) { margin-left: auto; max-width: 100%; flex-wrap: wrap; }
 .frequency { margin-left: 8px; padding: 3px 7px; color: #78b8ff; background: rgba(10,132,255,.12); border: 1px solid rgba(10,132,255,.16); border-radius: 6px; font-size: 9px; }
 .structure-state { display: flex; align-items: flex-start; gap: 8px; margin-top: 11px; }
 .structure-state p { color: var(--text-muted); font-size: 10px; line-height: 1.5; }

@@ -73,7 +73,9 @@ def test_axis_redefinition_only_trims_a_not_c(top, line, index, value):
 
 
 def test_wave_is_independent_of_nearest_pivot_condition():
-    bars, macd = fixture([25, 24, 20, 22, 18, 23, 19, 19.5, 21],
+    # Oct 3 B must remain above A. The nearer B low has stronger DIF/DEA,
+    # so local-pivot divergence still fails while the independent A/C passes.
+    bars, macd = fixture([25, 24, 20, 22, 21, 23, 19, 19.5, 21],
                         [.1, -2, -2, -1, -.5, -.5, -1.5, -1.4, -1.3],
                         [.1, -1.8, -1.7, -1.2, -.9, -.9, -1.3, -1.2, -1.1])
     macd['hist'] = [.2, -2, -1, .3, .2, .1, -.5, -.2, .1]
@@ -81,3 +83,5 @@ def test_wave_is_independent_of_nearest_pivot_condition():
     event, = wave_events(bars, macd)
     assert event.signal_index == 6 and event.confirmed_index == 8
     assert not [e for e in indicator_events(bars, macd) if e.signal_index == 6]
+    bars[4].low = 18
+    assert not wave_events(bars, macd)  # original fixture now fails the new B gate

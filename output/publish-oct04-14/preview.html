@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>缠论规则调整与候选确认方案</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root { color-scheme: light dark; --bg-color: #f6f8fa; --body-gradient-start: #ffffff; --text-color: #24292f; --heading-color: #1f2328; --border-color: #d0d7de; --accent-color: #0969da; --accent-hover: #0550ae; --code-bg: #f6f8fa; --inline-code-bg: rgba(175, 184, 193, 0.2); --blockquote-color: #57606a; --blockquote-border: #d0d7de; --table-alt-bg: #f6f8fa; --choice-border: rgba(9, 105, 218, 0.18); --choice-bg: linear-gradient(135deg, rgba(9, 105, 218, 0.08), rgba(31, 136, 61, 0.05)), #ffffff; --choice-shadow: rgba(140, 149, 159, 0.18); --choice-badge-border: rgba(9, 105, 218, 0.32); --choice-badge-bg: rgba(9, 105, 218, 0.10); --choice-content-color: #24292f; --svg-block-bg: #f8fafc; --svg-block-border: #d0d7de; --svg-canvas-bg: #ffffff; --svg-caption-color: #57606a; --mermaid-bg: #f6f8fa; --mermaid-border: #d0d7de; --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace; }
+    @media (prefers-color-scheme: dark) { :root { --bg-color: #0d1117; --body-gradient-start: #0d1117; --text-color: #c9d1d9; --heading-color: #ffffff; --border-color: #30363d; --accent-color: #58a6ff; --accent-hover: #79c0ff; --code-bg: #161b22; --inline-code-bg: rgba(110, 118, 129, 0.4); --blockquote-color: #8b949e; --blockquote-border: #30363d; --table-alt-bg: #161b22; --choice-border: rgba(88, 166, 255, 0.2); --choice-bg: linear-gradient(135deg, rgba(88, 166, 255, 0.12), rgba(63, 185, 80, 0.08)), #161b22; --choice-shadow: rgba(0, 0, 0, 0.22); --choice-badge-border: rgba(88, 166, 255, 0.36); --choice-badge-bg: rgba(88, 166, 255, 0.14); --choice-content-color: #c9d1d9; --svg-block-bg: #f8fafc; --svg-block-border: #30363d; --svg-canvas-bg: #ffffff; --svg-caption-color: #57606a; --mermaid-bg: #161b22; --mermaid-border: #30363d; } }
+    body { margin: 0; font-family: var(--font-sans); background: linear-gradient(180deg, var(--body-gradient-start) 0%, var(--bg-color) 100%); color: var(--text-color); line-height: 1.7; padding: 40px; -webkit-font-smoothing: antialiased; }
+    .markdown-preview { max-width: 900px; margin: 0 auto; }
+    .markdown-preview h1, .markdown-preview h2, .markdown-preview h3, .markdown-preview h4 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; color: var(--heading-color); }
+    .markdown-preview h1 { font-size: 2em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+    .markdown-preview h2 { font-size: 1.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+    .markdown-preview p { margin-top: 0; margin-bottom: 16px; text-align: justify; text-justify: inter-ideograph; }
+    .markdown-preview code { font-family: var(--font-mono); font-size: 85%; background-color: var(--inline-code-bg); padding: 0.2em 0.4em; border-radius: 6px; }
+    .markdown-preview pre { background-color: var(--code-bg); padding: 16px; overflow: auto; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border-color); }
+    .markdown-preview pre code { background-color: transparent; padding: 0; font-size: 13px; }
+    .markdown-preview .math-display { max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 18px 0; padding: 2px 0; -webkit-overflow-scrolling: touch; }
+    .markdown-preview blockquote { margin: 0 0 16px; padding: 0 1em; color: var(--blockquote-color); border-left: 0.25em solid var(--blockquote-border); }
+    .markdown-preview ul, .markdown-preview ol { padding-left: 2em; margin-bottom: 16px; }
+    .markdown-preview .choice-options { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding-left: 0; margin: 18px 0 22px; }
+    .markdown-preview .choice-option { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid var(--choice-border); border-radius: 12px; background: var(--choice-bg); box-shadow: 0 10px 26px var(--choice-shadow); }
+    .markdown-preview .choice-option::before { content: attr(data-choice-label); flex: 0 0 28px; width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--choice-badge-border); border-radius: 999px; background: var(--choice-badge-bg); color: var(--accent-color); font-size: 13px; font-weight: 800; line-height: 1; }
+    .markdown-preview .choice-option-content { min-width: 0; color: var(--choice-content-color); }
+    .markdown-preview .choice-option-content p { margin: 0; text-align: left; }
+    .markdown-preview a { color: var(--accent-color); text-decoration: none; }
+    .markdown-preview a:hover { text-decoration: underline; color: var(--accent-hover); }
+    .markdown-preview .table-scroll { max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 0 0 16px; border: 1px solid var(--border-color); border-radius: 8px; -webkit-overflow-scrolling: touch; }
+    .markdown-preview .table-scroll:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
+    .markdown-preview table { border-spacing: 0; border-collapse: collapse; margin-bottom: 16px; width: 100%; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); }
+    .markdown-preview .table-scroll table { width: max-content; min-width: 100%; margin-bottom: 0; border: 0; border-radius: 0; }
+    .markdown-preview table th, .markdown-preview table td { padding: 8px 13px; border: 1px solid var(--border-color); }
+    .markdown-preview table th { font-weight: 600; white-space: nowrap; background-color: var(--table-alt-bg); }
+    .markdown-preview table td { vertical-align: top; }
+    .markdown-preview table tr:nth-child(2n) { background-color: var(--table-alt-bg); }
+    .markdown-preview img { max-width: 100%; border-radius: 6px; }
+    .markdown-preview .svg-html-block { margin: 24px auto; max-width: 100%; overflow-x: auto; text-align: center; background: var(--svg-block-bg); border: 1px solid var(--svg-block-border); border-radius: 12px; padding: 18px; box-shadow: 0 14px 34px rgba(1, 4, 9, 0.22); }
+    .markdown-preview .svg-html-block figure { margin: 0; }
+    .markdown-preview .svg-html-block svg { max-width: 100%; height: auto; display: block; margin: 0 auto; background: var(--svg-canvas-bg); border-radius: 8px; }
+    .markdown-preview .svg-html-block figcaption { margin-top: 10px; color: var(--svg-caption-color); font-size: 14px; text-align: center; }
+    .markdown-preview .mermaid-frame { margin-bottom: 16px; }
+    .markdown-preview .mermaid-viewport { overflow: auto; border: 1px solid var(--mermaid-border); border-radius: 8px; padding: 10px; background: var(--mermaid-bg); cursor: zoom-in; }
+    .markdown-preview .mermaid { display: block; width: fit-content; max-width: none; margin: 0 auto; }
+    .markdown-alert { padding: 12px 16px; margin-bottom: 16px; border-left: 4px solid; border-radius: 6px; font-size: 14px; }
+    .markdown-alert-title { display: flex; align-items: center; font-weight: 600; margin-bottom: 8px; }
+    .markdown-alert-note { border-color: #1f6feb; background-color: rgba(31, 111, 235, 0.1); }
+    .markdown-alert-note .markdown-alert-title { color: #58a6ff; }
+    .markdown-alert-tip { border-color: #238636; background-color: rgba(35, 134, 54, 0.1); }
+    .markdown-alert-tip .markdown-alert-title { color: #3fb950; }
+    .markdown-alert-important { border-color: #8957e5; background-color: rgba(137, 87, 229, 0.1); }
+    .markdown-alert-important .markdown-alert-title { color: #a371f7; }
+    .markdown-alert-warning { border-color: #9e6a03; background-color: rgba(158, 106, 3, 0.1); }
+    .markdown-alert-warning .markdown-alert-title { color: #d29922; }
+    .markdown-alert-caution { border-color: #da3633; background-color: rgba(218, 54, 51, 0.1); }
+    .markdown-alert-caution .markdown-alert-title { color: #f85149; }
+    @media (max-width: 760px) { body { padding: 24px; } .markdown-preview .choice-options { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="markdown-preview">
+    <h1>缠论规则调整与候选确认方案</h1>
+<p>已读完《2026.10.4-14.docx》，核对了三张配图、当前代码，并重新运行了相关案例的局部成笔检查。<strong>文档中的三项可以形成一套一致的方案；第 3 项并非完全重复，它补充的是失效历史的追踪。</strong>本轮没有修改程序或部署。</p>
+<h2>一、非标准波段背离：按文档明确放宽价格关系</h2>
+<p>这次相较当前程序，有两处实质变化：</p>
+<div class="table-scroll" role="region" aria-label="可横向滚动表格" tabindex="0"><table><thead><tr><th>条件</th><th>当前非标准版</th><th>文档拟采用</th></tr></thead><tbody><tr><td>底背离 B 与 A</td><td>B 最低 &gt; A 最低</td><td><strong>B 最低 ≥ A 最低</strong></td></tr><tr><td>顶背离 B 与 A</td><td>B 最高 &lt; A 最高</td><td><strong>B 最高 ≤ A 最高</strong></td></tr><tr><td>C 与 A 的价格关系</td><td>C 必须达到或突破 A 极值</td><td><strong>不限制高低关系</strong></td></tr></tbody></table></div>
+<p>其余条件继续保留：</p>
+<ul>
+<li>A 使用完整原始同色柱波段。</li>
+<li>完整 B、C 的 DIF、DEA 保持在对应零轴一侧。</li>
+<li>C 同色柱面积严格小于 A。</li>
+<li>底背离比较段内 DIF 最低值是否抬高；顶背离比较段内 DIF 最高值是否降低。</li>
+<li>不要求 DEA 极值改善，但保留 DEA 零轴检查和 B 段双线回拉检查。</li>
+<li>C 结束后完整复核，才最终确认。</li>
+</ul>
+<p>这里应明确：<strong>“不限制 C 的价格”不等于“不比较 A、C 的指标”，也不等于只要面积缩小就成立。</strong></p>
+<p>建议仍在提示框区分：</p>
+<ul>
+<li><strong>价格达到前极值</strong>：C 等于或突破 A 的价格极值。</li>
+<li><strong>价格未达到前极值 · 动能减弱</strong>：C 没有达到 A 极值，但面积与 DIF 条件成立。</li>
+</ul>
+<p>两者都可以使用非标准三角形；实心表示“这套非标准指标规则已经确认”，不能直接解释为底部／顶部已经确定，也不应因此增加 M1。</p>
+<p><strong>此次只调整非标准版。</strong>标准版的 B 严格价格关系、C 达到前极值、DEA 改善等条件保持不变。</p>
+<p>另一个边界是：允许 B 等于 A 后，同一组行情可能先出现特殊波段提示，后来又出现非标准波段提示。二者依据不同，应分别保留，不能互相覆盖。</p>
+<h3>文档配图 1</h3>
+<p>下图为文档引用的此前建议，图内“仅放宽 C、B 仍严格”的表述属于旧建议；本次文档明确选择 B 允许相等，以上文分析为准。配图已清除本地路径引用，来源为《2026.10.4-2-疑问.docx》第 4 页。</p>
+<p><img src="https://md.bowenv.com/webpages/assets/replies/6feecdaccf7deda538ee2fb6362ddfa7e7d999f34183dc6b39b8441e6d43a0f3.png" alt="文档配图一：非标准波段规则的此前建议，已清除本地路径引用"></p>
+<h2>二、局部反向笔确认：解决“已满足局部条件，却未被全局笔选中”</h2>
+<p>当前程序的确认，不仅要求存在符合严格条件的反向笔，还要求它被选入全局笔序列。这会让部分候选一直等不到确认。</p>
+<p>文档采用的方案是：</p>
+<blockquote><p>从候选极值对应的分型出发，独立验证反向成笔；不再把“被全局笔序列选中”作为指标确认的必要条件。</p></blockquote>
+<p>但这<strong>不是放松笔的定义</strong>。仍然要求：</p>
+<ol>
+<li>使用截至当时的完整行情进行包含处理，不从信号点截断后重新合并。</li>
+<li>起点、终点分型成立。</li>
+<li>顶分型的高点、低点均严格高于底分型。</li>
+<li>满足当前新笔所需的独立 K 线间隔。</li>
+<li>只使用当时已完成的 K 线。</li>
+<li>确认前如价格或指标条件失效，候选仍须失效。</li>
+</ol>
+<p>全局笔、线段、中枢和高层级递归不因此改动。网页最好明确标注 <strong>“局部反向笔确认”</strong>，并允许查看这条确认用的局部笔，避免用户在主图全局笔中找不到它。</p>
+<p>本次重新检查得到：</p>
+<div class="table-scroll" role="region" aria-label="可横向滚动表格" tabindex="0"><table><thead><tr><th>案例</th><th>局部严格成笔条件首次具备的 K 线标签</th></tr></thead><tbody><tr><td>603936，15 分钟，23.28</td><td>2026-09-15 13:45</td></tr><tr><td>002821，15 分钟，161.03</td><td>2026-09-14 13:15</td></tr><tr><td>002821，15 分钟，193.90</td><td>2026-09-18 11:00</td></tr></tbody></table></div>
+<p>这是拟采用确认方式的复核结果，<strong>不是说当前线上已经按这些时间确认</strong>。实施时还须逐根回放验证完整生命周期；表中时间为行情 K 线标签，不直接等同于实际收盘时刻。</p>
+<p>同时，有些案例仍不应确认：</p>
+<ul>
+<li>399006，5 分钟，9 月 28 日 11:20：在 13:25 新低使候选失效前，没有满足间距的局部反向笔。</li>
+<li>002821，30 分钟，9 月 18 日 193.90：在后续新高前，同样没有满足间距条件。不能用 15 分钟的成笔替代 30 分钟确认。</li>
+</ul>
+<p>原双线背离可以共享局部确认器，但它仍比较最近局部极值；特殊波段仍比较前一 A 段。<strong>确认方法统一，不代表识别依据合并。</strong></p>
+<h3>文档配图 2</h3>
+<p><img src="https://md.bowenv.com/webpages/assets/replies/643ec179c8b5362a83f774471e7ea56244d63593267e863ee528a48d98269f53.png" alt="文档配图二：特殊波段采用独立的局部反向笔确认"></p>
+<h2>三、第 3 项与前两项是否重复？</h2>
+<p><strong>空心／实心的部分重复，可以合并成一条统一展示规范；历史追踪部分不重复。</strong></p>
+<p>前两项回答的是“什么条件生成、确认信号”；第 3 项还回答“曾经出现的信号后来为什么没了”。</p>
+<p>建议统一为：</p>
+<div class="table-scroll" role="region" aria-label="可横向滚动表格" tabindex="0"><table><thead><tr><th>状态</th><th>图形样式</th><th>含义</th></tr></thead><tbody><tr><td>有效候选、初步确认</td><td>原类别颜色，空心虚线</td><td>尚未最终确认</td></tr><tr><td>最终确认</td><td>原类别颜色，实心实线</td><td>已满足对应确认规则</td></tr><tr><td>已失效、被替代</td><td>灰色空心，降低透明度</td><td>曾经成立，但最终未确认</td></tr></tbody></table></div>
+<p>“连续两根柱缩短”等初步确认，也继续保持空心。</p>
+<p>特别需要区分：<strong>已失效不等于仍在等待确认。</strong>否则一直保留彩色空心，会让用户以为这些旧信号还有待确认。</p>
+<p>因此建议：</p>
+<ul>
+<li>默认主图显示有效候选和已确认信号。</li>
+<li>增加“显示失效／被替代候选”开关。</li>
+<li>历史列表始终可查询，不随主图隐藏而删除。</li>
+<li>点击后显示极值时间、首次发现时间、确认或失效时间、原因及替代关系。</li>
+<li>只有确实生成了后续候选，才显示“替代候选”；新价格极值本身不一定构成新候选。</li>
+</ul>
+<p>例如 399006 的上述案例，应显示：</p>
+<blockquote><p>11:20 出现特殊底背离候选；尚未满足反向成笔；13:25 因价格出现更低值而失效。</p></blockquote>
+<p>不能只让标记消失，也不能把它变成实心。</p>
+<p>另外，历史图上可以把实心标记画在原极值位置，但回放到实际确认之前，必须仍为空心；首次发现之前则不能提前显示，避免产生“当时已经知道”的错觉。</p>
+<h3>文档配图 3</h3>
+<p><img src="https://md.bowenv.com/webpages/assets/replies/755fc40390c8098156c393d9b0930d7f059f89a314313f8bfc8b16a5e8b8dac8.png" alt="文档配图三：保留失效候选及其原因和历史追踪"></p>
+<h2>四、建议实施顺序</h2>
+<ol>
+<li><strong>保存恢复点、冻结案例</strong>，记录当前规则版本与结果。</li>
+<li><strong>修改非标准价格条件</strong>：B 允许相等，取消 C 价格门槛，补充价格关系子标签。</li>
+<li><strong>实现独立局部反向笔确认</strong>，保留严格成笔条件及两类独立识别依据。</li>
+<li><strong>统一状态展示和历史追踪</strong>，补充失效原因、确认用笔与时间回放。</li>
+<li><strong>逐根回放及回归验收</strong>：检查顶底对称、等高等低、跨轴、面积扩大、DIF 失效、间距不足，并确认标准版、全局结构和 M1 来源没有被意外改变。</li>
+</ol>
+<p>这套方案与文档的选择一致，也保留了必要边界：<strong>放宽的是非标准价格关系和指标确认对全局笔选择的依赖，不是放宽面积、DIF、零轴或严格成笔条件。</strong></p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    (function () {
+      function escapeMermaidLabel(text) { return String(text || '').replace(/"/g, '\\"'); }
+      function normalizeMermaidDiagramText(input) {
+        return String(input || '').split('\n').map(function (line) {
+          return line
+            .replace(/(\b[A-Za-z][\w-]*)\[(?!")(.*?)\]/g, function (match, id, label) { return id + '["' + escapeMermaidLabel(label) + '"]'; })
+            .replace(/(\b[A-Za-z][\w-]*)\{(?!")(.*?)\}/g, function (match, id, label) { return id + '{"' + escapeMermaidLabel(label) + '"}'; })
+            .replace(/\|([^|\n]+)\|/g, function (match, label) {
+              var trimmed = String(label || '').trim();
+              if (/^".*"$/.test(trimmed)) return '|' + label + '|';
+              return '|"'+ escapeMermaidLabel(trimmed) +'"|';
+            });
+        }).join('\n');
+      }
+      function isMermaidLikeText(input) {
+        return /^\s*(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram(?:-v2)?|erDiagram|journey|gantt|pie|mindmap|timeline|gitGraph|quadrantChart|requirementDiagram|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment)\b/m.test(String(input || ''));
+      }
+      function getPreferredMermaidTheme() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+      }
+      function renderMermaid() {
+        try {
+          if (!window.mermaid) return;
+          var root = document.querySelector('.markdown-preview');
+          if (!root) return;
+          root.querySelectorAll('pre > code').forEach(function (code) {
+            if (!(code.classList.contains('language-mermaid') || isMermaidLikeText(code.textContent || ''))) return;
+            var pre = code.closest('pre');
+            if (!pre) return;
+            var frame = document.createElement('div');
+            frame.className = 'mermaid-frame';
+            var viewport = document.createElement('div');
+            viewport.className = 'mermaid-viewport';
+            var container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = normalizeMermaidDiagramText(code.textContent || '');
+            viewport.appendChild(container);
+            frame.appendChild(viewport);
+            pre.replaceWith(frame);
+          });
+          window.mermaid.initialize({ startOnLoad: false, theme: getPreferredMermaidTheme(), securityLevel: 'loose' });
+          window.mermaid.run({ nodes: root.querySelectorAll('.mermaid') });
+        } catch (error) {
+          console.error('Mermaid render failed:', error);
+        }
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderMermaid);
+      else renderMermaid();
+    })();
+  </script>
+</body>
+</html>

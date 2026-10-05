@@ -2,6 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 import echarts, { DOWN_COLOR, UP_COLOR } from '../echarts-setup'
+import { clickTooltipOptions, installClickChartTooltip } from '../click-chart-tooltip'
 import { fmt2 } from '../format'
 import {
   buildIndicatorSeries,
@@ -25,6 +26,7 @@ const indicatorRows = ref<Array<Record<string, unknown>>>([])
 const indicatorLoading = ref(false)
 const indicatorError = ref('')
 let chart: echarts.ECharts | null = null
+let clickTooltip: ReturnType<typeof installClickChartTooltip> | null = null
 let resizeObserver: ResizeObserver | null = null
 
 function buildOption(): echarts.EChartsCoreOption {
@@ -93,6 +95,7 @@ function buildOption(): echarts.EChartsCoreOption {
   return {
     backgroundColor: 'transparent', animationDuration: 360, animationEasing: 'cubicOut',
     tooltip: {
+      ...clickTooltipOptions,
       trigger: 'axis', confine: true, padding: [10, 12],
       axisPointer: {
         type: 'cross', link: [{ xAxisIndex: 'all' }],
@@ -162,6 +165,7 @@ function buildOption(): echarts.EChartsCoreOption {
         markPoint: {
           data: markPoints,
           tooltip: {
+            ...clickTooltipOptions,
             formatter: (params: { data?: { name?: string; date?: string; price?: number } }) => {
               const data = params.data
               return `<strong>${data?.name ?? ''}</strong><div style="margin-top:5px;color:#a6a6ad">${data?.date ?? ''} · ${fmt2(Number(data?.price))}</div>`
@@ -176,7 +180,11 @@ function buildOption(): echarts.EChartsCoreOption {
 
 function render() {
   if (!container.value || props.bars.length === 0) return
-  chart ??= echarts.init(container.value, 'dark')
+  if (!chart) {
+    chart = echarts.init(container.value, 'dark')
+    clickTooltip = installClickChartTooltip(chart, container.value)
+  }
+  clickTooltip?.hide()
   chart.setOption(buildOption(), true)
   requestAnimationFrame(() => chart?.resize())
 }
@@ -218,6 +226,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()
+  clickTooltip?.dispose()
   chart?.dispose()
   chart = null
 })

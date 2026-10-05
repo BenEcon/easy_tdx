@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { divergenceFocus } from '../src/divergence-focus.ts'
+import { divergenceFocus, reversePenFocus } from '../src/divergence-focus.ts'
 
 const item = () => ({bc: true, status: 'confirmed', evidence: {
   a_start: 5, a_end: 10, b_start: 10, b_end: 15, c_start: 15, c_end: 20,
@@ -27,11 +27,27 @@ test('rejects partial, reversed, overlapping and out-of-snapshot evidence', () =
     assert.equal(divergenceFocus(value, 22, ''), null)
   }
 })
-test('does not present superseded or false events; candidates remain candidates', () => {
-  assert.equal(divergenceFocus({...item(), status: 'superseded'}, 22, ''), null)
+test('allows inspection of historical failed evidence without reviving it', () => {
+  assert.ok(divergenceFocus({...item(), status: 'superseded'}, 22, '已失效'))
   assert.equal(divergenceFocus({...item(), bc: false}, 22, ''), null)
   assert.ok(divergenceFocus({...item(), status: 'candidate'}, 22, '候选'))
   assert.equal(divergenceFocus(item(), 0, ''), null)
+})
+
+test('local proof draws frozen exact endpoints only after its actual confirmation', () => {
+  const value = {bc:true,type:'macd',status:'confirmed',signal_index:10,confirmed_index:18,
+    evidence:{reverse_pen_local:1,reverse_pen_start:10,reverse_pen_end:15,
+      reverse_pen_confirmed:18,reverse_pen_start_price:20,reverse_pen_end_price:25}}
+  const focus = reversePenFocus(value,20,'局部反向笔确认')
+  assert.equal(focus.scope,'reverse-pen')
+  assert.deepEqual(focus.pen,{start:10,end:15,startPrice:20,endPrice:25})
+  assert.equal(focus.points.at(-1).index,18)
+  for (const change of [{status:'candidate'},{status:'superseded'},{signal_index:9},
+    {confirmed_index:15},{evidence:{...value.evidence,reverse_pen_start_price:NaN}},
+    {evidence:{...value.evidence,reverse_pen_local:undefined}}]) {
+    assert.equal(reversePenFocus({...value,...change},20,''),null)
+  }
+  assert.equal(reversePenFocus(value,18,''),null)
 })
 
 test('dual-line divergence uses two exact raw indices, never artificial ABC ranges', () => {
@@ -49,5 +65,16 @@ test('dual-line focus rejects missing, duplicate, reversed and out-of-range poin
     [1.5, 6], [5, NaN], [5, 22], [false, 5]]) {
     assert.equal(divergenceFocus({...item(), type: 'macd', reference_index: previous,
       signal_index: current, curr_date: '2026-01-01'}, 22, ''), null)
+  }
+})
+
+test('special wave focus uses AB and its extreme without inventing C', () => {
+  const value = {bc:true, type:'macd_wave_special', status:'candidate', signal_index:15,
+    evidence: {a_start:5, a_end:10, b_start:11, b_end:15}}
+  const focus = divergenceFocus(value,22,'特殊')
+  assert.deepEqual(focus.ranges, [{label:'A',start:5,end:10},{label:'B',start:11,end:15}])
+  assert.deepEqual(focus.points, [{label:'B 内新极值',index:15}])
+  for (const signal_index of [-1, undefined, 25, 10, 16, NaN]) {
+    assert.equal(divergenceFocus({...value,signal_index},22,''),null)
   }
 })

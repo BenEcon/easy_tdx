@@ -41,16 +41,18 @@ def test_both_whole_segment_extrema_required_not_only_price_day(top, line):
 
 
 @pytest.mark.parametrize('top', [False, True])
-def test_equal_price_is_research_only_and_not_future_confirmation(top):
+def test_equal_price_is_standard_but_not_future_confirmation(top):
     bars, macd = sample(top)
     key = 'high' if top else 'low'
     setattr(bars[5], key, getattr(bars[2], key))
     setattr(bars[6], key, getattr(bars[2], key))
     for count in (6, 7, 8, 9):
         reports = []
-        assert not wave_events(bars[:count], {k:v[:count] for k,v in macd.items()}, diagnostics=reports)
+        events = wave_events(bars[:count], {k:v[:count] for k,v in macd.items()}, diagnostics=reports)
+        assert events[-1].status == ('confirmed' if count >= 8 else 'candidate')
+        assert events[-1].confirmed_index == (7 if count >= 8 else None)
         report = next(r for r in reports if r['c_start'] == 5)
-        assert report['status'] == 'blocked'
+        assert report['status'] == ('confirmed' if count >= 8 else 'candidate')
         comparisons = {c['mode']:c for c in report['comparisons']}
         assert not comparisons['full_a']['passed']
         assert comparisons['equal_price']['passed'] and comparisons['full_a_equal_price']['passed']
@@ -104,9 +106,8 @@ def test_failure_snapshot_and_comparisons_are_independent_exports():
 def test_same_price_anchor_is_not_described_as_new_low():
     bars, macd=sample()
     bars[6].low=bars[5].low
-    first, second=wave_events(bars, macd)
-    assert first.status=='superseded' and '同价' in first.failure_reason
-    assert second.status=='confirmed'
+    event, = wave_events(bars, macd)
+    assert event.status=='confirmed' and event.signal_index == 5
 
 
 @pytest.mark.parametrize('count',[600,800])
@@ -131,7 +132,7 @@ def test_document_four_cases_and_mirrors(count,top):
     }
     for start, allowed in expected.items():
         report=next(r for r in reports if date(r['c_start'])==start)
-        assert report['status']=='blocked'
+        assert report['status']==('confirmed' if start == '2026-09-17 11:30' else 'blocked')
         assert tuple(c['passed'] for c in report['comparisons'][:3])==allowed
         assert report['comparisons'][3]['passed'] == (start == '2026-09-22 10:00')
     event=next(e for e in events if date(e.signal_index)=='2026-09-22 11:00')

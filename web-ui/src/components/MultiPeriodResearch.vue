@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { fetchBarSnapshot, formatError, type BarSnapshot } from '../api'
+import { fetchResearchSnapshot, formatError, type BarSnapshot } from '../api'
+import { targetIdentity, type ResearchTarget } from '../chanlun-target'
 import { detectMarket } from '../market'
 import { compactNumber } from '../technical-indicators'
 import type { AdjustMode, Category } from '../types'
 import NumberStepper from './NumberStepper.vue'
 
-const props = defineProps<{ code: string; adjust: AdjustMode; asOf: string; busy?: boolean; primaryCategory: Category; primarySnapshot: BarSnapshot }>()
+const props = defineProps<{ code: string; target?: ResearchTarget; adjust: AdjustMode; asOf: string; busy?: boolean; primaryCategory: Category; primarySnapshot: BarSnapshot }>()
 type Period = Category | 'MIN_120'
 const periods: Array<{ value: Period; label: string }> = [
   { value: 'WEEK', label: '周线' }, { value: 'DAY', label: '日线' },
@@ -33,7 +34,7 @@ const study = ref<Study | null>(null)
 const loading = ref(false)
 const errors = ref<string[]>([])
 const frozen = ref<Array<{ category: Period; snapshot: BarSnapshot }>>([])
-const settingsKey = computed(() => JSON.stringify([props.code, props.adjust, props.asOf, props.primaryCategory, props.primarySnapshot, selected.value, volumeMultiple.value, squeezePercent.value]))
+const settingsKey = computed(() => JSON.stringify([props.code, props.target, props.adjust, props.asOf, props.primaryCategory, props.primarySnapshot, selected.value, volumeMultiple.value, squeezePercent.value]))
 let generation = 0
 watch(settingsKey, () => { generation++; study.value = null; frozen.value = []; errors.value = []; loading.value = false })
 const fmt = (value: number | null | undefined) => value == null ? '—' : value.toFixed(2)
@@ -46,6 +47,7 @@ const goodRows = computed(() => study.value?.rows.filter(r => !r.error) ?? [])
 async function run() {
   const version = ++generation
   const identity = { code: props.code, adjust: props.adjust, asOf: props.asOf }
+  const instrument: ResearchTarget = props.target ? {...props.target} : {kind:'stock',code:props.code,market:detectMarket(props.code)}
   const options = { volume_multiple: volumeMultiple.value, squeeze_quantile: squeezePercent.value / 100 }
   study.value = null; frozen.value = []; errors.value = []; loading.value = true
   const snapshots: Array<{ category: Period; snapshot: BarSnapshot }> = []
@@ -56,7 +58,7 @@ async function run() {
       if (version !== generation) return
       try {
         const snapshot = category === props.primaryCategory ? props.primarySnapshot
-          : await fetchBarSnapshot(detectMarket(identity.code), identity.code, category, 800, identity.adjust)
+          : await fetchResearchSnapshot(instrument, category, 800, identity.adjust)
         if (!snapshot.metadata || snapshot.metadata.actual_adjust !== identity.adjust) throw new Error('实际复权方式与选择不一致，已排除该周期')
         if (!snapshot.bars.length) throw new Error('暂无行情')
         snapshots.push({ category, snapshot })
@@ -68,7 +70,7 @@ async function run() {
     const response = await fetch('/api/v1/chanlun/observations', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ as_of: identity.asOf, ...options,
-        series: snapshots.map(({ category, snapshot }) => ({ category, code: identity.code, bars: snapshot.bars })),
+        series: snapshots.map(({ category, snapshot }) => ({ category, code: targetIdentity(instrument), bars: snapshot.bars })),
       }),
     })
     if (!response.ok) throw new Error(`研究接口返回 ${response.status}`)
@@ -82,7 +84,7 @@ async function run() {
 
 function exportSnapshot() {
   if (!study.value) return
-  const snapshot = { format: 'chanlun-research-snapshot-v1', code: props.code, adjust: props.adjust,
+  const snapshot = { format: 'chanlun-research-snapshot-v1', code: props.code, instrument: props.target, adjust: props.adjust,
     as_of: study.value.as_of, historical_data_vintage: false, result: study.value, series: frozen.value,
     primary: { category: props.primaryCategory, snapshot: props.primarySnapshot },
     warmup_policy: '各周期从所保存行情首根开始；EMA 首值为首根收盘价；计算不舍入' }
@@ -104,7 +106,7 @@ function exportSnapshot() {
         <button :disabled="loading || busy || !selected.length || !asOf" @click="run">{{ loading ? '逐周期核验中…' : '更新研究' }}</button>
         <button :disabled="!study || loading" @click="exportSnapshot">保存研究快照</button>
       </div>
-      <p>共同截止：{{ asOf || '请先查询股票' }} · 只使用此前完整 K 线；主图周期复用原快照和预热起点，不重复拉取。未收盘柱不参与本表。</p>
+      <p>共同截止：{{ asOf || '请先查询标的' }} · 只使用此前完整 K 线；主图周期复用原快照和预热起点，不重复拉取。未收盘柱不参与本表。</p>
       <p>MA 5/10 · MAVOL 5/10 · MACD 12/26/9 · BOLL 20/2；成交量对照前 20 根，收口对照此前最多 120 根带宽分位。阈值是研究设置，并非已验证胜率。</p>
     </div>
     <p v-for="error in errors" :key="error" class="study-error" role="alert">{{ error }}</p>

@@ -115,24 +115,24 @@ def test_dual_line_finality_waits_for_exact_extreme_reverse_pen_on_every_prefix(
         event, = indicator_events(bars[:n], {k: v[:n] for k, v in macd.items()})
         assert event.signal_index == 9 and event.reference_index == 1
         assert event.preliminary_index == (11 if n >= 12 else None)
-        assert event.confirmed_index == (18 if n == 19 else None)
-        assert event.status == ('confirmed' if n == 19 else 'candidate')
+        assert event.confirmed_index == (14 if n >= 15 else None)
+        assert event.status == ('confirmed' if n >= 15 else 'candidate')
     assert event.evidence['reverse_pen_start'] == 9
     assert event.evidence['reverse_pen_end'] == 13
     payload, = ChanlunResult(klines=bars, bcs=[event]).to_dict()['bcs']
     assert payload['curr_date'] == '2026-01-10'
-    assert payload['confirmed_date'] == '2026-01-19'
-    assert payload['intervals']['reverse_pen_confirmed'] == '2026-01-19'
+    assert payload['confirmed_date'] == '2026-01-15'
+    assert payload['intervals']['reverse_pen_confirmed'] == '2026-01-15'
 
 
 @pytest.mark.parametrize('top', [False, True])
 @pytest.mark.parametrize('line', ['dif', 'dea'])
 def test_dual_line_can_fail_after_preliminary_but_before_reverse_pen(top, line):
     bars, macd = reverse_pen_sample(top)
-    macd[line][16] = macd[line][1]  # Equality already breaks strict improvement.
+    macd[line][13] = macd[line][1]  # Equality before first reverse pen breaks improvement.
     event, = indicator_events(bars, macd)
     assert event.status == 'superseded' and event.preliminary_index == 11
-    assert event.invalidated_index == 16 and event.confirmed_index is None
+    assert event.invalidated_index == 13 and event.confirmed_index is None
     assert 'DIF 或 DEA' in event.failure_reason
 
 

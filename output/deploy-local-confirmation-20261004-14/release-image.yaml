@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:local-confirmation-20261004-14

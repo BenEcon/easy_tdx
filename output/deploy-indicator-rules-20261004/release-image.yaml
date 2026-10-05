@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:indicator-rules-20261004

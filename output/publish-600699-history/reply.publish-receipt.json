@@ -1,0 +1,24 @@
+{
+  "fingerprint": "0c961317babe2d6438521fcbc7d96bacdb68a6387b9822b2f42dba154b3eeecc",
+  "request_id": "0a7b51a46c9740bab870fa6fc58bb4a0",
+  "status": "published",
+  "result": {
+    "name": "chan16",
+    "url": "https://md.bowenv.com/webpages/chan16.html",
+    "md_url": "https://md.bowenv.com/webpages/chan16.md",
+    "markdown_sha256": "b91e6ffb68bc1ab750e243f55f762b3334be6369016fb1a2287dc3b1af71da49",
+    "html_sha256": "b93ee7203caaf6b454fb2e70b0bd1c4e04bcd497bb7b511abbb86114db4dc64c",
+    "public_html_sha256": "16d32383e17609cce9ee833a4bfec1f0500f69e6e7618df90f84d15d5aae427a",
+    "images": [
+      {
+        "url": "https://md.bowenv.com/webpages/assets/replies/8621edec0f10c3ee6fe990f1bee546c4f4ecc4a6a3b9808a7c4ae128283498c8.png",
+        "sha256": "8621edec0f10c3ee6fe990f1bee546c4f4ecc4a6a3b9808a7c4ae128283498c8"
+      }
+    ],
+    "status": "published",
+    "request_id": "0a7b51a46c9740bab870fa6fc58bb4a0",
+    "backup": null,
+    "verified": true,
+    "clipboard_copied": true
+  }
+}

@@ -143,7 +143,7 @@ export interface ChanlunDivergence {
   failure_audit?: WaveAudit
   signal_index?: number | null
   reference_index?: number | null
-  type: 'bi' | 'pz' | 'qs' | 'macd' | 'macd_wave'
+  type: 'bi' | 'pz' | 'qs' | 'macd' | 'macd_wave' | 'macd_wave_nonstandard' | 'macd_wave_special'
   bc: boolean
   curr_date: string | null
   prev_date: string | null
@@ -151,6 +151,7 @@ export interface ChanlunDivergence {
   status?: 'candidate' | 'confirmed' | 'superseded'
   direction?: 'up' | 'down'
   detected_date?: string | null
+  detected_index?: number | null
   confirmed_date?: string | null
   confirmed_index?: number | null
   evidence?: Record<string, number>
@@ -463,10 +464,11 @@ export interface WaveComparison extends WaveAudit {
   passed: boolean
 }
 export interface WaveDiagnostic extends WaveAudit {
+  family?: 'standard' | 'nonstandard' | 'special' | 'double'
   direction: 'up' | 'down'
   status: 'blocked' | 'candidate' | 'confirmed'
   closed: boolean
-  c_start: number
+  c_start?: number // Special AB observations have no C wave.
   first_candidate_index: number | null
   comparisons?: WaveComparison[]
   rejections: Array<{ from_date: string; through_date: string; gates: string[] }>

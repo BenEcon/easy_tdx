@@ -102,7 +102,7 @@ def test_confirmed_top_wave_does_not_change_with_later_bars():
 def test_top_wave_rejects_non_divergent_segments(change):
     bars, macd = wave_fixture()
     if change == 'no_high':
-        bars[5].high = bars[6].high = 25
+        bars[5].high = bars[6].high = 24.99  # Oct 3: equality now qualifies for waves.
     elif change == 'area_grows':
         macd['hist'][5] = 4
     else:
@@ -127,9 +127,9 @@ def test_all_prefixes_are_exact_top_bottom_mirrors(factory, detector):
                 assert top.confirmed_index > top.signal_index
             for key, value in top.evidence.items():
                 other = bottom.evidence[key]
-                if key in ('price', 'previous_price', 'nearest_pivot_price'):
+                if key in ('price', 'previous_price', 'nearest_pivot_price', 'b_price'):
                     assert value + other == pytest.approx(100)
-                elif 'dif' in key or 'dea' in key:
+                elif ('dif' in key or 'dea' in key or key == 'signal_hist') and not key.endswith('_index'):
                     assert value == pytest.approx(-other)
                 else:
                     assert value == pytest.approx(other)
