@@ -61,28 +61,40 @@ function toggleMobileMA(period: number) {
 
 const container = ref<HTMLDivElement>()
 const consolidationPopover = ref<InstanceType<typeof StructureInfoPopover>>()
-function showConsolidations(indices: number[], x: number, y: number) {
+type RenderedDivergence = { divergence: ChanlunDivergence; coord: number[]; symbolOffset: number[]; symbolSize: number }
+let renderedDivergences: RenderedDivergence[] = []
+type StructureHit = { key: string; divergences?: ChanlunDivergence[]; areas?: number[] }
+let hoverKey = ''
+let dismissedHoverKey = ''
+let hoverCloseTimer: ReturnType<typeof setTimeout> | undefined
+function cancelHoverClose() { clearTimeout(hoverCloseTimer); hoverCloseTimer = undefined }
+function onPopoverClosed() { cancelHoverClose(); dismissedHoverKey = hoverKey; hoverKey = '' }
+function leaveStructure() {
+  if (consolidationPopover.value?.isPinned() || hoverCloseTimer !== undefined) return
+  hoverCloseTimer = setTimeout(() => {
+    hoverCloseTimer = undefined
+    if (!consolidationPopover.value?.isPinned()) consolidationPopover.value?.hide(false)
+    hoverKey = ''; dismissedHoverKey = ''
+  }, 180)
+}
+function showConsolidations(indices: number[], x: number, y: number, preview = false) {
   clickTooltip?.hide()
   const areas = props.result.pen_consolidations ?? []
-  void consolidationPopover.value?.show(indices.flatMap(index => areas[index] ? [{ index, area: areas[index]! }] : []), x, y)
+  void consolidationPopover.value?.show(indices.flatMap(index => areas[index] ? [{ index, area: areas[index]! }] : []), x, y, preview)
 }
-function onConsolidationContext(event: MouseEvent) {
-  if (!chart || !container.value) return
+function structureHit(event: MouseEvent): StructureHit | null {
+  if (!chart || !container.value) return null
   const rect = container.value.getBoundingClientRect()
   const x = (event.clientX - rect.left) * chart.getWidth() / rect.width
   const y = (event.clientY - rect.top) * chart.getHeight() / rect.height
   // Markers sit above/below candle extrema and may extend beyond the price grid.
   // Read the same records and offsets used to draw them, including history marks.
-  const option = chart.getOption() as { series?: Array<{ markPoint?: { data?: Array<{ divergence?: ChanlunDivergence; coord: number[]; symbolOffset?: number[]; symbolSize?: number | number[] }> } }> }
-  const hitsByPoint = (option.series?.[0]?.markPoint?.data ?? []).filter(point => point.divergence
-    && markerHit(chart!.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, point.coord) as number[], point.symbolOffset ?? [0, 0], point.symbolSize ?? 9, x, y))
+  const hitsByPoint = renderedDivergences.map((point, index) => ({ point, index })).filter(({point}) =>
+    markerHit(chart!.convertToPixel({ xAxisIndex: 0, yAxisIndex: 0 }, point.coord) as number[], point.symbolOffset, point.symbolSize, x, y))
   if (hitsByPoint.length) {
-    event.preventDefault()
-    clickTooltip?.hide()
-    void consolidationPopover.value?.showDivergences(hitsByPoint.slice().reverse().map(point => point.divergence!), event.clientX, event.clientY)
-    return
+    return { key: `points:${hitsByPoint.map(item => item.index).join(',')}`, divergences: hitsByPoint.slice().reverse().map(({point}) => point.divergence) }
   }
-  if (!props.layers.consolidations || !chart.containPixel({ gridIndex: 0 }, [x, y])) return
+  if (!props.layers.consolidations || !chart.containPixel({ gridIndex: 0 }, [x, y])) return null
   const bounds = (props.result.pen_consolidations ?? []).flatMap((area, index) => {
     const start = chartBarIndex(props.bars, area.start_date), end = chartBarIndex(props.bars, area.end_date)
     return start === null || end === null ? [] : [{ index,
@@ -91,9 +103,34 @@ function onConsolidationContext(event: MouseEvent) {
     }]
   })
   const hits = consolidationHits(bounds, x, y)
-  if (!hits.length) return
+  return hits.length ? { key: `areas:${hits.join(',')}`, areas: hits } : null
+}
+function showStructure(hit: StructureHit, event: MouseEvent, preview: boolean) {
+  cancelHoverClose()
+  clickTooltip?.hide()
+  if (hit.divergences) void consolidationPopover.value?.showDivergences(hit.divergences, event.clientX, event.clientY, preview)
+  else showConsolidations(hit.areas!, event.clientX, event.clientY, preview)
+}
+function onConsolidationContext(event: MouseEvent) {
+  const hit = structureHit(event)
+  if (!hit) return
   event.preventDefault()
-  showConsolidations(hits, event.clientX, event.clientY)
+  hoverKey = ''; dismissedHoverKey = ''
+  showStructure(hit, event, false)
+}
+function onStructureHover(event: PointerEvent) {
+  if (event.pointerType !== 'mouse' || event.buttons || clickTooltip?.isActive() || consolidationPopover.value?.isPinned()) return
+  const hit = structureHit(event)
+  if (!hit) { leaveStructure(); return }
+  cancelHoverClose()
+  if (hit.key === hoverKey || hit.key === dismissedHoverKey) return
+  dismissedHoverKey = ''
+  hoverKey = hit.key
+  showStructure(hit, event, true)
+}
+function onChartClick() {
+  cancelHoverClose()
+  consolidationPopover.value?.hide(false)
 }
 function browseConsolidations(event: MouseEvent) {
   const rect = (event.currentTarget as HTMLElement).getBoundingClientRect()
@@ -302,6 +339,7 @@ function buildOption(): echarts.EChartsCoreOption {
       })
     : []
 
+  renderedDivergences = divergencePoints as RenderedDivergence[]
   const series: Array<Record<string, unknown>> = [
     {
       name: 'K 线',
@@ -716,6 +754,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  cancelHoverClose()
   resizeObserver?.disconnect()
   clickTooltip?.dispose()
   chart?.dispose()
@@ -737,11 +776,14 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
       ref="container"
       class="chanlun-chart"
       @contextmenu="onConsolidationContext"
+      @pointermove="onStructureHover"
+      @pointerleave="leaveStructure"
+      @click="onChartClick"
       :style="{ height: `${chartHeight}px`, minHeight: `${chartHeight}px`, '--chanlun-chart-height': `${chartHeight}px` }"
     ></div>
     <div v-if="layers.consolidations && result.pen_consolidations?.length" class="consolidation-access"><span>右键盘整矩形，查看区间详情</span><button type="button" @click="browseConsolidations">查看盘整详情</button></div>
     <div v-if="layers.bcs && visibleDivergences(result.bcs, showDivergenceHistory).length" class="consolidation-access"><span>右键背离／背驰标记，查看状态与依据</span><button type="button" @click="browseDivergences">查看背离详情</button></div>
-    <StructureInfoPopover ref="consolidationPopover" />
+    <StructureInfoPopover ref="consolidationPopover" @enter="cancelHoverClose" @leave="leaveStructure" @closed="onPopoverClosed" />
     <p v-if="layers.nextPen" class="macd-prompt-note">琥珀虚线＝下一笔参考（未成笔）· 仅使用当前可见行情，端点可变，不预测未来。</p>
     <p v-if="layers.bcs" class="macd-prompt-note">圆形＝双线 · 菱形＝标准 · 三角形＝非标准 · 大菱形＝特殊 · 底紫顶绿 · 彩色空心＝候选 · 实心＝确认<span v-if="showDivergenceHistory"> · 灰色空心＝已失效／被替代</span></p>
     <p v-if="layers.mmds && macdPrompts(result.bcs).length" class="macd-prompt-note">M1 为 MACD 波段提示，非缠论结构一类点；标记位于极值日，实际确认日见提示详情。</p>

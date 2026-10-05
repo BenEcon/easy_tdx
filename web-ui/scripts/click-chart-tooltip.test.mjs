@@ -32,6 +32,21 @@ test('default inactive; moving does not show cards and leaving does not deactiva
   assert.deepEqual([...f.rendererListeners.keys()], ['click', 'mousemove'])
 })
 
+test('object previews can read date-card activation without activating it', () => {
+  const f = fixture()
+  const controller = installClickChartTooltip(f.chart, f.container)
+  assert.equal(controller.isActive(), false)
+  assert.deepEqual(f.actions, [])
+  f.rendererListeners.get('click')({offsetX:100,offsetY:80})
+  assert.equal(controller.isActive(), true)
+  f.chartListeners.get('datazoom')()
+  assert.equal(controller.isActive(), true)
+  f.listeners.get('click')({composedPath:()=>[]})
+  assert.equal(controller.isActive(), false)
+  controller.dispose()
+  assert.equal(controller.isActive(), false)
+})
+
 test('click selects a point; outside click closes; inside click is not dismissed', () => {
   const f = fixture()
   installClickChartTooltip(f.chart, f.container)

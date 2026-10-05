@@ -36,17 +36,22 @@ export function divergenceMarker(item: ChanlunDivergence, history = false) {
     && Number.isInteger(item.confirmed_index) && item.confirmed_index! > item.signal_index!
     && item.evidence?.reverse_pen_start === item.signal_index
     && item.evidence?.reverse_pen_confirmed === item.confirmed_index) : candidate)
-  const color = inactive ? '#8e949e' : item.direction === 'up' ? '#61dfa0' : '#cf8ff5'
+  const color = inactive ? '#929caa' : item.direction === 'up' ? '#61dfa0' : '#cf8ff5'
   return {
     symbol: item.type === 'macd' ? 'circle' : item.type === 'macd_wave_nonstandard' ? 'triangle' : 'diamond',
     symbolSize: special ? 13 : 9,
     itemStyle: {
       color: hollow ? 'transparent' : color,
       borderColor: color,
-      borderWidth: 1.5,
-      borderType: hollow ? 'dashed' : 'solid',
-      opacity: inactive ? .5 : 1,
+      // Tiny dashed outlines break unevenly at corners. History uses a quiet,
+      // continuous contour; active candidates retain their dashed lifecycle cue.
+      borderWidth: inactive ? 1.1 : 1.5,
+      borderType: inactive ? 'solid' : hollow ? 'dashed' : 'solid',
+      opacity: inactive ? .72 : 1,
     },
+    ...(inactive ? { emphasis: { itemStyle: {
+      color: 'transparent', borderColor: '#bcc6d3', borderWidth: 1.5, borderType: 'solid', opacity: 1,
+    } } } : {}),
     label: { show: false },
   }
 }

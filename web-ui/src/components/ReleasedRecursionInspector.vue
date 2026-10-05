@@ -20,7 +20,7 @@ function toggleExplorer(id: string, event: Event) {
 </script>
 
 <template>
-  <details class="released-inspector research-panel">
+  <details class="released-inspector research-panel research-hierarchy">
     <summary><strong>全域走势递归</strong><span v-if="evidence">外部 {{ data!.external_frontier_ids.length }} 条 · 最高 M{{ data!.highest_external_level }} · 已确认口径</span><span v-else>等待可核验快照</span></summary>
     <div class="research-panel-body">
     <dl class="research-copy">

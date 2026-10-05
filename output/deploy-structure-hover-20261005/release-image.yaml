@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:structure-hover-20261005

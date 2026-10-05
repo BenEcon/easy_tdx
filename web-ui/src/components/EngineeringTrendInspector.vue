@@ -15,7 +15,7 @@ const emit = defineEmits<{ seek: [position: number] }>()
 </script>
 
 <template>
-  <details class="trend-inspector research-panel">
+  <details class="trend-inspector research-panel research-hierarchy">
     <summary><strong>{{ mixed ? '工程走势递归' : '工程趋势递归' }}<span v-if="historical" class="research-version">旧解释</span></strong><span>{{ highest ? `最高 ${prefix}${highest} · 工程确认` : '等待完整走势证据' }}</span></summary>
     <div class="research-panel-body">
     <p v-if="historical" class="research-caveat research-history"><strong>历史对照</strong><span>保留原规则和原确认时间用于对照；当前内外归属与可用输入以“分层归属与内部递归”为准。</span></p>

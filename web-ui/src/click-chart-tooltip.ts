@@ -44,6 +44,7 @@ export function installClickChartTooltip(chart: ECharts, container: HTMLElement)
   document.addEventListener('keydown', dismissWithEscape)
   return {
     hide,
+    isActive: () => active,
     dispose() {
       active = false
       renderer.off('click', select)

@@ -1,6 +1,7 @@
 /* Shared disclosure rhythm for Chanlun research. No analytical state is changed. */
 .research-panel.research-panel {
   --research-gutter: 20px;
+  --hierarchy-indent: 20px;
   grid-column: 1 / -1;
   min-width: 0;
   margin: 0;
@@ -405,7 +406,7 @@ details[open] > .research-record-heading > strong::before { transform: rotate(45
 }
 
 @media (max-width: 760px) {
-  .research-panel.research-panel { --research-gutter: 14px; }
+  .research-panel.research-panel { --research-gutter: 14px; --hierarchy-indent: 10px; }
   .research-panel.research-panel > summary { grid-template-columns: minmax(0,1fr) 12px; gap: 3px 12px; padding-block: 13px; }
   .research-panel.research-panel > summary > span { grid-column: 1; text-align: left; }
   .research-panel.research-panel > summary::after { grid-column: 2; grid-row: 1 / span 2; }
@@ -437,4 +438,55 @@ details[open] > .research-record-heading > strong::before { transform: rotate(45
   .research-panel.research-panel > summary::after,
   .multi-study.research-panel fieldset label,
   .multi-study.research-panel .period-check { transition: none; }
+}
+
+/* Audit hierarchy: title → child record → evidence. Scope excludes chart controls.
+   Logical margins keep every sibling field aligned, including replay actions.
+   Stop adding depth after two nested disclosures so long recursive proofs remain readable. */
+.multi-study.research-panel .study-method > :not(summary) {
+  margin-inline-start: var(--hierarchy-indent);
+  max-inline-size: calc(100% - var(--hierarchy-indent));
+}
+.segment-list.research-hierarchy .segment-card > .structure-evidence {
+  margin-inline-start: 38px;
+  max-inline-size: calc(100% - 38px);
+}
+.research-hierarchy.research-panel > .research-panel-body {
+  padding-inline-start: calc(var(--research-gutter) + var(--hierarchy-indent));
+}
+.research-hierarchy .research-panel-body details > :not(summary, .research-panel-body) {
+  margin-inline-start: var(--hierarchy-indent);
+  max-inline-size: calc(100% - var(--hierarchy-indent));
+  min-inline-size: 0;
+  box-sizing: border-box;
+}
+.research-hierarchy .research-panel-body details > :is(.candidate-content, .proof-body) {
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+.research-hierarchy .research-panel-body section:has(> h4, > h5) > :is(details, section) {
+  margin-inline-start: var(--hierarchy-indent);
+  max-inline-size: calc(100% - var(--hierarchy-indent));
+  min-inline-size: 0;
+}
+.research-hierarchy .research-panel-body details details details > :not(summary, .research-panel-body) {
+  margin-inline-start: 0;
+  max-inline-size: 100%;
+}
+.research-hierarchy .research-panel {
+  --research-gutter: 0px;
+}
+.research-hierarchy .research-panel > .research-panel-body {
+  padding-inline-start: var(--hierarchy-indent);
+  padding-inline-end: 0;
+}
+.research-hierarchy .research-panel-body details > summary {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .segment-list.research-hierarchy .segment-card > .structure-evidence { margin-inline-start: var(--hierarchy-indent); max-inline-size: calc(100% - var(--hierarchy-indent)); }
+  .decomposition-inspector.research-hierarchy .block-evidence { padding-inline-start: 32px; }
+}
+@media (max-width: 380px) {
+  .research-panel.research-panel { --hierarchy-indent: 8px; }
 }

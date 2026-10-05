@@ -52,7 +52,7 @@ async function load(mode: 'history' | 'comparison') {
 </script>
 
 <template>
-  <details class="research-desk research-panel">
+  <details class="research-desk research-panel research-hierarchy">
     <summary><strong>归属时间轴与分解研究</strong><span>按需计算 · 不改变默认分析</span></summary>
     <div class="research-panel-body">
     <ExhaustiveResearch :code="code" :category="category" :bars="bars" :total="total" :busy="busy || pending" @seek="emit('seek', $event)" />

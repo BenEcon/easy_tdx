@@ -126,10 +126,28 @@ test('history is opt-in, inactive stays grey hollow, never creates M1', () => {
   assert.equal(divergenceMarker(old),null)
   const mark=divergenceMarker(old,true)
   assert.equal(mark.itemStyle.color,'transparent')
-  assert.equal(mark.itemStyle.borderColor,'#8e949e')
-  assert.equal(mark.itemStyle.opacity,.5)
+  assert.equal(mark.itemStyle.borderColor,'#929caa')
+  assert.equal(mark.itemStyle.opacity,.72)
   assert.deepEqual(macdPrompts([old]),[])
   assert.match(divergenceEvidence(old).join('\n'),/没有可关联的同类替代候选/)
+})
+
+test('every historical shape uses a continuous hollow contour, including on hover', () => {
+  for (const type of ['macd','macd_wave','macd_wave_nonstandard','macd_wave_special','bi','pz','qs']) {
+    for (const direction of ['up','down']) {
+      const record={bc:true,type,direction,status:'superseded'}
+      const mark=divergenceMarker(record,true)
+      assert.equal(mark.itemStyle.borderType,'solid')
+      assert.equal(mark.itemStyle.borderWidth,1.1)
+      assert.equal(mark.itemStyle.color,'transparent')
+      assert.equal(mark.emphasis.itemStyle.color,'transparent')
+      assert.equal(mark.emphasis.itemStyle.borderType,'solid')
+      assert.equal(mark.emphasis.itemStyle.opacity,1)
+      assert.equal(mark.symbol, type==='macd'?'circle':type==='macd_wave_nonstandard'?'triangle':'diamond')
+      assert.equal(mark.symbolSize,type==='macd_wave_special'?13:9)
+      assert.equal(divergenceMarker({...record,status:'candidate'},true).itemStyle.borderType,'dashed')
+    }
+  }
 })
 
 test('new nonstandard evidence relaxes prices only and records each subtype', () => {

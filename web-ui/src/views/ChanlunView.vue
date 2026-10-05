@@ -649,7 +649,7 @@ onMounted(async () => {
         </section>
 
         <section class="chart-workspace">
-          <details v-if="snapshotMetadata" class="snapshot-provenance research-panel">
+          <details v-if="snapshotMetadata" class="snapshot-provenance research-panel research-hierarchy">
             <summary><strong>数据口径</strong><span>{{ snapshotMetadata.source }} · {{ snapshotMetadata.actual_adjust }}</span></summary>
             <div class="research-panel-body">
               <p v-if="snapshotMetadata.actual_adjust !== snapshotMetadata.requested_adjust" class="provenance-warning" role="alert">所选复权方式未生效：请求 {{ snapshotMetadata.requested_adjust }}，实际为 {{ snapshotMetadata.actual_adjust }}。请恢复行情源后重查。</p>
@@ -772,16 +772,16 @@ onMounted(async () => {
               <p v-if="displayCentres.length === 0" class="no-data">当前窗口尚未形成已确认线段构成的基础中枢。</p>
             </div>
 
-            <section class="segment-list">
-              <header>
-                <div>
-                  <h4>最近的线段</h4>
-                  <p>实线为已确认，虚线仅提示候选方向，不参与中枢和买卖点计算。</p>
-                </div>
-                <span :class="['sequence-status', { valid: segmentSequenceValid }]">
-                  <i></i>{{ !result.xds.length ? '暂无确认线段' : segmentSequenceValid ? '端点连接一致' : '连接待核验' }}
+            <details :key="targetKey" class="segment-list research-panel research-hierarchy">
+              <summary>
+                <strong>最近的线段</strong>
+                <span class="segment-summary">
+                  <span>{{ result.xds.length }} 条已确认<span v-if="result.unfinished_xd"> · 1 条候选</span></span>
+                  <span v-if="result.xds.length" :class="['sequence-status', { valid: segmentSequenceValid }]"><i aria-hidden="true"></i>{{ segmentSequenceValid ? '端点连接一致' : '连接待核验' }}</span>
                 </span>
-              </header>
+              </summary>
+              <div class="research-panel-body">
+              <p>展示最近 {{ Math.min(6, result.xds.length) }} 条已确认线段。实线为已确认，虚线仅提示候选方向，不参与中枢和买卖点计算。</p>
               <div v-if="result.xds.length" class="segment-grid">
                 <article
                   v-for="xd in result.xds.slice(-6).reverse()"
@@ -814,7 +814,8 @@ onMounted(async () => {
                 <span>{{ segmentValue(result.unfinished_xd, 'start').toFixed(2) }} → {{ segmentValue(result.unfinished_xd, 'end').toFixed(2) }}</span>
                 <small>端点可能延伸或失效，确认后以实线显示；不是价格预测。</small>
               </div>
-            </section>
+              </div>
+            </details>
             <DecompositionInspector :data="result.base_decomposition" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <ExtensionHierarchyInspector :data="result.extension_hierarchy" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <EngineeringTrendInspector :data="result.engineering_movement_hierarchy ?? result.engineering_trend_hierarchy" :historical="!!result.layered_movement_ownership" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
@@ -848,46 +849,68 @@ onMounted(async () => {
             </template>
           </div>
 
-          <div v-else class="event-list">
-            <details v-if="auditedWaves.length" class="wave-diagnostics research-panel">
+          <div v-else class="divergence-workspace">
+            <details v-if="auditedWaves.length" class="wave-diagnostics research-panel research-hierarchy">
               <summary><strong>背离核验与规则对照</strong><span>{{ blockedWaves.length }} 组未通过</span></summary>
               <div class="research-panel-body">
               <p class="wave-diagnostics-note">标准使用有效 A；非标准使用完整 A，保留 DIF 改善、B/C 同侧与 B 回拉；特殊对照前一 A 的指标极值；双线对照最近局部极值。各自记录依据，不互相覆盖。</p>
-              <details v-for="item in auditedWaves" :key="`${item.family}-${item.direction}-${item.c_start ?? item.dates.b_start}`" class="wave-diagnostic-row">
+              <details v-for="item in auditedWaves" :key="`${item.family}-${item.direction}-${item.c_start ?? item.dates.b_start}`" class="wave-diagnostic-row reading-disclosure">
                 <summary>
-                  <span>{{ item.family === 'double' ? '双线' : item.family === 'special' ? '特殊' : item.family === 'nonstandard' ? '非标准' : '标准' }}{{ item.direction === 'down' ? '底' : '顶' }}背离 · {{ item.family === 'double' ? item.dates.c_start : item.family === 'special' ? `B ${item.dates.b_start} — ${item.dates.b_end}` : `C ${item.dates.c_start} — ${item.dates.c_end}` }}</span>
-                  <small>{{ item.status === 'confirmed' ? '已确认' : item.status === 'candidate' ? '候选未确认' : item.first_candidate_index == null ? '未形成候选' : '本段曾产生候选，当前检查未通过；历史状态见事件记录' }}</small>
-                  <p v-if="item.status === 'blocked'">{{ waveFailureSummary(item) }}</p>
+                  <strong>{{ item.family === 'double' ? '双线' : item.family === 'special' ? '特殊' : item.family === 'nonstandard' ? '非标准' : '标准' }}{{ item.direction === 'down' ? '底' : '顶' }}背离</strong>
+                  <span class="audit-status" :class="item.status">{{ item.status === 'confirmed' ? '已确认' : item.status === 'candidate' ? '候选未确认' : item.first_candidate_index == null ? '未形成候选' : '当前未通过' }}</span>
+                  <span class="audit-period">{{ item.family === 'double' ? item.dates.c_start : item.family === 'special' ? `B ${item.dates.b_start} — ${item.dates.b_end}` : `C ${item.dates.c_start} — ${item.dates.c_end}` }}</span>
+                  <span v-if="item.status === 'blocked'" class="audit-failure">{{ waveFailureSummary(item) }}</span>
                 </summary>
-                <p v-for="line in waveDiagnosticLines(item)" :key="line">{{ line }}</p>
+                <div class="audit-evidence-body">
+                <p v-if="item.status === 'blocked' && item.first_candidate_index != null" class="audit-history-note">本段曾产生候选，当前检查未通过；历史状态见事件记录。</p>
+                <EvidenceReading :lines="waveDiagnosticLines(item)" />
                 <div v-if="item.comparisons?.length" class="wave-comparisons">
                   <p>以下保留旧版研究对照，不含此次新增的 B 价格限制；与当前三类标记独立。非标准标记完全不使用 DEA 容差。</p>
-                  <details v-for="comparison in item.comparisons" :key="comparison.mode">
+                  <details v-for="comparison in item.comparisons" :key="comparison.mode" class="reading-disclosure">
                     <summary>{{ waveComparisonName(comparison) }}<small>{{ comparison.passed ? (comparison.closed ? '结束复核通过 · 仅对照' : '暂时满足 · C 未结束') : '仍未通过' }}</small></summary>
                     <p v-if="!comparison.passed">{{ waveFailureSummary(comparison) }}</p>
-                    <p v-for="line in waveComparisonLines(comparison)" :key="line">{{ line }}</p>
+                    <EvidenceReading :lines="waveComparisonLines(comparison)" />
                   </details>
+                </div>
                 </div>
               </details>
               </div>
             </details>
-            <div v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="event-row">
-              <span class="event-tag divergence" :class="[bc.direction === 'up' ? 'top' : 'bottom', bc.status, { nonstandard: bc.type === 'macd_wave_nonstandard' }]">{{ divergenceName(bc) }}</span>
-              <time>{{ bc.curr_date ? structureDate(bc.curr_date) : '时间未知' }}</time>
-              <small>{{ bc.status === 'candidate' ? (bc.preliminary_date ? '曾满足初步条件 · 等待走势完成' : '候选 · 尚未确认') : bc.status === 'superseded' ? '候选已替代或条件失效' : `确认于 ${structureDate(bc.confirmed_date)}` }} · 对照 {{ structureDate(bc.prev_date) }}</small>
-              <p>{{ formatMessage(bc.msg) }}</p>
-              <details class="divergence-evidence">
+            <details class="divergence-records research-panel research-hierarchy" open>
+              <summary><strong>背离事件记录</strong><span>{{ result.bcs.filter(item => item.bc).length }} 条 · 含候选与失效历史</span></summary>
+              <div class="research-panel-body">
+            <article v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="divergence-record">
+              <header class="divergence-record-heading">
+                <strong class="divergence-kind" :class="[bc.direction === 'up' ? 'top' : 'bottom', bc.status, { nonstandard: bc.type === 'macd_wave_nonstandard' }]"><i aria-hidden="true"></i>{{ divergenceName(bc) }}</strong>
+                <span class="audit-status" :class="bc.status">{{ bc.status === 'candidate' ? '候选未确认' : bc.status === 'superseded' ? '已替代 / 失效' : '已确认' }}</span>
+              </header>
+              <dl class="divergence-dates">
+                <div><dt>极值日期</dt><dd>{{ bc.curr_date ? structureDate(bc.curr_date) : '时间未知' }}</dd></div>
+                <div><dt>对照日期</dt><dd>{{ structureDate(bc.prev_date) }}</dd></div>
+                <div v-if="bc.status !== 'candidate' && bc.status !== 'superseded'"><dt>确认日期</dt><dd>{{ structureDate(bc.confirmed_date) }}</dd></div>
+              </dl>
+              <p v-if="bc.status === 'candidate' && bc.preliminary_date" class="audit-history-note">曾满足初步条件 · 等待走势完成</p>
+              <p class="divergence-description">{{ formatMessage(bc.msg) }}</p>
+              <details class="divergence-evidence reading-disclosure">
                 <summary>查看判定依据</summary>
-                <p v-for="line in divergenceEvidence(bc)" :key="line">{{ line }}</p>
+                <div class="audit-evidence-body">
+                <EvidenceReading :lines="divergenceEvidence(bc)" />
+                <div class="divergence-locate-actions">
                 <button v-if="divergenceFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateDivergence(bc)">{{ bc.type === 'macd' ? '定位前后极值' : '定位比较区间' }}</button>
                 <button v-if="reversePenFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateReversePen(bc)">查看局部确认用笔</button>
+                </div>
+                <div class="divergence-replays">
                 <ConfirmationReplay :index="bc.detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="首次提示" @seek="jumpToConfirmation" />
                 <ConfirmationReplay v-if="bc.status === 'confirmed'" :index="bc.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" @seek="jumpToConfirmation" />
                 <ConfirmationReplay v-if="bc.status === 'superseded'" :index="bc.invalidated_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="失效" @seek="jumpToConfirmation" />
                 <ConfirmationReplay v-if="bc.evidence?.replacement_detected_index != null" :index="bc.evidence.replacement_detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="后续替代候选" phase="首次提示" @seek="jumpToConfirmation" />
+                </div>
+                </div>
               </details>
-            </div>
+            </article>
             <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有背离／背驰候选或确认事件。{{ blockedWaves.length ? '请展开波段核验查看原因。' : '可增加历史窗口后重新核验。' }}</p>
+              </div>
+            </details>
           </div>
         </section>
       </div>
@@ -1362,10 +1385,7 @@ onMounted(async () => {
 .row-primary small { margin-top: 4px; color: var(--text-muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
 .range { color: #c2ccda; font-family: var(--font-mono); font-size: 11px; padding-top: 3px; font-variant-numeric: tabular-nums; }
 
-.segment-list { grid-column: 1 / -1; padding: 15px 16px 17px; border-top: 1px solid var(--border); }
-.segment-list > header { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 11px; }
-.segment-list h4 { color: var(--text); font-size: 13px; font-weight: 600; }
-.segment-list header p { margin-top: 6px; color: var(--text-muted); font-size: 11px; line-height: 1.8; }
+.segment-list .segment-summary { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 2px 14px; font-variant-numeric: tabular-nums; }
 .sequence-status { display: inline-flex; min-height: 24px; align-items: center; gap: 7px; color: #cbb38b; font-size: 10px; white-space: nowrap; }
 .sequence-status i { width: 5px; height: 5px; border-radius: 50%; border: 1px solid currentColor; }
 .sequence-status.valid { color: #a7c6b7; }
@@ -1388,15 +1408,55 @@ onMounted(async () => {
 .event-row > p, .divergence-evidence { grid-column: 1 / -1; }
 .divergence-evidence { padding-bottom: 4px; color: var(--text-muted); font-size: 12px; line-height: 1.85; overflow-wrap: anywhere; }
 .divergence-evidence summary { cursor: pointer; color: var(--accent); }
-.wave-diagnostics { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 12px; font-size: 12px; color: var(--text-secondary); }
-.wave-diagnostics > summary { cursor: pointer; padding: 8px 0; }
-.wave-diagnostics > summary > span { float: right; color: var(--text-muted); font-size: 11px; }
-.wave-diagnostics-note, .wave-diagnostic-row > p { font-size: 11px; line-height: 1.8; color: var(--text-muted); overflow-wrap: anywhere; }
-.wave-diagnostic-row { padding: 12px 0; border-bottom: 1px solid var(--border); }
-.wave-diagnostic-row summary { cursor: pointer; line-height: 1.7; }
-.wave-diagnostic-row summary small { display: block; color: var(--text-muted); }
-.wave-diagnostic-row summary p { margin: 4px 0 0; font-size: 11px; overflow-wrap: anywhere; }
-.wave-diagnostics summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+.divergence-workspace { min-width: 0; }
+.divergence-record { min-width: 0; padding: 18px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
+.divergence-record:last-child { border-bottom: 0; }
+.divergence-record-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
+.divergence-kind { display: inline-flex; align-items: baseline; gap: 9px; color: #cf9fe7; font-size: 12px; font-weight: 550; line-height: 1.8; }
+.divergence-kind i { width: 7px; height: 7px; flex: 0 0 7px; border: 1px solid currentColor; border-radius: 2px; transform: rotate(45deg); background: currentColor; }
+.divergence-kind.top { color: #8ac9ac; }
+.divergence-kind.nonstandard { color: #e3949c; }
+.divergence-kind.candidate i, .divergence-kind.superseded i { background: transparent; }
+.divergence-kind.superseded { color: #9ba4b2; }
+.audit-status { display: inline-flex; align-items: center; gap: 6px; color: #a1abba; font-size: 10px; line-height: 1.8; font-weight: 400; }
+.audit-status::before { content: ''; width: 4px; height: 4px; flex: 0 0 4px; border: 1px solid currentColor; border-radius: 50%; }
+.audit-status.confirmed { color: #a7c6b7; }
+.audit-status.confirmed::before { background: currentColor; }
+.audit-status.candidate { color: #cbb38b; }
+.divergence-dates { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 16px 0 10px; font-variant-numeric: tabular-nums; }
+.divergence-dates > div { min-width: 0; }
+.divergence-dates dt { color: #8996a8; font-size: 10px; margin-bottom: 5px; }
+.divergence-dates dd { margin: 0; color: #c1ccda; font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.divergence-description, .audit-history-note, .wave-comparisons > p { color: var(--text-muted); font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; text-align: justify; text-align-last: left; margin: 10px 0; }
+.divergence-record > .divergence-evidence { margin-top: 14px; }
+.divergence-workspace .audit-evidence-body { padding-bottom: 12px; }
+.divergence-locate-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.divergence-locate-actions:empty, .divergence-replays:empty { display: none; }
+.divergence-workspace .divergence-locate-actions button { min-height: 30px; font-size: 11px; padding: 5px 10px; background: rgba(255,255,255,.025); box-shadow: none; }
+.divergence-replays { padding-top: 8px; }
+.divergence-replays :deep(.confirmation-replay) { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px; padding: 10px 0; margin: 0; border-top: 1px solid rgba(255,255,255,.04); }
+.divergence-replays :deep(.confirmation-replay button) { background: rgba(255,255,255,.025); box-shadow: none; }
+.wave-diagnostic-row { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
+.wave-diagnostic-row:last-child { border-bottom: 0; }
+.wave-diagnostics .wave-diagnostic-row > summary { display: grid; grid-template-columns: minmax(0,1fr) auto 10px; align-items: baseline; gap: 6px 14px; padding: 12px 0; }
+.wave-diagnostic-row > summary > strong { color: var(--text); font-size: 12px; font-weight: 500; }
+.wave-diagnostics .wave-diagnostic-row > summary::before { content: none; }
+.wave-diagnostic-row > summary::after { content: ''; grid-column: 3; grid-row: 1; width: 5px; height: 5px; border-right: 1px solid #91a2bb; border-bottom: 1px solid #91a2bb; transform: rotate(-45deg); transition: transform 150ms ease; }
+.wave-diagnostic-row[open] > summary::after { transform: rotate(45deg); }
+.audit-period { grid-column: 1 / 3; color: #8e9cad; font-size: 10px; line-height: 1.8; font-variant-numeric: tabular-nums; }
+.audit-failure { grid-column: 1 / 3; color: #b7a58c; font-size: 11px; line-height: 1.8; }
+.wave-comparisons { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.05); padding-top: 8px; }
+.wave-comparisons > details > summary small { display: block; font-size: 10px; color: var(--text-muted); }
+@container (max-width: 400px) {
+  .divergence-replays :deep(.confirmation-replay) { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .divergence-replays :deep(.confirmation-replay > span) { grid-column: 1 / -1; }
+  .divergence-replays :deep(.confirmation-replay button) { white-space: normal; min-height: 36px; }
+  .wave-diagnostics .wave-diagnostic-row > summary { grid-template-columns: minmax(0,1fr) 10px; }
+  .wave-diagnostic-row > summary::after { grid-column: 2; }
+  .wave-diagnostic-row > summary > .audit-status { grid-column: 1; grid-row: 2; }
+  .audit-period, .audit-failure { grid-column: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .wave-diagnostic-row > summary::after { transition: none; } }
 .wave-comparisons { margin-top: 12px; padding-left: 12px; border-left: 1px solid var(--border); }
 .wave-comparisons details { margin: 10px 0; }
 .wave-comparisons p { color: var(--text-muted); font-size: 11px; line-height: 1.8; overflow-wrap: anywhere; }
@@ -1410,7 +1470,6 @@ onMounted(async () => {
   .data-list { grid-column: 1 / -1; }
   .data-list + .data-list { border-left: 0; border-top: 1px solid var(--border); }
   .segment-grid { grid-template-columns: 1fr; }
-  .segment-list > header { flex-wrap: wrap; }
 }
 @container (max-width: 400px) {
   .segment-card { grid-template-columns: 28px minmax(0,1fr); }
@@ -1426,7 +1485,6 @@ onMounted(async () => {
 @media (max-width: 760px) {
   .provenance-facts { grid-template-columns: 1fr 1fr; gap: 18px; }
   .provenance-facts > :last-child { grid-column: 1 / -1; }
-  .segment-list > header { flex-wrap: wrap; gap: 8px; }
   .data-row { grid-template-columns: 24px minmax(0,1fr); }
   .data-row > .range { grid-column: 2; padding: 0; }
   .segment-card { grid-template-columns: 28px minmax(0,1fr); }

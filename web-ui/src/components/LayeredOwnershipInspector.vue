@@ -20,7 +20,7 @@ const emit = defineEmits<{ seek: [position: number] }>()
 </script>
 
 <template>
-  <details class="ownership-inspector research-panel">
+  <details class="ownership-inspector research-panel research-hierarchy">
     <summary><strong>分层归属与内部递归<span v-if="historical" class="research-version">旧解释</span></strong><span>{{ owners.length }} 个归属区 · 独立解释</span></summary>
     <div class="research-panel-body">
     <dl class="research-copy"><div><dt>内部保留</dt><dd>升级或扩展范围内的完成结构保留在内部。</dd></div><div><dt>父级替代</dt><dd>父级须独立满足完成条件，并在当前输入中替代子级；同一来源不再作为外部独立输入。</dd></div><div v-if="data?.rule === 'layered_recursive_ownership_v2'"><dt>逐层归属</dt><dd>已启用逐层归属：内部再次升级或扩展时继续在对应归属区内核验，不跨区拼接。</dd></div></dl>

@@ -27,7 +27,7 @@ const rows = computed(() => (props.data?.candidates ?? []).map(candidate => {
 </script>
 
 <template>
-  <details class="expansion-inspector research-panel">
+  <details class="expansion-inspector research-panel research-hierarchy">
     <summary class="section-heading">
       <strong>跨中枢候选核验</strong>
       <span>{{ data ? `${rows.length} 项候选 · 不用于高层级信号` : '未提供候选依据' }}</span>

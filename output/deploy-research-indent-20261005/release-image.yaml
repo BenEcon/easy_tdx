@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:research-indent-20261005

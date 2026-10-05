@@ -8,7 +8,7 @@ const emit = defineEmits<{ seek: [position: number] }>()
 </script>
 
 <template>
-  <details class="decomposition-inspector research-panel">
+  <details class="decomposition-inspector research-panel research-hierarchy">
     <summary><strong>走势分解审核</strong><span>{{ decompositionCoverage(data) }}</span></summary>
     <div class="research-panel-body">
     <p class="scope">这是基础线段的归属分解。“归属固定”不代表走势类型完成，未用于高层级递归。</p>

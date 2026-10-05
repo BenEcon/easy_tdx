@@ -7,6 +7,8 @@ import { divergenceName, divergenceEvidence } from '../divergence-evidence'
 import EvidenceReading from './EvidenceReading.vue'
 
 type Area = NonNullable<ChanlunResult['pen_consolidations']>[number]
+const emit = defineEmits<{ enter: []; leave: []; closed: [] }>()
+const preview = ref(false)
 const panel = ref<HTMLElement>()
 const choices = ref<Array<{ index: number; area: Area }>>([])
 const divergences = ref<ChanlunDivergence[]>([])
@@ -25,29 +27,30 @@ async function place() {
   const rect = panel.value.getBoundingClientRect()
   position.value = boundedPopover(anchor.x, anchor.y, rect.width, rect.height, window.innerWidth, window.innerHeight)
 }
-async function show(items: Array<{ index: number; area: Area }>, x: number, y: number) {
+async function show(items: Array<{ index: number; area: Area }>, x: number, y: number, transient = false) {
   if (!items.length) return
   choices.value = items
   divergences.value = []
-  await open(x, y)
+  await open(x, y, transient)
 }
-async function showDivergences(items: ChanlunDivergence[], x: number, y: number) {
+async function showDivergences(items: ChanlunDivergence[], x: number, y: number, transient = false) {
   if (!items.length) return
   divergences.value = items
   choices.value = []
-  await open(x, y)
+  await open(x, y, transient)
 }
-async function open(x: number, y: number) {
+async function open(x: number, y: number, transient: boolean) {
   const version = ++revision
   if (!panel.value?.matches(':popover-open')) returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
   selected.value = 0
+  preview.value = transient
   evidenceOpen.value = false
   anchor = { x, y }
   await nextTick()
   if (version !== revision || !panel.value) return
   panel.value.showPopover()
   await place()
-  panel.value.querySelector<HTMLButtonElement>('.popover-close')?.focus({ preventScroll: true })
+  if (!transient) panel.value.querySelector<HTMLButtonElement>('.popover-close')?.focus({ preventScroll: true })
 }
 function hide(restoreFocus = true) {
   revision++
@@ -56,6 +59,7 @@ function hide(restoreFocus = true) {
     panel.value.hidePopover()
     if (restoreFocus && hadFocus && returnFocus?.isConnected) returnFocus.focus({ preventScroll: true })
   }
+  emit('closed')
 }
 function choose(index: number) { selected.value = index; evidenceOpen.value = false; void place() }
 function toggleEvidence() { evidenceOpen.value = !evidenceOpen.value; void place() }
@@ -65,11 +69,11 @@ function escape(event: KeyboardEvent) {
 }
 onMounted(() => { document.addEventListener('pointerdown', outside, true); document.addEventListener('keydown', escape, true) })
 onBeforeUnmount(() => { hide(false); document.removeEventListener('pointerdown', outside, true); document.removeEventListener('keydown', escape, true) })
-defineExpose({ show, showDivergences, hide })
+defineExpose({ show, showDivergences, hide, isPinned: () => !!panel.value?.matches(':popover-open') && !preview.value })
 </script>
 
 <template>
-  <section ref="panel" popover="manual" role="dialog" :aria-label="divergence ? '背离／背驰详情' : '盘整区间详情'" class="consolidation-popover" :style="{ left: `${position.left}px`, top: `${position.top}px` }">
+  <section ref="panel" popover="manual" role="dialog" :aria-label="divergence ? '背离／背驰详情' : '盘整区间详情'" class="consolidation-popover" :data-preview="preview" :style="{ left: `${position.left}px`, top: `${position.top}px` }" @pointerenter="emit('enter')" @pointerleave="emit('leave')" @pointerdown="preview = false" @focusin="preview = false">
     <template v-if="divergence">
       <header><div><strong>{{ divergenceName(divergence) }}</strong><span :class="{ ongoing: divergence.status === 'candidate', inactive: divergence.status === 'superseded' }">{{ status(divergence) }}</span></div><button type="button" class="popover-close" aria-label="关闭背离详情" @click="hide()">×</button></header>
       <nav v-if="divergences.length > 1" aria-label="切换背离标记"><button v-for="(item, index) in divergences" :key="index" type="button" :aria-pressed="selected === index" @click="choose(index)">{{ divergenceName(item) }} · {{ structureDate(item.curr_date) }} · {{ status(item) }}</button></nav>
@@ -85,7 +89,7 @@ defineExpose({ show, showDivergences, hide })
       <p v-if="divergence.failure_reason" class="live-note">失效原因：{{ divergence.failure_reason }}</p>
       <button type="button" class="evidence-toggle" :aria-expanded="evidenceOpen" @click="toggleEvidence">{{ evidenceOpen ? '收起判定依据' : '查看判定依据' }}<span aria-hidden="true">{{ evidenceOpen ? '−' : '＋' }}</span></button>
       <EvidenceReading v-if="evidenceOpen" :lines="divergenceEvidence(divergence)" />
-      <footer>极值时间与实际确认时间分别记录；确认不保证价格反转。</footer>
+      <footer>极值时间与实际确认时间分别记录；确认不保证价格反转。<span v-if="preview" class="preview-hint">悬停预览 · 右键标记可固定查看</span></footer>
     </template>
     <template v-if="current">
       <header><div><strong>盘整 {{ current.index + 1 }}</strong><span :class="{ ongoing: !current.area.confirmed }">{{ current.area.confirmed ? '三笔已确认' : '进行中 · 末笔待确认' }}</span></div><button type="button" class="popover-close" aria-label="关闭盘整详情" @click="hide()">×</button></header>
@@ -97,7 +101,7 @@ defineExpose({ show, showDivergences, hide })
         <div><dt>来源笔</dt><dd>{{ current.area.pen_indices.map(index => index + 1).join('、') }}</dd></div>
       </dl>
       <p v-if="!current.area.confirmed" class="live-note">末笔尚未确认，重叠范围与端点仍可变化。</p>
-      <footer>三笔价格重叠，不等同于中枢，不作为独立交易依据。</footer>
+      <footer>三笔价格重叠，不等同于中枢，不作为独立交易依据。<span v-if="preview" class="preview-hint">悬停预览 · 右键矩形可固定查看</span></footer>
     </template>
   </section>
 </template>
@@ -121,6 +125,7 @@ dt { color: #929fb0; font-size: 10px; }
 dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 footer, .live-note { margin: 10px 0 0; font-size: 10px; line-height: 1.8; color: #96a3b6; }
 .live-note { color: #cbb38b; }
+.preview-hint { display: block; margin-top: 6px; color: #a7b9ce; }
 header span.inactive { color: #99a1ad; }
 .signal-message { margin: 10px 0; font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; text-align: justify; }
 .evidence-toggle { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 10px 0; border: 0; border-top: 1px solid rgba(255,255,255,.08); border-radius: 0; background: transparent; color: #b3c9e1; font-size: 11px; box-shadow: none; }

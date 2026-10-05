@@ -96,7 +96,7 @@ function exportSnapshot() {
 </script>
 
 <template>
-  <details class="multi-study research-panel">
+  <details class="multi-study research-panel research-hierarchy">
     <summary><strong>多周期研究</strong><span>量价与动能观察 · 不生成正式买卖点</span></summary>
     <div class="research-panel-body">
     <div class="study-tools">

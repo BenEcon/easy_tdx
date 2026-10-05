@@ -7,7 +7,7 @@ const emit = defineEmits<{ seek: [position: number] }>()
 </script>
 
 <template>
-  <details class="extension-inspector research-panel">
+  <details class="extension-inspector research-panel research-hierarchy">
     <summary><strong>延伸升级核验</strong><span>{{ data?.proofs.length ? `${data.proofs.length} 项证明 · 最高结构 L${data.highest_proven_level}` : '暂无可证明的升级' }}</span></summary>
     <div class="research-panel-body">
     <dl class="research-copy">
