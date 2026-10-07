@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:synchronous-zoom-20261006

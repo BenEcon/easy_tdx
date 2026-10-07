@@ -290,17 +290,14 @@ class TestMacClientFailover:
 
         with (
             patch("easy_tdx.mac.client.TdxConnection") as mock_conn_cls,
-            patch("easy_tdx.mac.client.time.sleep"),
             patch(
-                "easy_tdx.mac.client.select_best_host_sync", return_value="new-mac-host"
-            ) as mock_select,
+                "easy_tdx.mac.client.get_mac_hosts", return_value=["bad-mac-host", "new-mac-host"]
+            ),
+            patch("easy_tdx.mac.client.save_best_mac_host") as mock_save,
+            patch("easy_tdx.config.save_best_host") as mock_standard_save,
         ):
             mock_conn = MagicMock()
             mock_conn.execute.side_effect = [
-                TdxConnectionError("down"),
-                TdxConnectionError("down"),
-                TdxConnectionError("down"),
-                TdxConnectionError("down"),
                 TdxConnectionError("down"),
                 999,  # failover 后成功
             ]
@@ -309,15 +306,8 @@ class TestMacClientFailover:
             client = MacClient("bad-mac-host", 7709, 1.0, auto_reconnect=True, heartbeat_interval=0)
             client._execute(KlineOffsetCmd(0, 1))
 
-            mock_select.assert_called_once()
-            # 第 3 个位置参数是 save_fn，必须是 save_best_mac_host（防 v1.19.4 回归）
-            from easy_tdx.config import save_best_mac_host
-
-            save_fn = mock_select.call_args.args[2]
-            assert save_fn is save_best_mac_host, (
-                "MacClient failover 必须用 save_best_mac_host，"
-                "否则污染标准 best_host（v1.19.4 修复）"
-            )
+            mock_save.assert_called_once_with("new-mac-host")
+            mock_standard_save.assert_not_called()
 
 
 # --------------------------------------------------------------------------- #

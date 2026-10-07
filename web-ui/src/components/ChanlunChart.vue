@@ -31,6 +31,7 @@ import { signalName, structuralSignalDetail, macdSignalDetail, type ChartSignalD
 import { barWindow, overlappingBars, nearestMarkers, timeLinkGraphic, type PlotRect, type TimeWindow, type MarkerCandidate } from '../chart-research-link'
 import { useResearchPreferences } from '../research-preferences'
 import { researchIndicatorRows } from '../research-indicators'
+import { synchronousChartMotion, synchronizeChartSeries } from '../chart-synchronous-motion'
 
 const props = defineProps<{
   bars: Bar[]
@@ -640,21 +641,18 @@ function buildOption(): echarts.EChartsCoreOption {
     itemStyle: { color: movingAverageColor(period) },
   }))
   series.push(...averages, ...secondarySeries)
-  if (props.focus) {
-    for (const item of series) Object.assign(item, { animation: false, animationDuration: 0, animationDurationUpdate: 0 })
-  }
+  synchronizeChartSeries(series)
 
   return {
     backgroundColor: 'transparent',
-    animation: !props.focus,
-    animationDuration: 420,
-    animationEasing: 'cubicOut',
+    ...synchronousChartMotion,
     tooltip: {
       ...clickTooltipOptions,
       trigger: 'axis',
       confine: true,
       padding: [10, 12],
       axisPointer: {
+        animation: false,
         type: 'cross',
         link: [{ xAxisIndex: 'all' }],
         lineStyle: { color: 'rgba(255,255,255,.22)', type: 'dashed', width: 1 },
@@ -725,7 +723,7 @@ function buildOption(): echarts.EChartsCoreOption {
         pageTextStyle: { color: '#858b98' },
       })),
     ],
-    axisPointer: { link: [{ xAxisIndex: 'all' }] },
+    axisPointer: { animation: false, link: [{ xAxisIndex: 'all' }] },
     grid: [
       { left: 58, right: 28, top: 50, height: 342 },
       ...panels.value.map((_, i) => ({ left: 58, right: 28, top: 420 + i * 155, height: 115 })),
@@ -771,12 +769,13 @@ function buildOption(): echarts.EChartsCoreOption {
     ],
     dataZoom: [
       {
-        type: 'inside', xAxisIndex: axisIndices,
+        type: 'inside', xAxisIndex: axisIndices, throttle: 16,
         ...(props.focus ? { startValue: props.focus.start, endValue: props.focus.end }
           : { start: Math.max(0, 100 - Math.min(100, 12000 / Math.max(dates.length, 1))), end: 100 }),
       },
       {
         type: 'slider',
+        throttle: 16, realtime: true,
         xAxisIndex: axisIndices,
         height: 20,
         bottom: 15,
@@ -957,7 +956,6 @@ watch(() => [props.bars, props.result.macd, indicators.value.map(item => [item.i
 .chanlun-chart {
   width: 100%;
   height: 470px;
-  transition: height 220ms ease;
 }
 .chanlun-chart.has-indicator { height: 585px; }
 :global(.chart-frame:fullscreen .chanlun-chart),
