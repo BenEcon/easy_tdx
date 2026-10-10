@@ -1,0 +1,6 @@
+### Result
+{"periods":5,"width":390}
+### Ran Playwright code
+```js
+await (async(page)=>{const cloud=page.locator(".cloud-archives").nth(1);await cloud.locator(":scope > summary").click();await cloud.getByRole("button",{name:"保存当前结果到云端",exact:true}).click();await cloud.getByText("已保存到当前账户，可在其他设备刷新云目录查看。",{exact:true}).waitFor();const row=cloud.locator("li").filter({hasText:"多周期研究"}).first();await row.getByRole("button",{name:"查看原档",exact:true}).click();const dialog=page.getByRole("dialog",{name:"云端研究原档",exact:true});await dialog.waitFor();await dialog.getByRole("region",{name:"多周期概览表",exact:true}).waitFor();const count=await dialog.locator("tbody tr").count();if(count<5)throw Error("missing study periods");await page.setViewportSize({width:390,height:1000});await page.screenshot({path:"../output/playwright/cloud-study-mobile.png"});const width=await page.evaluate(()=>document.documentElement.scrollWidth);if(width>390)throw Error("mobile overflow");await dialog.getByRole("button",{name:"关闭云存档",exact:true}).click();return {periods:count,width};})(page);
+```

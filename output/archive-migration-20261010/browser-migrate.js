@@ -1,0 +1,36 @@
+async page => {
+  const errors=[];page.on('pageerror',error=>errors.push(error.message));
+  const endpoint='http://127.0.0.1:8768/api/v1/research/archives';
+  const directory=async()=> (await (await page.request.get(endpoint)).json());
+  let lost=false;const calls=[];
+  const handler=async route=>{
+    if(route.request().method()!=='PUT'){await route.continue();return}
+    calls.push(route.request().url());
+    if(!lost){lost=true;await route.fetch();await route.abort('failed')}else await route.continue();
+  };
+  await page.route('**/api/v1/research/archives/*',handler);
+  await page.getByRole('checkbox',{name:'选择所有可迁移原档'}).check();
+  await page.getByRole('button',{name:'确认迁移 3 份到当前账户',exact:true}).click();
+  await page.getByText('本条未确认成功，已停止后续上传。可保留选择重试，或取消本条选择后继续；本地原件未删除。',{exact:true}).waitFor();
+  const lostCount=(await directory()).items.length;
+  if(lostCount!==1||calls.length!==1)throw Error('failure did not stop batch');
+  await page.getByRole('button',{name:'确认迁移 3 份到当前账户',exact:true}).click();
+  await page.getByText('所选原档已核对完成；本地原件保留，没有重新计算。',{exact:true}).waitFor();
+  const completed=await directory();
+  if(completed.items.length!==3||calls[0]!==calls[1])throw Error('idempotency failed');
+  await page.unroute('**/api/v1/research/archives/*',handler);
+  const record=await (await page.request.get(endpoint+'/'+completed.items[0].id)).json();
+  if(record.payload.charts[0].bars[0].open!==1.123456789||record.payload.charts[0].frozenIndicators!==undefined||record.payload.owner!==undefined)throw Error('content changed');
+  await page.reload();
+  await page.getByText('账户云存档',{exact:true}).click();
+  await page.getByRole('button',{name:'检查本地快照',exact:true}).click();
+  await page.getByText('已检查 4 份，请选择要迁移的原档。',{exact:true}).waitFor();
+  await page.getByRole('checkbox',{name:'选择所有可迁移原档'}).check();
+  await page.getByRole('button',{name:'确认迁移 3 份到当前账户',exact:true}).click();
+  await page.getByText('所选原档已核对完成；本地原件保留，没有重新计算。',{exact:true}).waitFor();
+  const reloaded=(await directory()).items.length;
+  if(reloaded!==3)throw Error('reload duplicated archives');
+  const localCount=await page.evaluate(()=>new Promise((resolve,reject)=>{const req=indexedDB.open('tdx-research-snapshots',1);req.onerror=()=>reject(req.error);req.onsuccess=()=>{const db=req.result,r=db.transaction('snapshots').objectStore('snapshots').count();r.onsuccess=()=>{db.close();resolve(r.result)}}}));
+  if(localCount!==5||errors.length)throw Error('local originals/error: '+JSON.stringify({localCount,errors}));
+  return {lostCount,completed:completed.items.length,reloaded,localCount,errors,stableRetry:calls[0]===calls[1],precision:record.payload.charts[0].bars[0].open};
+}

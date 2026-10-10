@@ -1,0 +1,6 @@
+
+> web-ui@0.0.0 build
+> vue-tsc -b && vite build
+
+src/views/SignalRadarView.vue(307,16): error TS2345: Argument of type '{ metadata: { source: string; requested_adjust: string; actual_adjust: string; observed_at: string; category: string; bar_time?: "start" | "end" | undefined; completion_note: string; volume_policy: string; ... 17 more ...; quality?: { ...; } | undefined; }; }' is not assignable to parameter of type '{ readonly metadata: MarketDataMetadata; readonly count: number; } & VNodeProps & AllowedComponentProps & ComponentCustomProps & Record<...>'.
+  Property 'count' is missing in type '{ metadata: { source: string; requested_adjust: string; actual_adjust: string; observed_at: string; category: string; bar_time?: "start" | "end" | undefined; completion_note: string; volume_policy: string; ... 17 more ...; quality?: { ...; } | undefined; }; }' but required in type '{ readonly metadata: MarketDataMetadata; readonly count: number; }'.

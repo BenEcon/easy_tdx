@@ -1,0 +1,317 @@
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 62%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 82%]
+........................................................................ [ 85%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+........................................................................ [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.10.18-final-0 _______________
+
+Name                                                    Stmts   Miss  Cover   Missing
+-------------------------------------------------------------------------------------
+src/easy_tdx/MyTT.py                                      341     41    88%   33, 41, 45, 49, 53, 57, 61, 81, 93, 125, 135, 156, 165, 176, 180, 184-186, 190-193, 197-200, 204, 224, 230, 234, 238-241, 245-248, 496-498
+src/easy_tdx/__init__.py                                   16      0   100%
+src/easy_tdx/__main__.py                                   45     45     0%   31-145
+src/easy_tdx/_binary.py                                    17      1    94%   17
+src/easy_tdx/_df.py                                       117     18    85%   29, 79, 115, 147, 168, 195-202, 209-218, 227
+src/easy_tdx/_health.py                                    66      0   100%
+src/easy_tdx/_reconnect.py                                118     20    83%   152-163, 250, 252, 267-270, 293, 300, 326-327
+src/easy_tdx/backtest/__init__.py                           5      0   100%
+src/easy_tdx/backtest/attribution.py                      109      4    96%   103, 107, 146, 216
+src/easy_tdx/backtest/cli.py                              189    134    29%   93-94, 102-151, 168, 171-172, 186-218, 230-242, 247-287, 353-411, 416-436
+src/easy_tdx/backtest/combo.py                            144      7    95%   168-169, 175-176, 202, 430, 456
+src/easy_tdx/backtest/dsl.py                               26     26     0%   7-55
+src/easy_tdx/backtest/engine.py                           187     10    95%   205, 224-225, 236-238, 244, 321, 381, 460
+src/easy_tdx/backtest/execution.py                        229     50    78%   23, 86, 90, 107-108, 153, 176, 178, 199, 261, 270, 274, 286, 321, 325, 331, 337, 395, 419, 422, 427, 431, 448, 457, 472, 505-542, 588, 606, 625, 627
+src/easy_tdx/backtest/multi_strategy_engine.py             93      4    96%   215, 218, 220, 225
+src/easy_tdx/backtest/optimizer.py                         91      3    97%   216-217, 254
+src/easy_tdx/backtest/orders.py                           183     31    83%   90-94, 99, 107, 110-111, 122, 180-181, 189, 218, 227, 264, 285-292, 332, 336, 341, 345, 384-385, 434, 491-503
+src/easy_tdx/backtest/performance.py                      142      8    94%   184, 276-277, 281-282, 287, 307, 326
+src/easy_tdx/backtest/portfolio.py                         80      3    96%   89-90, 110
+src/easy_tdx/backtest/portfolio_engine.py                  94      6    94%   134-135, 242, 246, 248, 253
+src/easy_tdx/backtest/slippage.py                          40      0   100%
+src/easy_tdx/backtest/strategies/__init__.py                6      0   100%
+src/easy_tdx/backtest/strategies/builtin.py               320     15    95%   264, 287, 289, 317, 401, 403, 627, 631-632, 663, 690, 695, 703, 772, 774
+src/easy_tdx/backtest/strategies/presets.py                 5      0   100%
+src/easy_tdx/backtest/strategies/registry.py              121      4    97%   114, 166, 286, 340
+src/easy_tdx/backtest/strategy.py                         154     11    93%   316, 344, 346, 364, 399, 426, 455, 461-467
+src/easy_tdx/backtest/types.py                             61      2    97%   147, 156
+src/easy_tdx/chanlun/__init__.py                            4      0   100%
+src/easy_tdx/chanlun/analyser.py                          222      5    98%   705, 708, 711, 714, 717
+src/easy_tdx/chanlun/anchors.py                            13      0   100%
+src/easy_tdx/chanlun/beichi.py                             59     47    20%   41-54, 59-88, 93-122, 127-173, 181
+src/easy_tdx/chanlun/bi.py                                 37      5    86%   35, 42, 52-57
+src/easy_tdx/chanlun/candidate_audit.py                    27      1    96%   54
+src/easy_tdx/chanlun/config.py                             16      1    94%   45
+src/easy_tdx/chanlun/decomposition.py                      31      0   100%
+src/easy_tdx/chanlun/divergence_signals.py                529     57    89%   444, 447-448, 758, 788, 819, 971, 1132, 1144, 1151, 1155, 1157, 1159, 1163, 1167, 1169, 1254, 1386-1462
+src/easy_tdx/chanlun/engineering_completion.py             35      1    97%   94
+src/easy_tdx/chanlun/engineering_consolidations.py         75      1    99%   128
+src/easy_tdx/chanlun/engineering_trends.py                191      2    99%   130, 250
+src/easy_tdx/chanlun/exhaustive_recursion.py               40      0   100%
+src/easy_tdx/chanlun/expansion_regrouping.py              171      2    99%   234, 292
+src/easy_tdx/chanlun/extension_recursion.py                65      3    95%   32, 78, 133
+src/easy_tdx/chanlun/fractal.py                            27      3    89%   59-65, 74
+src/easy_tdx/chanlun/input_data.py                         45      0   100%
+src/easy_tdx/chanlun/kline_merge.py                        38      0   100%
+src/easy_tdx/chanlun/layered_ownership.py                 140      0   100%
+src/easy_tdx/chanlun/macd.py                               30     10    67%   31, 57, 90-100
+src/easy_tdx/chanlun/mixed_sources.py                      48      0   100%
+src/easy_tdx/chanlun/mmd.py                                63     51    19%   41-51, 56-59, 65-99, 105-137, 142-160
+src/easy_tdx/chanlun/multi_level.py                        72     29    60%   58, 66, 112, 175-198, 216-223, 249-259
+src/easy_tdx/chanlun/nested_recursion.py                   79      0   100%
+src/easy_tdx/chanlun/observations.py                       52      0   100%
+src/easy_tdx/chanlun/ownership_conflicts.py                10      0   100%
+src/easy_tdx/chanlun/ownership_history.py                   9      0   100%
+src/easy_tdx/chanlun/partition_search.py                   74      1    99%   77
+src/easy_tdx/chanlun/pen_consolidation.py                  17      2    88%   19, 21
+src/easy_tdx/chanlun/recursive_structure.py                31      0   100%
+src/easy_tdx/chanlun/regrouping_versions.py               110      1    99%   117
+src/easy_tdx/chanlun/release_review.py                     33      0   100%
+src/easy_tdx/chanlun/released_recursion.py                216      1    99%   236
+src/easy_tdx/chanlun/research_context.py                  263      7    97%   102, 378-380, 389, 468, 478
+src/easy_tdx/chanlun/research_types.py                     75      0   100%
+src/easy_tdx/chanlun/structure.py                         144      0   100%
+src/easy_tdx/chanlun/structure_signals.py                 113      4    96%   93, 115, 120, 128
+src/easy_tdx/chanlun/types.py                             136      7    95%   31, 56, 84, 113, 163, 198, 239
+src/easy_tdx/chanlun/xd.py                                181     10    94%   119, 186, 202, 272-275, 282-283, 331
+src/easy_tdx/chanlun/zs.py                                 32      1    97%   50
+src/easy_tdx/chanlun/zsd.py                                48     37    23%   39-60, 80-99, 109-112, 132-143
+src/easy_tdx/cli/__init__.py                               66      1    98%   59
+src/easy_tdx/cli/cmd_admin.py                              26     17    35%   21-40, 46-47
+src/easy_tdx/cli/cmd_announcement.py                       43     32    26%   50-101
+src/easy_tdx/cli/cmd_auction.py                            16      8    50%   22-30
+src/easy_tdx/cli/cmd_board.py                             107     58    46%   53-64, 94-108, 125-133, 165-183, 215-223, 253-267
+src/easy_tdx/cli/cmd_capital.py                            16      8    50%   22-30
+src/easy_tdx/cli/cmd_chanlun.py                           101     54    47%   51-86, 129-137, 140-143, 154-171, 203-233
+src/easy_tdx/cli/cmd_company.py                           113     82    27%   34-46, 94-98, 121-122, 132-143, 157-201, 212-223, 239-251
+src/easy_tdx/cli/cmd_ex.py                                 78     41    47%   20, 52-67, 86-94, 120-128, 154-162, 168-178
+src/easy_tdx/cli/cmd_factor.py                             29     15    48%   13, 32-56, 72
+src/easy_tdx/cli/cmd_finance.py                            26     11    58%   38-48, 63
+src/easy_tdx/cli/cmd_indicator.py                          70     51    27%   14-33, 73-113, 121-131
+src/easy_tdx/cli/cmd_info.py                               26     14    46%   20-26, 43-51
+src/easy_tdx/cli/cmd_kline.py                              21      8    62%   51-67
+src/easy_tdx/cli/cmd_monitor.py                            27     14    48%   29-37, 52-58
+src/easy_tdx/cli/cmd_offline.py                           311    249    20%   41, 47-53, 80-112, 147-188, 198-221, 245-288, 310-340, 362-388, 408-434, 444-465, 474-479, 502-530, 535-564, 587-612, 634-694
+src/easy_tdx/cli/cmd_pfactor.py                            14      2    86%   13, 38
+src/easy_tdx/cli/cmd_quote.py                              33     18    45%   23-31, 66-81
+src/easy_tdx/cli/cmd_run_all.py                           291    264     9%   27-50, 55-74, 79-89, 101-222, 234-293, 305-385, 445-555
+src/easy_tdx/cli/cmd_tick.py                               20     10    50%   33-44
+src/easy_tdx/cli/cmd_transaction.py                        19      8    58%   35-43
+src/easy_tdx/cli/cmd_web.py                                35      6    83%   58-63, 69-72
+src/easy_tdx/cli/conn.py                                   27     15    44%   22-27, 42-47, 53-58
+src/easy_tdx/cli/output.py                                 46     46     0%   3-71
+src/easy_tdx/cli/parsers.py                                70     51    27%   30-33, 60-63, 79-82, 100-103, 108-126, 143-149, 154-158, 170-173, 178-188
+src/easy_tdx/cli/proxy.py                                  39      1    97%   34
+src/easy_tdx/client.py                                    809    378    53%   144, 193, 197, 201-215, 219-225, 278-287, 296-300, 307-309, 312-313, 317, 321-324, 341, 344-345, 353, 419, 423, 439-442, 447, 457-458, 468-472, 488, 494, 511-512, 610-611, 621-622, 628-629, 637, 641, 645, 651, 668, 675-686, 693-709, 716-720, 728-730, 738-764, 834, 868, 872, 884, 982, 1036-1045, 1054-1058, 1076-1082, 1085-1086, 1094, 1108, 1152-1159, 1169, 1182-1232, 1235, 1241-1252, 1271-1286, 1299-1314, 1324-1325, 1330-1331, 1336-1339, 1342, 1345, 1348, 1353, 1364, 1371-1382, 1389-1405, 1409-1413, 1417-1419, 1423-1449, 1462-1479, 1499-1513, 1519, 1527-1562, 1569-1575, 1586-1607, 1643-1645
+src/easy_tdx/cninfo/__init__.py                             4      0   100%
+src/easy_tdx/cninfo/client.py                             107      3    97%   206-207, 272
+src/easy_tdx/cninfo/models.py                              22      0   100%
+src/easy_tdx/codec/__init__.py                              5      0   100%
+src/easy_tdx/codec/bitmap.py                              249     23    91%   189-193, 335, 341-343, 346, 369, 377-379, 382, 385-387, 390, 399, 402, 405-406, 412
+src/easy_tdx/codec/block.py                                35      4    89%   32, 35-36, 40
+src/easy_tdx/codec/datetime_.py                            23      0   100%
+src/easy_tdx/codec/financial.py                            48      5    90%   21, 70, 83, 91, 96
+src/easy_tdx/codec/frame.py                                28      2    93%   52, 64
+src/easy_tdx/codec/industry.py                             15      2    87%   22-23
+src/easy_tdx/codec/mac_frame.py                            10      0   100%
+src/easy_tdx/codec/price.py                                37      2    95%   35-36
+src/easy_tdx/codec/price_rules.py                          40      3    92%   16, 26, 61
+src/easy_tdx/codec/volume.py                               27      0   100%
+src/easy_tdx/commands/__init__.py                           3      0   100%
+src/easy_tdx/commands/base.py                               8      0   100%
+src/easy_tdx/commands/block_info.py                        29     14    52%   24-27, 30-34, 53-56, 59-61
+src/easy_tdx/commands/company_info.py                      47      7    85%   20-21, 25, 65-67, 81
+src/easy_tdx/commands/finance_info.py                      27      4    85%   24-25, 74-75
+src/easy_tdx/commands/minute_time.py                       38      4    89%   23-24, 40-41
+src/easy_tdx/commands/report_file.py                       16     10    38%   18-20, 24-27, 30-32
+src/easy_tdx/commands/security_bars.py                     78     28    64%   145-208
+src/easy_tdx/commands/security_count.py                    13      0   100%
+src/easy_tdx/commands/security_list.py                     27      0   100%
+src/easy_tdx/commands/security_quotes.py                  108     13    88%   40, 53, 78, 80, 84-100, 188-189
+src/easy_tdx/commands/setup.py                              5      0   100%
+src/easy_tdx/commands/transaction.py                       61      4    93%   26-27, 45-46
+src/easy_tdx/commands/xdxr_info.py                         62     10    84%   26-27, 31, 56-57, 77-78, 80-82
+src/easy_tdx/computation.py                                44      0   100%
+src/easy_tdx/config.py                                    129     25    81%   218, 231-235, 246-250, 298-305, 310-315
+src/easy_tdx/ex/__init__.py                                 4      0   100%
+src/easy_tdx/ex/_hk_transaction.py                         88      4    95%   129, 152, 157, 210
+src/easy_tdx/ex/client.py                                 222     82    63%   92-97, 105, 112, 115, 118-119, 127, 137, 177-184, 196, 200, 204, 212, 222, 244-246, 266-272, 280, 289, 303, 314, 358-363, 371, 378-379, 382-383, 386-387, 395, 399, 408, 425, 433-434, 448-455, 458-459, 466, 469, 476, 487, 496, 513-515, 529-537, 544, 552, 565, 575
+src/easy_tdx/ex/commands/__init__.py                        0      0   100%
+src/easy_tdx/ex/commands/get_history_bars_range.py         45     33    27%   15-18, 21-28, 32-35, 39, 42-76
+src/easy_tdx/ex/commands/get_instrument_bars.py            31     23    26%   21-25, 28-29, 40-74
+src/easy_tdx/ex/commands/get_instrument_count.py           10      5    50%   11, 14-17
+src/easy_tdx/ex/commands/get_instrument_info.py            29     22    24%   13-14, 17-18, 21-50
+src/easy_tdx/ex/commands/get_instrument_quote.py           21     14    33%   13-14, 17-18, 21-68
+src/easy_tdx/ex/commands/get_instrument_quote_list.py      47     35    26%   20-23, 26-27, 37-54, 64-128, 138-218
+src/easy_tdx/ex/commands/get_markets.py                    25     18    28%   14, 17-41
+src/easy_tdx/ex/commands/get_minute_time.py                45     32    29%   13-14, 17-18, 21-26, 30-53, 60-62, 65-66, 69-74
+src/easy_tdx/ex/commands/get_transaction.py                53     11    79%   19-20, 23-28, 35, 81-82
+src/easy_tdx/ex/commands/login.py                          13      4    69%   38-47, 51
+src/easy_tdx/ex/commands/setup.py                           2      2     0%   3-5
+src/easy_tdx/ex/mac_client.py                             395    240    39%   56-61, 102-106, 114, 121-122, 125, 128, 132-138, 141-142, 150, 170, 199-212, 215-216, 224-245, 261-287, 291-306, 326-328, 355-364, 392-401, 424-426, 442-446, 580-584, 592, 599-601, 604-605, 608-609, 617, 621, 625, 641, 655-656, 670-683, 686-687, 695-714, 718-744, 748-763, 774-776, 786-793, 808-817, 829-831, 838-842
+src/easy_tdx/ex/models.py                                  91      0   100%
+src/easy_tdx/ex/transport/__init__.py                       0      0   100%
+src/easy_tdx/ex/transport/async_.py                        71     52    27%   38-44, 47-50, 53-54, 57-77, 80-88, 91-98, 101-102, 110, 113-114
+src/easy_tdx/ex/transport/sync.py                         101     78    23%   29-47, 56-69, 73-79, 100-105, 109-116, 119-124, 128-142, 145-146, 154, 157-158
+src/easy_tdx/exceptions.py                                 10      0   100%
+src/easy_tdx/factor/__init__.py                             7      0   100%
+src/easy_tdx/factor/analysis.py                            96     11    89%   56-57, 61-62, 67, 80-81, 97, 105, 111, 123
+src/easy_tdx/factor/base.py                                20      0   100%
+src/easy_tdx/factor/builtin/__init__.py                     9      0   100%
+src/easy_tdx/factor/builtin/chanlun.py                     53      5    91%   29, 37-38, 82-83
+src/easy_tdx/factor/builtin/momentum.py                    27      0   100%
+src/easy_tdx/factor/builtin/quality.py                     40      0   100%
+src/easy_tdx/factor/builtin/technical.py                   42      0   100%
+src/easy_tdx/factor/builtin/value.py                       19      0   100%
+src/easy_tdx/factor/builtin/volatility.py                  37      0   100%
+src/easy_tdx/factor/builtin/volume.py                      47      0   100%
+src/easy_tdx/factor/engine.py                              73      7    90%   27-29, 73, 90, 114, 132
+src/easy_tdx/factor/transform.py                          119     30    75%   18, 23, 28, 34-43, 49, 61, 66, 71, 77, 88, 93, 101, 113, 118, 127, 132-134, 150, 153, 164, 191, 195
+src/easy_tdx/indicator.py                                  99      2    98%   25, 331
+src/easy_tdx/mac/__init__.py                                0      0   100%
+src/easy_tdx/mac/adjust.py                                 84     15    82%   60, 90-92, 97, 106, 109-110, 113, 126, 130, 154-155, 157, 172
+src/easy_tdx/mac/client.py                                827    485    41%   101-115, 125-130, 134, 139-142, 147-154, 212-222, 231-235, 250, 253, 256-257, 261, 265, 283, 286-287, 295, 343-344, 367-394, 428, 433, 444, 461, 490-493, 585-593, 612-618, 635-641, 650-651, 674-698, 711-712, 747-751, 774-800, 809-810, 840-869, 914-953, 1012-1014, 1017, 1024, 1033, 1067-1070, 1083-1084, 1103-1104, 1112-1113, 1126-1127, 1139-1140, 1157, 1170-1189, 1208-1209, 1267-1277, 1286-1290, 1305, 1313-1314, 1318, 1322, 1342-1343, 1351, 1359, 1398-1399, 1411-1438, 1447-1467, 1483-1495, 1514-1583, 1607-1620, 1632-1638, 1647-1653, 1656-1657, 1671-1697, 1704-1705, 1730-1734, 1747-1773, 1776-1777, 1807-1836, 1887-1923, 1947-2017, 2024-2027, 2034-2035, 2047-2048, 2055-2056, 2063-2064, 2071-2072, 2081, 2088-2107, 2119-2120
+src/easy_tdx/mac/commands/__init__.py                      15      0   100%
+src/easy_tdx/mac/commands/board_list.py                    26      0   100%
+src/easy_tdx/mac/commands/board_members_quotes.py          44     33    25%   48-54, 58-76, 80-114
+src/easy_tdx/mac/commands/chart_sampling.py                29     17    41%   27-28, 31-34, 37-47
+src/easy_tdx/mac/commands/file_query.py                    46     22    52%   38-39, 42-45, 48-52, 72-75, 78-85, 88-90
+src/easy_tdx/mac/commands/goods_list.py                    43     19    56%   42-47, 50-51, 54-80
+src/easy_tdx/mac/commands/kline_offset.py                  17      7    59%   27-28, 31-38
+src/easy_tdx/mac/commands/server_info.py                   41     34    17%   14-16, 19-67
+src/easy_tdx/mac/commands/symbol_auction.py                25     15    40%   28-31, 35-42, 46-66
+src/easy_tdx/mac/commands/symbol_bar.py                    47      5    89%   28-30, 106, 111
+src/easy_tdx/mac/commands/symbol_belong_board.py           43     31    28%   16-19, 24-27, 42-43, 47-53, 57-90
+src/easy_tdx/mac/commands/symbol_capital_flow.py           34     23    32%   16-19, 34-35, 39-45, 49-71
+src/easy_tdx/mac/commands/symbol_info.py                   20      9    55%   26-27, 30-31, 36-70
+src/easy_tdx/mac/commands/symbol_quotes.py                 55     42    24%   34-44, 47-51, 54-99
+src/easy_tdx/mac/commands/symbol_tick_chart.py             27     16    41%   32-37, 40-51, 55-98
+src/easy_tdx/mac/commands/symbol_transaction.py            27     10    63%   39, 46-54, 58-76
+src/easy_tdx/mac/commands/tick_charts.py                   50      0   100%
+src/easy_tdx/mac/commands/unusual.py                       98     87    11%   14-82, 99-101, 105-117, 120-171
+src/easy_tdx/mac/enums.py                                 188      0   100%
+src/easy_tdx/mac/models.py                                153      0   100%
+src/easy_tdx/models/__init__.py                             8      0   100%
+src/easy_tdx/models/bar.py                                 18      0   100%
+src/easy_tdx/models/enums.py                               18      0   100%
+src/easy_tdx/models/finance.py                             87      0   100%
+src/easy_tdx/models/quote.py                               52      0   100%
+src/easy_tdx/models/security.py                            13      0   100%
+src/easy_tdx/models/stats.py                               45      3    93%   41, 46, 72
+src/easy_tdx/models/timeseries.py                          16      0   100%
+src/easy_tdx/offline/__init__.py                           12      0   100%
+src/easy_tdx/offline/block.py                              45     33    27%   31-35, 51-92
+src/easy_tdx/offline/daily_bar.py                          63      9    86%   45, 53, 60, 68, 86, 93, 140-142
+src/easy_tdx/offline/ex_daily_bar.py                       38      2    95%   44, 48
+src/easy_tdx/offline/finders.py                            14      9    36%   14-16, 25-27, 36-38
+src/easy_tdx/offline/gbbq.py                               61     42    31%   303-366
+src/easy_tdx/offline/history_financial.py                  31     23    26%   23-47, 52-59
+src/easy_tdx/offline/min_bar.py                            45      4    91%   42, 46, 90, 94
+src/easy_tdx/offline/paths.py                              36     23    36%   28-37, 56-65, 70-74
+src/easy_tdx/offline/write_daily.py                        55      9    84%   73, 80-90, 104, 108-114
+src/easy_tdx/offline/write_ex_daily.py                     33      1    97%   43
+src/easy_tdx/offline/write_min_bar.py                      69      5    93%   72, 102, 147, 177, 180
+src/easy_tdx/portfolio/__init__.py                          5      0   100%
+src/easy_tdx/portfolio/optimizer.py                       113     33    71%   66, 69, 82, 105, 128, 131-133, 137-138, 161, 184-191, 198-216
+src/easy_tdx/portfolio/rebalance.py                       126      5    96%   58, 66, 111, 193, 220
+src/easy_tdx/portfolio/risk.py                             28      2    93%   21-22
+src/easy_tdx/portfolio/types.py                            18      0   100%
+src/easy_tdx/realtime/__init__.py                           3      0   100%
+src/easy_tdx/realtime/engine.py                            73      5    93%   129-130, 137-139
+src/easy_tdx/realtime/feed.py                             141     36    74%   82-83, 89-90, 238-253, 257-267, 289-300, 308
+src/easy_tdx/screen/__init__.py                             3      0   100%
+src/easy_tdx/screen/cli.py                                169    105    38%   75-123, 166-221, 295-343, 353-389, 415-416, 427-428
+src/easy_tdx/screen/ranker.py                             135     80    41%   78-82, 105-151, 163-187, 202-248, 336-340
+src/easy_tdx/screen/scanner.py                            268     90    66%   125, 158-159, 243-247, 251-264, 286, 306-317, 324, 367, 402-426, 436-437, 446-447, 463, 467, 477-481, 485, 591-621, 658-664, 681-699
+src/easy_tdx/screen/strength.py                           200    113    44%   132, 210-227, 231-251, 255-275, 284-296, 306-340, 344-363, 450-466, 487-489
+src/easy_tdx/sina/__init__.py                               4      0   100%
+src/easy_tdx/sina/client.py                                71      2    97%   149, 163
+src/easy_tdx/sina/models.py                                14      1    93%   49
+src/easy_tdx/transport/__init__.py                          3      0   100%
+src/easy_tdx/transport/async_.py                           86     14    84%   45, 84-85, 90-92, 99-100, 109-110, 118, 135-137
+src/easy_tdx/transport/sync.py                            185     93    50%   46, 67-68, 81, 83, 109-111, 156-158, 165-166, 172-178, 182-196, 203-204, 212, 220-228, 232-240, 244-272, 280-291, 295-296
+src/easy_tdx/tray.py                                       50     50     0%   18-127
+src/easy_tdx/unified.py                                   220    137    38%   41-44, 47, 50-55, 58, 61-62, 70, 77-83, 86-89, 100, 112, 126, 138, 154, 163, 166, 176, 179, 186, 197, 202, 205, 208, 216, 219, 226, 229, 238, 245, 257-262, 269, 272, 279, 289, 300, 308, 311, 321, 339-342, 345, 348-353, 356, 359-360, 368, 375-381, 384-387, 398-399, 411-412, 426-427, 439-440, 456-457, 466-467, 470-471, 481-482, 485-486, 493-494, 505-506, 511-512, 515-516, 519-520, 528-529, 532-533, 540-541, 544-545, 554-555, 562-563, 575-581, 588-589, 592-593, 600-601, 611-612, 623-624, 632-633, 636-637, 647-648
+src/easy_tdx/web/__init__.py                                9      2    78%   47-49
+src/easy_tdx/web/account_store.py                         255     24    91%   158-159, 194, 196, 223, 272, 277, 292, 356-360, 382, 439, 452, 457, 497, 504, 523-530
+src/easy_tdx/web/adjusted_bars.py                           6      0   100%
+src/easy_tdx/web/app.py                                   170     70    59%   39-41, 46-48, 57-61, 67-145, 179, 319-322, 327
+src/easy_tdx/web/backtest_schemas.py                      238      2    99%   48, 485
+src/easy_tdx/web/bar_snapshot.py                          119      6    95%   88, 91-92, 102, 120-121
+src/easy_tdx/web/convert.py                               139     63    55%   61-68, 90-102, 107-119, 186-198, 211-214, 219-234
+src/easy_tdx/web/deps.py                                   21      6    71%   24, 39-44
+src/easy_tdx/web/errors.py                                 28      4    86%   43-44, 59-60
+src/easy_tdx/web/market_data.py                            60      1    98%   51
+src/easy_tdx/web/market_range.py                           77      9    88%   37, 72-73, 80, 84, 90-91, 121, 168
+src/easy_tdx/web/realtime_limits.py                        62      0   100%
+src/easy_tdx/web/request_security.py                       52      6    88%   44-47, 55, 69
+src/easy_tdx/web/research_cursor.py                        40      0   100%
+src/easy_tdx/web/research_provenance.py                    23      1    96%   44
+src/easy_tdx/web/resource_admission.py                    196     13    93%   160, 170-171, 176, 182-183, 204-205, 236-239, 263
+src/easy_tdx/web/routers/__init__.py                        0      0   100%
+src/easy_tdx/web/routers/admin_data.py                     22      0   100%
+src/easy_tdx/web/routers/announcement.py                   17     10    41%   24-37
+src/easy_tdx/web/routers/auth.py                          151     18    88%   36, 121, 125-126, 202-212, 258, 261, 265, 276-277
+src/easy_tdx/web/routers/backtest.py                      346     71    79%   103-130, 200-201, 230, 240, 276-296, 398, 468, 490, 507-512, 580-583, 616, 619, 634, 638, 655-685, 784-786, 790, 838, 845-865, 925
+src/easy_tdx/web/routers/bars.py                          106     12    89%   121-123, 144, 227, 267-268, 279-280, 292-293, 306-309
+src/easy_tdx/web/routers/block.py                          12      3    75%   16, 28-29
+src/easy_tdx/web/routers/board_mac.py                      33     10    70%   58-64, 74-75, 86-91, 103-109, 122-129
+src/easy_tdx/web/routers/chanlun.py                        85      9    89%   45-48, 82-84, 96, 118-119
+src/easy_tdx/web/routers/chanlun_observations.py          104      2    98%   43, 54
+src/easy_tdx/web/routers/chanlun_replay.py                152      1    99%   40
+src/easy_tdx/web/routers/ex_market.py                      48     10    79%   23-35
+src/easy_tdx/web/routers/finance.py                        35     15    57%   17, 27-28, 38-39, 49-50, 63-66, 74-75, 85-88
+src/easy_tdx/web/routers/indicator.py                      23      9    61%   18, 24-26, 37, 41-52
+src/easy_tdx/web/routers/mac_data.py                       21      7    67%   17, 27-28, 38-39, 47-48
+src/easy_tdx/web/routers/mac_quotes.py                     22      8    64%   23, 37-46, 56-57, 68-69
+src/easy_tdx/web/routers/market.py                         50     26    48%   22, 31-32, 42-43, 52-53, 62-67, 75-76, 86-87, 99-100, 129-166
+src/easy_tdx/web/routers/realtime.py                      187     75    60%   62-63, 67-69, 81-82, 106-107, 114-146, 163-179, 188-189, 231-235, 240-247, 249, 253-259, 269-272
+src/easy_tdx/web/routers/research.py                      116      5    96%   71, 94-95, 193, 222
+src/easy_tdx/web/routers/server.py                         97      8    92%   112-116, 166, 174, 186-196
+src/easy_tdx/web/routers/sina.py                           16      9    44%   28-39
+src/easy_tdx/web/routers/strategies.py                     48      2    96%   36-37
+src/easy_tdx/web/schemas.py                                79     13    84%   116, 121, 132-144
+src/easy_tdx/web/signal_scan.py                           154      8    95%   47, 63, 115-116, 205-206, 212-213
+src/easy_tdx/web/strategy_store.py                        115      1    99%   177
+src/easy_tdx/web/task_runner.py                           215     11    95%   183-186, 289-290, 309-310, 333-334, 351
+src/easy_tdx/web/trading_calendar.py                       24      1    96%   60
+-------------------------------------------------------------------------------------
+TOTAL                                                   20801   5417    74%
+Required test coverage of 60% reached. Total coverage: 73.96%
+2520 passed, 1 warning in 1313.53s (0:21:53)

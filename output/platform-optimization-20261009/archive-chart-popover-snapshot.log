@@ -1,0 +1,131 @@
+### Page
+- Page URL: http://127.0.0.1:8766/account
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=f2e4]:
+  - complementary [ref=f2e5]:
+    - button "收起左侧栏" [ref=f2e11] [cursor=pointer]
+    - link "返回股票分析" [ref=f2e15]:
+      - /url: /
+      - generic [ref=f2e20]:
+        - strong [ref=f2e21]: 股票分析
+        - generic [ref=f2e22]: Analysis Studio
+    - navigation "主要导航" [ref=f2e23]:
+      - generic [ref=f2e24]:
+        - paragraph [ref=f2e25]: 分析
+        - link "个股分析" [ref=f2e26]:
+          - /url: /
+        - link "市场行情" [ref=f2e33]:
+          - /url: /market
+        - link "盘中研究" [ref=f2e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=f2e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=f2e51]:
+          - /url: /signals
+        - link "追踪标的" [ref=f2e58]:
+          - /url: /tracking
+      - generic [ref=f2e64]:
+        - paragraph [ref=f2e65]: 研究
+        - link "板块研究" [ref=f2e66]:
+          - /url: /boards
+        - link "公司资料" [ref=f2e75]:
+          - /url: /company
+        - link "扩展市场" [ref=f2e83]:
+          - /url: /extended
+        - link "量化研究" [ref=f2e90]:
+          - /url: /quant-research
+        - link "组合回测" [ref=f2e96]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=f2e105]:
+          - /url: /optimize
+        - link "结果对比" [ref=f2e110]:
+          - /url: /compare
+        - link "策略库" [ref=f2e115]:
+          - /url: /strategies
+      - generic [ref=f2e121]:
+        - paragraph [ref=f2e122]: 系统
+        - link "行情服务器" [ref=f2e123]:
+          - /url: /settings
+        - link "个人账户" [ref=f2e130]:
+          - /url: /account
+        - link "账户管理" [ref=f2e137]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=f2e146]:
+          - /url: /admin/data
+    - link "A archive-qa 管理员" [ref=f2e154]:
+      - /url: /account
+      - generic [ref=f2e155]: A
+      - generic [ref=f2e156]:
+        - strong [ref=f2e157]: archive-qa
+        - generic [ref=f2e158]: 管理员
+  - generic [ref=f2e159]:
+    - generic [ref=f2e160]:
+      - generic [ref=f2e161]:
+        - heading "个人账户" [level=1] [ref=f2e173]
+        - paragraph [ref=f2e163]: 查看账户信息并管理个人数据与安全设置
+      - generic [ref=f2e164]:
+        - link "个人账户" [ref=f2e165]:
+          - /url: /account
+          - generic [ref=f2e166]: A
+          - generic [ref=f2e167]: archive-qa
+          - generic [ref=f2e168]: ADMIN
+        - button "退出登录" [ref=f2e169] [cursor=pointer]
+    - main [ref=f2e172]:
+      - generic [ref=f2e174]:
+        - generic [ref=f2e175]:
+          - generic [ref=f2e176]: A
+          - generic [ref=f2e177]:
+            - paragraph [ref=f2e178]: PERSONAL DATA
+            - heading "archive-qa" [level=2] [ref=f2e179]
+            - paragraph [ref=f2e180]: 你的策略、扫描信号和偏好设置均与此账户关联。
+          - generic [ref=f2e181]: 管理员
+        - region "账户概况" [ref=f2e182]:
+          - article [ref=f2e183]:
+            - generic [ref=f2e184]: 已保存策略
+            - strong [ref=f2e185]: "0"
+            - generic [ref=f2e186]: 仅你可见
+          - article [ref=f2e187]:
+            - generic [ref=f2e188]: 账户状态
+            - strong [ref=f2e189]: 正常
+            - generic [ref=f2e190]: 数据持续保存
+          - article [ref=f2e191]:
+            - generic [ref=f2e192]: 上次登录
+            - strong [ref=f2e193]: 2026年10月9日 23:02
+            - generic [ref=f2e194]: 服务器时间记录
+        - group [ref=f2e195]:
+          - generic "› 账户云存档 手动保存 · 跨设备查看" [ref=f2e196] [cursor=pointer]:
+            - text: ›
+            - strong [ref=f2e197]: 账户云存档
+            - generic [ref=f2e198]: 手动保存 · 跨设备查看
+        - generic [ref=f2e199]:
+          - generic [ref=f2e200]:
+            - paragraph [ref=f2e201]: SECURITY
+            - heading "修改密码" [level=3] [ref=f2e202]
+            - paragraph [ref=f2e203]: 设置新密码后，除当前浏览器外的既有会话将失效。
+          - generic [ref=f2e204]:
+            - generic [ref=f2e205]:
+              - generic [ref=f2e206]: 当前密码
+              - textbox "当前密码" [ref=f2e207]
+            - generic [ref=f2e208]:
+              - generic [ref=f2e209]: 新密码
+              - textbox "新密码" [ref=f2e210]
+            - generic [ref=f2e211]:
+              - generic [ref=f2e212]: 确认新密码
+              - textbox "确认新密码" [ref=f2e213]
+            - button "保存新密码" [ref=f2e214] [cursor=pointer]
+        - region [ref=f2e215]:
+          - generic [ref=f2e216]:
+            - generic [ref=f2e217]:
+              - heading "后台计算" [level=3] [ref=f2e218]
+              - paragraph [ref=f2e219]: 仅显示你的最近 20 个任务；页面可见时每 5 秒更新。
+            - button "刷新" [ref=f2e220] [cursor=pointer]
+          - paragraph [ref=f2e221]: 当前使用临时内存记录，服务重启后不保留。
+          - paragraph [ref=f2e222]: 暂无后台任务
+        - region [ref=f2e223]:
+          - generic [ref=f2e224]:
+            - heading "登录会话" [level=3] [ref=f2e225]
+            - paragraph [ref=f2e226]: 退出所有浏览器与设备的登录，已保存的数据不会删除。
+          - button "退出全部设备" [ref=f2e227] [cursor=pointer]
+```

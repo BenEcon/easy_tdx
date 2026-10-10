@@ -1,0 +1,36 @@
+✔ navigation preserves explicit stock/index/fund/board identity and parameters without auto run (1.47975ms)
+✔ ambiguous identity is rejected rather than guessed or numeric code padded (0.128791ms)
+✔ query parser rejects incomplete, duplicate, incompatible and mixed-context values (0.875958ms)
+✔ market entry preserves local dates and strategy, runs only on explicit request (6.605458ms)
+✔ boards entry preserves local dates and strategy, runs only on explicit request (1.575667ms)
+✔ mixed market context blocks all loading and computation: savedStrategyId (1.102833ms)
+✔ mixed market context blocks all loading and computation: optimizationContext (0.92925ms)
+✔ mixed market context blocks all loading and computation: autoRun (0.936375ms)
+✔ mixed market context blocks all loading and computation: unexpected (1.119208ms)
+✔ slow catalog cannot overwrite input with a market entry (4.00475ms)
+✔ slow catalog cannot overwrite owner with a market entry (1.284042ms)
+✔ catalog-stage input cannot restore saved inputs or dispatch a task (1.8745ms)
+✔ catalog-stage params cannot restore saved inputs or dispatch a task (1.373916ms)
+✔ catalog-stage owner cannot restore saved inputs or dispatch a task (0.955833ms)
+✔ catalog-stage failure cannot restore saved inputs or dispatch a task (0.941042ms)
+✔ optimization context restores every execution field and malformed context blocks dispatch (1.578459ms)
+✔ actual backtest view loads exact saved context without running, then saves the configuration used (1.117541ms)
+✔ saving original radar warmup uses loaded input dates, not hidden form defaults (1.096292ms)
+✔ late saved record cannot overwrite owner (1.347834ms)
+✔ late saved record cannot overwrite route (1.15375ms)
+✔ late saved record cannot overwrite input (1.092667ms)
+✔ late saved record cannot overwrite unmount (1.143209ms)
+✔ invalid saved context blocks run, while legacy missing fields disclose fallback (3.550625ms)
+✔ every execution input invalidates the old result before it can be saved (11.541584ms)
+✔ editing a cost while bars are pending never runs the new form on the old request (0.876709ms)
+✔ save completion after owner cannot write into a different page or account (1.069708ms)
+✔ save completion after route cannot write into a different page or account (1.051ms)
+✔ save completion after unmount cannot write into a different page or account (0.960416ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 487.603167

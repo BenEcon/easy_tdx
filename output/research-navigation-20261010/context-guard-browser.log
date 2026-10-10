@@ -1,0 +1,31 @@
+### Result
+{"mixedLinks":4,"computationRequests":0,"queryCount":8,"features":["缠论回放","个股行情","缠论回放","研究行情","缠论回放","研究行情","缠论回放","研究行情"],"automaticStudyEvents":0,"pageErrors":[]}
+### Ran Playwright code
+```js
+await (async page => {
+  const base='http://127.0.0.1:8768', sent=[], errors=[];
+  const listen=r=>{if(/^\/api\/v1\/(?:bars|chanlun|backtest\/run)/.test(new URL(r.url()).pathname))sent.push(r.url())};
+  const error=e=>errors.push(e.message);page.on('request',listen);page.on('pageerror',error);
+  const before=await(await page.request.get(base+'/api/v1/admin/activity/summary')).json();
+  try {
+    const entry={researchContext:'v1',from:'market',targetKind:'stock',market:'SZ',symbol:'300750',name:'宁德时代',boardType:'',category:'MIN_30',adjust:'QFQ',count:'600',range:'latest'};
+    for(const path of ['/','/chanlun'])for(const extra of [{savedStrategyId:'saved-1'},{optimizationContext:'v1'}]) {
+      await page.goto(base+path+'?'+new URLSearchParams({...entry,...extra}));
+      await page.getByRole('alert').filter({hasText:'入口参数无效'}).waitFor();
+      const run=page.getByRole('button',{name:path==='/'?'开始回测':'开始分析',exact:true});
+      if(await run.isEnabled())await run.click();
+    }
+    const after=await(await page.request.get(base+'/api/v1/admin/activity/summary')).json();
+    if(before.items[0].queries!==after.items[0].queries)throw Error('invalid entry recorded query');
+    if(sent.length)throw Error('invalid entry fetched or computed '+JSON.stringify(sent));
+    const events=await(await page.request.get(base+'/api/v1/admin/activity/events?kind=query&limit=100')).json();
+    if(events.items.some(e=>e.feature==='多周期研究'))throw Error('automatic multiperiod study included in manual queries');
+    if(events.items.length!==after.items[0].queries)throw Error('query list and summary disagree');
+    if(errors.length)throw Error(errors.join(';'));
+    return {mixedLinks:4,computationRequests:sent.length,queryCount:after.items[0].queries,features:events.items.map(e=>e.feature),automaticStudyEvents:0,pageErrors:errors};
+  }finally {page.off('request',listen);page.off('pageerror',error)}
+})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8768/chanlun?researchContext=v1&from=market&targetKind=stock&market=SZ&symbol=300750&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=MIN_30&adjust=QFQ&count=600&range=latest&optimizationContext=v1
+- Page Title: 股票分析 · Analysis Studio

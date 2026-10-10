@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>共同估值组件验收 · 合成数据</title><div id="qa"></div>
+<script type="module">
+import { createApp } from 'vue'
+import ResultDataProvenance from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/ResultDataProvenance.vue'
+import '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/style.css'
+const member=(name,category,expected,actual,reason=null)=>({member:name,category,expected_time:expected,valuation_time:actual,source_time:actual,asof_age_seconds:345600,reason})
+const evidence={datasets:[],request:{members:['DAY','WEEK','MONTH']},performance_basis:{sample_category:'MONTH',annual_periods:12,return_count:2,sample_start:'2026-01-30T15:00:00',sample_end:'2026-03-31T15:00:00',unavailable_reason:'共同采样存在缺失或无效成员估值，未跳过缺口计算年化',warnings:['年化仅使用最粗周期的共同已收盘估值；总收益和回撤保留完整估值并集。'],valuation_samples:[
+{datetime:'2026-01-30T15:00:00',valid:true,members:[member('周线策略@SH:600000','WEEK','2026-01-30T15:00:00','2026-01-30T15:00:00')]},
+{datetime:'2026-02-27T15:00:00',valid:true,members:[member('周线策略@SH:600000','WEEK','2026-02-27T15:00:00','2026-02-27T15:00:00')]},
+{datetime:'2026-03-31T15:00:00',valid:false,members:[member('日线成员@SZ:300750','DAY','2026-03-31T15:00:00','2026-03-30T15:00:00','缺少该时点应有的已收盘估值；不以更早数据或未来数据替代'),member('周线策略@SH:600000','WEEK','2026-03-27T15:00:00','2026-03-27T15:00:00')]}
+],excluded_targets:[{datetime:'2026-04-30T15:00:00',members:['周线策略@SH:600000'],reason:'超出成员已观测原生周期范围，不外推尾部绩效'}]}}
+createApp({components:{ResultDataProvenance},data:()=>({evidence}),template:`<main><header><h1>共同估值验收</h1><p>本地合成数据，不连接生产服务。</p></header><ResultDataProvenance :evidence="evidence" /></main>`}).mount('#qa')
+</script>
+<style>body{overflow:auto!important}main{max-width:1000px;margin:32px auto;padding:0 20px}h1{font-size:22px}p{color:var(--text-muted)}#qa{width:100%}</style></html>

@@ -1,0 +1,73 @@
+### Page
+- Page URL: http://127.0.0.1:8768/account
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=e19]:
+  - generic [ref=e20]:
+    - button "打开导航" [ref=e21] [cursor=pointer]: ☰
+    - heading "个人账户" [level=1] [ref=e23]
+    - generic [ref=e24]:
+      - link "个人账户" [ref=e25]:
+        - /url: /account
+        - generic [ref=e26]: F
+      - button "退出登录" [ref=e27] [cursor=pointer]
+  - main [ref=e30]:
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e33]: F
+        - generic [ref=e34]:
+          - paragraph [ref=e35]: PERSONAL DATA
+          - heading "factor-qa" [level=2] [ref=e36]
+          - paragraph [ref=e37]: 你的策略、扫描信号和偏好设置均与此账户关联。
+        - generic [ref=e38]: 管理员
+      - region "账户概况" [ref=e39]:
+        - article [ref=e40]:
+          - generic [ref=e41]: 已保存策略
+          - strong [ref=e42]: "0"
+          - generic [ref=e43]: 仅你可见
+        - article [ref=e44]:
+          - generic [ref=e45]: 账户状态
+          - strong [ref=e46]: 正常
+          - generic [ref=e47]: 数据持续保存
+        - article [ref=e48]:
+          - generic [ref=e49]: 上次登录
+          - strong [ref=e50]: 2026年10月10日 00:33
+          - generic [ref=e51]: 服务器时间记录
+      - group [ref=e52]:
+        - generic "› 账户云存档 手动保存 · 跨设备查看" [ref=e53] [cursor=pointer]:
+          - text: ›
+          - strong [ref=e54]: 账户云存档
+          - generic [ref=e55]: 手动保存 · 跨设备查看
+      - group [ref=e56]:
+        - generic "活动记录与隐私" [ref=e57] [cursor=pointer]
+      - generic [ref=e58]:
+        - generic [ref=e59]:
+          - paragraph [ref=e60]: SECURITY
+          - heading "修改密码" [level=3] [ref=e61]
+          - paragraph [ref=e62]: 设置新密码后，除当前浏览器外的既有会话将失效。
+        - generic [ref=e63]:
+          - generic [ref=e64]:
+            - generic [ref=e65]: 当前密码
+            - textbox "当前密码" [ref=e66]
+          - generic [ref=e67]:
+            - generic [ref=e68]: 新密码
+            - textbox "新密码" [ref=e69]
+          - generic [ref=e70]:
+            - generic [ref=e71]: 确认新密码
+            - textbox "确认新密码" [ref=e72]
+          - button "保存新密码" [ref=e73] [cursor=pointer]
+      - region [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - heading "后台计算" [level=3] [ref=e77]
+            - paragraph [ref=e78]: 仅显示你的最近 20 个任务；页面可见时每 5 秒更新。
+          - button "刷新" [ref=e79] [cursor=pointer]
+        - paragraph [ref=e80]: 当前使用临时内存记录，服务重启后不保留。
+        - paragraph [ref=e81]: 暂无后台任务
+      - region [ref=e82]:
+        - generic [ref=e83]:
+          - heading "登录会话" [level=3] [ref=e84]
+          - paragraph [ref=e85]: 退出所有浏览器与设备的登录，已保存的数据不会删除。
+        - button "退出全部设备" [ref=e86] [cursor=pointer]
+```

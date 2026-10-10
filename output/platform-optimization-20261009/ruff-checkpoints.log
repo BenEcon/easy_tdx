@@ -1,0 +1,11 @@
+src/easy_tdx/web/task_store.py:438:101: E501 Line too long (107 > 100)
+    |
+436 |             conn.execute(
+437 |                 "UPDATE tasks SET status='running',generation=?,lease=?,worker_id=?,"
+438 |                 "started_at=?,heartbeat=?,guard_protocol=?,guard_ready=0,resumed_grid_points=0 WHERE id=?",
+    |                                                                                                     ^^^^^^^ E501
+439 |                 (lease.generation, lease.token, worker_id, now, now, guard_protocol, lease.task_id),
+440 |             )
+    |
+
+Found 1 error.

@@ -1,0 +1,28 @@
+....................FF.................................                  [100%]
+=================================== FAILURES ===================================
+______ test_replay_real_worker_complete_envelope_reopen_and_dedup[series] ______
+tests/unit/test_factor_recompute_tasks.py:163: in test_replay_real_worker_complete_envelope_reopen_and_dedup
+    assert store.get("bob", state["task_id"]) is None
+src/easy_tdx/web/task_store.py:414: in get
+    self._owned(conn, owner, task_id, include_result=True),
+src/easy_tdx/web/task_store.py:405: in _owned
+    raise KeyError("任务不存在")
+E   KeyError: '任务不存在'
+__ test_replay_real_worker_complete_envelope_reopen_and_dedup[multi-horizon] ___
+tests/unit/test_factor_recompute_tasks.py:163: in test_replay_real_worker_complete_envelope_reopen_and_dedup
+    assert store.get("bob", state["task_id"]) is None
+src/easy_tdx/web/task_store.py:414: in get
+    self._owned(conn, owner, task_id, include_result=True),
+src/easy_tdx/web/task_store.py:405: in _owned
+    raise KeyError("任务不存在")
+E   KeyError: '任务不存在'
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_recompute_tasks.py::test_replay_real_worker_complete_envelope_reopen_and_dedup[series]
+FAILED tests/unit/test_factor_recompute_tasks.py::test_replay_real_worker_complete_envelope_reopen_and_dedup[multi-horizon]
+2 failed, 53 passed, 1 warning in 18.12s

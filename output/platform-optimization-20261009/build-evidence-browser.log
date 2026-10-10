@@ -1,0 +1,5 @@
+
+> web-ui@0.0.0 build
+> vue-tsc -b && vite build
+
+src/views/ChanlunView.vue(153,7): error TS6133: 'blockedWaves' is declared but its value is never read.

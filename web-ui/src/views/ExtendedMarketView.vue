@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { queryAction } from '../query-origin'
 import { computed, onMounted, ref } from 'vue'
 import ChartFrame from '../components/ChartFrame.vue'
 import DataGrid from '../components/DataGrid.vue'
@@ -57,13 +58,13 @@ const changePct = computed(() => {
   return Number.isFinite(price) && Number.isFinite(preClose) && preClose ? ((price / preClose) - 1) * 100 : null
 })
 
-async function load() {
+async function load(manual = false) {
   loading.value = true
   error.value = ''
   try {
     rows.value = tab.value === 'instruments'
-      ? (await fetchExtendedInstruments(market.value, 0, 1000)).data
-      : (await fetchExtendedMarket(tab.value, market.value, code.value.trim(), category.value)).data
+      ? (await queryAction(manual)(() => fetchExtendedInstruments(market.value, 0, 1000))).data
+      : (await queryAction(manual)(() => fetchExtendedMarket(tab.value as 'bars'|'quote'|'minute'|'transaction', market.value, code.value.trim(), category.value))).data
   } catch (e) {
     rows.value = []
     error.value = `${formatError(e)}。如提示“扩展市场客户端未启用”，请在服务器启用扩展行情连接。`
@@ -72,7 +73,7 @@ async function load() {
   }
 }
 
-function switchTab(next: Tab) { tab.value = next; rows.value = []; void load() }
+function switchTab(next: Tab) { tab.value = next; rows.value = []; void load(true) }
 
 async function initialize() {
   try { markets.value = (await fetchExtendedMarkets()).data } catch { markets.value = [] }
@@ -86,10 +87,10 @@ onMounted(initialize)
     <section class="extended-header">
       <div class="intro"><span>GLOBAL TAPE</span><h2>扩展市场</h2><p>港股、期货与外盘行情使用独立扩展数据连接。</p></div>
       <div class="field market-field"><label>市场</label><MacSelect v-model="market" :options="marketOptions" /></div>
-      <label v-if="tab !== 'instruments'" class="field code-field"><span>证券 / 合约代码</span><input v-model="code" autocomplete="off" placeholder="00700 / AAPL / IFL0" @keyup.enter="load" /></label>
+      <label v-if="tab !== 'instruments'" class="field code-field"><span>证券 / 合约代码</span><input v-model="code" autocomplete="off" placeholder="00700 / AAPL / IFL0" @keyup.enter="load(true)" /></label>
       <div v-if="tab === 'bars'" class="field period-field"><label>周期</label><MacSelect v-model="category" :options="categoryOptions" /></div>
       <label v-if="tab === 'instruments'" class="field search-field"><span>筛选合约</span><input v-model="query" type="search" placeholder="输入代码或名称" /></label>
-      <button class="primary load-button action-button" :disabled="loading" @click="load">{{ loading ? '读取中' : '查询行情' }}</button>
+      <button class="primary load-button action-button" :disabled="loading" @click="load(true)">{{ loading ? '读取中' : '查询行情' }}</button>
     </section>
     <nav class="tab-bar"><button v-for="item in tabs" :key="item.value" :class="{ active: tab === item.value }" @click="switchTab(item.value)">{{ item.label }}</button><span class="connection-mark"><i></i>EX 7727</span></nav>
     <p v-if="error" class="error-banner status-banner">{{ error }}</p>

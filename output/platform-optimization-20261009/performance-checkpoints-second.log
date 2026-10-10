@@ -1,0 +1,53 @@
+.................................................FFF
+=================================== FAILURES ===================================
+__________ test_partial_state_resumes_without_rerunning_saved_bars[0] __________
+tests/unit/test_backtest_signal_checkpoints.py:126: in test_partial_state_resumes_without_rerunning_saved_bars
+    assert_result_equal(actual, expected)
+tests/unit/test_backtest_signal_checkpoints.py:98: in assert_result_equal
+    assert actual.performance == expected.performance
+E   AssertionError: assert {'total_retur...ion': 64, ...} == {'total_retur...ion': 64, ...}
+E     
+E     Omitting 16 identical items, use -vv to show
+E     Differing items:
+E     {'sharpe': nan} != {'sharpe': nan}
+E     {'volatility': nan} != {'volatility': nan}
+E     {'sortino': nan} != {'sortino': nan}
+E     {'annual_return': nan} != {'annual_return': nan}...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_________ test_partial_state_resumes_without_rerunning_saved_bars[20] __________
+tests/unit/test_backtest_signal_checkpoints.py:126: in test_partial_state_resumes_without_rerunning_saved_bars
+    assert_result_equal(actual, expected)
+tests/unit/test_backtest_signal_checkpoints.py:98: in assert_result_equal
+    assert actual.performance == expected.performance
+E   AssertionError: assert {'total_retur...ion': 65, ...} == {'total_retur...ion': 65, ...}
+E     
+E     Omitting 16 identical items, use -vv to show
+E     Differing items:
+E     {'sharpe': nan} != {'sharpe': nan}
+E     {'volatility': nan} != {'volatility': nan}
+E     {'sortino': nan} != {'sortino': nan}
+E     {'annual_return': nan} != {'annual_return': nan}...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+_________ test_partial_state_resumes_without_rerunning_saved_bars[80] __________
+tests/unit/test_backtest_signal_checkpoints.py:126: in test_partial_state_resumes_without_rerunning_saved_bars
+    assert_result_equal(actual, expected)
+tests/unit/test_backtest_signal_checkpoints.py:98: in assert_result_equal
+    assert actual.performance == expected.performance
+E   AssertionError: assert {'total_retur...tion': 2, ...} == {'total_retur...tion': 2, ...}
+E     
+E     Omitting 16 identical items, use -vv to show
+E     Differing items:
+E     {'sharpe': nan} != {'sharpe': nan}
+E     {'volatility': nan} != {'volatility': nan}
+E     {'sortino': nan} != {'sortino': nan}
+E     {'annual_return': nan} != {'annual_return': nan}...
+E     
+E     ...Full output truncated (3 lines hidden), use '-vv' to show
+=========================== short test summary info ============================
+FAILED tests/unit/test_backtest_signal_checkpoints.py::test_partial_state_resumes_without_rerunning_saved_bars[0]
+FAILED tests/unit/test_backtest_signal_checkpoints.py::test_partial_state_resumes_without_rerunning_saved_bars[20]
+FAILED tests/unit/test_backtest_signal_checkpoints.py::test_partial_state_resumes_without_rerunning_saved_bars[80]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 3 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+3 failed, 49 passed, 4 deselected in 1.34s

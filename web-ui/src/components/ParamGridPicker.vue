@@ -104,6 +104,7 @@ const gridPoints = computed(() => {
       <input
         v-if="selected.has(p.name)"
         :value="inputs[p.name] ?? ''"
+        :aria-label="`${p.label}取值列表`"
         :placeholder="`如 ${p.default}, ${p.default}, ...`"
         class="values-input"
         @input="onInput(p.name, ($event.target as HTMLInputElement).value)"

@@ -1,0 +1,33 @@
+F....................................................................... [  7%]
+........................................................................ [ 14%]
+........................................................................ [ 21%]
+........................................................................ [ 29%]
+........................................................................ [ 36%]
+........................................................................ [ 43%]
+........................................................................ [ 51%]
+........................................................................ [ 58%]
+........................................................................ [ 65%]
+........................................................................ [ 73%]
+........................................................................ [ 80%]
+........................................................................ [ 87%]
+........................................................................ [ 94%]
+..................................................                       [100%]
+=================================== FAILURES ===================================
+______________ test_exact_implemented_set_and_default_parameters _______________
+tests/unit/test_gtja191.py:361: in test_exact_implemented_set_and_default_parameters
+    assert {
+E   assert {2, 3, 6, 11, 13, 14, ...} == {2, 3, 6, 11, 14, 15, ...}
+E     
+E     Extra items in the left set:
+E     120
+E     13
+E     Use -v to get more diff
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191.py::test_exact_implemented_set_and_default_parameters
+1 failed, 985 passed, 1 warning in 126.56s (0:02:06)

@@ -18,7 +18,9 @@ const CATEGORIES: Category[] = ['DAY', 'WEEK', 'MONTH', 'MIN_1', 'MIN_5', 'MIN_1
 const stockHistory = ref<StockHistoryItem[]>([])
 const lastStock = ref<StockHistoryItem | null>(null)
 const { currentUser } = useAuth()
-let hydratingNames = false
+let historyEpoch = 0
+let hydration: object | null = null
+watch(() => currentUser.value?.id, () => { historyEpoch++; hydration = null }, { flush: 'sync' })
 const selectionKey = () => `easy-tdx.selected-stock.${currentUser.value?.id ?? 'guest'}`
 function cachedSelection(): StockHistoryItem | null {
   try {
@@ -69,21 +71,23 @@ function persist(items: StockHistoryItem[], nextLastStock?: StockHistoryItem) {
 
 async function hydrateHistoryNames(items: StockHistoryItem[]) {
   const missing = items.filter((item) => !item.name)
-  if (!missing.length || hydratingNames) return
-  hydratingNames = true
+  if (!missing.length || hydration) return
+  const owner = currentUser.value?.id, epoch = historyEpoch, request = {}
+  hydration = request
   try {
     const unique = [...new Map(missing.map((item) => [item.code, item])).values()]
     const names = await fetchStockNames(unique.map((item) => ({
       market: detectMarket(item.code), code: item.code,
     })))
+    if (owner !== currentUser.value?.id || epoch !== historyEpoch || hydration !== request) return
     const updated = stockHistory.value.map((item) => (
-      names[item.code] ? { ...item, name: names[item.code] } : item
+      !item.name && names[item.code] ? { ...item, name: names[item.code] } : item
     ))
     if (updated.some((item, index) => item.name !== stockHistory.value[index]?.name)) persist(updated)
   } catch {
     // 名称服务不可用时保留代码，下一次账户数据刷新会自动重试。
   } finally {
-    hydratingNames = false
+    if (hydration === request) hydration = null
   }
 }
 
@@ -125,7 +129,9 @@ export function getLastStockCode(fallback = '000001'): string {
 /** Follow confirmed selections without persisting partially typed input. */
 export function useSelectedStock(fallback = '000001'): Ref<string> {
   const code = ref(getLastStockCode(fallback))
-  watch(lastStock, (item) => { code.value = item?.code ?? fallback })
+  // Preference responses rebuild the history objects even when selection is
+  // unchanged. Do not overwrite a route-selected or currently edited code then.
+  watch(() => lastStock.value?.code, (selected) => { code.value = selected ?? fallback })
   return code
 }
 

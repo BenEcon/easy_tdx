@@ -1,0 +1,238 @@
+INFO:     Started server process [6402]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8769 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49726 - "GET /signals HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49726 - "GET /assets/index-DtdxDOe0.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49727 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49726 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49727 - "GET /assets/LoginView-SIQw53sx.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49726 - "GET /assets/LoginView-C6otUSAi.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49727 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49726 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49727 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49731 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49732 - "GET /assets/SignalRadarView-CB9jJarc.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49726 - "POST /api/v1/backtest/signal-scan/run/async HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:49727 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49731 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49726 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49732 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49727 - "GET /assets/backtest-VGZlEwbn.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49731 - "GET /assets/StrategyPicker-DmQ5o3sz.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49735 - "GET /assets/ResearchEntryContext-CMw5CfXA.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49732 - "GET /assets/KlineChart-CB8YVHs-.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49727 - "GET /assets/MetricTable-C8YU7S37.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49736 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49726 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49732 - "GET /assets/BacktestView-DHNGKAib.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49735 - "GET /assets/SymbolPicker-BXuZMVV6.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49731 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49727 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49736 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49732 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49726 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49735 - "POST /api/v1/quotes HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49731 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49727 - "POST /api/v1/backtest/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49736 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49732 - "POST /api/v1/indicator/compute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49747 - "GET /qa/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49747 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49799 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49872 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49967 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49993 - "GET /?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=ce05c1529d344a5b95919460a87f9e14&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49993 - "GET /assets/index-DtdxDOe0.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49994 - "GET /assets/BacktestView-BJ_whhZl.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /assets/ChartFrame-CjYwtQ0R.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49995 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /assets/bar-time-CQCKboTN.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49997 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49998 - "GET /assets/MacSelect-CfntU3Z5.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49996 - "GET /assets/NumberStepper-D9bympcR.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49995 - "GET /assets/DataProvenance-ydhl9xmu.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49996 - "GET /assets/research-input-C5-rhLeS.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49998 - "GET /assets/tracking-DuCXbBYI.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/backtest-C955qnTk.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49997 - "GET /assets/research-navigation-CDVVUywM.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49998 - "GET /assets/backtest-VGZlEwbn.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/ResearchEntryContext-DTTPeB3u.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49996 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49995 - "GET /assets/MetricStateNotes-DRiAc0ml.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /assets/ResearchEntryContext-CMw5CfXA.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49997 - "GET /assets/execution-context-CkNDQyxx.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49998 - "GET /assets/mobile-settings-CNDwnjXh.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/StrategyPicker-DFmfgxyg.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /assets/PerformanceContextNote-BKYDfI88.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49995 - "GET /assets/format-BbMv5Yas.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49996 - "GET /assets/chart-resize-COs1wg8I.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49997 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49998 - "GET /assets/StrategyPicker-DmQ5o3sz.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/KlineChart-CU38Rm2c.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49995 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49996 - "GET /assets/KlineChart-CB8YVHs-.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /assets/TechnicalIndicatorPicker-vxCthrfW.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49998 - "GET /assets/MetricTable-C8YU7S37.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49997 - "GET /assets/MetricTable-BEFMNnw5.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/market-preferences-DLzjQVlO.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49996 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /assets/SymbolPicker-BXuZMVV6.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49998 - "GET /assets/AdjustPicker-Bb7m_ao_.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49995 - "GET /assets/StockHistoryMenu-DTrJrR9L.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49997 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49993 - "GET /assets/SymbolPicker-Dqe4MjM5.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49996 - "GET /assets/BacktestView-DHNGKAib.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49994 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49998 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49997 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49995 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49993 - "POST /api/v1/quotes HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49996 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49994 - "POST /api/v1/backtest/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49998 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49997 - "POST /api/v1/indicator/compute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49999 - "GET /qa/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49999 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49995 - "POST /api/v1/strategies HTTP/1.1" 201 Created
+INFO:     127.0.0.1:50072 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50147 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50255 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50321 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /chanlun?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=ce05c1529d344a5b95919460a87f9e14&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /assets/index-CQYAc9b6.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50423 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50423 - "GET /assets/ChanlunView-DjOina_S.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /assets/ChartFrame-s5TFjD0q.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50423 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50425 - "GET /assets/CloudResearchArchives-NF9jzP62.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50424 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50427 - "GET /assets/NumberStepper-D_tdhyTt.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50426 - "GET /assets/TechnicalIndicatorPicker-B7MNYa_A.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50427 - "GET /assets/MacSelect-Dg0O_pbD.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50424 - "GET /assets/MultiPeriodOverviewTable-AbyHhJXy.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50426 - "GET /assets/CloudResearchArchives-Cm8rDFpT.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50423 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50425 - "GET /assets/DataProvenance-BUGieEfq.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /assets/bar-time-CQCKboTN.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50427 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50426 - "GET /assets/ResearchEntryContext-DWkG4pNQ.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50424 - "GET /assets/tracking-qdPj0t1Q.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50423 - "GET /assets/ResearchEntryContext-D-_RhXbO.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50425 - "GET /assets/research-navigation-8IQmB6rx.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /assets/market-preferences-ElGlihpc.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50427 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50426 - "GET /assets/AdjustPicker-Drzswfh_.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50424 - "GET /assets/StockHistoryMenu-lIilDkmY.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50423 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50425 - "GET /assets/ChanlunTargetPicker-BMk4d91b.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50424 - "GET /assets/ChanlunView-DPuW1xWl.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "GET /assets/ChanlunTargetPicker-D-d8ErAX.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50426 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50427 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50423 - "POST /api/v1/chanlun/replay?ownership_history=summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50425 - "POST /api/v1/quotes HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50422 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50424 - "GET /api/v1/chanlun/industries?market=SZ&code=300450 HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:50426 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50497 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50570 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50645 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50717 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /chanlun?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=ce05c1529d344a5b95919460a87f9e14&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /assets/index-mVva_0Q7.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /assets/ChanlunView-lj55VhuH.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /assets/ChartFrame-7z48Jl_I.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51176 - "GET /assets/CloudResearchArchives-DiMdbZZm.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51175 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51178 - "GET /assets/NumberStepper-We9cqCPw.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51177 - "GET /assets/TechnicalIndicatorPicker-B9n6_x2y.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51177 - "GET /assets/CloudResearchArchives-Cm8rDFpT.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51178 - "GET /assets/MultiPeriodOverviewTable-Bd4Yx5zP.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /assets/MacSelect-CFzhdGxQ.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51175 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51176 - "GET /assets/DataProvenance-CA1VLbp-.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51177 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51175 - "GET /assets/ResearchEntryContext-D-_RhXbO.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /assets/tracking-De6NzGDD.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /assets/research-navigation-Iyny1W9o.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51178 - "GET /assets/ResearchEntryContext-DEzzagfp.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51176 - "GET /assets/AdjustPicker-B74gFiWq.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51177 - "GET /assets/market-preferences-CaJFsSem.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51175 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "GET /assets/ChanlunTargetPicker-JjoX8RhT.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51178 - "GET /assets/StockHistoryMenu-B38JDuzx.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51177 - "GET /assets/ChanlunView-DFogwYFN.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51176 - "GET /assets/ChanlunTargetPicker-D-d8ErAX.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51174 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51175 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51173 - "POST /api/v1/chanlun/replay?ownership_history=summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51188 - "GET /qa/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51178 - "POST /api/v1/quotes HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51176 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51177 - "GET /api/v1/chanlun/industries?market=SZ&code=300450 HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51174 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51245 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51309 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51331 - "POST /qa/evict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51309 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51309 - "GET /?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=ce05c1529d344a5b95919460a87f9e14&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51309 - "GET /assets/index-mVva_0Q7.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51338 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51309 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51338 - "GET /assets/BacktestView-Bx0vwOEQ.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51309 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51309 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51338 - "GET /assets/research-input-C5-rhLeS.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51339 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51341 - "GET /assets/bar-time-CQCKboTN.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51342 - "GET /assets/backtest-DXtm712r.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51340 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51340 - "GET /assets/backtest-VGZlEwbn.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51309 - "GET /assets/MetricStateNotes-BVe7MvLh.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51339 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51338 - "GET /assets/ResearchEntryContext-D-_RhXbO.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51342 - "GET /assets/execution-context-BPlu_Zt0.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51341 - "GET /assets/mobile-settings-BuiGBfzo.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51340 - "GET /assets/format-BbMv5Yas.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51309 - "GET /assets/chart-resize-BdHfxRAA.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51339 - "GET /assets/StrategyPicker-vdCs3t-9.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51338 - "GET /assets/PerformanceContextNote-DWWq64hG.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51342 - "GET /assets/StrategyPicker-DmQ5o3sz.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51341 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51339 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51309 - "GET /assets/MetricTable-DyontHzK.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51338 - "GET /assets/KlineChart-CB8YVHs-.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51340 - "GET /assets/KlineChart-C_5q1I9S.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51339 - "GET /assets/MetricTable-C8YU7S37.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51341 - "GET /assets/SymbolPicker-DTuNE6NX.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51342 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51309 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:51340 - "GET /assets/SymbolPicker-LnkmSldH.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51342 - "GET /assets/BacktestView-ChWXElt2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51338 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51309 - "GET /api/v1/backtest/tasks/ce05c1529d344a5b95919460a87f9e14/scan-evidence/0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51339 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51341 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51331 - "GET /qa/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51402 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51467 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51527 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51601 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [6402]

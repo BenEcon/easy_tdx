@@ -1,0 +1,42 @@
+.........................................F.............................. [ 52%]
+........................................FF......................         [100%]
+=================================== FAILURES ===================================
+__________________ test_fetch_scan_bars_dedupe_and_normalize ___________________
+tests/unit/test_signal_scan.py:197: in test_fetch_scan_bars_dedupe_and_normalize
+    assert len([c for c in client.calls if c[0] == "SH:601088"]) == 1
+E   assert 0 == 1
+E    +  where 0 = len([])
+------------------------------ Captured log call -------------------------------
+WARNING  easy_tdx.web.signal_scan:signal_scan.py:198 信号扫描取数失败 SH:601088: 503: QFQ 复权服务不可用；未使用不复权行情替代。可稍后重试或明确选择不复权
+WARNING  easy_tdx.web.signal_scan:signal_scan.py:198 信号扫描取数失败 SZ:000001: 503: QFQ 复权服务不可用；未使用不复权行情替代。可稍后重试或明确选择不复权
+_________________________ test_factor_list_and_compute _________________________
+tests/unit/test_web_research.py:43: in test_factor_list_and_compute
+    result = await factor_compute(
+src/easy_tdx/web/routers/research.py:58: in factor_compute
+    df = await fetch_adjusted_bars(
+src/easy_tdx/web/adjusted_bars.py:23: in fetch_adjusted_bars
+    return await load_equity_frame(client, mac_client, market, code, category, start, count, adjust)
+src/easy_tdx/web/market_data.py:31: in load_equity_frame
+    raise HTTPException(503, f'{adjust} 复权服务不可用；未使用不复权行情替代。可稍后重试或明确选择不复权')
+E   fastapi.exceptions.HTTPException: 503: QFQ 复权服务不可用；未使用不复权行情替代。可稍后重试或明确选择不复权
+_____________ test_portfolio_risk_returns_weights_and_correlation ______________
+tests/unit/test_web_research.py:59: in test_portfolio_risk_returns_weights_and_correlation
+    result = await portfolio_risk(
+src/easy_tdx/web/routers/research.py:112: in portfolio_risk
+    df = await fetch_adjusted_bars(
+src/easy_tdx/web/adjusted_bars.py:23: in fetch_adjusted_bars
+    return await load_equity_frame(client, mac_client, market, code, category, start, count, adjust)
+src/easy_tdx/web/market_data.py:31: in load_equity_frame
+    raise HTTPException(503, f'{adjust} 复权服务不可用；未使用不复权行情替代。可稍后重试或明确选择不复权')
+E   fastapi.exceptions.HTTPException: 503: QFQ 复权服务不可用；未使用不复权行情替代。可稍后重试或明确选择不复权
+=============================== warnings summary ===============================
+tests/unit/test_web_api.py::test_bars_min1_endpoint_keeps_datetime
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_signal_scan.py::test_fetch_scan_bars_dedupe_and_normalize
+FAILED tests/unit/test_web_research.py::test_factor_list_and_compute - fastap...
+FAILED tests/unit/test_web_research.py::test_portfolio_risk_returns_weights_and_correlation
+3 failed, 133 passed, 1 warning in 66.86s (0:01:06)

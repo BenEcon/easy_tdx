@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { queryAction } from '../query-origin'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useAuth } from '../auth'
+import { latestResearchRequest } from '../research-input'
+import ResearchNavigationBar from '../components/ResearchNavigationBar.vue'
+import { navigationTarget, type NavigationTarget } from '../research-navigation'
 import DataGrid from '../components/DataGrid.vue'
 import MacSelect from '../components/MacSelect.vue'
 import StockQueryField from '../components/StockQueryField.vue'
@@ -27,6 +32,46 @@ const loadingBoards = ref(false)
 const loadingMembers = ref(false)
 const loadingBelong = ref(false)
 const error = ref('')
+const boardSelection = ref<NavigationTarget | null>(null)
+const memberSelection = ref<NavigationTarget | null>(null)
+const resultBoardType = ref('')
+function selectMember(row: Row) {
+  if (!loadingMembers.value) memberSelection.value = navigationTarget(row)
+}
+const memberError = ref('')
+const belongError = ref('')
+const listRequests = latestResearchRequest()
+const memberRequests = latestResearchRequest()
+const belongRequests = latestResearchRequest()
+const { currentUser } = useAuth()
+function clearMembers() {
+  boardSelection.value = null
+  memberSelection.value = null
+  memberRequests.invalidate()
+  selectedBoard.value = null
+  members.value = []
+  summary.value = {}
+  memberError.value = ''
+  loadingMembers.value = false
+}
+function clearBoards() {
+  resultBoardType.value = ''
+  listRequests.invalidate()
+  boards.value = []
+  loadingBoards.value = false
+  error.value = ''
+  clearMembers()
+}
+function clearBelong() {
+  belongRequests.invalidate()
+  belongs.value = []
+  loadingBelong.value = false
+  belongError.value = ''
+}
+watch([mode, boardType, sortColumn, changeDays, blockFile], clearBoards, { flush: 'sync' })
+watch(stockCode, clearBelong, { flush: 'sync' })
+watch(() => currentUser.value?.id, () => { clearBoards(); clearBelong() }, { flush: 'sync' })
+onBeforeUnmount(() => { clearBoards(); clearBelong() })
 
 const boardTypes = [
   { value: 'HY', label: '通达信行业' }, { value: 'HY2', label: '二级行业' },
@@ -96,73 +141,91 @@ const displayMembers = computed(() => members.value.map((row) => ({
   change_pct: percentage(row.close ?? row.price, row.last_close ?? row.pre_close),
 })))
 
-async function loadBoards() {
+async function loadBoards(manual = false) {
+  clearBoards()
+  const request = listRequests.begin()
+  const input = { mode: mode.value, boardType: boardType.value, sortColumn: sortColumn.value,
+    days: Number(changeDays.value), blockFile: blockFile.value }
+  const query = queryAction(manual)
   loadingBoards.value = true
   error.value = ''
   try {
-    const response = mode.value === 'live'
-      ? await fetchBoardList({ boardType: boardType.value, sortColumn: sortColumn.value })
-      : mode.value === 'ranking'
-        ? await fetchBoardRanking({ boardType: boardType.value, topN: 100 })
-        : mode.value === 'change'
-          ? await fetchBoardChangeRanking({ boardType: boardType.value, days: Number(changeDays.value), topN: 100 })
-          : await fetchBlockInfo(blockFile.value)
+    const response = await query(() => input.mode === 'live'
+      ? fetchBoardList({ boardType: input.boardType, sortColumn: input.sortColumn })
+      : input.mode === 'ranking'
+        ? fetchBoardRanking({ boardType: input.boardType, topN: 100 })
+        : input.mode === 'change'
+          ? fetchBoardChangeRanking({ boardType: input.boardType, days: input.days, topN: 100 })
+          : fetchBlockInfo(input.blockFile))
+    if (!request.current()) return
+    resultBoardType.value = input.boardType
     boards.value = response.data
-    if (boards.value.length && mode.value !== 'classic') await selectBoard(boards.value[0])
-    else { selectedBoard.value = null; members.value = []; summary.value = {} }
+    if (boards.value.length && input.mode !== 'classic') void selectBoard(boards.value[0])
   } catch (e) {
+    if (!request.current()) return
     error.value = formatError(e)
     boards.value = []
   } finally {
-    loadingBoards.value = false
+    if (request.current()) loadingBoards.value = false
   }
 }
 
-async function selectBoard(row: Row) {
+async function selectBoard(row: Row, manual = false) {
   const symbol = String(row.code ?? row.board_code ?? row.board_symbol ?? '')
   if (!symbol) return
+  clearMembers()
+  const request = memberRequests.begin()
   selectedBoard.value = row
+  boardSelection.value = navigationTarget(row, {board:true, boardType:resultBoardType.value})
   loadingMembers.value = true
   try {
     const [memberResult, summaryResult] = await Promise.allSettled([
-      fetchBoardMembers(symbol), fetchBoardSummary(symbol),
+      queryAction(manual)(() => fetchBoardMembers(symbol, 200, request.signal)), fetchBoardSummary(symbol),
     ])
+    if (!request.current()) return
     members.value = memberResult.status === 'fulfilled' ? memberResult.value.data : []
     summary.value = summaryResult.status === 'fulfilled' ? summaryResult.value.data : {}
     if (!members.value.length && memberResult.status === 'rejected') throw memberResult.reason
+    if (summaryResult.status === 'rejected') memberError.value = `板块概览暂不可用：${formatError(summaryResult.reason)}`
   } catch (e) {
-    error.value = formatError(e)
+    if (!request.current()) return
+    memberError.value = formatError(e)
     members.value = []
   } finally {
-    loadingMembers.value = false
+    if (request.current()) loadingMembers.value = false
   }
 }
 
 function switchMode(next: Mode) {
   mode.value = next
-  void loadBoards()
+  void loadBoards(true)
 }
 
 async function queryBelong() {
+  clearBelong()
   if (!/^\d{6}$/.test(stockCode.value)) {
-    error.value = '股票代码必须是 6 位数字'
+    belongError.value = '股票代码必须是 6 位数字'
     return
   }
+  const request = belongRequests.begin()
+  const code = stockCode.value
   loadingBelong.value = true
-  error.value = ''
   try {
-    const market = detectMarket(stockCode.value)
-    belongs.value = (await fetchBoardBelong(market, stockCode.value)).data
-    recordStockHistory({ code: stockCode.value, category: 'DAY' })
+    const market = detectMarket(code)
+    const response = await queryAction(true)(() => fetchBoardBelong(market, code))
+    if (!request.current()) return
+    belongs.value = response.data
+    recordStockHistory({ code, category: 'DAY' })
   } catch (e) {
-    error.value = formatError(e)
+    if (!request.current()) return
+    belongError.value = formatError(e)
     belongs.value = []
   } finally {
-    loadingBelong.value = false
+    if (request.current()) loadingBelong.value = false
   }
 }
 
-onMounted(loadBoards)
+onMounted(() => loadBoards())
 </script>
 
 <template>
@@ -179,21 +242,24 @@ onMounted(loadBoards)
       <div v-if="mode === 'live'" class="select-control"><label>排序周期</label><MacSelect v-model="sortColumn" :options="sortOptions" /></div>
       <div v-else-if="mode === 'change'" class="select-control"><label>统计区间</label><MacSelect v-model="changeDays" :options="dayOptions" /></div>
       <div v-else-if="mode === 'classic'" class="select-control"><label>板块文件</label><MacSelect v-model="blockFile" :options="blockOptions" /></div>
-      <button class="primary refresh-btn action-button" :disabled="loadingBoards" @click="loadBoards">{{ loadingBoards ? '更新中' : '更新板块' }}</button>
+      <button class="primary refresh-btn action-button" :disabled="loadingBoards" @click="loadBoards(true)">{{ loadingBoards ? '更新中' : '更新板块' }}</button>
     </section>
     <p v-if="error" class="error-banner status-banner">{{ error }}</p>
 
     <section class="split-workspace">
       <div class="pane board-pane">
         <header><div><h3>板块排行</h3><p>{{ boards.length }} 个板块 · 点击查看成分</p></div><span class="pane-badge">RANK</span></header>
-        <DataGrid :rows="displayBoards" :columns="mode === 'live' ? boardColumns : []" :selectable="mode !== 'classic'" :empty-text="loadingBoards ? '正在获取板块…' : '暂无板块数据'" @select="selectBoard" />
+        <DataGrid :rows="displayBoards" :columns="mode === 'live' ? boardColumns : []" :selectable="mode !== 'classic'" :empty-text="loadingBoards ? '正在获取板块…' : '暂无板块数据'" @select="row => selectBoard(row, true)" />
+        <ResearchNavigationBar v-if="mode !== 'classic'" :selection="boardSelection" source="boards" :busy="loadingBoards" />
       </div>
       <div class="pane member-pane">
         <header><div><h3>{{ selectedName }}</h3><p>{{ members.length }} 只成分股</p></div><span v-if="loadingMembers" class="loading-label">载入中</span></header>
+        <p v-if="memberError" class="error-banner status-banner" role="status">{{ memberError }}</p>
         <div v-if="summaryEntries.length" class="summary-strip">
           <div v-for="([key, value]) in summaryEntries" :key="key"><small>{{ summaryLabel(key) }}</small><strong>{{ summaryValue(key, value) }}</strong></div>
         </div>
-        <DataGrid :rows="displayMembers" :columns="memberColumns" :empty-text="loadingMembers ? '正在加载成分股…' : '请选择板块'" />
+        <DataGrid :rows="displayMembers" :columns="memberColumns" :selectable="!loadingMembers" @select="selectMember" :empty-text="loadingMembers ? '正在加载成分股…' : '请选择板块'" />
+        <ResearchNavigationBar :selection="memberSelection" source="boards" :busy="loadingMembers" />
       </div>
     </section>
 
@@ -207,6 +273,7 @@ onMounted(loadBoards)
         </button>
       </div>
       <div class="belong-result">
+        <p v-if="belongError" class="error-banner status-banner" role="status">{{ belongError }}</p>
         <DataGrid :rows="belongs" :columns="[
           { key: 'board_code', label: '板块代码' }, { key: 'board_name', label: '板块名称' },
           { key: 'close', label: '现价' }, { key: 'pre_close', label: '昨收' },

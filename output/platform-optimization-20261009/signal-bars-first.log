@@ -1,0 +1,10 @@
+
+==================================== ERRORS ====================================
+_______ ERROR collecting tests/unit/test_backtest_signal_checkpoints.py ________
+tests/unit/test_backtest_signal_checkpoints.py:163: in <module>
+    @pytest.mark.parametrize("name", [entry.name for entry in get_registry().list()])
+E   AttributeError: 'StrategyRegistry' object has no attribute 'list'
+=========================== short test summary info ============================
+ERROR tests/unit/test_backtest_signal_checkpoints.py - AttributeError: 'Strat...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.81s

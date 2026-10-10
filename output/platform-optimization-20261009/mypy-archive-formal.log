@@ -1,0 +1,2 @@
+src/easy_tdx/web/archive_ingress.py:38: error: Returning Any from function declared to return "bool"  [no-any-return]
+Found 1 error in 1 file (checked 292 source files)

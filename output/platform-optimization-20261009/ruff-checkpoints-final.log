@@ -1,0 +1,11 @@
+src/easy_tdx/web/task_store.py:51:101: E501 Line too long (102 > 100)
+   |
+49 |     "id,owner,fingerprint,version,kind,status,generation,lease,worker_id,heartbeat,stop_reason,"
+50 |     "guard_protocol,guard_ready,COALESCE(length(staged_result),0) AS staged_bytes,"
+51 |     "COALESCE(length(checkpoint),0) AS checkpoint_bytes,checkpoint_fingerprint,checkpoint_grid_points"
+   |                                                                                                     ^^ E501
+52 | )
+   |
+
+Found 1 error.
+454 files already formatted

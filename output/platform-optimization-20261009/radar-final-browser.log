@@ -1,0 +1,9 @@
+### Result
+{"dimensions":[{"width":1440,"content":1440},{"width":390,"content":390},{"width":320,"content":320}],"restoredOriginalAdjust":true}
+### Ran Playwright code
+```js
+await (async (page) => { await page.reload(); await page.getByRole("button",{name:"复核信号",exact:true}).first().waitFor(); const dimensions=[]; for (const width of [1440,390,320]) { await page.setViewportSize({width,height:900}); await page.locator(".radar-table").waitFor({state:"visible"}); await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))); const size=await page.evaluate(()=>({width:innerWidth,content:document.documentElement.scrollWidth})); if(size.content>width)throw Error(JSON.stringify(size)); await page.screenshot({path:`../output/playwright/radar-table-final-${width}.png`,animations:"disabled"}); dimensions.push(size); } await page.setViewportSize({width:1440,height:900}); await page.getByRole("button",{name:"复核信号",exact:true}).nth(1).click(); await page.getByText("已生成当前策略回测",{exact:false}).waitFor({timeout:60000}); const context=await page.getByRole("region",{name:"信号人工复核上下文"}).innerText(); if(!context.includes("前复权")||context.includes("当前分析条件已改变"))throw Error(context); return {dimensions,restoredOriginalAdjust:true}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:18094/?review=signal&autoRun=1&symbol=300750&market=SZ&category=MIN_30&adjust=QFQ&scanAsOf=2026-09-30+14:30:00&scanFingerprint=7f6b0a06acaf9e5bb871995809dbd72bc16239f3edf32342b5d653db1b6522e1&signal=BUY&signalDate=2026-09-30+13:30&strategy=ma_cross&strategyName=%E6%9C%AC%E6%9C%BA%E7%9C%9F%E5%AE%9E+ma_cross&strategyLabel=%E5%9D%87%E7%BA%BF%E4%BA%A4%E5%8F%89&params={}&count=800&startDate=2024-09-30&endDate=2026-09-30
+- Page Title: 股票分析 · Analysis Studio

@@ -1,0 +1,344 @@
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=stock&symbol=300750&market=SZ&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=DAY&adjust=QFQ
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=f3e5]:
+  - generic [ref=f3e6]:
+    - button "打开导航" [ref=f3e7] [cursor=pointer]: ☰
+    - heading "缠论结构" [level=1] [ref=f3e9]
+    - generic [ref=f3e10]:
+      - link "个人账户" [ref=f3e11]:
+        - /url: /account
+        - generic [ref=f3e12]: T
+      - button "退出登录" [ref=f3e13] [cursor=pointer]
+  - main [ref=f3e16]:
+    - generic [ref=f3e17]:
+      - button "分析设置 · 300750 展开" [ref=f3e18] [cursor=pointer]:
+        - generic [ref=f3e19]: 分析设置 · 300750
+        - generic [ref=f3e20]: 展开
+      - main [ref=f3e21]:
+        - generic [ref=f3e22]:
+          - navigation "缠论工作区" [ref=f3e23]:
+            - button [ref=f3e24] [cursor=pointer]:
+              - strong [ref=f3e25]: 看图
+            - button [pressed] [ref=f3e26] [cursor=pointer]:
+              - strong [ref=f3e27]: 研究
+            - button [ref=f3e28] [cursor=pointer]:
+              - strong [ref=f3e29]: 审核
+          - generic [ref=f3e30]:
+            - generic [ref=f3e31]:
+              - generic [ref=f3e32]:
+                - generic "个股 · 300750" [ref=f3e33]
+                - generic [ref=f3e34]: DAY
+              - paragraph [ref=f3e37]: 当前 向下笔 · 进行中，尚未形成中枢
+            - generic [ref=f3e38]:
+              - generic [ref=f3e39]:
+                - strong [ref=f3e40]: "240"
+                - generic [ref=f3e41]: 原始 K 线
+              - generic [ref=f3e42]:
+                - strong [ref=f3e43]: "183"
+                - generic [ref=f3e44]: 合并 K 线
+              - generic [ref=f3e45]:
+                - strong [ref=f3e46]: "93"
+                - generic [ref=f3e47]: 分型
+              - generic [ref=f3e48]:
+                - strong [ref=f3e49]: "18"
+                - generic [ref=f3e50]: 笔
+              - generic [ref=f3e51]:
+                - strong [ref=f3e52]: "0"
+                - generic [ref=f3e53]: 基础中枢
+              - generic [ref=f3e54]:
+                - strong [ref=f3e55]: "2"
+                - generic [ref=f3e56]: 线段
+              - generic [ref=f3e57]:
+                - strong [ref=f3e58]: "0"
+                - generic [ref=f3e59]: 买卖点
+              - generic [ref=f3e60]:
+                - strong [ref=f3e61]: "2"
+                - generic [ref=f3e62]: 背离 / 背驰
+          - region "当前分析上下文" [ref=f3e63]:
+            - region "行情数据口径" [ref=f3e64]:
+              - group [ref=f3e65]:
+                - generic "› 数据口径 MAC 行情 · 前复权 收盘截至 2026-10-09 15:00:00" [ref=f3e66] [cursor=pointer]:
+                  - text: ›
+                  - strong [ref=f3e67]: 数据口径
+                  - generic [ref=f3e68]: MAC 行情 · 前复权
+                  - time [ref=f3e69]: 收盘截至 2026-10-09 15:00:00
+            - paragraph [ref=f3e70]: 线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。
+            - generic [ref=f3e71]:
+              - generic [ref=f3e72]:
+                - generic [ref=f3e73]:
+                  - strong [ref=f3e74]: 快照末尾
+                  - button "回放上一根 K 线" [ref=f3e75] [cursor=pointer]: 上一根
+                  - slider "K 线回放位置" [ref=f3e76] [cursor=pointer]: "240"
+                  - button "回放下一根 K 线" [disabled] [ref=f3e77]: 下一根
+                - generic [ref=f3e78]:
+                  - status [ref=f3e79]: 2026-10-09 · 240/240
+                  - button "返回末尾" [disabled] [ref=f3e80]
+              - generic [ref=f3e81]: 按当前标的快照回放，不代表历史当天的数据版本；个股与行业对比时采用共同截止点。
+            - generic [ref=f3e82]:
+              - generic [ref=f3e83]: 所属行业
+              - generic [ref=f3e84]: 暂无行业归属数据
+            - region "多周期图表对比"
+          - region "研究工作区" [ref=f3e85]:
+            - generic [ref=f3e86]:
+              - heading "多周期研究" [level=3] [ref=f3e87]
+              - paragraph [ref=f3e88]: 个股 · 300750 · 主周期 日线 · 共同截止 2026-10-09 15:00:00
+            - group [ref=f3e89]:
+              - generic "研究偏好与快照 账户偏好 · 本地快照" [ref=f3e90] [cursor=pointer]:
+                - strong [ref=f3e91]: 研究偏好与快照
+                - generic [ref=f3e92]: 账户偏好 · 本地快照
+            - group [ref=f3e93]:
+              - generic "多周期概览 · 300750 量价、动能、严格笔与背离" [ref=f3e94] [cursor=pointer]:
+                - strong [ref=f3e95]: 多周期概览 · 300750
+                - generic [ref=f3e96]: 量价、动能、严格笔与背离
+              - generic [ref=f3e97]:
+                - generic [ref=f3e98]:
+                  - generic [ref=f3e99]:
+                    - generic [ref=f3e100]: 共同截止
+                    - time [ref=f3e101]: 2026-10-09 15:00:00
+                  - generic [ref=f3e102]:
+                    - checkbox "自动更新" [checked] [ref=f3e103]
+                    - text: 自动更新
+                  - button "更新概览" [ref=f3e104] [cursor=pointer]
+                  - button "保存研究快照" [ref=f3e105] [cursor=pointer]
+                - region "多周期概览表" [ref=f3e106]:
+                  - paragraph [ref=f3e107]: 横向查看各项信息；点击周期查看完整依据。成交量均线沿用行情原始口径，同周期比较；数值显示两位小数，判定使用未舍入值。
+                  - region "多周期概览数据，可横向滚动" [ref=f3e108]:
+                    - table [ref=f3e109]:
+                      - caption [ref=f3e110]: 所选标的按周期汇总的量价、动能、严格笔与背离信息
+                      - rowgroup [ref=f3e111]:
+                        - row [ref=f3e112]:
+                          - columnheader "周期" [ref=f3e113]
+                          - columnheader "均线 / 价格" [ref=f3e114]
+                          - columnheader "成交量" [ref=f3e115]
+                          - columnheader "MACD" [ref=f3e116]
+                          - columnheader "严格笔与当前方向" [ref=f3e117]
+                          - columnheader "背离" [ref=f3e118]
+                          - columnheader "其他" [ref=f3e119]
+                      - rowgroup [ref=f3e120]:
+                        - row [ref=f3e121]:
+                          - rowheader [ref=f3e122]:
+                            - button "查看周线完整依据" [ref=f3e123] [cursor=pointer]:
+                              - text: 周线
+                              - generic [aria-hidden] [ref=f3e124]: ↗
+                            - generic [ref=f3e125]:
+                              - text: 已收盘截止
+                              - time [ref=f3e126]: 2026-10-09 15:00:00
+                          - cell [ref=f3e127]:
+                            - paragraph [ref=f3e128]: 收盘 297.75
+                            - paragraph [ref=f3e129]: MA5 302.96 / MA10 340.61
+                            - paragraph [ref=f3e130]: 短期空头展开，双线共同下降
+                            - paragraph [ref=f3e131]: 多头未排列 · 空头至 MA30
+                          - cell [ref=f3e132]:
+                            - paragraph [ref=f3e133]: MAVOL5 1463786.20
+                            - paragraph [ref=f3e134]: MAVOL10 1310723.40
+                            - paragraph [ref=f3e135]: 短期均量优势扩大
+                            - paragraph [ref=f3e136]: 本根 / 前 20 根均量：0.57 倍
+                          - cell [ref=f3e137]:
+                            - paragraph [ref=f3e138]: DIF -21.28 / DEA -9.97
+                            - paragraph [ref=f3e139]: 零轴下方 · 绿柱 · 缩短
+                            - paragraph [ref=f3e140]: DIF 位于 DEA 下方，间距收窄
+                          - cell [ref=f3e141]:
+                            - paragraph [ref=f3e142]: 向下严格笔 · 末端可延伸
+                            - paragraph [ref=f3e143]: 2026-05-08 00:00:00 → 2026-07-10 00:00:00；467.34 → 344.75
+                            - paragraph [ref=f3e144]: 当前观察：原反向观察已被新极值否定；原方向延伸，等待新分型
+                            - paragraph [ref=f3e145]: 观察可知：2026-07-24 15:00:00
+                          - cell [ref=f3e146]:
+                            - paragraph [ref=f3e147]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                          - cell [ref=f3e148]:
+                            - paragraph [ref=f3e149]: BOLL 带宽扩张（不表示突破方向）
+                            - paragraph [ref=f3e150]: 观察窗口：2026-05-29 00:00:00 — 2026-10-09 00:00:00（20 根）
+                        - row [ref=f3e151]:
+                          - rowheader [ref=f3e152]:
+                            - button "查看日线完整依据" [ref=f3e153] [cursor=pointer]:
+                              - text: 日线
+                              - generic [aria-hidden] [ref=f3e154]: ↗
+                            - generic [ref=f3e155]:
+                              - text: 已收盘截止
+                              - time [ref=f3e156]: 2026-10-09 15:00:00
+                          - cell [ref=f3e157]:
+                            - paragraph [ref=f3e158]: 收盘 297.75
+                            - paragraph [ref=f3e159]: MA5 290.88 / MA10 295.26
+                            - paragraph [ref=f3e160]: 短期均线由下方趋近，修复中
+                            - paragraph [ref=f3e161]: 多头未排列 · 空头至 MA120
+                          - cell [ref=f3e162]:
+                            - paragraph [ref=f3e163]: MAVOL5 36864942.80
+                            - paragraph [ref=f3e164]: MAVOL10 37201791.00
+                            - paragraph [ref=f3e165]: 短期均量相对差距收窄
+                            - paragraph [ref=f3e166]: 本根 / 前 20 根均量：1.49 倍
+                          - cell [ref=f3e167]:
+                            - paragraph [ref=f3e168]: DIF -19.47 / DEA -19.75
+                            - paragraph [ref=f3e169]: 零轴下方 · 红柱 · 换色
+                            - paragraph [ref=f3e170]: DIF 刚上穿 DEA
+                          - cell [ref=f3e171]:
+                            - paragraph [ref=f3e172]: 向下严格笔 · 末端可延伸
+                            - paragraph [ref=f3e173]: 2026-08-06 00:00:00 → 2026-09-29 00:00:00；408.59 → 285.74
+                            - paragraph [ref=f3e174]: 当前观察：原反向观察已被新极值否定；原方向延伸，等待新分型
+                            - paragraph [ref=f3e175]: 观察可知：2026-09-30 15:00:00
+                          - cell [ref=f3e176]:
+                            - paragraph [ref=f3e177]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                          - cell [ref=f3e178]:
+                            - paragraph [ref=f3e179]: 三组快慢线差值同时增加；仅表示联合修复，不等于买点
+                            - paragraph [ref=f3e180]: 观察窗口：2026-09-04 00:00:00 — 2026-10-09 00:00:00（20 根）
+                        - row [ref=f3e181]:
+                          - rowheader [ref=f3e182]:
+                            - button "查看30 分钟完整依据" [ref=f3e183] [cursor=pointer]:
+                              - text: 30 分钟
+                              - generic [aria-hidden] [ref=f3e184]: ↗
+                            - generic [ref=f3e185]:
+                              - text: 已收盘截止
+                              - time [ref=f3e186]: 2026-10-09 15:00:00
+                          - cell [ref=f3e187]:
+                            - paragraph [ref=f3e188]: 收盘 297.75
+                            - paragraph [ref=f3e189]: MA5 298.30 / MA10 294.86
+                            - paragraph [ref=f3e190]: 短期多头收敛
+                            - paragraph [ref=f3e191]: 多头至 MA30 · 空头未排列
+                          - cell [ref=f3e192]:
+                            - paragraph [ref=f3e193]: MAVOL5 4449380.00
+                            - paragraph [ref=f3e194]: MAVOL10 6273820.00
+                            - paragraph [ref=f3e195]: 短期均量相对差距扩大
+                            - paragraph [ref=f3e196]: 本根 / 前 20 根均量：0.96 倍
+                          - cell [ref=f3e197]:
+                            - paragraph [ref=f3e198]: DIF 1.93 / DEA 0.80
+                            - paragraph [ref=f3e199]: 零轴上方 · 红柱 · 缩短
+                            - paragraph [ref=f3e200]: DIF 位于 DEA 上方，间距收窄
+                          - cell [ref=f3e201]:
+                            - paragraph [ref=f3e202]: 向上严格笔 · 末端可延伸
+                            - paragraph [ref=f3e203]: 2026-10-08 15:00:00 → 2026-10-09 14:30:00；285.17 → 299.50
+                            - paragraph [ref=f3e204]: 当前观察：向下观察，尚未严格成笔
+                            - paragraph [ref=f3e205]: 观察可知：2026-10-09 15:00:00
+                          - cell [ref=f3e206]:
+                            - paragraph [ref=f3e207]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                          - cell [ref=f3e208]:
+                            - paragraph [ref=f3e209]: 三组快慢线差值同时减少；联合动能减弱
+                            - paragraph [ref=f3e210]: BOLL 带宽扩张（不表示突破方向）
+                            - paragraph [ref=f3e211]: 缩量回调：本根收盘下跌，量低于前 20 根均量
+                            - paragraph [ref=f3e212]: 观察窗口：2026-09-30 13:30:00 — 2026-10-09 15:00:00（20 根）
+                        - row [ref=f3e213]:
+                          - rowheader [ref=f3e214]:
+                            - button "查看15 分钟完整依据" [ref=f3e215] [cursor=pointer]:
+                              - text: 15 分钟
+                              - generic [aria-hidden] [ref=f3e216]: ↗
+                            - generic [ref=f3e217]:
+                              - text: 已收盘截止
+                              - time [ref=f3e218]: 2026-10-09 15:00:00
+                          - cell [ref=f3e219]:
+                            - paragraph [ref=f3e220]: 收盘 297.75
+                            - paragraph [ref=f3e221]: MA5 298.38 / MA10 298.36
+                            - paragraph [ref=f3e222]: MA5 刚上穿 MA10
+                            - paragraph [ref=f3e223]: 多头至 MA60 · 空头未排列
+                          - cell [ref=f3e224]:
+                            - paragraph [ref=f3e225]: MAVOL5 1877420.00
+                            - paragraph [ref=f3e226]: MAVOL10 2224690.00
+                            - paragraph [ref=f3e227]: 短期均量相对差距收窄
+                            - paragraph [ref=f3e228]: 本根 / 前 20 根均量：0.93 倍
+                          - cell [ref=f3e229]:
+                            - paragraph [ref=f3e230]: DIF 2.34 / DEA 2.18
+                            - paragraph [ref=f3e231]: 零轴上方 · 红柱 · 缩短
+                            - paragraph [ref=f3e232]: DIF 位于 DEA 上方，间距收窄
+                          - cell [ref=f3e233]:
+                            - paragraph [ref=f3e234]: 向上严格笔 · 末端可延伸
+                            - paragraph [ref=f3e235]: 2026-10-08 14:45:00 → 2026-10-09 11:00:00；285.17 → 301.42
+                            - paragraph [ref=f3e236]: 当前观察：已有反向局部分型；向下待成笔，严格价格或间距尚未满足
+                            - paragraph [ref=f3e237]: 观察可知：2026-10-09 13:15:00
+                          - cell [ref=f3e238]:
+                            - paragraph [ref=f3e239]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                          - cell [ref=f3e240]:
+                            - paragraph [ref=f3e241]: 缩量回调：本根收盘下跌，量低于前 20 根均量
+                            - paragraph [ref=f3e242]: 观察窗口：2026-10-08 14:15:00 — 2026-10-09 15:00:00（20 根）
+                        - row [ref=f3e243]:
+                          - rowheader [ref=f3e244]:
+                            - button "查看5 分钟完整依据" [ref=f3e245] [cursor=pointer]:
+                              - text: 5 分钟
+                              - generic [aria-hidden] [ref=f3e246]: ↗
+                            - generic [ref=f3e247]:
+                              - text: 已收盘截止
+                              - time [ref=f3e248]: 2026-10-09 15:00:00
+                          - cell [ref=f3e249]:
+                            - paragraph [ref=f3e250]: 收盘 297.75
+                            - paragraph [ref=f3e251]: MA5 298.02 / MA10 298.41
+                            - paragraph [ref=f3e252]: 短期均线由下方趋近，修复中
+                            - paragraph [ref=f3e253]: 多头未排列 · 空头至 MA10
+                          - cell [ref=f3e254]:
+                            - paragraph [ref=f3e255]: MAVOL5 841560.00
+                            - paragraph [ref=f3e256]: MAVOL10 695120.00
+                            - paragraph [ref=f3e257]: 短期均量优势扩大
+                            - paragraph [ref=f3e258]: 本根 / 前 20 根均量：1.69 倍
+                          - cell [ref=f3e259]:
+                            - paragraph [ref=f3e260]: DIF 0.50 / DEA 0.81
+                            - paragraph [ref=f3e261]: 零轴上方 · 绿柱 · 延长
+                            - paragraph [ref=f3e262]: DIF 位于 DEA 下方，间距扩大
+                          - cell [ref=f3e263]:
+                            - paragraph [ref=f3e264]: 向上严格笔 · 末端可延伸
+                            - paragraph [ref=f3e265]: 2026-10-09 13:10:00 → 2026-10-09 14:15:00；296.37 → 299.50
+                            - paragraph [ref=f3e266]: 当前观察：向下观察，尚未严格成笔
+                            - paragraph [ref=f3e267]: 观察可知：2026-10-09 14:20:00
+                          - cell [ref=f3e268]:
+                            - paragraph [ref=f3e269]: 双线顶背离 · 候选；极值 2026-10-09 14:15:00
+                          - cell [ref=f3e270]:
+                            - paragraph [ref=f3e271]: BOLL 带宽处于此前最多 120 根的低 20% 区间
+                            - paragraph [ref=f3e272]: BOLL 带宽扩张（不表示突破方向）
+                            - paragraph [ref=f3e273]: 观察窗口：2026-10-09 13:25:00 — 2026-10-09 15:00:00（20 根）
+                - group [ref=f3e274]:
+                  - generic "周期与研究参数" [ref=f3e275] [cursor=pointer]
+                - generic [ref=f3e276]:
+                  - generic [ref=f3e277]:
+                    - heading "周期观察" [level=4] [ref=f3e278]
+                    - generic [ref=f3e279]: 点击周期展开过程与依据
+                  - group [ref=f3e280]:
+                    - generic "› 周线 下行 · 跌破前低后回抽，收盘暂未收回该前低 原反向观察已被新极值否定；原方向延伸，等待新分型 297.75 零轴下方" [ref=f3e281] [cursor=pointer]:
+                      - generic [ref=f3e282]: › 周线
+                      - generic [ref=f3e283]:
+                        - strong [ref=f3e284]: 下行 · 跌破前低后回抽，收盘暂未收回该前低
+                        - generic [ref=f3e285]: 原反向观察已被新极值否定；原方向延伸，等待新分型
+                      - generic [ref=f3e286]:
+                        - text: "297.75"
+                        - generic [ref=f3e287]: 零轴下方
+                  - group [ref=f3e288]:
+                    - generic "› 日线 下行 · 末端反弹 原反向观察已被新极值否定；原方向延伸，等待新分型 297.75 零轴下方" [ref=f3e289] [cursor=pointer]:
+                      - generic [ref=f3e290]: › 日线
+                      - generic [ref=f3e291]:
+                        - strong [ref=f3e292]: 下行 · 末端反弹
+                        - generic [ref=f3e293]: 原反向观察已被新极值否定；原方向延伸，等待新分型
+                      - generic [ref=f3e294]:
+                        - text: "297.75"
+                        - generic [ref=f3e295]: 零轴下方
+                  - group [ref=f3e296]:
+                    - generic "› 30 分钟 上行 · 末端回落 向下观察，尚未严格成笔 297.75 零轴上方" [ref=f3e297] [cursor=pointer]:
+                      - generic [ref=f3e298]: › 30 分钟
+                      - generic [ref=f3e299]:
+                        - strong [ref=f3e300]: 上行 · 末端回落
+                        - generic [ref=f3e301]: 向下观察，尚未严格成笔
+                      - generic [ref=f3e302]:
+                        - text: "297.75"
+                        - generic [ref=f3e303]: 零轴上方
+                  - group [ref=f3e304]:
+                    - generic "› 15 分钟 上行 · 末端回落 已有反向局部分型；向下待成笔，严格价格或间距尚未满足 297.75 零轴上方" [ref=f3e305] [cursor=pointer]:
+                      - generic [ref=f3e306]: › 15 分钟
+                      - generic [ref=f3e307]:
+                        - strong [ref=f3e308]: 上行 · 末端回落
+                        - generic [ref=f3e309]: 已有反向局部分型；向下待成笔，严格价格或间距尚未满足
+                      - generic [ref=f3e310]:
+                        - text: "297.75"
+                        - generic [ref=f3e311]: 零轴上方
+                  - group [ref=f3e312]:
+                    - generic "› 5 分钟 横向波动 · 末端回落 向下观察，尚未严格成笔 297.75 零轴上方" [ref=f3e313] [cursor=pointer]:
+                      - generic [ref=f3e314]: › 5 分钟
+                      - generic [ref=f3e315]:
+                        - strong [ref=f3e316]: 横向波动 · 末端回落
+                        - generic [ref=f3e317]: 向下观察，尚未严格成笔
+                      - generic [ref=f3e318]:
+                        - text: "297.75"
+                        - generic [ref=f3e319]: 零轴上方
+                  - group [ref=f3e320]:
+                    - generic "跨周期过轴时间对照" [ref=f3e321] [cursor=pointer]
+                - generic [ref=f3e322]:
+                  - heading "观察与分歧" [level=4] [ref=f3e323]
+                  - paragraph [ref=f3e324]: 仅使用共同截止点前完整 K 线；结构层级不等于图表周期；不按周期多数投票；过轴先后只记录事实，不作强制条件。当前调整后快照不等于历史当天的数据版本；缺失的旧分钟行情不作推断。
+            - group [ref=f3e325]:
+              - generic "三笔盘整 4 组 笔级重叠 · 非中枢" [ref=f3e326] [cursor=pointer]:
+                - strong [ref=f3e327]: 三笔盘整 4 组
+                - generic [ref=f3e328]: 笔级重叠 · 非中枢
+```

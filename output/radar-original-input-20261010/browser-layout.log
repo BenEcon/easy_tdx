@@ -1,0 +1,10 @@
+### Ran Playwright code
+```js
+await (async (page) => { const sizes=[]; for(const width of [1440,390,320]) { await page.setViewportSize({width,height:1000}); await page.getByRole("region",{name:"信号人工复核上下文"}).scrollIntoViewIfNeeded(); const measure=await page.evaluate(()=>({viewport:innerWidth,scroll:document.documentElement.scrollWidth,context:document.querySelector(".radar-review-context").getBoundingClientRect().toJSON()})); if(measure.scroll>width+1||measure.context.width>width)throw Error(JSON.stringify(measure)); sizes.push(measure); await page.screenshot({path:"/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/radar-original-"+width+".png"}); } console.log(JSON.stringify(sizes)); })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8769/?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=1838300072b74dc4aaf4f46df0a8d245&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30
+- Page Title: 股票分析 · Analysis Studio
+- Console: 6 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T19-39-18-870Z.log#L6-L12

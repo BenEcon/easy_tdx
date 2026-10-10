@@ -1,0 +1,73 @@
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  8%]
+........................................................................ [ 11%]
+.F...................................................................... [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 22%]
+........................................................................ [ 25%]
+..................F....................................F................ [ 28%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 88%]
+........................................................................ [ 91%]
+........................................................................ [ 94%]
+........................................................................ [ 97%]
+............................................................             [100%]
+=================================== FAILURES ===================================
+________ TestFactorEngineWithBuiltins.test_all_builtin_factors_compute _________
+tests/unit/test_factor_engine.py:209: in test_all_builtin_factors_compute
+    result = engine.compute_single(df, [name])
+src/easy_tdx/factor/engine.py:96: in compute_single
+    values = factor.compute(df)
+src/easy_tdx/factor/builtin/gtja191.py:387: in compute
+    return PanelFactor.compute(self, df)
+src/easy_tdx/factor/base.py:52: in compute
+    raise ValueError(f"{self.name} 需要明确股票池的整池截面计算，不能用于独立单股序列")
+E   ValueError: gtja191_006 需要明确股票池的整池截面计算，不能用于独立单股序列
+__ test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_006] __
+tests/unit/test_factor_research.py:198: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    values = factor.compute(frame)
+src/easy_tdx/factor/builtin/gtja191.py:387: in compute
+    return PanelFactor.compute(self, df)
+src/easy_tdx/factor/base.py:52: in compute
+    raise ValueError(f"{self.name} 需要明确股票池的整池截面计算，不能用于独立单股序列")
+E   ValueError: gtja191_006 需要明确股票池的整池截面计算，不能用于独立单股序列
+__ test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_185] __
+tests/unit/test_factor_research.py:198: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    values = factor.compute(frame)
+src/easy_tdx/factor/builtin/gtja191.py:387: in compute
+    return PanelFactor.compute(self, df)
+src/easy_tdx/factor/base.py:52: in compute
+    raise ValueError(f"{self.name} 需要明确股票池的整池截面计算，不能用于独立单股序列")
+E   ValueError: gtja191_185 需要明确股票池的整池截面计算，不能用于独立单股序列
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_engine.py::TestFactorEngineWithBuiltins::test_all_builtin_factors_compute
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_006]
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_185]
+3 failed, 2505 passed, 1 warning in 256.87s (0:04:16)

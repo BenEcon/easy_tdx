@@ -1,0 +1,220 @@
+### Page
+- Page URL: http://127.0.0.1:8768/account
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e47]:
+    - generic [ref=e48]:
+      - button "打开导航" [ref=e49] [cursor=pointer]: ☰
+      - heading "个人账户" [level=1] [ref=e51]
+      - generic [ref=e52]:
+        - link "个人账户" [ref=e53]:
+          - /url: /account
+          - generic [ref=e54]: H
+        - button "退出登录" [ref=e55] [cursor=pointer]
+    - main [ref=e58]:
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - generic [ref=e61]: H
+          - generic [ref=e62]:
+            - paragraph [ref=e63]: PERSONAL DATA
+            - heading "horizonqa" [level=2] [ref=e64]
+            - paragraph [ref=e65]: 你的策略、扫描信号和偏好设置均与此账户关联。
+          - generic [ref=e66]: 管理员
+        - region "账户概况" [ref=e67]:
+          - article [ref=e68]:
+            - generic [ref=e69]: 已保存策略
+            - strong [ref=e70]: "0"
+            - generic [ref=e71]: 仅你可见
+          - article [ref=e72]:
+            - generic [ref=e73]: 账户状态
+            - strong [ref=e74]: 正常
+            - generic [ref=e75]: 数据持续保存
+          - article [ref=e76]:
+            - generic [ref=e77]: 上次登录
+            - strong [ref=e78]: 2026年10月10日 09:09
+            - generic [ref=e79]: 服务器时间记录
+        - group [ref=e80]:
+          - generic "› 账户云存档 手动保存 · 跨设备查看" [ref=e81] [cursor=pointer]:
+            - text: ›
+            - strong [ref=e82]: 账户云存档
+            - generic [ref=e83]: 手动保存 · 跨设备查看
+          - generic [ref=e149]:
+            - paragraph [ref=e150]: 仅本人账户可访问；保存原始行情、参数及分析结果，不自动重算。云端与本地副本独立，刷新目录不会覆盖当前研究。
+            - region "本地快照迁移" [ref=e151]:
+              - generic [ref=e152]:
+                - generic [ref=e153]:
+                  - heading "本地快照迁移" [level=4] [ref=e154]
+                  - paragraph [ref=e155]: 检查当前账户在此浏览器保存的图表快照，选择后复制到云端。
+                - button "检查本地快照" [ref=e156] [cursor=pointer]
+            - generic [ref=e157]:
+              - generic [ref=e158]:
+                - button "导入研究备份" [ref=e159] [cursor=pointer]
+                - button "刷新云目录" [ref=e160] [cursor=pointer]
+                - button "回收站" [ref=e161] [cursor=pointer]
+              - paragraph [ref=e162]: 4 / 100 份 · 1.60 / 128.00 MiB（含回收站）
+              - list [ref=e163]:
+                - listitem [ref=e164]:
+                  - generic [ref=e165]:
+                    - strong [ref=e166]: 000001 · 日线 · 因子研究
+                    - generic [ref=e167]: 因子研究 · 2026-10-10 00:59:36 UTC · v1
+                  - generic [ref=e168]:
+                    - button "查看原档" [ref=e169] [cursor=pointer]
+                    - button "导出" [ref=e170] [cursor=pointer]
+                    - button "编辑备注" [ref=e171] [cursor=pointer]
+                    - button "移入回收站" [ref=e172] [cursor=pointer]
+                - listitem [ref=e173]:
+                  - generic [ref=e174]:
+                    - strong [ref=e175]: 000001 · 日线 · 因子研究
+                    - generic [ref=e176]: 因子研究 · 2026-10-10 00:45:34 UTC · v1
+                  - generic [ref=e177]:
+                    - button "查看原档" [ref=e178] [cursor=pointer]
+                    - button "导出" [ref=e179] [cursor=pointer]
+                    - button "编辑备注" [ref=e180] [cursor=pointer]
+                    - button "移入回收站" [ref=e181] [cursor=pointer]
+                - listitem [ref=e182]:
+                  - generic [ref=e183]:
+                    - strong [ref=e184]: 8 只标的 · 因子截面检验
+                    - generic [ref=e185]: 因子研究 · 2026-10-10 00:31:56 UTC · v1
+                  - generic [ref=e186]:
+                    - button "查看原档" [ref=e187] [cursor=pointer]
+                    - button "导出" [ref=e188] [cursor=pointer]
+                    - button "编辑备注" [ref=e189] [cursor=pointer]
+                    - button "移入回收站" [ref=e190] [cursor=pointer]
+                - listitem [ref=e191]:
+                  - generic [ref=e192]:
+                    - strong [ref=e193]: 8 只标的 · 因子截面检验
+                    - generic [ref=e194]: 因子研究 · 2026-10-09 23:58:41 UTC · v1
+                  - generic [ref=e195]:
+                    - button "查看原档" [ref=e196] [cursor=pointer]
+                    - button "导出" [ref=e197] [cursor=pointer]
+                    - button "编辑备注" [ref=e198] [cursor=pointer]
+                    - button "移入回收站" [ref=e199] [cursor=pointer]
+        - group [ref=e84]:
+          - generic "活动记录与隐私" [ref=e85] [cursor=pointer]
+        - generic [ref=e86]:
+          - generic [ref=e87]:
+            - paragraph [ref=e88]: SECURITY
+            - heading "修改密码" [level=3] [ref=e89]
+            - paragraph [ref=e90]: 设置新密码后，除当前浏览器外的既有会话将失效。
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - generic [ref=e93]: 当前密码
+              - textbox "当前密码" [ref=e94]
+            - generic [ref=e95]:
+              - generic [ref=e96]: 新密码
+              - textbox "新密码" [ref=e97]
+            - generic [ref=e98]:
+              - generic [ref=e99]: 确认新密码
+              - textbox "确认新密码" [ref=e100]
+            - button "保存新密码" [ref=e101] [cursor=pointer]
+        - region [ref=e102]:
+          - generic [ref=e103]:
+            - generic [ref=e104]:
+              - heading "后台计算" [level=3] [ref=e105]
+              - paragraph [ref=e106]: 仅显示你的最近 20 个任务；页面可见时每 5 秒更新。
+            - button "刷新" [ref=e107] [cursor=pointer]
+          - paragraph [ref=e108]: 记录已持久保存，刷新或重启网页服务后仍可查询。排队任务等待匹配版本的计算服务。
+          - list [ref=e109]:
+            - listitem [ref=e279]:
+              - generic [ref=e280]:
+                - strong [ref=e281]: 因子存档重算 · 000001 · 日线 · 因子研究
+                - generic [ref=e282]: 10/10 09:11 · 上海时间 · 0 秒
+                - paragraph [ref=e283]: 完整结果校验 1/1 · 阶段处理量
+              - generic [ref=e284]: 已完成
+              - button "打开因子结果" [ref=e287] [cursor=pointer]
+              - button "删除任务记录 因子存档重算 · 000001 · 日线 · 因子研究" [ref=e289] [cursor=pointer]: 删除记录
+            - listitem [ref=e265]:
+              - generic [ref=e266]:
+                - strong [ref=e267]: 因子存档重算 · 000001 · 日线 · 因子研究
+                - generic [ref=e268]: 10/10 09:10 · 上海时间 · 35 秒
+              - generic [ref=e269]: 已取消
+              - button "查看原因" [ref=e273] [cursor=pointer]
+              - button "删除任务记录 因子存档重算 · 000001 · 日线 · 因子研究" [ref=e275] [cursor=pointer]: 删除记录
+            - listitem [ref=e110]:
+              - generic [ref=e111]:
+                - strong [ref=e112]: 因子序列 · SZ:000001 · DAY · 4 个因子
+                - generic [ref=e113]: 10/10 08:57 · 上海时间 · 0 秒
+                - paragraph [ref=e114]: 此记录属于其他执行版本，原始结果保留，不会改写为当前规则。
+                - paragraph [ref=e115]: 完整结果校验 1/1 · 阶段处理量
+              - generic [ref=e116]: 已完成
+              - button "打开因子结果" [ref=e119] [cursor=pointer]
+              - button "删除任务记录 因子序列 · SZ:000001 · DAY · 4 个因子" [ref=e121] [cursor=pointer]: 删除记录
+            - listitem [ref=e122]:
+              - generic [ref=e123]:
+                - strong [ref=e124]: 因子序列 · SZ:000001 · DAY · 4 个因子
+                - generic [ref=e125]: 10/10 08:57 · 上海时间 · 15 秒
+                - paragraph [ref=e126]: 此记录属于其他执行版本，原始结果保留，不会改写为当前规则。
+              - generic [ref=e127]: 已取消
+              - button "查看原因" [ref=e129] [cursor=pointer]
+              - button "删除任务记录 因子序列 · SZ:000001 · DAY · 4 个因子" [ref=e131] [cursor=pointer]: 删除记录
+            - listitem [ref=e132]:
+              - generic [ref=e133]:
+                - strong [ref=e134]: 因子检验 · 8 只标的 · 2 个因子
+                - generic [ref=e135]: 10/10 08:25 · 上海时间 · 3 秒
+                - paragraph [ref=e136]: 此记录属于其他执行版本，原始结果保留，不会改写为当前规则。
+                - paragraph [ref=e137]: 完整结果校验 1/1 · 阶段处理量
+              - generic [ref=e138]: 已完成
+              - button "打开因子结果" [ref=e141] [cursor=pointer]
+              - button "删除任务记录 因子检验 · 8 只标的 · 2 个因子" [ref=e143] [cursor=pointer]: 删除记录
+        - region [ref=e144]:
+          - generic [ref=e145]:
+            - heading "登录会话" [level=3] [ref=e146]
+            - paragraph [ref=e147]: 退出所有浏览器与设备的登录，已保存的数据不会删除。
+          - button "退出全部设备" [ref=e148] [cursor=pointer]
+  - dialog "云端研究原档" [active] [ref=e200]:
+    - banner [ref=e201]:
+      - generic [ref=e202]:
+        - strong [ref=e203]: 000001 · 日线 · 因子研究
+        - paragraph [ref=e204]: 保存于 2026-10-10T00:59:36.360292+00:00 · 原档 f8893ae47b03
+      - button "关闭云存档" [ref=e205] [cursor=pointer]
+    - region "云存档原始结果" [ref=e207]:
+      - paragraph [ref=e208]: 账户上传的原档，未经服务端重新核验。原行情与分析结果不重新查询或计算；带冻结指标的图表直接使用保存的逐根数值。
+      - group [ref=e209]:
+        - generic "按原始输入显式重算" [ref=e210] [cursor=pointer]
+        - paragraph [ref=e254]: 使用本机当前公式实现与存档中的实际参数，不刷新行情。原始输入由账户存档提供，未经行情真实性验证。结果可能与旧版本不同；保存时创建独立新版本，不覆盖原档。
+        - generic [ref=e255]:
+          - checkbox "我已确认使用原输入与当前实现" [checked] [ref=e256]
+          - text: 我已确认使用原输入与当前实现
+        - generic [ref=e257]:
+          - button "开始重算" [ref=e258] [cursor=pointer]
+          - button "保存为新版本" [ref=e290] [cursor=pointer]
+        - generic [ref=e261]:
+          - status [ref=e262]: 已完成 · 0 秒
+          - paragraph [ref=e291]: 完整结果校验 1/1 · 本阶段处理量，不是总体完成比例
+          - paragraph [ref=e263]: 关闭原档或停止等待不会取消后台计算。未取得编号时，可到个人账户核实提交状态；完整结果可从后台任务取回。
+          - link "查看后台任务" [ref=e278]:
+            - /url: /account
+        - status [ref=e292]: 重算已返回。请核对下方成功与失败结果，再保存为新版本；原档未改变。
+        - group [ref=e293]:
+          - generic "本次重算结果（尚不替换原档）" [ref=e294] [cursor=pointer]
+      - region "只读因子研究" [ref=e211]:
+        - generic [ref=e212]:
+          - generic [ref=e213]:
+            - heading "000001 · 日线 · 因子研究" [level=3] [ref=e214]
+            - paragraph [ref=e215]: 2026/10/10 08:59:36 · 日线 · 前复权 · 时间序列
+          - generic [ref=e216]: 只读原档
+        - generic [ref=e217]:
+          - combobox "存档因子" [ref=e219] [cursor=pointer]:
+            - generic [ref=e220]: 二十周期动量
+          - combobox "存档数值精度" [ref=e224] [cursor=pointer]:
+            - generic [ref=e225]: 易读精度
+        - group [ref=e228]:
+          - generic "公式、数据要求与版本" [ref=e229] [cursor=pointer]
+        - combobox "存档曲线布局" [ref=e231] [cursor=pointer]:
+          - generic [ref=e232]: 单因子原值
+        - generic [ref=e235]:
+          - generic [ref=e236]:
+            - generic [ref=e237]:
+              - heading "原始因子序列" [level=3] [ref=e238]
+              - paragraph [ref=e239]: 仅绘制保存时的数值；缺失保持为空
+            - button "全屏查看原始因子序列" [ref=e241] [cursor=pointer]
+          - img "因子检验图；对应数值见下方明细表" [ref=e245]
+        - group [ref=e248]:
+          - generic "完整序列 · 160 根" [ref=e249] [cursor=pointer]
+        - group [ref=e250]:
+          - generic "原始输入与完整配置 · 1 个标的" [ref=e251] [cursor=pointer]
+      - group [ref=e252]:
+        - generic "完整原始存档" [ref=e253] [cursor=pointer]
+```

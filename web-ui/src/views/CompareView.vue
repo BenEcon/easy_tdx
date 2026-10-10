@@ -8,13 +8,17 @@ import ChartFrame from '../components/ChartFrame.vue'
 import CompareChart from '../components/CompareChart.vue'
 import CompareTable from '../components/CompareTable.vue'
 import { fetchTask, fetchTaskList, formatError } from '../api'
-import type { BacktestResult, EquityPoint, TaskSummary } from '../types'
+import type { BacktestResult, EquityPoint, TaskSummary, PerformanceBasis } from '../types'
+import { resultBasis } from '../metric-state'
+import { portfolioBasis } from '../performance-context'
+import type { PortfolioResult } from '../types'
 
 /** 统一的可对比项：无论单标的还是组合，都归一化为 equity + performance。 */
 interface CompareItem {
   label: string
   equity: EquityPoint[]
   performance: Record<string, number>
+  basis?: PerformanceBasis
 }
 
 const taskList = ref<TaskSummary[]>([])
@@ -30,7 +34,7 @@ async function loadTasks() {
   error.value = ''
   try {
     const resp = await fetchTaskList(20)
-    taskList.value = resp.tasks.filter((t) => t.status === 'done')
+    taskList.value = resp.tasks.filter((t) => t.status === 'done' && t.kind !== 'factor_evaluation' && t.kind !== 'factor_series' && t.kind !== 'factor_recompute')
   } catch (e) {
     error.value = formatError(e)
   } finally {
@@ -42,13 +46,14 @@ async function loadTasks() {
  * 支持单标的（equity_curve/performance）和组合（combined_equity/total_performance）。 */
 function extractComparable(
   result: Record<string, unknown> | null,
-): { equity: EquityPoint[]; performance: Record<string, number> } | null {
+): Omit<CompareItem, 'label'> | null {
   if (!result) return null
   // 单标的回测
   if (result.performance && result.equity_curve) {
     return {
       equity: result.equity_curve as EquityPoint[],
       performance: result.performance as Record<string, number>,
+      basis: resultBasis(result as unknown as BacktestResult),
     }
   }
   // 组合回测
@@ -56,6 +61,7 @@ function extractComparable(
     return {
       equity: result.combined_equity as EquityPoint[],
       performance: result.total_performance as Record<string, number>,
+      basis: portfolioBasis(result as unknown as PortfolioResult),
     }
   }
   return null
@@ -90,7 +96,7 @@ function refreshItems() {
   // 这里把归一化的 equity/performance 包装回去
   compareItems.value = Array.from(details.value.values()).map((item) => ({
     label: item.label,
-    result: { equity_curve: item.equity, performance: item.performance } as unknown as BacktestResult,
+    result: { equity_curve: item.equity, performance: item.performance, config: { performance_basis: item.basis } } as unknown as BacktestResult,
   }))
 }
 

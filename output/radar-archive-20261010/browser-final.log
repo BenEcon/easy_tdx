@@ -1,0 +1,5 @@
+### Error
+TimeoutError: locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('dialog', { name: '已保存研究快照' }).getByRole('button', { name: '关闭', exact: true })[22m
+

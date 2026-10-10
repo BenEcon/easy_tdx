@@ -1,0 +1,64 @@
+async page => {
+  const base='http://127.0.0.1:8768', errors=[],sent=[]
+  page.on('pageerror',e=>errors.push(e.message))
+  await page.setViewportSize({width:1440,height:1000})
+  await page.waitForLoadState('networkidle')
+  const owner=await page.evaluate(async()=>{
+    const user=(await(await fetch('/api/v1/auth/me')).json()).user
+    const r=await fetch('/api/v1/auth/me/preferences',{method:'PATCH',headers:{'Content-Type':'application/json','X-Preferences-Owner':user.id},body:JSON.stringify({preferences:{adjust_mode:'QFQ',sidebar_collapsed:false,qa_other_device:{note:'preserve'}}})})
+    if(!r.ok)throw Error('seed '+r.status)
+    return user.id
+  })
+  await page.goto(base+'/')
+  await page.getByRole('combobox',{name:'全局复权方式'}).waitFor()
+  let release,arrive
+  const held=new Promise(r=>release=r), firstSeen=new Promise(r=>arrive=r)
+  let first=true
+  await page.route('**/api/v1/auth/me/preferences',async route=>{
+    const request=route.request()
+    const body=request.postDataJSON()
+    sent.push({method:request.method(),owner:request.headers()['x-preferences-owner'],preferences:body.preferences})
+    const response=await route.fetch()
+    if(first&&Object.hasOwn(body.preferences,'sidebar_collapsed')) {
+      first=false;arrive();await held
+    }
+    await route.fulfill({response})
+  })
+  await page.getByRole('button',{name:'收起左侧栏',exact:true}).click()
+  await firstSeen
+  await page.getByRole('combobox',{name:'全局复权方式'}).click()
+  await page.getByRole('option',{name:/后复权/}).click()
+  release()
+  await page.waitForResponse(r=>r.url().endsWith('/auth/me/preferences')&&r.request().postData()?.includes('HFQ'))
+  await page.waitForLoadState('networkidle')
+  if(!/后复权/.test(await page.getByRole('combobox',{name:'全局复权方式'}).innerText()))throw Error('old response rolled back HFQ')
+  if(sent.length!==2||sent.some(r=>r.method!=='PATCH'||r.owner!==owner))throw Error('wrong requests '+JSON.stringify(sent))
+  if(Object.keys(sent[0].preferences).length!==1||Object.keys(sent[1].preferences).length!==1)throw Error('full preference overwrite')
+  await page.locator('a[href="/chanlun"]').first().click()
+  await page.getByRole('combobox',{name:'缠论分析周期'}).waitFor()
+  if(!/后复权/.test(await page.getByRole('combobox',{name:'全局复权方式'}).innerText()))throw Error('SPA route lost adjustment')
+  const preserved=await page.evaluate(async()=> (await(await fetch('/api/v1/auth/me')).json()).user.preferences)
+  if(preserved.adjust_mode!=='HFQ'||preserved.qa_other_device?.note!=='preserve'||!preserved.sidebar_collapsed)throw Error('server preferences lost')
+  await page.screenshot({path:'output/playwright/preference-isolation-desktop.png',fullPage:true})
+  await page.unroute('**/api/v1/auth/me/preferences')
+  await page.route('**/api/v1/auth/me/preferences',r=>r.fulfill({status:503,json:{detail:'QA offline save'}}))
+  const failed=page.waitForResponse(r=>r.url().endsWith('/auth/me/preferences'))
+  await page.getByRole('button',{name:'展开左侧栏',exact:true}).click()
+  await failed;await page.waitForLoadState('networkidle')
+  if(errors.length)throw Error('unhandled failed save '+errors.join(';'))
+  await page.unroute('**/api/v1/auth/me/preferences')
+  const switched=await page.evaluate(async oldOwner=>{
+    const name='preference-member-'+Date.now()
+    const create=await fetch('/api/v1/admin/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:name,password:'Local-preference-QA-2026!',role:'user'})})
+    if(!create.ok)throw Error('create failed '+create.status)
+    const member=(await create.json()).user
+    const login=await fetch('/api/v1/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:name,password:'Local-preference-QA-2026!'})})
+    if(!login.ok)throw Error('login failed')
+    const denied=await fetch('/api/v1/auth/me/preferences',{method:'PATCH',headers:{'Content-Type':'application/json','X-Preferences-Owner':oldOwner},body:JSON.stringify({preferences:{private_note:'old-owner'}})})
+    const me=(await(await fetch('/api/v1/auth/me')).json()).user
+    return {status:denied.status,id:member.id,actual:me.id,preferences:me.preferences}
+  },owner)
+  if(switched.status!==409||switched.id!==switched.actual||Object.keys(switched.preferences).length)throw Error('owner gate failed '+JSON.stringify(switched))
+  if(errors.length)throw Error('page errors '+errors.join(';'))
+  return {sent,serverState:preserved,cookieOwnerMismatch:switched.status,pageErrors:errors.length,explicitOfflineSaveHandled:true}
+}

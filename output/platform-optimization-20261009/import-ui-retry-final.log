@@ -1,0 +1,11 @@
+### Result
+{"before":3,"after":4,"sameRetryId":true,"attempts":2}
+### Ran Playwright code
+```js
+await (async page=>{const cloud=page.locator(".cloud-archives"),input=cloud.locator("input[type=file]");const list=async()=>await(await page.request.get("http://127.0.0.1:8766/api/v1/research/archives")).json();const before=(await list()).items.length;const urls=[];let dropped=false;await page.route("**/research/archives/*",async route=>{if(route.request().method()==="PUT"){urls.push(route.request().url());if(!dropped){dropped=true;await route.fetch();await route.abort("failed");return;}}await route.continue();});try{await cloud.locator(".archive-toolbar button:not([disabled])").filter({hasText:"导入研究备份"}).waitFor();await input.setInputFiles("../output/playwright/import-legacy-research.json");await page.getByRole("button",{name:"确认导入到当前账户",exact:true}).click();await cloud.getByRole("alert").waitFor();await cloud.getByRole("button",{name:"重试原存档上传",exact:true}).click();await cloud.getByText("已保存到当前账户，可在其他设备刷新云目录查看。",{exact:true}).waitFor();const after=(await list()).items.length;if(after!==before+1||urls.length!==2||urls[0]!==urls[1])throw Error(JSON.stringify({before,after,urls}));return {before,after,sameRetryId:true,attempts:urls.length};}finally{await page.unroute("**/research/archives/*");}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/account
+- Page Title: 股票分析 · Analysis Studio
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T14-01-16-502Z.log#L2

@@ -1,0 +1,131 @@
+{
+  "rows": [
+    {
+      "strategy_id": "chanlun_mmd",
+      "strategy_name": "本机真实 chanlun_mmd",
+      "kind": "single",
+      "strategy": "chanlun_mmd",
+      "strategy_label": "缠论买卖点",
+      "params": {},
+      "symbol": "SH:600699",
+      "category": "DAY",
+      "latest_signal": "BUY",
+      "signal_date": "2026-02-10 00:00",
+      "recent_signals": [
+        {
+          "date": "2026-02-10 00:00",
+          "direction": "BUY"
+        }
+      ],
+      "position": "holding",
+      "last_close": 27.389999389648438,
+      "last_bar_date": "2026-02-10 00:00",
+      "error": null,
+      "metadata": {
+        "source": "MAC",
+        "requested_adjust": "QFQ",
+        "actual_adjust": "QFQ",
+        "observed_at": "2026-02-10 16:00:00",
+        "timezone": "Asia/Shanghai",
+        "category": "DAY",
+        "bar_time": "end",
+        "completion_policy": "exchange_calendar_with_explicit_fallback",
+        "completion_note": "已核验日历年份：2020、2021、2022、2023、2024、2025、2026；周月边界按交易所休市安排。未覆盖年份保守判断，未收盘柱不作确认依据。",
+        "calendar_version": "sse-cash-2020-2026-v2",
+        "calendar_covered_years": [
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "quality": {
+          "status": "ok",
+          "errors": [],
+          "warnings": [],
+          "invalid_bar_indices": [],
+          "missing_session_count": 0,
+          "missing_sessions": [],
+          "missing_bar_count": 0,
+          "missing_bar_samples": [],
+          "calendar_unverified_years": [],
+          "suspension_status": "not_verified"
+        },
+        "last_bar_at": "2026-02-10 00:00:00",
+        "last_closed_at": "2026-02-10 15:00:00",
+        "data_fingerprint": "9fbf15a8ead0f5d5bd0ff16d6cede0d757b0092653edd4037339ffea88b65be0",
+        "adjustment_verified": true,
+        "volume_policy": "上游成交量；未独立核验成交量复权口径",
+        "historical_data_vintage": false
+      }
+    },
+    {
+      "strategy_id": "ma_cross",
+      "strategy_name": "本机真实 ma_cross",
+      "kind": "single",
+      "strategy": "ma_cross",
+      "strategy_label": "均线交叉",
+      "params": {},
+      "symbol": "SZ:300750",
+      "category": "MIN_30",
+      "latest_signal": "BUY",
+      "signal_date": "2026-09-30 13:30",
+      "recent_signals": [
+        {
+          "date": "2026-09-30 13:30",
+          "direction": "BUY"
+        }
+      ],
+      "position": "holding",
+      "last_close": 290.7099914550781,
+      "last_bar_date": "2026-09-30 14:30",
+      "error": null,
+      "metadata": {
+        "source": "MAC",
+        "requested_adjust": "QFQ",
+        "actual_adjust": "QFQ",
+        "observed_at": "2026-09-30 14:30:00",
+        "timezone": "Asia/Shanghai",
+        "category": "MIN_30",
+        "bar_time": "end",
+        "completion_policy": "exchange_calendar_with_explicit_fallback",
+        "completion_note": "已核验日历年份：2020、2021、2022、2023、2024、2025、2026；周月边界按交易所休市安排。未覆盖年份保守判断，未收盘柱不作确认依据。",
+        "calendar_version": "sse-cash-2020-2026-v2",
+        "calendar_covered_years": [
+          2020,
+          2021,
+          2022,
+          2023,
+          2024,
+          2025,
+          2026
+        ],
+        "quality": {
+          "status": "ok",
+          "errors": [],
+          "warnings": [],
+          "invalid_bar_indices": [],
+          "missing_session_count": 0,
+          "missing_sessions": [],
+          "missing_bar_count": 0,
+          "missing_bar_samples": [],
+          "calendar_unverified_years": [],
+          "suspension_status": "not_verified"
+        },
+        "last_bar_at": "2026-09-30 14:30:00",
+        "last_closed_at": "2026-09-30 14:30:00",
+        "data_fingerprint": "7f6b0a06acaf9e5bb871995809dbd72bc16239f3edf32342b5d653db1b6522e1",
+        "adjustment_verified": true,
+        "volume_policy": "上游成交量；未独立核验成交量复权口径",
+        "historical_data_vintage": false
+      }
+    }
+  ],
+  "total": 2,
+  "buy_count": 2,
+  "sell_count": 0,
+  "error_count": 0,
+  "elapsed": 0.37
+}

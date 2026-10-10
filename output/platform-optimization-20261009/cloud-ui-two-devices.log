@@ -1,0 +1,12 @@
+### Result
+{"independentBrowserContext":true,"conflict":"存档已被其他页面修改，请刷新后重试 你的编辑仍保留。可先复制文字，再取消编辑、刷新目录后核对最新版本。","draftPreserved":true}
+### Ran Playwright code
+```js
+await (async(page)=>{const cloud=page.locator(".cloud-archives").first();await cloud.getByRole("button",{name:"刷新云目录",exact:true}).click();const row=cloud.locator("li").filter({hasText:"图表快照"}).first();await row.getByRole("button",{name:"编辑备注",exact:true}).click();await row.getByRole("textbox",{name:"存档备注",exact:true}).fill("第一设备未提交草稿");const context=await page.context().browser().newContext({viewport:{width:390,height:1000}});try{const other=await context.newPage();await other.goto(page.url());await other.getByRole("navigation",{name:"缠论工作区"}).getByRole("button",{name:/研究/}).click();const second=other.locator(".cloud-archives").first();await second.locator(":scope > summary").click();const remote=second.locator("li").filter({hasText:"图表快照"}).first();await remote.getByRole("button",{name:"编辑备注",exact:true}).click();await remote.getByRole("textbox",{name:"存档备注",exact:true}).fill("第二设备已保存");await remote.getByRole("button",{name:"保存备注",exact:true}).click();await second.getByText("名称与备注已保存，原始行情和结果未改变。",{exact:true}).waitFor();await row.getByRole("button",{name:"保存备注",exact:true}).click();await cloud.getByRole("alert").waitFor();if(await row.getByRole("textbox",{name:"存档备注",exact:true}).inputValue()!=="第一设备未提交草稿")throw Error("draft lost");const conflict=await cloud.getByRole("alert").innerText();if(!conflict.includes("其他页面修改"))throw Error(conflict);await row.getByRole("button",{name:"取消编辑",exact:true}).click();await cloud.getByRole("button",{name:"刷新云目录",exact:true}).click();await cloud.getByText("第二设备已保存",{exact:true}).waitFor();return {independentBrowserContext:true,conflict,draftPreserved:true};}finally{await context.close();}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=stock&symbol=300750&market=SZ&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=DAY&adjust=QFQ
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T13-24-10-380Z.log#L1

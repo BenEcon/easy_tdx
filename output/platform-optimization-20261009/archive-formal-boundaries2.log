@@ -1,0 +1,39 @@
+..F..................................................................... [ 80%]
+.................                                                        [100%]
+=================================== FAILURES ===================================
+_________ test_session_revoked_during_upload_rechecked_before_writing __________
+.venv/lib/python3.10/site-packages/starlette/_exception_handler.py:42: in wrapped_app
+    await app(scope, receive, sender)
+.venv/lib/python3.10/site-packages/starlette/routing.py:73: in app
+    response = await f(request)
+.venv/lib/python3.10/site-packages/fastapi/routing.py:291: in app
+    solved_result = await solve_dependencies(
+.venv/lib/python3.10/site-packages/fastapi/dependencies/utils.py:640: in solve_dependencies
+    solved = await run_in_threadpool(call, **solved_result.values)
+.venv/lib/python3.10/site-packages/starlette/concurrency.py:37: in run_in_threadpool
+    return await anyio.to_thread.run_sync(func)
+.venv/lib/python3.10/site-packages/anyio/to_thread.py:65: in run_sync
+    return await get_async_backend().run_sync_in_worker_thread(
+.venv/lib/python3.10/site-packages/anyio/_backends/_asyncio.py:2706: in run_sync_in_worker_thread
+    return await future
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/tasks.py:304: in __wakeup
+    future.result()
+.venv/lib/python3.10/site-packages/anyio/_backends/_asyncio.py:1100: in run
+    result = context.run(func, *args)
+src/easy_tdx/web/routers/auth.py:91: in get_current_user
+    raise HTTPException(
+E   fastapi.exceptions.HTTPException: 401: 请先登录
+
+During handling of the above exception, another exception occurred:
+tests/unit/test_archive_ingress.py:129: in test_session_revoked_during_upload_rechecked_before_writing
+    assert second.get(base).status_code == 401
+E   NameError: name 'second' is not defined
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_archive_ingress.py::test_session_revoked_during_upload_rechecked_before_writing
+1 failed, 88 passed, 1 warning in 13.29s

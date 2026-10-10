@@ -1,0 +1,12 @@
+### Result
+{"status":{"scan_fetch":1,"live_fetch":0,"bars":800,"fingerprint":"4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23"},"replayStatus":200,"bars":800,"visible":800,"origin":"system","sizes":[{"width":1440,"scroll":1440},{"width":390,"scroll":390},{"width":320,"scroll":320}],"errors":[]}
+### Ran Playwright code
+```js
+await (async (page) => { const errors=[],seen=[];page.on("pageerror",e=>errors.push(e.message));page.on("request",r=>{if(r.url().includes("/api/v1/"))seen.push({url:r.url(),body:r.postDataJSON(),origin:r.headers()["x-query-origin"]})});await page.setViewportSize({width:1440,height:1000});const response=page.waitForResponse(r=>new URL(r.url()).pathname.endsWith("/chanlun/replay")&&r.request().method()==="POST",{timeout:60000});await page.reload();const result=await response;const body=result.request().postDataJSON();const status=await(await page.request.get("http://127.0.0.1:8769/qa/status")).json();if(result.status()!==200||body.bars.length!==status.bars||status.live_fetch!==0)throw Error(JSON.stringify({status,code:result.status(),bars:body.bars.length}));await page.getByText("行情已核验，执行版本一致。",{exact:true}).waitFor();const sizes=[];for(const width of [1440,390,320]){await page.setViewportSize({width,height:1000});await page.getByRole("region",{name:"信号人工复核上下文"}).scrollIntoViewIfNeeded();const size=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));if(size.scroll>width+1)throw Error("overflow");sizes.push(size);await page.screenshot({path:"/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/radar-original-chanlun-"+width+".png"})}return {status,replayStatus:result.status(),bars:body.bars.length,visible:body.visible_count,origin:seen.find(r=>new URL(r.url).pathname.endsWith("/chanlun/replay")).origin,sizes,errors}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8769/chanlun?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=ce05c1529d344a5b95919460a87f9e14&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T19-39-18-870Z.log#L15-L16

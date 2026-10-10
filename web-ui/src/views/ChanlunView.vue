@@ -1,8 +1,16 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { queryAction } from '../query-origin'
+import { useAuth } from '../auth'
+import { fetchRadarSnapshot } from '../api'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
+import { withRadarArchiveSource, type RadarArchiveSource } from '../radar-archive'
 import { useRoute } from 'vue-router'
+import { readResearchNavigation } from '../research-navigation'
+import ResearchEntryContext from '../components/ResearchEntryContext.vue'
+import { researchTarget, trackingAdjustment, validateTrackingTarget, type TrackingTarget } from '../tracking'
 
 import ChanlunChart from '../components/ChanlunChart.vue'
+import DataProvenance from '../components/DataProvenance.vue'
 import ChanlunTargetPicker from '../components/ChanlunTargetPicker.vue'
 import { targetIdentity, targetKindLabel, type ResearchTarget } from '../chanlun-target'
 import MultiPeriodResearch from '../components/MultiPeriodResearch.vue'
@@ -13,7 +21,10 @@ import PenConsolidationPanel from '../components/PenConsolidationPanel.vue'
 import { structureDate } from '../structure-display'
 import ConfirmationReplay from '../components/ConfirmationReplay.vue'
 import EvidenceReading from '../components/EvidenceReading.vue'
-import ResearchEventRecord from '../components/ResearchEventRecord.vue'
+import SignalEvidenceWorkspace from '../components/SignalEvidenceWorkspace.vue'
+import RadarReviewContext from '../components/RadarReviewContext.vue'
+import { readRadarReview, sameReviewInput, snapshotForReview } from '../radar-review'
+import { chartBarIndex } from '../chart-position'
 import DecompositionInspector from '../components/DecompositionInspector.vue'
 import ExtensionHierarchyInspector from '../components/ExtensionHierarchyInspector.vue'
 import EngineeringTrendInspector from '../components/EngineeringTrendInspector.vue'
@@ -28,8 +39,7 @@ import NumberStepper from '../components/NumberStepper.vue'
 import { movingAverageColor } from '../moving-averages'
 import { DEFAULT_LINE_WIDTHS, MIN_LINE_WIDTH, MAX_LINE_WIDTH, LINE_WIDTH_STEP, structureLineWidth, type StructureLine } from '../chanlun-line-width'
 import { DEFAULT_CANDLE_TRANSPARENCY, candleTransparency } from '../candle-fill'
-import { divergenceEvidence, divergenceName, signalEvidence, waveFailureSummary, waveDiagnosticLines, waveComparisonName, waveComparisonLines } from '../divergence-evidence'
-import { macdPrompts } from '../divergence-marker'
+import { divergenceName } from '../divergence-evidence'
 import { divergenceFocus, reversePenFocus, type DivergenceFocus } from '../divergence-focus'
 import { expansionFocus } from '../expansion-focus'
 import { releasedFocus, type ReleaseFocusMode } from '../released-focus'
@@ -43,14 +53,35 @@ import type { Bar, Category, ChanlunResult, ChanlunDivergence } from '../types'
 import { useMarketPreferences } from '../market-preferences'
 import { useMobileViewport } from '../mobile-viewport'
 import { useResearchPreferences } from '../research-preferences'
+import ResearchWorkspaceNav from '../components/ResearchWorkspaceNav.vue'
+import ResearchWorkspaceTools from '../components/ResearchWorkspaceTools.vue'
+import type { ResearchWorkspace } from '../research-workspace'
 
 const route = useRoute()
+const entryContext = computed(() => readResearchNavigation(route.query))
 const researchPreferences = useResearchPreferences()
 const objectHover = computed({ get: () => researchPreferences.settings.value.objectHover, set: value => researchPreferences.patch({ objectHover: value }) })
 const mainChart = ref<InstanceType<typeof ChanlunChart>>()
 const multiCharts = ref<InstanceType<typeof MultiPeriodCharts>>()
 const mobile = useMobileViewport()
 const mobileSettingsOpen = ref(true)
+const workspace = ref<ResearchWorkspace>('chart')
+const visitedWorkspaces = ref({ research:false, audit:false })
+const chartWorkspaceAnchor = ref<HTMLElement>(), researchWorkspaceAnchor = ref<HTMLElement>(), auditWorkspaceAnchor = ref<HTMLElement>()
+async function setWorkspace(value: ResearchWorkspace, scroll = true) {
+  if (workspace.value !== value) window.dispatchEvent(new Event('research-workspace-change'))
+  workspace.value = value
+  if (value !== 'chart') visitedWorkspaces.value[value] = true
+  await nextTick()
+  window.dispatchEvent(new Event('resize'))
+  if (scroll) ({chart:chartWorkspaceAnchor,research:researchWorkspaceAnchor,audit:auditWorkspaceAnchor}[value]).value?.scrollIntoView({block:'start'})
+}
+async function returnToPrimaryChart(date: string) {
+  await setWorkspace('chart',false)
+  multiCharts.value?.showPrimary()
+  await nextTick()
+  mainChart.value?.locate(date)
+}
 const stockCode = useSelectedStock()
 const selectedTarget = ref<ResearchTarget>({kind:'stock',code:'',market:''})
 const isStock = computed(() => selectedTarget.value.kind === 'stock')
@@ -59,7 +90,14 @@ const code = computed({get: () => isStock.value ? stockCode.value : selectedTarg
 const target = computed<ResearchTarget>(() => isStock.value
   ? {kind:'stock',code:stockCode.value,market:detectMarket(stockCode.value)} : selectedTarget.value)
 const targetKey = computed(() => targetIdentity(target.value))
-const targetTitle = computed(() => `${targetKindLabel[target.value.kind]} · ${isStock.value ? stockDisplayName(code.value) : `${code.value}${target.value.name ? `-${target.value.name}` : ''}`}`)
+const entryStockName = computed(() => {
+  const t = entryContext.value.value?.target
+  return t && isStock.value && t.code===code.value && t.market===target.value.market && t.name ? `${t.code}-${t.name}` : stockDisplayName(code.value)
+})
+const trackingFund = computed(() => (route.query.from === 'tracking' || entryContext.value.value?.target.kind === 'fund') && route.query.targetKind === 'fund' && isStock.value && route.query.symbol === code.value)
+const targetTitle = computed(() => trackingFund.value
+  ? `场内基金 · ${code.value}-${String(route.query.name || '名称待补充')}`
+  : `${targetKindLabel[target.value.kind]} · ${isStock.value ? entryStockName.value : `${code.value}${target.value.name ? `-${target.value.name}` : ''}`}`)
 const lineWidths = ref({ ...researchPreferences.settings.value.widths })
 const candleFillTransparency = ref(researchPreferences.settings.value.transparency)
 const lineWidthOptions: Array<{ key: StructureLine; label: string; color: string }> = [
@@ -96,7 +134,7 @@ let industryVersion = 0
 let analysisAbort: AbortController | null = null
 let industryAbort: AbortController | null = null
 let replayAbort: AbortController | null = null
-async function loadIndustry() {
+async function loadIndustry(manual = false) {
   const version = ++industryVersion
   industryAbort?.abort(); industryAbort = new AbortController()
   const signal = industryAbort.signal
@@ -106,7 +144,7 @@ async function loadIndustry() {
   industryLoading.value = true
   industryError.value = ''
   try {
-    const data = industrySnapshot.value ?? await analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value }, signal)
+    const data = industrySnapshot.value ?? await queryAction(manual)(() => analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value }, signal))
     if (version !== industryVersion) return
     industrySnapshot.value = data
     if (!snapshotResult.value || !bars.value.length) return
@@ -146,13 +184,15 @@ const count = ref(600)
 const loading = ref(false)
 const error = ref('')
 const result = ref<ChanlunResult | null>(null)
-const macdPromptItems = computed(() => macdPrompts(result.value?.bcs ?? []))
-const blockedWaves = computed(() => (result.value?.wave_diagnostics ?? []).filter(item => item.status === 'blocked').slice().reverse())
-const auditedWaves = computed(() => (result.value?.wave_diagnostics ?? []).slice().reverse())
 const bars = ref<Bar[]>([])
 const snapshotBars = ref<Bar[]>([])
 const snapshotResult = ref<ChanlunResult | null>(null)
 const snapshotMetadata = ref<BarSnapshot['metadata'] | null>(null)
+const radarArchiveSource = shallowRef<RadarArchiveSource|null>(null)
+function captureResearch() {
+  if(!multiCharts.value)throw Error('图表尚未就绪，未保存不完整研究')
+  return withRadarArchiveSource(multiCharts.value.capture(),radarArchiveSource.value)
+}
 const researchAsOf = computed(() => {
   const last = bars.value.at(-1)
   if (!last) return ''
@@ -169,6 +209,7 @@ let replayVersion = 0
 function clearReplay() {
   analysisAbort?.abort(); industryAbort?.abort(); replayAbort?.abort()
   snapshotMetadata.value = null
+  radarArchiveSource.value = null
   replayVersion++
   replayBusy.value = false
   snapshotBars.value = []
@@ -196,9 +237,9 @@ async function seekReplay(position: number) {
       bars: snapshotBars.value, visible_count: target,
     }
     const comparison = industryView.value !== 'stock' && industrySnapshot.value
-      ? await replayChanlunComparison({ stock: request, industry: { code: industryCode.value, bars: industrySnapshot.value.bars } }, signal)
+      ? await queryAction(true)(() => replayChanlunComparison({ stock: request, industry: { code: industryCode.value, bars: industrySnapshot.value!.bars } }, signal))
       : null
-    const next = comparison?.stock ?? (target === snapshotBars.value.length ? snapshotResult.value : await replayChanlun(request, signal))
+    const next = comparison?.stock ?? (target === snapshotBars.value.length ? snapshotResult.value : await queryAction(true)(() => replayChanlun(request, signal)))
     if (version !== replayVersion) return
     result.value = next
     bars.value = snapshotBars.value.slice(0, target)
@@ -224,6 +265,17 @@ async function seekReplay(position: number) {
   }
 }
 const activeTab = ref<'structure' | 'signals' | 'divergence'>('structure')
+const evidenceBrowser = ref<InstanceType<typeof SignalEvidenceWorkspace>>()
+async function reviewChartDate(date: string) {
+  // Only the current primary chart may open this primary-result evidence workspace.
+  const index = chartBarIndex(bars.value, date)
+  if (index === null) return
+  const selected = bars.value[index]!.datetime
+  activeTab.value = 'divergence'
+  await setWorkspace('audit',false)
+  await nextTick()
+  await evidenceBrowser.value?.inspectDate({ date: selected, precision: category.value.startsWith('MIN_') ? 'minute' : 'day' })
+}
 const focusedDivergence = ref<DivergenceFocus | null>(null)
 const showDivergenceHistory = ref(true)
 const focusToolbar = ref<HTMLElement>()
@@ -251,6 +303,8 @@ async function showStructureFocus(focus: DivergenceFocus) {
   if (replayBusy.value || loading.value || industryLoading.value) return
   if (industryView.value === 'industry') industryView.value = 'stock'
   focusedDivergence.value = focus
+  await setWorkspace('chart',false)
+  multiCharts.value?.showPrimary()
   await nextTick()
   focusToolbar.value?.scrollIntoView({ block: 'center' })
   focusToolbar.value?.focus({ preventScroll: true })
@@ -258,6 +312,7 @@ async function showStructureFocus(focus: DivergenceFocus) {
 async function jumpToConfirmation(position: number) {
   await seekReplay(position)
   if (bars.value.length === position && !error.value) {
+    await setWorkspace('chart',false)
     await nextTick()
     replaySlider.value?.scrollIntoView({ block: 'center' })
     replaySlider.value?.focus({ preventScroll: true })
@@ -269,6 +324,12 @@ async function locateReleased(id: string, mode: ReleaseFocusMode) {
 }
 const { adjustMode } = useMarketPreferences()
 const effectiveAdjust = computed(() => isStock.value ? adjustMode.value : 'NONE' as const)
+const {currentUser}=useAuth()
+watch(()=>currentUser.value?.id,()=>{
+  analysisVersion++;industryVersion++;replayVersion++
+  analysisAbort?.abort();industryAbort?.abort();replayAbort?.abort()
+  clearReplay();loading.value=false;result.value=null;bars.value=[];industryData.value=null;industries.value=[];error.value=''
+},{flush:'sync'})
 watch([category, count, adjustMode], () => {
   clearReplay()
   analysisVersion++
@@ -278,11 +339,10 @@ watch([category, count, adjustMode], () => {
   industryData.value = null
 }, { flush: 'sync' })
 const isSignalReview = computed(() => route.query.review === 'signal')
-const reviewSignalLabel = computed(() =>
-  route.query.signal === 'BUY' ? '买入信号' : route.query.signal === 'SELL' ? '卖出信号' : '缠论信号',
-)
-const reviewSignalDate = computed(() => String(route.query.signalDate || '日期未知'))
-const reviewSourceName = computed(() => String(route.query.strategyName || route.query.strategyLabel || '缠论买卖点'))
+const reviewContext = computed(() => readRadarReview(route.query))
+const reviewMatches = computed(() => isStock.value && sameReviewInput(reviewContext.value.value, code.value, category.value, effectiveAdjust.value))
+const reviewLocation = ref('')
+const reviewStatus = computed(() => loading.value ? (reviewContext.value.value?.evidence?'正在读取原任务行情并核验…':'正在按原截止时间重新取数核验…') : error.value ? `复核未完成：${error.value}` : result.value ? reviewLocation.value : '尚未生成本次复核结果。')
 
 interface LayerState {
   nextPen: boolean
@@ -295,7 +355,7 @@ interface LayerState {
 }
 
 const layers = ref<LayerState>({
-  nextPen: false,
+  nextPen: true,
   consolidations: true,
   bis: true,
   zss: false,
@@ -311,7 +371,7 @@ const layerOptions: Array<{ key: keyof LayerState; label: string }> = [
   { key: 'xds', label: '线段' },
   { key: 'mmds', label: '买卖点' },
   { key: 'bcs', label: '背离 / 背驰' },
-  { key: 'nextPen', label: '下一笔参考' },
+  { key: 'nextPen', label: '待成笔方向' },
 ]
 
 const categories: Array<{ value: Category; label: string }> = [
@@ -360,22 +420,6 @@ const latestStructure = computed(() => {
   return `当前 ${direction} · ${status}，最近中枢 ${center.zd.toFixed(2)}–${center.zg.toFixed(2)}`
 })
 
-function signalLabel(type: string): string {
-  const labels: Record<string, string> = {
-    '1buy': '一类买点',
-    '2buy': '二类买点',
-    '3buy': '三类买点',
-    '1sell': '一类卖点',
-    '2sell': '二类卖点',
-    '3sell': '三类卖点',
-  }
-  return labels[type] ?? type
-}
-
-function formatMessage(text: string): string {
-  return text.replace(/-?\d+\.\d+/g, (value) => Number(value).toFixed(2))
-}
-
 function segmentValue(
   segment: ChanlunResult['xds'][number],
   endpoint: 'start' | 'end',
@@ -395,15 +439,24 @@ function selectHistory(item: StockHistoryItem) {
   category.value = item.category
 }
 
-async function runAnalysis() {
+async function runAnalysis(manual = false) {
+  if (entryContext.value.error) { error.value = entryContext.value.error; return }
+  const query = queryAction(manual)
+  if (isSignalReview.value && !reviewContext.value.value) { error.value = reviewContext.value.error; return }
   if (!/^\d{6}$/.test(code.value)) {
     error.value = isStock.value ? '请输入 6 位证券代码' : '请先选择指数或板块'
     return
   }
 
   loading.value = true
+  workspace.value = 'chart'
+  visitedWorkspaces.value = {research:false,audit:false}
   clearReplay()
+  result.value = null
+  bars.value = []
   error.value = ''
+  reviewLocation.value = ''
+  const review = reviewMatches.value ? reviewContext.value.value : null
   const version = ++analysisVersion
   analysisAbort = new AbortController()
   const signal = analysisAbort.signal
@@ -414,23 +467,39 @@ async function runAnalysis() {
   try {
     const instrument = { ...target.value }
     const market = instrument.market
-    const snapshot = await fetchResearchSnapshot(instrument, category.value, count.value, effectiveAdjust.value, signal)
+    const fetched = review?.evidence
+      ? await query(()=>fetchRadarSnapshot(review,currentUser.value?.id??'',signal))
+      : await query(() => fetchResearchSnapshot(instrument, category.value, count.value, effectiveAdjust.value, signal))
+    const snapshot = review && !review.evidence ? snapshotForReview(fetched, review) : fetched
     const nextBars = snapshot.bars
     if (version !== analysisVersion) return
     if (!nextBars.length) throw new Error('所选范围暂无行情')
-    const nextResult = await replayChanlun({
+    const nextResult = await query(() => replayChanlun({
       code: instrument.kind === 'stock' ? `${market}${instrument.code}` : targetIdentity(instrument), category: category.value,
       bars: nextBars, visible_count: nextBars.length,
-    }, signal)
+    }, signal))
     if (version !== analysisVersion) return
     bars.value = nextBars
     snapshotMetadata.value = snapshot.metadata
+    radarArchiveSource.value = snapshot.radarSource ?? null
     result.value = nextResult
     snapshotBars.value = nextBars
     snapshotResult.value = nextResult
     replayPosition.value = nextBars.length
     if (isStock.value) recordStockHistory({ code: code.value, category: category.value })
     activeTab.value = 'structure'
+    if (review) {
+      await nextTick()
+      if (version !== analysisVersion) return
+      const signalDate = category.value.startsWith('MIN_') ? review.signalDate : review.signalDate.slice(0, 10)
+      if (signalDate && chartBarIndex(nextBars, signalDate) !== null) {
+        mainChart.value?.locate(signalDate)
+        await reviewChartDate(signalDate)
+        reviewLocation.value = '已按信号日期筛选当前结构证据；有无匹配以检索结果为准。结构采用当前规则，原策略参数仅作对照。'
+      } else {
+        reviewLocation.value = '已生成截止范围内的当前结构；未指定信号日期或本次行情未覆盖该时点，未定位。'
+      }
+    }
     if (!isStock.value) return
     try {
       const belonging = await fetchStockIndustries(market, code.value, signal)
@@ -445,19 +514,60 @@ async function runAnalysis() {
   }
 }
 
-onMounted(async () => {
+async function loadRoute() {
+  analysisAbort?.abort()
+  analysisVersion++
+  clearReplay()
+  loading.value = false
+  result.value = null
+  error.value = ''
+  if (route.query.researchContext !== undefined) {
+    const entry = entryContext.value
+    if (!entry.value) { error.value = entry.error; return }
+    selectedTarget.value = researchTarget(entry.value.target)
+    if (isStock.value) code.value = entry.value.target.code
+    category.value = entry.value.category
+    adjustMode.value = entry.value.adjust
+    count.value = entry.value.count
+    return
+  }
+  if (route.query.from === 'tracking') {
+    try {
+      const q = route.query
+      for (const key of ['targetKind','symbol','market','name','category','boardType']) if (typeof q[key] !== 'string') throw new Error('追踪标的链接不完整')
+      const instrument = {kind:q.targetKind,code:q.symbol,market:q.market,name:q.name,boardType:q.boardType || undefined} as TrackingTarget
+      validateTrackingTarget(instrument)
+      if (!['WEEK','DAY','MIN_60','MIN_30','MIN_15','MIN_5'].includes(String(q.category))) throw new Error('追踪分析周期不支持')
+      selectedTarget.value = researchTarget(instrument)
+      if (instrument.kind === 'stock' || instrument.kind === 'fund') code.value = instrument.code
+      category.value = q.category as Category
+      adjustMode.value = trackingAdjustment(instrument)
+      count.value = 800
+      await runAnalysis()
+    } catch (e) { error.value = formatError(e) }
+    return
+  }
+  if (isSignalReview.value) {
+    const review = reviewContext.value.value
+    if (!review) { error.value = reviewContext.value.error; return }
+    selectedTarget.value = { kind: 'stock', code: review.symbol, market: detectMarket(review.symbol) }
+    code.value = review.symbol
+    category.value = review.category
+    adjustMode.value = review.adjust
+    count.value = 800
+    if (route.query.autoRun === '1') await runAnalysis()
+    return
+  }
   const qSymbol = route.query.symbol as string | undefined
   const qCategory = route.query.category as Category | undefined
   const qCount = Number(route.query.count)
-  if (qSymbol) code.value = qSymbol
+  if (qSymbol) { selectedTarget.value = {kind:'stock',code:qSymbol,market:detectMarket(qSymbol)}; code.value = qSymbol }
   if (qCategory) category.value = qCategory
   if (countOptions.some((item) => item.value === qCount)) count.value = qCount
 
-  if (isSignalReview.value && route.query.autoRun === '1' && qSymbol) {
-    await runAnalysis()
-    if (result.value) activeTab.value = 'signals'
-  }
-})
+}
+onMounted(loadRoute)
+watch(() => route.fullPath, () => { if (route.path === '/chanlun') void loadRoute() })
 </script>
 
 <template>
@@ -482,7 +592,7 @@ onMounted(async () => {
             <label>证券代码</label>
             <StockHistoryMenu @select="selectHistory" />
           </div>
-          <input v-model.trim="code" autocomplete="off" maxlength="6" inputmode="numeric" placeholder="000001" @keyup.enter="runAnalysis" />
+          <input v-model.trim="code" autocomplete="off" maxlength="6" inputmode="numeric" placeholder="000001" @keyup.enter="runAnalysis(true)" />
           <span class="market-label">{{ detectedMarket }}</span>
         </div>
         <div class="field">
@@ -558,27 +668,15 @@ onMounted(async () => {
         <p>K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰</p>
       </div>
 
-      <button class="primary analyze-button action-button" :disabled="loading" @click="runAnalysis">
+      <button class="primary analyze-button action-button" :disabled="loading" @click="runAnalysis(true)">
         <span v-if="loading" class="spinner"></span>
         {{ loading ? '正在解析结构…' : '开始分析' }}
       </button>
     </aside>
 
     <main class="analysis-workspace">
-      <section v-if="isSignalReview" class="review-context" aria-label="信号人工复核上下文">
-        <div class="review-context-icon">
-          <svg viewBox="0 0 20 20" aria-hidden="true">
-            <circle cx="8.5" cy="8.5" r="4.75" />
-            <path d="m12.1 12.1 3.4 3.4M6.4 8.7l1.3 1.3 2.8-3" />
-          </svg>
-        </div>
-        <div class="review-context-copy">
-          <span>雷达信号 · 人工复核</span>
-          <strong>{{ reviewSourceName }} · {{ code }}</strong>
-          <p>{{ reviewSignalLabel }} · {{ reviewSignalDate }} · {{ category }} · 已载入完整结构并定位买卖点</p>
-        </div>
-        <RouterLink class="review-back" to="/signals">返回信号雷达</RouterLink>
-      </section>
+      <ResearchEntryContext v-if="route.query.researchContext !== undefined" :value="entryContext.value" :error="entryContext.error" />
+      <RadarReviewContext v-if="isSignalReview" :review="reviewContext.value" :error="reviewContext.error" :matches="reviewMatches" :status="reviewStatus" :metadata="snapshotMetadata" />
       <div v-if="error" class="error-banner">{{ error }}</div>
 
       <div v-if="!result && !loading" class="empty-state">
@@ -649,7 +747,7 @@ onMounted(async () => {
         </div>
         <h2>观察价格如何形成结构</h2>
         <p>选择标的和周期，系统会把走势拆成笔、线段和中枢，并标出买卖点与背驰。</p>
-        <button class="primary" @click="runAnalysis">分析 {{ code }}</button>
+        <button class="primary" @click="runAnalysis(true)">分析 {{ code }}</button>
       </div>
 
       <div v-else-if="loading && !result" class="loading-state">
@@ -658,6 +756,7 @@ onMounted(async () => {
       </div>
 
       <div v-if="result" class="result-workspace" :class="{ refreshing: loading }">
+        <ResearchWorkspaceNav :model-value="workspace" :mobile="mobile" @update:model-value="setWorkspace" />
         <section class="summary-strip">
           <div class="summary-context">
             <div class="summary-identity">
@@ -669,7 +768,7 @@ onMounted(async () => {
               <p>{{ latestStructure }}</p>
             </div>
           </div>
-          <div class="summary-metrics">
+          <div v-show="workspace !== 'chart'" class="summary-metrics">
             <div v-for="item in summary" :key="item.label" class="summary-item">
               <strong>{{ item.value }}</strong>
               <span>{{ item.label }}</span>
@@ -677,19 +776,10 @@ onMounted(async () => {
           </div>
         </section>
 
-        <section class="chart-workspace">
-          <details v-if="snapshotMetadata" class="snapshot-provenance research-panel research-hierarchy">
-            <summary><strong>数据口径</strong><span>{{ snapshotMetadata.source }} · {{ snapshotMetadata.actual_adjust }}</span></summary>
-            <div class="research-panel-body">
-              <p v-if="snapshotMetadata.actual_adjust !== snapshotMetadata.requested_adjust" class="provenance-warning" role="alert">所选复权方式未生效：请求 {{ snapshotMetadata.requested_adjust }}，实际为 {{ snapshotMetadata.actual_adjust }}。请恢复行情源后重查。</p>
-              <dl class="provenance-facts">
-                <div><dt>行情窗口</dt><dd>{{ snapshotBars.length }} 根</dd></div>
-                <div><dt>MACD 参数</dt><dd>12 / 26 / 9</dd></div>
-                <div><dt>采集时间</dt><dd>{{ snapshotMetadata.observed_at }}</dd></div>
-              </dl>
-              <p>EMA 从窗口首根开始预热。{{ snapshotMetadata.volume_policy }}。{{ snapshotMetadata.completion_note }}</p>
-            </div>
-          </details>
+        <section ref="chartWorkspaceAnchor" class="chart-workspace" :aria-label="workspace === 'chart' ? '看图工作区' : '当前分析上下文'">
+          <DataProvenance v-if="snapshotMetadata" :metadata="snapshotMetadata" :count="snapshotBars.length">
+            <p>结构 MACD 参数 12 / 26 / 9；EMA 从窗口首根开始预热。</p>
+          </DataProvenance>
           <p v-if="bars.some(bar => bar.is_closed === false)" class="structure-scope">虚线空心柱表示尚未确认收盘的 K 线、成交量及 MACD 柱；当前结构和信号仍可能随本周期行情变化。</p>
           <p v-if="result.structure_metadata" class="structure-scope">线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。</p>
           <p v-if="result.structure_metadata?.initial_unresolved_bars" class="structure-scope">开头 {{ result.structure_metadata.initial_unresolved_bars }} 根 K 线缺少前置方向，仅保留行情，不推定包含方向。</p>
@@ -716,12 +806,14 @@ onMounted(async () => {
               <button v-for="mode in [{ value: 'stock', label: '个股' }, { value: 'industry', label: '行业' }, { value: 'compare', label: '上下对比' }]" :key="mode.value" :class="{ active: industryView === mode.value }" @click="industryView = mode.value">{{ mode.label }}</button>
             </div>
           </div>
-          <div v-if="focusedDivergence && industryView !== 'industry'" ref="focusToolbar" class="focus-toolbar" tabindex="-1" aria-label="图表区间核验">
+          <div v-if="focusedDivergence && industryView !== 'industry' && workspace === 'chart'" ref="focusToolbar" class="focus-toolbar" tabindex="-1" aria-label="图表区间核验">
             <strong>{{ focusedDivergence.title }}</strong>
             <span>{{ focusedDivergence.scope === 'reverse-pen' ? '局部确认用笔 · 保存首次成笔证据，不替换全局结构笔' : focusedDivergence.scope === 'released' ? '当前工程结构依据 · 反向确认不计入价格来源' : focusedDivergence.scope === 'expansion' ? '重组 A / B / C · 不是 MACD 分段或已确认高级别中枢' : focusedDivergence.mode === 'points' ? '前后极值对照（非 A/B/C 分段）' : `${focusedDivergence.ranges.map(range => range.label).join(' / ')} 比较区间` }} · 仅定位，不改变回放时刻</span>
             <button @click="focusedDivergence = null">清除区间定位</button>
           </div>
           <MultiPeriodCharts ref="multiCharts" v-if="industryView !== 'industry' && snapshotMetadata" :target="target" :title="targetTitle" :adjust="effectiveAdjust"
+            :primary-indicators="() => mainChart?.captureIndicators()"
+            :workspace="workspace" @workspace="setWorkspace"
             :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-bars="bars" :primary-metadata="snapshotMetadata"
             :primary-result="result" :count="count" :layers="layers" :show-divergence-history="showDivergenceHistory"
             :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency"
@@ -731,7 +823,7 @@ onMounted(async () => {
               <div class="chart-legend">
                 <span class="legend-bi">笔</span>
                 <span v-if="layers.consolidations" class="legend-live-area"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3"/><path d="M8 5v3l2 1.5"/></svg>盘整进行中</span>
-                <span v-if="layers.nextPen" class="legend-next-pen">下一笔参考 · 未成笔</span>
+                <span v-if="layers.nextPen" class="legend-next-pen">待成笔方向 · 观察</span>
                 <span class="legend-zs">中枢</span>
                 <span class="legend-xd">线段</span>
                 <span v-if="layers.xds && result.unfinished_xd" class="legend-pending">候选未确认</span>
@@ -740,24 +832,29 @@ onMounted(async () => {
               </div>
               <label class="history-toggle"><input v-model="showDivergenceHistory" type="checkbox" :disabled="!layers.bcs" /><span>显示失效历史</span></label>
             </template>
-            <ChanlunChart ref="mainChart" :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" :focus="focusedDivergence" @update:ma-periods="setVisibleMA" @inspect="multiCharts?.inspectMain($event)" @viewport="multiCharts?.setPrimaryRange($event)" @zoom="multiCharts?.setPrimaryRange($event)" />
+            <ChanlunChart ref="mainChart" :bars="bars" :result="result" :layers="layers" :show-divergence-history="showDivergenceHistory" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" :focus="focusedDivergence" evidence-enabled @review="reviewChartDate" @update:ma-periods="setVisibleMA" @inspect="multiCharts?.inspectMain($event)" @viewport="multiCharts?.setPrimaryRange($event)" @zoom="multiCharts?.setPrimaryRange($event)" />
           </ChartFrame>
           </MultiPeriodCharts>
-          <PenConsolidationPanel v-if="layers.consolidations && result.pen_consolidations?.length" :areas="result.pen_consolidations" />
-          <MultiPeriodResearch v-if="snapshotMetadata" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" />
-          <template v-if="industryView !== 'stock'">
+          <div v-if="industryView !== 'stock'" v-show="workspace === 'chart'">
             <p v-if="industryLoading" role="status">正在加载行业结构…</p>
-            <p v-else-if="industryError" role="alert">{{ industryError }} <button @click="loadIndustry">重试</button></p>
+            <p v-else-if="industryError" role="alert">{{ industryError }} <button @click="loadIndustry(true)">重试</button></p>
             <p v-else-if="industryAlignment?.status === 'unavailable'" class="structure-scope" role="status">行业快照在 {{ replayDate }} 及以前没有行情，未补造数据。可向后回放或扩大历史窗口。</p>
             <p v-else-if="industryAlignment" class="structure-scope">共同截止：{{ replayDate }} · 行业最新：{{ industryAlignment.industry_as_of?.replace(' 00:00:00', '') }}{{ industryAlignment.status === 'earlier' ? '（行业数据早于截止时间）' : '（时间已对齐）' }}</p>
             <ChartFrame v-if="industryData && !industryLoading && !industryError" :title="`行业 · ${industries.find(item => item.value === industryCode)?.label}`" description="行业指数 · 不复权；与个股按共同截止时间重新计算。">
               <ChanlunChart :bars="industryData.bars" :result="industryData.result" :layers="layers" :ma-periods="maPeriods" :ma-available-periods="maAvailablePeriods" :line-widths="lineWidths" :candle-transparency="candleFillTransparency" @update:ma-periods="setVisibleMA" />
             </ChartFrame>
-          </template>
+          </div>
         </section>
 
-        <section class="detail-workspace">
-          <p class="detail-stock-label">以下结构明细对应{{ targetTitle }}</p>
+        <section v-if="visitedWorkspaces.research" v-show="workspace === 'research'" ref="researchWorkspaceAnchor" class="research-mode-workspace" aria-label="研究工作区">
+          <header class="workspace-section-heading"><h3>多周期研究</h3><p>{{ targetTitle }} · 主周期 {{ periodLabel(category) }} · 共同截止 {{ researchAsOf }}</p></header>
+          <ResearchWorkspaceTools v-if="multiCharts" :capture="captureResearch" :busy="loading || replayBusy" />
+          <MultiPeriodResearch v-if="snapshotMetadata" :active="workspace === 'research'" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :ma-periods="maAvailablePeriods" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" :radar-source="radarArchiveSource" />
+          <PenConsolidationPanel v-if="layers.consolidations && result.pen_consolidations?.length" :areas="result.pen_consolidations" />
+        </section>
+
+        <section v-if="visitedWorkspaces.audit" v-show="workspace === 'audit'" ref="auditWorkspaceAnchor" class="detail-workspace" aria-label="主周期审核工作区">
+          <header class="workspace-section-heading"><h3>主周期完整审核</h3><p>以下结构明细对应{{ targetTitle }} · {{ periodLabel(category) }}，与上方对照周期证据分别核验。</p></header>
           <nav class="detail-tabs" aria-label="缠论结果分类">
             <button :class="{ active: activeTab === 'structure' }" @click="activeTab = 'structure'">
               结构 <span>{{ result.bi_count + displayCentres.length + result.xd_count }}</span>
@@ -860,100 +957,8 @@ onMounted(async () => {
             <ExpansionInspector :data="result.expansion_regrouping" :versions="result.regrouping_versions" :total="snapshotBars.length" :visible-count="bars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" @locate="locateExpansion" />
           </div>
 
-          <div v-else-if="activeTab === 'signals'" class="signal-workspace">
-            <details class="signal-records research-panel research-hierarchy" open>
-              <summary><strong>结构性买卖点</strong><span>{{ result.mmds.length }} 条 · 结构依据独立核验</span></summary>
-              <div class="research-panel-body">
-                <p class="event-scope-note">极值日期与确认日期分开记录；展开条目可查看结构依据与确认回放。</p>
-            <ResearchEventRecord v-for="(signal, index) in result.mmds.slice().reverse()" :key="`${signal.type}-${signal.date}-${index}`" class="signal-record"
-              :title="signalLabel(signal.type)" :date="signal.date" :tone="signal.type.includes('buy') ? 'buy' : 'sell'"
-              :state="signal.confirmed_date ? 'confirmed' : 'unrecorded'" :state-label="signal.confirmed_date ? '已确认' : '确认时间未提供'"
-              :metadata="[{label:'确认日期',value:structureDate(signal.confirmed_date)},{label:'识别来源',value:signal.source === 'confirmed_segment_base_v1' ? '已确认线段 · 基础结构' : '原始信号记录'}]"
-              :description="formatMessage(signal.msg)">
-              <details v-if="signal.source === 'confirmed_segment_base_v1'" class="reading-disclosure">
-                <summary>查看结构依据</summary>
-                <div class="audit-evidence-body">
-                <EvidenceReading :lines="signalEvidence(signal)" />
-                <div class="event-replays"><ConfirmationReplay :index="signal.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="signalLabel(signal.type)" caption="结构确认" @seek="jumpToConfirmation" /></div>
-                </div>
-              </details>
-            </ResearchEventRecord>
-            <p v-if="result.mmds.length === 0" class="no-data">当前窗口没有识别到结构性买卖点。</p>
-              </div>
-            </details>
-            <details v-if="macdPromptItems.length" class="macd-records research-panel research-hierarchy" open>
-              <summary><strong>MACD M1 提示</strong><span>{{ macdPromptItems.length }} 条 · 非结构性买卖点</span></summary>
-              <div class="research-panel-body">
-                <p class="event-scope-note">独立于结构性买卖点，不参与一类点策略判断。</p>
-              <ResearchEventRecord v-for="(item, index) in macdPromptItems.slice().reverse()" :key="`macd-prompt-${index}`" class="macd-prompt-row"
-                :title="`M1 · ${item.direction === 'down' ? '买入提示' : '卖出提示'}`" :date="item.curr_date" :tone="item.direction === 'down' ? 'buy' : 'sell'" state="confirmed" state-label="提示已确认"
-                :metadata="[{label:'实际确认',value:structureDate(item.confirmed_date)},{label:'提示来源',value:divergenceName(item)}]">
-                <div class="event-replays"><ConfirmationReplay :index="item.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="MACD M1 提示" caption="提示确认" @seek="jumpToConfirmation" /></div>
-              </ResearchEventRecord>
-              </div>
-            </details>
-          </div>
-
-          <div v-else class="divergence-workspace">
-            <details v-if="auditedWaves.length" class="wave-diagnostics research-panel research-hierarchy">
-              <summary><strong>背离核验与规则对照</strong><span>{{ blockedWaves.length }} 组未通过</span></summary>
-              <div class="research-panel-body">
-              <dl class="audit-rule-guide">
-                <div><dt>标准</dt><dd>使用有效 A</dd></div><div><dt>非标准</dt><dd>完整 A · 保留 DIF 改善、B/C 同侧与 B 回拉</dd></div>
-                <div><dt>特殊</dt><dd>对照前一 A 的指标极值</dd></div><div><dt>双线</dt><dd>对照最近局部极值</dd></div>
-              </dl>
-              <p class="audit-history-note">各类分别记录依据，不互相覆盖。核验通过项数仅用于审核，不代表信号强弱或胜率。</p>
-              <details v-for="item in auditedWaves" :key="`${item.family}-${item.direction}-${item.c_start ?? item.dates.b_start}`" class="wave-diagnostic-row reading-disclosure">
-                <summary>
-                  <strong>{{ item.family === 'double' ? '双线' : item.family === 'special' ? '特殊' : item.family === 'nonstandard' ? '非标准' : '标准' }}{{ item.direction === 'down' ? '底' : '顶' }}背离</strong>
-                  <span class="audit-status" :class="item.status">{{ item.status === 'confirmed' ? '已确认' : item.status === 'candidate' ? '候选未确认' : item.first_candidate_index == null ? '未形成候选' : '当前未通过' }}</span>
-                  <span class="audit-period"><span>{{ item.family === 'double' ? structureDate(item.dates.c_start) : item.family === 'special' ? `B ${structureDate(item.dates.b_start)} — ${structureDate(item.dates.b_end)}` : `C ${structureDate(item.dates.c_start)} — ${structureDate(item.dates.c_end)}` }}</span><span class="audit-check-count">{{ item.checks.filter(check => check.passed).length }} / {{ item.checks.length }} 项通过</span></span>
-                  <span v-if="item.status === 'blocked'" class="audit-failure">{{ waveFailureSummary(item) }}</span>
-                </summary>
-                <div class="audit-evidence-body">
-                <p v-if="item.status === 'blocked' && item.first_candidate_index != null" class="audit-history-note">本段曾产生候选，当前检查未通过；历史状态见事件记录。</p>
-                <EvidenceReading :lines="waveDiagnosticLines(item)" />
-                <div v-if="item.comparisons?.length" class="wave-comparisons">
-                  <p>以下保留旧版研究对照，不含此次新增的 B 价格限制；与当前三类标记独立。非标准标记完全不使用 DEA 容差。</p>
-                  <details v-for="comparison in item.comparisons" :key="comparison.mode" class="reading-disclosure">
-                    <summary>{{ waveComparisonName(comparison) }}<small>{{ comparison.passed ? (comparison.closed ? '结束复核通过 · 仅对照' : '暂时满足 · C 未结束') : '仍未通过' }}</small></summary>
-                    <p v-if="!comparison.passed">{{ waveFailureSummary(comparison) }}</p>
-                    <EvidenceReading :lines="waveComparisonLines(comparison)" />
-                  </details>
-                </div>
-                </div>
-              </details>
-              </div>
-            </details>
-            <details class="divergence-records research-panel research-hierarchy" open>
-              <summary><strong>背离事件记录</strong><span>{{ result.bcs.filter(item => item.bc).length }} 条 · 含候选与失效历史</span></summary>
-              <div class="research-panel-body">
-                <p class="event-scope-note">候选、已确认与失效分别保留；极值出现不代表当时已经确认。</p>
-            <ResearchEventRecord v-for="(bc, index) in result.bcs.filter(item => item.bc).slice().reverse()" :key="`${bc.type}-${bc.curr_date}-${index}`" class="divergence-record"
-              :title="divergenceName(bc)" :date="bc.curr_date" :tone="bc.type === 'macd_wave_nonstandard' ? 'nonstandard' : bc.direction === 'up' ? 'top' : 'bottom'"
-              :state="bc.status || 'confirmed'" :state-label="bc.status === 'candidate' ? '候选未确认' : bc.status === 'superseded' ? '已替代 / 失效' : '已确认'"
-              :metadata="[{label:'对照日期',value:structureDate(bc.prev_date)}, {label:bc.status === 'superseded' ? '失效 / 替代日期' : bc.status === 'candidate' ? '首次提示' : '确认日期',value:structureDate(bc.status === 'superseded' ? bc.invalidated_date : bc.status === 'candidate' ? bc.detected_date : bc.confirmed_date)}]"
-              :note="bc.status === 'candidate' && bc.preliminary_date ? '曾满足初步条件 · 等待走势完成' : undefined" :description="formatMessage(bc.msg)">
-              <details class="divergence-evidence reading-disclosure">
-                <summary>查看判定依据</summary>
-                <div class="audit-evidence-body">
-                <EvidenceReading :lines="divergenceEvidence(bc)" />
-                <div class="divergence-locate-actions">
-                <button v-if="divergenceFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateDivergence(bc)">{{ bc.type === 'macd' ? '定位前后极值' : '定位比较区间' }}</button>
-                <button v-if="reversePenFocus(bc, bars.length, '')" :disabled="replayBusy || loading || industryLoading" @click="locateReversePen(bc)">查看局部确认用笔</button>
-                </div>
-                <div class="event-replays">
-                <ConfirmationReplay :index="bc.detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="首次提示" caption="首次提示" @seek="jumpToConfirmation" />
-                <ConfirmationReplay v-if="bc.status === 'confirmed'" :index="bc.confirmed_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" caption="最终确认" @seek="jumpToConfirmation" />
-                <ConfirmationReplay v-if="bc.status === 'superseded'" :index="bc.invalidated_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :label="divergenceName(bc)" phase="失效" caption="失效 / 替代" @seek="jumpToConfirmation" />
-                <ConfirmationReplay v-if="bc.evidence?.replacement_detected_index != null" :index="bc.evidence.replacement_detected_index" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" label="后续替代候选" phase="首次提示" caption="后续替代候选" @seek="jumpToConfirmation" />
-                </div>
-                </div>
-              </details>
-            </ResearchEventRecord>
-            <p v-if="result.bcs.filter(item => item.bc).length === 0" class="no-data">当前窗口没有背离／背驰候选或确认事件。{{ blockedWaves.length ? '请展开波段核验查看原因。' : '可增加历史窗口后重新核验。' }}</p>
-              </div>
-            </details>
+          <div v-else class="divergence-workspace signal-workspace">
+            <SignalEvidenceWorkspace ref="evidenceBrowser" :result="result" :bars="bars" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" :entry="activeTab" @seek="jumpToConfirmation" @locate-divergence="locateDivergence" @locate-reverse-pen="locateReversePen" @return-chart="returnToPrimaryChart" />
           </div>
         </section>
       </div>
@@ -962,6 +967,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.research-mode-workspace{padding:0 20px 24px;min-width:0}.workspace-section-heading{padding:16px 0;margin-bottom:10px;border-bottom:1px solid var(--border)}.workspace-section-heading h3{margin:0 0 7px;font-size:14px;font-weight:550}.workspace-section-heading p{margin:0;font-size:11px;line-height:1.8;color:var(--text-muted);overflow-wrap:anywhere}.chart-workspace,.research-mode-workspace,.detail-workspace{scroll-margin-top:66px}@media(max-width:760px){.result-workspace{padding-bottom:calc(82px + env(safe-area-inset-bottom))}.research-mode-workspace{padding-inline:12px}.chart-workspace,.research-mode-workspace,.detail-workspace{scroll-margin-top:12px}}
+.analysis-workspace > .radar-review-context { margin: 0 20px 18px; }
+@media (max-width: 600px) { .analysis-workspace > .radar-review-context { margin-inline: 12px; } }
 .target-note { font-size: 10px; line-height: 1.6; color: var(--text-muted); margin: 0; }
 .history-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 28px; box-sizing: border-box; margin: 0; padding: 0 8px; border: 1px solid rgba(255,255,255,.08); border-radius: 6px; background: rgba(255,255,255,.025); color: var(--text-muted); font-size: 10px; line-height: 1; cursor: pointer; white-space: nowrap; transition: background .15s; }
 .history-toggle:hover { background: rgba(255,255,255,.05); }
@@ -1438,42 +1446,6 @@ onMounted(async () => {
 .segment-card small { margin-top: 6px; color: var(--text-muted); font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
 .segment-price { color: #c8c9d0; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 
-.divergence-workspace, .signal-workspace { min-width: 0; }
-.audit-status { display: inline-flex; align-items: center; gap: 6px; color: #a1abba; font-size: 10px; line-height: 1.8; font-weight: 400; }
-.audit-status::before { content: ''; width: 4px; height: 4px; flex: 0 0 4px; border: 1px solid currentColor; border-radius: 50%; }
-.audit-status.confirmed { color: #a7c6b7; }
-.audit-status.confirmed::before { background: currentColor; }
-.audit-status.candidate { color: #cbb38b; }
-.audit-history-note, .wave-comparisons > p { color: var(--text-muted); font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; text-align: justify; text-align-last: left; margin: 10px 0; }
-.divergence-workspace .audit-evidence-body { padding-bottom: 12px; }
-.divergence-locate-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-.divergence-locate-actions:empty { display: none; }
-.divergence-workspace .divergence-locate-actions button { min-height: 30px; font-size: 11px; padding: 5px 10px; background: rgba(255,255,255,.025); box-shadow: none; }
-.wave-diagnostic-row { padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.055); }
-.wave-diagnostic-row:last-child { border-bottom: 0; }
-.wave-diagnostics .wave-diagnostic-row > summary { display: grid; grid-template-columns: minmax(0,1fr) auto 10px; align-items: baseline; gap: 6px 14px; padding: 12px 0; }
-.wave-diagnostic-row > summary > strong { color: var(--text); font-size: 12px; font-weight: 500; }
-.wave-diagnostics .wave-diagnostic-row > summary::before { content: none; }
-.wave-diagnostic-row > summary::after { content: ''; grid-column: 3; grid-row: 1; width: 5px; height: 5px; border-right: 1px solid #91a2bb; border-bottom: 1px solid #91a2bb; transform: rotate(-45deg); transition: transform 150ms ease; }
-.wave-diagnostic-row[open] > summary::after { transform: rotate(45deg); }
-.audit-period { grid-column: 1 / 3; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; color: #8e9cad; font-size: 10px; line-height: 1.8; font-variant-numeric: tabular-nums; }
-.audit-check-count { color: #a3adbc; white-space: nowrap; }
-.audit-rule-guide { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0 28px; margin: 8px 0 12px; }
-.audit-rule-guide > div { display: grid; grid-template-columns: 44px minmax(0,1fr); gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,.045); font-size: 11px; line-height: 1.8; }
-.audit-rule-guide dt { color: #bcc9d9; }
-.audit-rule-guide dd { margin: 0; color: #97a5b8; }
-.audit-failure { grid-column: 1 / 3; color: #b7a58c; font-size: 11px; line-height: 1.8; }
-.wave-comparisons { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.05); padding-top: 8px; }
-.wave-comparisons > details > summary small { display: block; font-size: 10px; color: var(--text-muted); }
-@container (max-width: 400px) {
-  .audit-rule-guide { grid-template-columns: minmax(0,1fr); }
-  .wave-diagnostics .wave-diagnostic-row > summary { grid-template-columns: minmax(0,1fr) 10px; }
-  .wave-diagnostic-row > summary::after { grid-column: 2; }
-  .wave-diagnostic-row > summary > .audit-status { grid-column: 1; grid-row: 2; }
-  .audit-period, .audit-failure { grid-column: 1; }
-}
-@media (prefers-reduced-motion: reduce) { .wave-diagnostic-row > summary::after { transition: none; } }
-.wave-comparisons details { margin: 10px 0; }
 .no-data { padding: 28px 12px; color: var(--text-muted); font-size: 12px; line-height: 1.8; text-align: center; }
 
 @container (max-width: 780px) {

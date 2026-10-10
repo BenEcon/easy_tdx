@@ -1,0 +1,3 @@
+Fault injection: valid frozen 240 real bars; actual analyser raises.
+chanlun_bi_dir returned_rows 240 all_zero True
+chanlun_mmd returned_rows 240 all_zero True

@@ -1,0 +1,6 @@
+### Result
+{"primaryFocusVisible":true,"comparisonNotMixed":true,"focus":"非标准波段底背离 · 2026-06-23\nA / B / C 比较区间 · 仅定位，不改变回放时刻\n清除区间定位"}
+### Ran Playwright code
+```js
+await (async (page) => { const focus=page.locator(".focus-toolbar"); await focus.waitFor(); if(await page.locator(".period-chart-cell:visible").count())throw Error("main focus left on comparison"); if(await page.getByRole("region",{name:"蜡烛图绘图区",exact:true}).count()!==1)throw Error("primary not visible"); return {primaryFocusVisible:true,comparisonNotMixed:true,focus:await focus.innerText()}; })(page);
+```

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>chan17</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <style>
+    :root { color-scheme: light dark; --bg-color: #f6f8fa; --body-gradient-start: #ffffff; --text-color: #24292f; --heading-color: #1f2328; --border-color: #d0d7de; --accent-color: #0969da; --accent-hover: #0550ae; --code-bg: #f6f8fa; --inline-code-bg: rgba(175, 184, 193, 0.2); --blockquote-color: #57606a; --blockquote-border: #d0d7de; --table-alt-bg: #f6f8fa; --choice-border: rgba(9, 105, 218, 0.18); --choice-bg: linear-gradient(135deg, rgba(9, 105, 218, 0.08), rgba(31, 136, 61, 0.05)), #ffffff; --choice-shadow: rgba(140, 149, 159, 0.18); --choice-badge-border: rgba(9, 105, 218, 0.32); --choice-badge-bg: rgba(9, 105, 218, 0.10); --choice-content-color: #24292f; --svg-block-bg: #f8fafc; --svg-block-border: #d0d7de; --svg-canvas-bg: #ffffff; --svg-caption-color: #57606a; --mermaid-bg: #f6f8fa; --mermaid-border: #d0d7de; --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Mono', monospace; }
+    @media (prefers-color-scheme: dark) { :root { --bg-color: #0d1117; --body-gradient-start: #0d1117; --text-color: #c9d1d9; --heading-color: #ffffff; --border-color: #30363d; --accent-color: #58a6ff; --accent-hover: #79c0ff; --code-bg: #161b22; --inline-code-bg: rgba(110, 118, 129, 0.4); --blockquote-color: #8b949e; --blockquote-border: #30363d; --table-alt-bg: #161b22; --choice-border: rgba(88, 166, 255, 0.2); --choice-bg: linear-gradient(135deg, rgba(88, 166, 255, 0.12), rgba(63, 185, 80, 0.08)), #161b22; --choice-shadow: rgba(0, 0, 0, 0.22); --choice-badge-border: rgba(88, 166, 255, 0.36); --choice-badge-bg: rgba(88, 166, 255, 0.14); --choice-content-color: #c9d1d9; --svg-block-bg: #f8fafc; --svg-block-border: #30363d; --svg-canvas-bg: #ffffff; --svg-caption-color: #57606a; --mermaid-bg: #161b22; --mermaid-border: #30363d; } }
+    body { margin: 0; font-family: var(--font-sans); background: linear-gradient(180deg, var(--body-gradient-start) 0%, var(--bg-color) 100%); color: var(--text-color); line-height: 1.7; padding: 40px; -webkit-font-smoothing: antialiased; }
+    .markdown-preview { max-width: 900px; margin: 0 auto; }
+    .markdown-preview h1, .markdown-preview h2, .markdown-preview h3, .markdown-preview h4 { margin-top: 24px; margin-bottom: 16px; font-weight: 600; line-height: 1.25; color: var(--heading-color); }
+    .markdown-preview h1 { font-size: 2em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+    .markdown-preview h2 { font-size: 1.5em; padding-bottom: 0.3em; border-bottom: 1px solid var(--border-color); }
+    .markdown-preview p { margin-top: 0; margin-bottom: 16px; text-align: justify; text-justify: inter-ideograph; }
+    .markdown-preview code { font-family: var(--font-mono); font-size: 85%; background-color: var(--inline-code-bg); padding: 0.2em 0.4em; border-radius: 6px; }
+    .markdown-preview pre { background-color: var(--code-bg); padding: 16px; overflow: auto; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border-color); }
+    .markdown-preview pre code { background-color: transparent; padding: 0; font-size: 13px; }
+    .markdown-preview .math-display { max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 18px 0; padding: 2px 0; -webkit-overflow-scrolling: touch; }
+    .markdown-preview blockquote { margin: 0 0 16px; padding: 0 1em; color: var(--blockquote-color); border-left: 0.25em solid var(--blockquote-border); }
+    .markdown-preview ul, .markdown-preview ol { padding-left: 2em; margin-bottom: 16px; }
+    .markdown-preview .choice-options { list-style: none; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding-left: 0; margin: 18px 0 22px; }
+    .markdown-preview .choice-option { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 12px 14px; border: 1px solid var(--choice-border); border-radius: 12px; background: var(--choice-bg); box-shadow: 0 10px 26px var(--choice-shadow); }
+    .markdown-preview .choice-option::before { content: attr(data-choice-label); flex: 0 0 28px; width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--choice-badge-border); border-radius: 999px; background: var(--choice-badge-bg); color: var(--accent-color); font-size: 13px; font-weight: 800; line-height: 1; }
+    .markdown-preview .choice-option-content { min-width: 0; color: var(--choice-content-color); }
+    .markdown-preview .choice-option-content p { margin: 0; text-align: left; }
+    .markdown-preview a { color: var(--accent-color); text-decoration: none; }
+    .markdown-preview a:hover { text-decoration: underline; color: var(--accent-hover); }
+    .markdown-preview .table-scroll { max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 0 0 16px; border: 1px solid var(--border-color); border-radius: 8px; -webkit-overflow-scrolling: touch; }
+    .markdown-preview .table-scroll:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
+    .markdown-preview table { border-spacing: 0; border-collapse: collapse; margin-bottom: 16px; width: 100%; border-radius: 6px; overflow: hidden; border: 1px solid var(--border-color); }
+    .markdown-preview .table-scroll table { width: max-content; min-width: 100%; margin-bottom: 0; border: 0; border-radius: 0; }
+    .markdown-preview table th, .markdown-preview table td { padding: 8px 13px; border: 1px solid var(--border-color); }
+    .markdown-preview table th { font-weight: 600; white-space: nowrap; background-color: var(--table-alt-bg); }
+    .markdown-preview table td { vertical-align: top; }
+    .markdown-preview table tr:nth-child(2n) { background-color: var(--table-alt-bg); }
+    .markdown-preview img { max-width: 100%; border-radius: 6px; }
+    .markdown-preview .svg-html-block { margin: 24px auto; max-width: 100%; overflow-x: auto; text-align: center; background: var(--svg-block-bg); border: 1px solid var(--svg-block-border); border-radius: 12px; padding: 18px; box-shadow: 0 14px 34px rgba(1, 4, 9, 0.22); }
+    .markdown-preview .svg-html-block figure { margin: 0; }
+    .markdown-preview .svg-html-block svg { max-width: 100%; height: auto; display: block; margin: 0 auto; background: var(--svg-canvas-bg); border-radius: 8px; }
+    .markdown-preview .svg-html-block figcaption { margin-top: 10px; color: var(--svg-caption-color); font-size: 14px; text-align: center; }
+    .markdown-preview .mermaid-frame { margin-bottom: 16px; }
+    .markdown-preview .mermaid-viewport { overflow: auto; border: 1px solid var(--mermaid-border); border-radius: 8px; padding: 10px; background: var(--mermaid-bg); cursor: zoom-in; }
+    .markdown-preview .mermaid { display: block; width: fit-content; max-width: none; margin: 0 auto; }
+    .markdown-alert { padding: 12px 16px; margin-bottom: 16px; border-left: 4px solid; border-radius: 6px; font-size: 14px; }
+    .markdown-alert-title { display: flex; align-items: center; font-weight: 600; margin-bottom: 8px; }
+    .markdown-alert-note { border-color: #1f6feb; background-color: rgba(31, 111, 235, 0.1); }
+    .markdown-alert-note .markdown-alert-title { color: #58a6ff; }
+    .markdown-alert-tip { border-color: #238636; background-color: rgba(35, 134, 54, 0.1); }
+    .markdown-alert-tip .markdown-alert-title { color: #3fb950; }
+    .markdown-alert-important { border-color: #8957e5; background-color: rgba(137, 87, 229, 0.1); }
+    .markdown-alert-important .markdown-alert-title { color: #a371f7; }
+    .markdown-alert-warning { border-color: #9e6a03; background-color: rgba(158, 106, 3, 0.1); }
+    .markdown-alert-warning .markdown-alert-title { color: #d29922; }
+    .markdown-alert-caution { border-color: #da3633; background-color: rgba(218, 54, 51, 0.1); }
+    .markdown-alert-caution .markdown-alert-title { color: #f85149; }
+    @media (max-width: 760px) { body { padding: 24px; } .markdown-preview .choice-options { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="markdown-preview">
+    <p>结论：<strong>文档中的调整可以覆盖均胜电子这次情况。但对这个具体案例，只需放宽 B 段价格条件，不需要放宽 B 段 DIF 的零轴限制。</strong>如果采用新价格规则，9 月 16 日的 <strong>17.80</strong> 可以作为波段底背离的极值位置；最终确认应在 <strong>9 月 17 日收盘后</strong>，届时再显示对应的 M1。</p>
+<p>我已读取正文和两张图，并对照当前代码、保存行情及服务器重新获取的行情复核。本次没有修改代码或线上规则。</p>
+<h2>一、文档第一张图是否是当前标准？</h2>
+<p><strong>是，第一张图与目前标准波段背离的核心判定一致。</strong>文档随后提出的文字方案，则是对它的修改，不是当前已生效的规则。（来源：《2026.10.7-1.docx》第 1 页，用户提供的文档。）</p>
+<p>底背离的主要区别如下：</p>
+<div class="table-scroll" role="region" aria-label="可横向滚动表格" tabindex="0"><table><thead><tr><th>条件</th><th>当前标准版</th><th>文档拟调整</th></tr></thead><tbody><tr><td>柱色结构</td><td>绿 A → 红 B → 绿 C</td><td>不变</td></tr><tr><td>A 的范围</td><td>末尾双线持续位于零轴下的有效部分</td><td>不变</td></tr><tr><td>A、C 零轴条件</td><td>DIF、DEA 整段均小于零</td><td>不变</td></tr><tr><td>B 零轴条件</td><td>DIF、DEA 整段均小于零</td><td>DEA 保持小于零，DIF 允许短暂略高于零</td></tr><tr><td>B 价格</td><td>B 最低必须高于 A 最低</td><td>允许等于或低于 A</td></tr><tr><td>C 价格</td><td>C 最低 ≤ A 最低</td><td>不变</td></tr><tr><td>面积</td><td>C 绿柱面积小于有效 A</td><td>不变</td></tr><tr><td>双线极值</td><td>C 段 DIF、DEA 谷值分别高于 A 段谷值</td><td>不变</td></tr><tr><td>最终确认</td><td>C 柱色结束，完整复核通过</td><td>建议保持不变</td></tr></tbody></table></div>
+<p>还有两个容易忽略的细节：</p>
+<ul>
+<li>A 一旦截取，<strong>价格、面积、DIF 和 DEA 都使用同一个有效 A 区间</strong>，不能分别挑选对自己有利的范围。</li>
+<li>C 尚未结束时，比较的是“截至当时”的累计面积与极值；后续面积扩大、双线继续下探，都可能使候选失效。</li>
+</ul>
+<p>这里的“标准”是网页中已约定的工程规则名称，不意味着它是所有 MACD 分析或缠论解释的统一标准。</p>
+<h2>二、均胜电子为什么没有提示？</h2>
+<p>文档第二张图对应 <strong>600699、日线、前复权、600 根行情</strong>。我按 MACD <strong>12、26、9</strong> 复核了截至 2026 年 9 月 30 日的数据。（来源：《2026.10.7-1.docx》第 2 页，用户提供的文档。）</p>
+<p>先纠正一个价格：</p>
+<p><strong>8 月 25 日最低是 18.68，不是 19.68。</strong>保存的历史快照和本次服务器返回结果一致。</p>
+<p>完整三段为：</p>
+<div class="table-scroll" role="region" aria-label="可横向滚动表格" tabindex="0"><table><thead><tr><th>段落</th><th>日期范围</th><th>段内最低价</th><th>最低价日期</th></tr></thead><tbody><tr><td>A：绿柱</td><td>8 月 20 日—9 月 1 日</td><td>18.68</td><td>8 月 25 日</td></tr><tr><td>B：红柱</td><td>9 月 2 日—9 月 11 日</td><td>18.25</td><td>9 月 11 日</td></tr><tr><td>C：绿柱</td><td>9 月 14 日—9 月 16 日</td><td>17.80</td><td>9 月 16 日</td></tr></tbody></table></div>
+<p>判定结果如下。指标保留六位，是为了避免两位小数掩盖比较差异。</p>
+<div class="table-scroll" role="region" aria-label="可横向滚动表格" tabindex="0"><table><thead><tr><th>检查项</th><th>实际结果</th><th>当前是否通过</th></tr></thead><tbody><tr><td>C 最低 ≤ A 最低</td><td>17.80 ≤ 18.68</td><td>通过</td></tr><tr><td>C 面积 &lt; A 面积</td><td>0.319186 &lt; 1.903050</td><td>通过</td></tr><tr><td>DIF 段内谷值抬高</td><td>−0.605756 → −0.533082</td><td>通过</td></tr><tr><td>DEA 段内谷值抬高</td><td>−0.524255 → −0.446476</td><td>通过</td></tr><tr><td>有效 ABC 双线始终在零轴下</td><td>全部满足</td><td>通过</td></tr><tr><td>B 双线相对 A 谷值回拉</td><td>两条线均满足</td><td>通过</td></tr><tr><td>B 最低 &gt; A 最低</td><td>18.25 &gt; 18.68 不成立</td><td><strong>未通过</strong></td></tr></tbody></table></div>
+<p>C 的面积约为 A 的 <strong>16.77%</strong>。</p>
+<p>所以，这次没有生成标准波段底背离，<strong>唯一拦截条件就是 B 段已经出现低于 A 的价格</strong>，不是面积、双线改善或零轴条件不满足，也不是图表漏画。</p>
+<p>尤其值得注意：B 段 DIF 的最高值约为 <strong>−0.309117</strong>，根本没有跨零轴。因此这个案例不能作为放宽“B 段 DIF 跨轴”的验证依据。</p>
+<h2>三、调整后，9 月 16 日能否显示 M1？</h2>
+<p><strong>可以，但要分清标记位置和实际确认时间。</strong></p>
+<p>如果取消 B 价格门槛、保留其余现行条件，按逐日已知数据计算：</p>
+<div class="table-scroll" role="region" aria-label="可横向滚动表格" tabindex="0"><table><thead><tr><th>当时已知的日期</th><th>应有状态</th></tr></thead><tbody><tr><td>9 月 14 日收盘</td><td>18.30 已低于 A 的 18.68，可首次出现空心候选</td></tr><tr><td>9 月 15 日收盘</td><td>新低 18.01，原候选失效，更新到新极值</td></tr><tr><td>9 月 16 日收盘</td><td>新低 17.80，更新为空心候选；尚不能最终确认</td></tr><tr><td>9 月 17 日收盘</td><td>柱色转红，C 结束且完整复核通过；转实心，并在 9 月 16 日极值位置显示 M1</td></tr></tbody></table></div>
+<p>这里还有一个重要事实：9 月 14—16 日绿柱绝对值约为：</p>
+<p><strong>0.019877 → 0.126097 → 0.173212</strong></p>
+<p>它们在延长，<strong>并没有连续两根缩短</strong>。这不妨碍 9 月 17 日按“柱色反转、C 结束”的规则最终确认，但不能说 9 月 16 日已经获得缩柱确认。</p>
+<p>因此应明确记录：</p>
+<ul>
+<li>极值日期：<strong>9 月 16 日</strong></li>
+<li>这一组首次候选日期：<strong>9 月 14 日</strong></li>
+<li>最终极值锚点首次出现：<strong>9 月 16 日</strong></li>
+<li>实际确认日期：<strong>9 月 17 日</strong></li>
+</ul>
+<p>历史图可以把 M1 画在 9 月 16 日，但回放、信号雷达和回测不得把它当成 9 月 16 日已知的确认信号。</p>
+<p>另外，当前网页的 <strong>M1 是已确认 MACD 标准波段提示，不是缠论结构一买</strong>。这次修改也不应自动改变结构一买的判定。</p>
+<h2>四、是否包含特殊波段背离后来出现 C 的情况？</h2>
+<p><strong>能覆盖其中一部分，但不是“出现绿柱就自动升级”。</strong></p>
+<p>这个案例恰好可以说明两者的关系：</p>
+<ol>
+<li><strong>9 月 11 日，18.25 出现在红柱 B 中。</strong><br>当前程序确实生成了特殊波段底背离候选。</li>
+<li><strong>9 月 15 日，价格降至 18.01。</strong><br>9 月 11 日的特殊候选尚未反向成笔确认，就被新低打破，所以失效。现有记录也是这个结果。</li>
+<li><strong>9 月 16 日，C 段出现 17.80。</strong><br>如果采用新价格规则，可以形成另一条独立的 ABC 波段背离记录，随后于 9 月 17 日确认。</li>
+</ol>
+<p>建议把它们展示为“相关的两次观察”，而不是把旧特殊候选改名、移动到新日期：</p>
+<ul>
+<li>特殊记录：B 内先出现价格突破，等待反向成笔。</li>
+<li>标准记录：C 出现后，重新核验面积、双线极值及其他门槛，等待 C 结束。</li>
+</ul>
+<p><strong>旧记录失效的事实应保留，新记录成立的依据也应独立保留。</strong>这样历史解释和回放才不会被后来的走势改写。</p>
+<h2>五、新方案有哪些需要明确的边界？</h2>
+<h3>1. 放宽 B 价格是合理的规则扩展，但会改变旧版结果</h3>
+<p>红柱只说明 DIF 高于 DEA，并不要求价格一定高于前一绿柱段的最低价。MACD 本身由收盘价的指数移动平均计算，指标与价格极值并不是同一种测量。<a href="https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/macd" target="_blank" rel="noopener noreferrer">Fidelity 的 MACD 说明</a></p>
+<p>所以，允许 B 创新低，在指标逻辑上没有矛盾；但它确实取消了此前明确设定的门槛，需要记录规则版本，不能把新增结果说成旧版原本就应确认。</p>
+<h3>2. “只要求 C ≤ A”不保证 C 是整个 ABC 的最低点</h3>
+<p>例如：</p>
+<ul>
+<li>A 最低 20；</li>
+<li>B 最低 18；</li>
+<li>C 最低 19。</li>
+</ul>
+<p>按文档的新价格条件，C≤A 成立；但真正最低点在 B，不在 C。</p>
+<p>因此建议区分：</p>
+<ul>
+<li><strong>波段背离候选</strong>：按文档，只要求 C≤A，其余指标条件通过。</li>
+<li><strong>整个 ABC 新低标签</strong>：另检查 C≤min(A、B)。</li>
+</ul>
+<p>是否把后者作为 M1 的额外门槛，需要单独决定，不能悄悄加进去。均胜电子的 17.80 同时低于 A 和 B，因此不受这项选择影响。</p>
+<h3>3. “略高于零、短暂跨轴”还不是可执行的完整规则</h3>
+<p>至少需要明确：</p>
+<ul>
+<li>“略高”用什么尺度：固定 DIF 数值、相对 A 谷值比例，还是价格归一化数值？</li>
+<li>“短暂”限制连续几根，还是累计几根？</li>
+<li>多次跨零如何处理？</li>
+<li>恰好等于零是否算跨轴？</li>
+</ul>
+<p>我不建议直接写成“DIF＜0.1”这类固定数值：不同股票价格与周期下，含义差别很大。</p>
+<p><strong>本例没有跨轴，所以建议先把 B 价格放宽和 B DIF 跨轴容差分开验证。</strong></p>
+<h2>六、建议的完善方案</h2>
+<p>按以下顺序推进较稳妥：</p>
+<ol>
+<li><strong>先增加“B 价格不受限”的独立对照。</strong><br>保持完整 ABC 零轴检查、面积缩小、DIF/DEA 段内极值改善及 C 结束确认不变。均胜电子可作为明确验收案例。</li>
+<li><strong>保留旧版结果并标出新增原因。</strong><br>例如：“旧版未通过：B 低于 A；新版对照通过。”避免历史信号突然增加却无法解释。</li>
+<li><strong>特殊与标准记录建立关联，但不互相覆盖。</strong><br>保存各自首次提示、极值、失效和确认日期。</li>
+<li><strong>单独研究 B 段 DIF 跨轴容差。</strong><br>先明确幅度和持续时间，再用确实发生跨轴的案例验证；顶背离采用严格对称规则。</li>
+<li><strong>明确 M1 的来源与时间。</strong><br>如决定新版替换默认标准，本例 M1 应标在 <strong>9 月 16 日 17.80</strong>，但只能从 <strong>9 月 17 日确认后</strong>显示；若只是对照模式，则应标为对照结果，不混入正式 M1。</li>
+</ol>
+<p><strong>我的建议是先采纳 B 价格放宽，暂时保留原零轴规则。它已经能解决文档中的均胜电子案例，而且更容易判断新增信号究竟来自哪项变化。</strong></p>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    (function () {
+      function escapeMermaidLabel(text) { return String(text || '').replace(/"/g, '\\"'); }
+      function normalizeMermaidDiagramText(input) {
+        return String(input || '').split('\n').map(function (line) {
+          return line
+            .replace(/(\b[A-Za-z][\w-]*)\[(?!")(.*?)\]/g, function (match, id, label) { return id + '["' + escapeMermaidLabel(label) + '"]'; })
+            .replace(/(\b[A-Za-z][\w-]*)\{(?!")(.*?)\}/g, function (match, id, label) { return id + '{"' + escapeMermaidLabel(label) + '"}'; })
+            .replace(/\|([^|\n]+)\|/g, function (match, label) {
+              var trimmed = String(label || '').trim();
+              if (/^".*"$/.test(trimmed)) return '|' + label + '|';
+              return '|"'+ escapeMermaidLabel(trimmed) +'"|';
+            });
+        }).join('\n');
+      }
+      function isMermaidLikeText(input) {
+        return /^\s*(flowchart|graph|sequenceDiagram|classDiagram|stateDiagram(?:-v2)?|erDiagram|journey|gantt|pie|mindmap|timeline|gitGraph|quadrantChart|requirementDiagram|C4Context|C4Container|C4Component|C4Dynamic|C4Deployment)\b/m.test(String(input || ''));
+      }
+      function getPreferredMermaidTheme() {
+        return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default';
+      }
+      function renderMermaid() {
+        try {
+          if (!window.mermaid) return;
+          var root = document.querySelector('.markdown-preview');
+          if (!root) return;
+          root.querySelectorAll('pre > code').forEach(function (code) {
+            if (!(code.classList.contains('language-mermaid') || isMermaidLikeText(code.textContent || ''))) return;
+            var pre = code.closest('pre');
+            if (!pre) return;
+            var frame = document.createElement('div');
+            frame.className = 'mermaid-frame';
+            var viewport = document.createElement('div');
+            viewport.className = 'mermaid-viewport';
+            var container = document.createElement('div');
+            container.className = 'mermaid';
+            container.textContent = normalizeMermaidDiagramText(code.textContent || '');
+            viewport.appendChild(container);
+            frame.appendChild(viewport);
+            pre.replaceWith(frame);
+          });
+          window.mermaid.initialize({ startOnLoad: false, theme: getPreferredMermaidTheme(), securityLevel: 'loose' });
+          window.mermaid.run({ nodes: root.querySelectorAll('.mermaid') });
+        } catch (error) {
+          console.error('Mermaid render failed:', error);
+        }
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', renderMermaid);
+      else renderMermaid();
+    })();
+  </script>
+</body>
+</html>

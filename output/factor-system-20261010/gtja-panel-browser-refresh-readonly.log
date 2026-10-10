@@ -1,0 +1,6 @@
+### Result
+{"afterRefreshReadonlyRequests":0,"size":{"width":390,"viewport":390,"dialog":374}}
+### Ran Playwright code
+```js
+await (async page=>{const calls=[];const h=r=>{if((r.method()==="POST"&&/compute|evaluate|recompute|tasks/.test(r.url()))||/\/bars(?:\?|$)/.test(r.url()))calls.push(r.url())};page.on("request",h);await page.getByRole("button",{name:"查看原档",exact:true}).first().click();await page.getByRole("dialog").waitFor();await page.setViewportSize({width:390,height:844});await page.waitForTimeout(400);page.off("request",h);if(calls.length)throw Error(JSON.stringify(calls));const size=await page.evaluate(()=>({width:document.documentElement.scrollWidth,viewport:innerWidth,dialog:document.querySelector("dialog[open]").getBoundingClientRect().width}));if(size.width>390||size.dialog>390)throw Error(JSON.stringify(size));await page.screenshot({path:"/Users/bowen/Documents/Python/Google/output/playwright/gtja-panel-archive-mobile.png"});return {afterRefreshReadonlyRequests:calls.length,size};})(page);
+```

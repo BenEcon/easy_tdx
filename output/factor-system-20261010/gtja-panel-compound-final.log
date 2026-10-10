@@ -1,0 +1,44 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 16%]
+........................................................................ [ 21%]
+........................................................................ [ 27%]
+........................................................................ [ 32%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+........................................................................ [ 60%]
+........................................................................ [ 65%]
+........................................................................ [ 71%]
+........................................................................ [ 76%]
+........................................................................ [ 82%]
+........................................................................ [ 87%]
+........................................................................ [ 92%]
+...............................................................F........ [ 98%]
+.....................                                                    [100%]
+=================================== FAILURES ===================================
+__ test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_148] __
+tests/unit/test_factor_research.py:222: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    np.testing.assert_allclose(
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-08, atol=2e-10
+E   
+E   Mismatched elements: 2 / 200 (1%)
+E   Max absolute difference among violations: 1.
+E   Max relative difference among violations: 1.
+E    ACTUAL: array([[nan, nan],
+E          [nan, nan],
+E          [nan, nan],...
+E    DESIRED: array([[nan, nan],
+E          [nan, nan],
+E          [nan, nan],...
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_148]
+1 failed, 1316 passed, 1 warning in 97.05s (0:01:37)

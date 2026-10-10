@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>分钟时间组件验收 · 合成数据</title>
+<div id="qa"></div>
+<script type="module">
+import { createApp } from 'vue'
+import TradeTable from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/TradeTable.vue'
+import EquityChart from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/EquityChart.vue'
+import KlineChart from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/KlineChart.vue'
+import '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/style.css'
+const dates = ['09:35','09:40','09:45','09:50','09:55','10:00','10:05','10:10'].map(t=>'2026-10-09T'+t+':00')
+const bars=dates.map((datetime,i)=>({datetime,open:20+i,close:20.2+i,high:21+i,low:19+i,vol:10000,amount:100000}))
+const trades=[{datetime:dates[4],direction:'BUY',size:100,price:24,commission:5,pnl:0,slippage:0,rejected:false},
+{datetime:dates[6],direction:'SELL',size:100,price:26,commission:7.6,pnl:187.4,slippage:0,rejected:false}]
+const equity=dates.map((datetime,i)=>({datetime,total:100000+(i>=4?(i>=6?187.4:15+(i-4)*100):0),drawdown_pct:0,drawdown:0,cash:100000,position_value:0}))
+createApp({components:{TradeTable,EquityChart,KlineChart},data:()=>({bars,trades,equity}),
+template:`<main><header><h1>分钟时间组件验收</h1><p>合成行情；只检查实际组件的时间与标记显示，不连接生产。</p></header><section><h2>成交记录</h2><TradeTable :trades="trades" /></section><section><h2>资金曲线</h2><EquityChart :equity="equity" /></section><section><h2>蜡烛图成交定位</h2><KlineChart :bars="bars" :trades="trades" /></section></main>`}).mount('#qa')
+</script>
+<style>body{overflow:auto!important}main{max-width:1100px;margin:32px auto;padding:0 16px}section{min-width:0;margin:28px 0}h1{font-size:22px}h2{font-size:15px;margin:0 0 12px}p{color:var(--text-dim)}#qa{width:100%}</style>
+</html>

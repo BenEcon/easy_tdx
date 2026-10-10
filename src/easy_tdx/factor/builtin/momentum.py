@@ -13,9 +13,10 @@ class Momentum20D(Factor):
     category = "momentum"
     description = "20 日动量（20 日收益率）"
     inputs = ("close",)
+    window = 20
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
-        return df["close"].pct_change(20)
+        return df["close"].pct_change(self.window, fill_method=None)
 
 
 @register_factor
@@ -24,9 +25,10 @@ class Momentum60D(Factor):
     category = "momentum"
     description = "60 日动量（60 日收益率）"
     inputs = ("close",)
+    window = 60
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
-        return df["close"].pct_change(60)
+        return df["close"].pct_change(self.window, fill_method=None)
 
 
 @register_factor
@@ -35,6 +37,7 @@ class Reversal5D(Factor):
     category = "momentum"
     description = "5 日反转因子（负 5 日收益率）"
     inputs = ("close",)
+    window = 5
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
-        return -df["close"].pct_change(5)
+        return -df["close"].pct_change(self.window, fill_method=None)

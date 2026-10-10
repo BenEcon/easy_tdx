@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { queryAction } from '../query-origin'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import ChartFrame from '../components/ChartFrame.vue'
 import DataGrid from '../components/DataGrid.vue'
+import DataProvenance from '../components/DataProvenance.vue'
+import type { MarketDataMetadata } from '../market-data-contract'
 import IntradayChart from '../components/IntradayChart.vue'
 import MacSelect from '../components/MacSelect.vue'
 import StockQueryField from '../components/StockQueryField.vue'
 import { fetchIndexBars, fetchMinuteData, fetchServerSession, fetchTransactionData, formatError } from '../api'
 import { detectMarket } from '../market'
+import { bindRealtimeSocket } from '../realtime-connection'
 import { useSelectedStock, recordStockHistory, stockDisplayName } from '../stock-history'
 
 type Row = Record<string, unknown>
@@ -18,6 +22,7 @@ const tab = ref<Tab>('minute')
 const indexSymbol = ref('SH:000001')
 const category = ref('DAY')
 const rows = ref<Row[]>([])
+const indexMetadata = ref<MarketDataMetadata | null>(null)
 const loading = ref(false)
 const error = ref('')
 const live = ref(false)
@@ -65,11 +70,15 @@ function minuteLabel(index: number): string {
 }
 
 function disconnectLive() {
-  socket?.close()
+  const previous = socket
   socket = null
+  previous?.close()
   live.value = false
   liveState.value = 'idle'
+  liveTick.value = null
 }
+
+watch(code, disconnectLive, { flush: 'sync' })
 
 function toggleLive() {
   if (socket) {
@@ -77,36 +86,49 @@ function toggleLive() {
     return
   }
   const market = detectMarket(code.value)
+  if (!/^\d{6}$/.test(code.value)) {
+    error.value = '股票代码必须是 6 位数字'
+    return
+  }
+  error.value = ''
   live.value = true
   liveState.value = 'connecting'
   const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-  socket = new WebSocket(`${protocol}//${location.host}/api/v1/ws/realtime/${market}${code.value}`)
-  socket.onopen = () => { liveState.value = 'connected' }
-  socket.onmessage = (event) => {
-    const payload = JSON.parse(String(event.data)) as Row
-    if (payload.type !== 'ping' && payload.type !== 'status') liveTick.value = payload
-  }
-  socket.onerror = () => { liveState.value = 'error' }
-  socket.onclose = () => {
-    socket = null
-    live.value = false
-    if (liveState.value !== 'error') liveState.value = 'idle'
-  }
+  const current = new WebSocket(`${protocol}//${location.host}/api/v1/ws/realtime/${market}${code.value}`)
+  socket = current
+  bindRealtimeSocket(current, () => socket === current, {
+    connected: () => { liveState.value = 'connected' },
+    tick: payload => { liveTick.value = payload },
+    error: message => { liveState.value = 'error'; error.value = message },
+    closed: event => {
+      socket = null
+      live.value = false
+      liveTick.value = null
+      if (event.code !== 1000 && event.code !== 1001) {
+        liveState.value = 'error'
+        error.value = event.reason || (event.code === 4401 ? '登录已失效，请重新登录' : '实时连接中断，请稍后重试')
+      } else if (liveState.value !== 'error') liveState.value = 'idle'
+    },
+  })
 }
 
-async function load() {
+async function load(manual = false) {
+  const query = queryAction(manual)
   if (tab.value !== 'session' && tab.value !== 'index' && !/^\d{6}$/.test(code.value)) {
     error.value = '股票代码必须是 6 位数字'
     return
   }
   loading.value = true
   error.value = ''
+  indexMetadata.value = null
   try {
-    if (tab.value === 'minute') rows.value = (await fetchMinuteData(detectMarket(code.value), code.value, date.value || undefined)).data
-    else if (tab.value === 'transactions') rows.value = (await fetchTransactionData(detectMarket(code.value), code.value, date.value || undefined)).data
+    if (tab.value === 'minute') rows.value = (await query(() => fetchMinuteData(detectMarket(code.value), code.value, date.value || undefined))).data
+    else if (tab.value === 'transactions') rows.value = (await query(() => fetchTransactionData(detectMarket(code.value), code.value, date.value || undefined))).data
     else if (tab.value === 'index') {
       const [market, indexCode] = indexSymbol.value.split(':')
-      rows.value = (await fetchIndexBars(market, indexCode, category.value)).data
+      const snapshot = await query(() => fetchIndexBars(market, indexCode, category.value))
+      rows.value = snapshot.data
+      indexMetadata.value = snapshot.metadata
     } else rows.value = (await fetchServerSession()).data
     if (tab.value === 'minute' || tab.value === 'transactions') recordStockHistory({ code: code.value, category: 'DAY' })
   } catch (e) {
@@ -120,10 +142,10 @@ async function load() {
 function switchTab(next: Tab) {
   tab.value = next
   rows.value = []
-  void load()
+  void load(true)
 }
 
-onMounted(load)
+onMounted(() => load())
 onBeforeUnmount(disconnectLive)
 </script>
 
@@ -139,7 +161,7 @@ onBeforeUnmount(disconnectLive)
         <div class="select-field"><label>指数</label><MacSelect v-model="indexSymbol" :options="indexOptions" /></div>
         <div class="select-field period"><label>周期</label><MacSelect v-model="category" :options="categoryOptions" /></div>
       </template>
-      <button class="primary query-button action-button" :disabled="loading" @click="load">
+      <button class="primary query-button action-button" :disabled="loading" @click="load(true)">
         <svg class="button-icon" :class="{ spinning: loading }" viewBox="0 0 20 20"><path d="M10 3a7 7 0 1 1-5.2 2.3M3 3v4h4" /></svg>
         {{ loading ? '读取中' : '更新数据' }}
       </button>
@@ -153,6 +175,7 @@ onBeforeUnmount(disconnectLive)
     </nav>
 
     <p v-if="error" class="error-banner status-banner">{{ error }}</p>
+    <DataProvenance v-if="tab === 'index' && indexMetadata" :metadata="indexMetadata" :count="rows.length" />
     <section v-if="liveTick" class="live-strip">
       <span>实时快照</span><strong>{{ stockName }}</strong>
       <b>{{ Number(liveTick.price ?? 0).toFixed(2) }}</b>

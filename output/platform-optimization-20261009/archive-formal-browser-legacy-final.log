@@ -1,0 +1,9 @@
+### Result
+{"widths":[1440,390,320],"pageErrors":[],"researchRequests":[],"legacyMissingIndicatorsNotCalculated":true}
+### Ran Playwright code
+```js
+await (async (page) => {await page.reload();const cloud=page.locator(".cloud-archives");await cloud.locator(":scope > summary").click();await cloud.getByRole("button",{name:"查看原档",exact:true}).waitFor();const errors=[],requests=[];const onerror=e=>errors.push(e.message),onrequest=r=>{if(/\/api\/v1\/(bars|indicator|chanlun)/.test(r.url()))requests.push(r.url());};page.on("pageerror",onerror);page.on("request",onrequest);try{await cloud.getByRole("button",{name:"查看原档",exact:true}).click();const dialog=page.getByRole("dialog",{name:"云端研究原档",exact:true});await dialog.getByText("旧档未保存指标 · 仅展示原行情与原结构，未补算。",{exact:true}).waitFor();if(await dialog.getByRole("button",{name:"＋ 添加指标",exact:true}).count())throw Error("legacy recalculation enabled");const widths=[];for(const width of [1440,390,320]){await page.setViewportSize({width,height:1000});if(await page.evaluate(()=>document.documentElement.scrollWidth)!==width)throw Error("overflow");widths.push(width);}await page.screenshot({path:"../output/playwright/archive-formal-legacy-final-320.png"});await page.getByRole("button",{name:"关闭云存档",exact:true}).click();if(errors.length||requests.length)throw Error(JSON.stringify({errors,requests}));return {widths,pageErrors:errors,researchRequests:requests,legacyMissingIndicatorsNotCalculated:true};}finally{page.off("pageerror",onerror);page.off("request",onrequest);}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/account
+- Page Title: 股票分析 · Analysis Studio

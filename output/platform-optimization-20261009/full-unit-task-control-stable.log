@@ -1,0 +1,88 @@
+............................FFF......................................... [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 45%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+........................................................................ [ 54%]
+........................................................................ [ 57%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 66%]
+........................................................................ [ 69%]
+........................................................................ [ 72%]
+........................................................................ [ 75%]
+........................................................................ [ 78%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 90%]
+........................................................................ [ 93%]
+........................................................................ [ 96%]
+........................................................................ [ 99%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+________________ test_async_client_serializes_concurrent_calls _________________
+tests/unit/test_async_transport.py:60: in test_async_client_serializes_concurrent_calls
+    asyncio.run(main())
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/runners.py:44: in run
+    return loop.run_until_complete(main)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/base_events.py:649: in run_until_complete
+    return future.result()
+tests/unit/test_async_transport.py:41: in main
+    server = await asyncio.start_server(handle, "127.0.0.1", 0)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/streams.py:85: in start_server
+    return await loop.create_server(factory, host, port, **kwds)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/base_events.py:1519: in create_server
+    raise OSError(err.errno, 'error while attempting '
+E   PermissionError: [Errno 1] error while attempting to bind on address ('127.0.0.1', 0): operation not permitted
+_______________________ test_async_client_auto_reconnect _______________________
+tests/unit/test_async_transport.py:99: in test_async_client_auto_reconnect
+    asyncio.run(main())
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/runners.py:44: in run
+    return loop.run_until_complete(main)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/base_events.py:649: in run_until_complete
+    return future.result()
+tests/unit/test_async_transport.py:84: in main
+    server = await asyncio.start_server(handle, "127.0.0.1", 0)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/streams.py:85: in start_server
+    return await loop.create_server(factory, host, port, **kwds)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/base_events.py:1519: in create_server
+    raise OSError(err.errno, 'error while attempting '
+E   PermissionError: [Errno 1] error while attempting to bind on address ('127.0.0.1', 0): operation not permitted
+______________________ test_async_client_request_timeout _______________________
+tests/unit/test_async_transport.py:139: in test_async_client_request_timeout
+    asyncio.run(main())
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/runners.py:44: in run
+    return loop.run_until_complete(main)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/base_events.py:649: in run_until_complete
+    return future.result()
+tests/unit/test_async_transport.py:119: in main
+    server = await asyncio.start_server(handle, "127.0.0.1", 0)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/streams.py:85: in start_server
+    return await loop.create_server(factory, host, port, **kwds)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/base_events.py:1519: in create_server
+    raise OSError(err.errno, 'error while attempting '
+E   PermissionError: [Errno 1] error while attempting to bind on address ('127.0.0.1', 0): operation not permitted
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_async_transport.py::test_async_client_serializes_concurrent_calls
+FAILED tests/unit/test_async_transport.py::test_async_client_auto_reconnect
+FAILED tests/unit/test_async_transport.py::test_async_client_request_timeout
+3 failed, 2393 passed, 1 warning in 615.01s (0:10:15)

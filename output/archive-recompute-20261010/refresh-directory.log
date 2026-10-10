@@ -1,0 +1,6 @@
+### Result
+"账户云存档\n手动保存 · 跨设备查看\n\n仅本人账户可访问；保存原始行情、参数及分析结果，不自动重算。云端与本地副本独立，刷新目录不会覆盖当前研究。\n\n本地快照迁移\n\n检查当前账户在此浏览器保存的图表快照，选择后复制到云端。\n\n检查本地快照\n导入研究备份\n刷新云目录\n回收站\n\n2 / 100 份 · 0.10 / 128.00 MiB（含回收站）\n\n重算测试研究\n多周期研究 · 2026-10-09 16:48:28 UTC · v1\n\n明确合成行情\n\n查看原档\n导出\n编辑备注\n移入回收站\n重算测试图表\n图表快照 · 2026-10-09 16:48:28 UTC · v1\n\n明确合成行情与测试差异\n\n查看原档\n导出\n编辑备注\n移入回收站"
+### Ran Playwright code
+```js
+await (async page => { await page.getByRole("button",{name:"刷新云目录",exact:true}).click(); await page.getByText("重算测试图表",{exact:true}).waitFor(); return await page.locator(".cloud-archives").innerText(); })(page);
+```

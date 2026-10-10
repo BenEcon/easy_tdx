@@ -1,0 +1,436 @@
+### Page
+- Page URL: http://127.0.0.1:8769/quant-research
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=e207]:
+  - complementary [ref=e208]:
+    - button "收起左侧栏" [ref=e214] [cursor=pointer]
+    - link "返回股票分析" [ref=e218]:
+      - /url: /
+      - generic [ref=e223]:
+        - strong [ref=e224]: 股票分析
+        - generic [ref=e225]: Analysis Studio
+    - navigation "主要导航" [ref=e226]:
+      - generic [ref=e227]:
+        - paragraph [ref=e228]: 分析
+        - link "个股分析" [ref=e229]:
+          - /url: /
+        - link "市场行情" [ref=e236]:
+          - /url: /market
+        - link "盘中研究" [ref=e242]:
+          - /url: /intraday
+        - link "缠论结构" [ref=e248]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=e254]:
+          - /url: /signals
+        - link "追踪标的" [ref=e261]:
+          - /url: /tracking
+      - generic [ref=e267]:
+        - paragraph [ref=e268]: 研究
+        - link "板块研究" [ref=e269]:
+          - /url: /boards
+        - link "公司资料" [ref=e278]:
+          - /url: /company
+        - link "扩展市场" [ref=e286]:
+          - /url: /extended
+        - link "量化研究" [ref=e293]:
+          - /url: /quant-research
+        - link "组合回测" [ref=e299]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=e308]:
+          - /url: /optimize
+        - link "结果对比" [ref=e313]:
+          - /url: /compare
+        - link "策略库" [ref=e318]:
+          - /url: /strategies
+      - generic [ref=e324]:
+        - paragraph [ref=e325]: 系统
+        - link "行情服务器" [ref=e326]:
+          - /url: /settings
+        - link "个人账户" [ref=e333]:
+          - /url: /account
+        - link "账户管理" [ref=e340]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=e349]:
+          - /url: /admin/data
+    - link "G gtjaqa 管理员" [ref=e357]:
+      - /url: /account
+      - generic [ref=e358]: G
+      - generic [ref=e359]:
+        - strong [ref=e360]: gtjaqa
+        - generic [ref=e361]: 管理员
+  - generic [ref=e362]:
+    - generic [ref=e363]:
+      - generic [ref=e364]:
+        - heading "量化研究" [level=1] [ref=e365]
+        - paragraph [ref=e366]: 计算内置因子并分析组合权重、相关性与风险贡献
+      - generic [ref=e367]:
+        - link "个人账户" [ref=e368]:
+          - /url: /account
+          - generic [ref=e369]: G
+          - generic [ref=e370]: gtjaqa
+          - generic [ref=e371]: ADMIN
+        - button "退出登录" [ref=e372] [cursor=pointer]
+    - main [ref=e375]:
+      - generic [ref=e376]:
+        - generic [ref=e377]:
+          - generic [ref=e378]:
+            - text: 量化研究工作台
+            - heading "因子与风险实验室" [level=2] [ref=e379]
+            - paragraph [ref=e380]: 计算内置因子，分析组合权重、相关性与风险贡献。
+          - generic [ref=e381]:
+            - button "中英术语对照" [ref=e382] [cursor=pointer]
+            - navigation [ref=e386]:
+              - button "因子序列" [ref=e387] [cursor=pointer]
+              - button "因子检验" [ref=e388] [cursor=pointer]
+              - button "组合风险" [ref=e389] [cursor=pointer]
+        - generic [ref=e810]:
+          - complementary [ref=e811]:
+            - generic [ref=e812]:
+              - heading "样本与因子" [level=3] [ref=e813]
+              - paragraph [ref=e814]: 已收盘日线 · 5—20 只标的 · 最多 4 个因子
+            - generic [ref=e815]:
+              - generic [ref=e816]:
+                - generic [ref=e817]: 股票代码
+                - button "股票历史 1" [ref=e819] [cursor=pointer]:
+                  - generic [ref=e822]: 股票历史
+                  - generic [ref=e823]: "1"
+              - generic [ref=e826]:
+                - textbox "6位代码（市场自动识别）" [ref=e827]: "000001"
+                - button "添加" [ref=e828] [cursor=pointer]
+              - paragraph [ref=e829]: 将识别为：深市
+              - generic [ref=e830]:
+                - generic [ref=e831]:
+                  - text: 000001-合成验收（非实盘）
+                  - button "×" [ref=e832] [cursor=pointer]
+                - generic [ref=e833]:
+                  - text: "600036"
+                  - button "×" [ref=e834] [cursor=pointer]
+                - generic [ref=e835]:
+                  - text: "601166"
+                  - button "×" [ref=e836] [cursor=pointer]
+                - generic [ref=e837]:
+                  - text: "601998"
+                  - button "×" [ref=e838] [cursor=pointer]
+                - generic [ref=e839]:
+                  - text: "601818"
+                  - button "×" [ref=e840] [cursor=pointer]
+                - generic [ref=e841]:
+                  - text: "600000"
+                  - button "×" [ref=e842] [cursor=pointer]
+                - generic [ref=e843]:
+                  - text: "600016"
+                  - button "×" [ref=e844] [cursor=pointer]
+                - generic [ref=e845]:
+                  - text: "600015"
+                  - button "×" [ref=e846] [cursor=pointer]
+            - combobox "检验因子库" [ref=e848] [cursor=pointer]:
+              - generic [ref=e849]: GTJA191 · 已实现价量
+            - searchbox "查找检验因子" [ref=e852]: "107"
+            - generic [ref=e853]:
+              - checkbox "仅看收藏 · 0 项" [ref=e854]
+              - text: 仅看收藏 · 0 项
+            - generic [ref=e855]:
+              - button "移除GTJA 032 · 价量排名相关累计 · 相关窗口 4 / 累计窗口 3" [ref=e1279] [cursor=pointer]: GTJA 032 · 价量排名相关累计 · 相关窗口 4 / 累计窗口 3 ×
+              - button "移除GTJA 107 · 开盘相对前价三重排名" [ref=e1261] [cursor=pointer]: GTJA 107 · 开盘相对前价三重排名 ×
+            - group [ref=e1197]:
+              - generic "因子参数 3 项可编辑" [ref=e1262] [cursor=pointer]
+              - paragraph [ref=e1199]: 窗口单位为当前 K 线根数；修改后须重新计算。标识保留原值，结果记录实际公式与窗口。
+              - generic [ref=e1200]:
+                - generic [ref=e1201]:
+                  - strong [ref=e1202]: GTJA 032 · 价量排名相关累计
+                  - generic [ref=e1203]: gtja191_032 · 相关窗口 · 默认 3 根
+                - generic [ref=e1204]:
+                  - generic [ref=e1205]:
+                    - textbox "gtja191_032 相关窗口" [ref=e1206]: "4"
+                    - generic [ref=e1207]:
+                      - button "gtja191_032 相关窗口增加" [ref=e1208] [cursor=pointer]
+                      - button "gtja191_032 相关窗口减少" [ref=e1211] [cursor=pointer]
+                  - button "恢复gtja191_032相关窗口默认参数" [ref=e1214] [cursor=pointer]: 重置
+              - generic [ref=e1215]:
+                - generic [ref=e1216]:
+                  - strong [ref=e1217]: GTJA 032 · 价量排名相关累计
+                  - generic [ref=e1218]: gtja191_032 · 累计窗口 · 默认 3 根
+                - generic [ref=e1219]:
+                  - generic [ref=e1220]:
+                    - textbox "gtja191_032 累计窗口" [ref=e1221]: "3"
+                    - generic [ref=e1222]:
+                      - button "gtja191_032 累计窗口增加" [ref=e1223] [cursor=pointer]
+                      - button "gtja191_032 累计窗口减少" [ref=e1226] [cursor=pointer]
+                  - button "恢复gtja191_032累计窗口默认参数" [disabled] [ref=e1229]: 重置
+              - generic [ref=e1263]:
+                - generic [ref=e1264]:
+                  - strong [ref=e1265]: GTJA 107 · 开盘相对前价三重排名
+                  - generic [ref=e1266]: gtja191_107 · 前价间隔 · 默认 1 根
+                - generic [ref=e1267]:
+                  - generic [ref=e1268]:
+                    - textbox "gtja191_107 前价间隔" [ref=e1269]: "1"
+                    - generic [ref=e1270]:
+                      - button "gtja191_107 前价间隔增加" [ref=e1271] [cursor=pointer]
+                      - button "gtja191_107 前价间隔减少" [ref=e1274] [cursor=pointer]
+                  - button "恢复gtja191_107前价间隔默认参数" [disabled] [ref=e1277]: 重置
+            - group [ref=e891]:
+              - generic "多因子组合 可选" [ref=e892] [cursor=pointer]:
+                - text: 多因子组合
+                - generic [ref=e893]: 可选
+            - group "检验因子 2/4" [ref=e1278]:
+              - generic [ref=e895]:
+                - text: 检验因子
+                - generic [ref=e896]: 2/4
+              - generic [ref=e1231]:
+                - generic [ref=e1232]:
+                  - checkbox "GTJA 071 · 收盘均价偏离百分数" [ref=e1233]
+                  - generic [ref=e1234]: GTJA 071 · 收盘均价偏离百分数
+                - button "收藏GTJA 071 · 收盘均价偏离百分数" [ref=e1235] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e1236]: ☆
+              - generic [ref=e1237]:
+                - generic [ref=e1238]:
+                  - checkbox "GTJA 076 · 量缩放收益变异系数" [ref=e1239]
+                  - generic [ref=e1240]: GTJA 076 · 量缩放收益变异系数
+                - button "收藏GTJA 076 · 量缩放收益变异系数" [ref=e1241] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e1242]: ☆
+              - generic [ref=e1243]:
+                - generic [ref=e1244]:
+                  - checkbox "GTJA 072 · 区间高点距离平滑" [ref=e1245]
+                  - generic [ref=e1246]: GTJA 072 · 区间高点距离平滑
+                - button "收藏GTJA 072 · 区间高点距离平滑" [ref=e1247] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e1248]: ☆
+              - generic [ref=e1249]:
+                - generic [ref=e1250]:
+                  - checkbox "GTJA 079 · 价格变动平滑强弱" [ref=e1251]
+                  - generic [ref=e1252]: GTJA 079 · 价格变动平滑强弱
+                - button "收藏GTJA 079 · 价格变动平滑强弱" [ref=e1253] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e1254]: ☆
+              - generic [ref=e1255]:
+                - generic [ref=e1256]:
+                  - checkbox "GTJA 107 · 开盘相对前价三重排名" [checked] [ref=e1257]
+                  - generic [ref=e1258]: GTJA 107 · 开盘相对前价三重排名
+                - button "收藏GTJA 107 · 开盘相对前价三重排名" [ref=e1259] [cursor=pointer]:
+                  - generic [aria-hidden] [ref=e1260]: ☆
+            - group "远期窗口 · 可多选" [ref=e987]:
+              - generic [ref=e989]:
+                - checkbox "1 个观测日远期窗口" [ref=e990]
+                - text: 1 个观测日
+              - generic [ref=e991]:
+                - checkbox "5 个观测日远期窗口" [checked] [ref=e992]
+                - text: 5 个观测日
+              - generic [ref=e993]:
+                - checkbox "10 个观测日远期窗口" [ref=e994]
+                - text: 10 个观测日
+              - generic [ref=e995]:
+                - checkbox "20 个观测日远期窗口" [ref=e996]
+                - text: 20 个观测日
+            - combobox "全局复权方式" [ref=e999] [cursor=pointer]:
+              - generic [ref=e1000]: 前复权
+            - group [ref=e1003]:
+              - generic "时间划分" [ref=e1004] [cursor=pointer]
+              - combobox "时间检验方式" [ref=e1006] [cursor=pointer]:
+                - generic [ref=e1007]: 全样本 · 回顾性
+            - group [ref=e1010]:
+              - generic "高级设置" [ref=e1011] [cursor=pointer]
+            - button "开始因子检验" [ref=e1291] [cursor=pointer]
+            - generic [ref=e1281]:
+              - status [ref=e1282]: 已完成 · 1 秒
+              - paragraph [ref=e1283]:
+                - text: 完整结果校验 1/1
+                - generic [ref=e1284]: 本阶段处理量，不代表整体完成比例；以任务最终状态为准。
+              - link "查看后台任务" [ref=e1288]:
+                - /url: /account
+              - paragraph [ref=e1289]: 停止等待或修改输入不会取消后台计算。取得任务编号后可取消；未取得编号时，请到个人账户确认提交状态。
+            - paragraph [ref=e1013]: 默认样本仅为可编辑示例，不是推荐组合。估值因子与缠论因子暂不参与截面检验。
+          - generic [ref=e1014]:
+            - region "因子研究存档" [ref=e1015]:
+              - generic [ref=e1016]:
+                - button "导出完整研究" [ref=e1017] [cursor=pointer]
+                - paragraph [ref=e1018]: 保存原始输入、实际参数、公式版本及结果；重开只读，不自动取数或计算。
+              - group [ref=e1019]:
+                - generic "› 账户云存档 手动保存 · 跨设备查看" [active] [ref=e1020] [cursor=pointer]:
+                  - text: ›
+                  - strong [ref=e1021]: 账户云存档
+                  - generic [ref=e1022]: 手动保存 · 跨设备查看
+                - generic [ref=e1438]:
+                  - paragraph [ref=e1439]: 仅本人账户可访问；保存原始行情、参数及分析结果，不自动重算。云端与本地副本独立，刷新目录不会覆盖当前研究。
+                  - region "本地快照迁移" [ref=e1440]:
+                    - generic [ref=e1441]:
+                      - generic [ref=e1442]:
+                        - heading "本地快照迁移" [level=4] [ref=e1443]
+                        - paragraph [ref=e1444]: 检查当前账户在此浏览器保存的图表快照，选择后复制到云端。
+                      - button "检查本地快照" [ref=e1445] [cursor=pointer]
+                  - generic [ref=e1446]:
+                    - generic [ref=e1447]:
+                      - button "保存当前结果到云端" [ref=e1448] [cursor=pointer]
+                      - button "导入研究备份" [ref=e1449] [cursor=pointer]
+                      - button "刷新云目录" [ref=e1450] [cursor=pointer]
+                      - button "回收站" [ref=e1451] [cursor=pointer]
+                    - paragraph [ref=e1452]: 5 / 100 份 · 0.67 / 128.00 MiB（含回收站）
+                    - list [ref=e1453]:
+                      - listitem [ref=e1454]:
+                        - generic [ref=e1455]:
+                          - strong [ref=e1456]: 000001 · 日线 · 因子研究
+                          - generic [ref=e1457]: 因子研究 · 2026-10-10 05:01:47 UTC · v1
+                        - generic [ref=e1458]:
+                          - button "查看原档" [ref=e1459] [cursor=pointer]
+                          - button "导出" [ref=e1460] [cursor=pointer]
+                          - button "编辑备注" [ref=e1461] [cursor=pointer]
+                          - button "移入回收站" [ref=e1462] [cursor=pointer]
+                      - listitem [ref=e1463]:
+                        - generic [ref=e1464]:
+                          - strong [ref=e1465]: 000001 · 日线 · 因子研究
+                          - generic [ref=e1466]: 因子研究 · 2026-10-10 04:41:10 UTC · v1
+                        - generic [ref=e1467]:
+                          - button "查看原档" [ref=e1468] [cursor=pointer]
+                          - button "导出" [ref=e1469] [cursor=pointer]
+                          - button "编辑备注" [ref=e1470] [cursor=pointer]
+                          - button "移入回收站" [ref=e1471] [cursor=pointer]
+                      - listitem [ref=e1472]:
+                        - generic [ref=e1473]:
+                          - strong [ref=e1474]: 000001 · 日线 · 因子研究
+                          - generic [ref=e1475]: 因子研究 · 2026-10-10 04:27:08 UTC · v1
+                        - generic [ref=e1476]:
+                          - button "查看原档" [ref=e1477] [cursor=pointer]
+                          - button "导出" [ref=e1478] [cursor=pointer]
+                          - button "编辑备注" [ref=e1479] [cursor=pointer]
+                          - button "移入回收站" [ref=e1480] [cursor=pointer]
+                      - listitem [ref=e1481]:
+                        - generic [ref=e1482]:
+                          - strong [ref=e1483]: 8 只标的 · 因子截面检验
+                          - generic [ref=e1484]: 因子研究 · 2026-10-10 04:06:30 UTC · v1
+                        - generic [ref=e1485]:
+                          - button "查看原档" [ref=e1486] [cursor=pointer]
+                          - button "导出" [ref=e1487] [cursor=pointer]
+                          - button "编辑备注" [ref=e1488] [cursor=pointer]
+                          - button "移入回收站" [ref=e1489] [cursor=pointer]
+                      - listitem [ref=e1490]:
+                        - generic [ref=e1491]:
+                          - strong [ref=e1492]: 000001 · 日线 · 因子研究
+                          - generic [ref=e1493]: 因子研究 · 2026-10-10 04:00:26 UTC · v1
+                        - generic [ref=e1494]:
+                          - button "查看原档" [ref=e1495] [cursor=pointer]
+                          - button "导出" [ref=e1496] [cursor=pointer]
+                          - button "编辑备注" [ref=e1497] [cursor=pointer]
+                          - button "移入回收站" [ref=e1498] [cursor=pointer]
+            - region "多远期窗口对照" [ref=e1292]:
+              - generic [ref=e1293]:
+                - heading "远期窗口对照" [level=3] [ref=e1294]
+                - generic [ref=e1295]: 同一行情 · 同一因子参数
+              - paragraph [ref=e1296]: 各窗口使用各自完整标签，有效样本可能不同；不自动选优、不反转方向。多日收益相互重叠，比较结果不等于交易策略收益。
+              - generic [ref=e1297]:
+                - combobox "查看远期窗口" [ref=e1299] [cursor=pointer]:
+                  - generic [ref=e1300]: 5 个观测日 · 查看明细
+                - combobox "远期对照精度" [ref=e1304] [cursor=pointer]:
+                  - generic [ref=e1305]: 易读精度
+              - generic "远期对照汇总" [ref=e1308]:
+                - table [ref=e1309]:
+                  - rowgroup [ref=e1310]:
+                    - row [ref=e1311]:
+                      - columnheader "远期" [ref=e1312]
+                      - columnheader "因子" [ref=e1313]
+                      - columnheader "有效相关" [ref=e1314]
+                      - columnheader "秩相关" [ref=e1315]
+                      - columnheader "信息比率" [ref=e1316]
+                      - columnheader "高组－低组" [ref=e1317]
+                  - rowgroup [ref=e1318]:
+                    - row [ref=e1319]:
+                      - columnheader [ref=e1320]:
+                        - button "查看5日GTJA 032 · 价量排名相关累计 · 相关窗口 4 / 累计窗口 3明细" [ref=e1321] [cursor=pointer]: 5 日
+                      - rowheader "GTJA 032 · 价量排名相关累计 · 相关窗口 4 / 累计窗口 3" [ref=e1322]
+                      - cell "0" [ref=e1323]
+                      - cell "—" [ref=e1324]
+                      - cell "—" [ref=e1325]
+                      - cell "—" [ref=e1326]
+                    - row [ref=e1327]:
+                      - columnheader [ref=e1328]:
+                        - button "查看5日GTJA 107 · 开盘相对前价三重排名明细" [ref=e1329] [cursor=pointer]: 5 日
+                      - rowheader "GTJA 107 · 开盘相对前价三重排名" [ref=e1330]
+                      - cell "154" [ref=e1331]
+                      - cell "-0.96" [ref=e1332]
+                      - cell "-10.54" [ref=e1333]
+                      - cell "-3.94%" [ref=e1334]
+              - paragraph [ref=e1335]: 下方明细对应 5 个观测日；切换只显示已保存结果，不重新获取行情或计算。
+            - group [ref=e1336]:
+              - generic "从评分建立追踪分组 手动选择 · 保留原档" [ref=e1337] [cursor=pointer]
+            - generic [ref=e1339]:
+              - heading "截面检验结果" [level=3] [ref=e1340]
+              - paragraph [ref=e1341]: 2026-02-05 — 2026-10-09 · 8 只 · 160 个观测日
+            - generic "因子检验汇总" [ref=e1342]:
+              - table [ref=e1343]:
+                - rowgroup [ref=e1344]:
+                  - row [ref=e1345]:
+                    - columnheader "因子" [ref=e1346]
+                    - columnheader "覆盖率" [ref=e1347]
+                    - columnheader "有效截面" [ref=e1348]
+                    - columnheader "秩相关均值" [ref=e1349]
+                    - columnheader "信息比率" [ref=e1350]
+                    - columnheader "正相关占比" [ref=e1351]
+                    - columnheader "高组－低组" [ref=e1352]
+                - rowgroup [ref=e1353]:
+                  - row [ref=e1354]:
+                    - rowheader [ref=e1355]:
+                      - button "GTJA 032 · 价量排名相关累计 · 相关窗口 4 / 累计窗口 3" [ref=e1356] [cursor=pointer]
+                    - cell "0.00%" [ref=e1357]
+                    - cell "0" [ref=e1358]
+                    - cell "—" [ref=e1359]
+                    - cell "—" [ref=e1360]
+                    - cell "—" [ref=e1361]
+                    - cell "—" [ref=e1362]
+                  - row [ref=e1363]:
+                    - rowheader [ref=e1364]:
+                      - button "GTJA 107 · 开盘相对前价三重排名" [ref=e1365] [cursor=pointer]
+                    - cell "99.38%" [ref=e1366]
+                    - cell "154" [ref=e1367]
+                    - cell "-0.96" [ref=e1368]
+                    - cell "-10.54" [ref=e1369]
+                    - cell "0.00%" [ref=e1370]
+                    - cell "-3.94%" [ref=e1371]
+            - generic [ref=e1372]:
+              - heading "GTJA 107 · 开盘相对前价三重排名" [level=3] [ref=e1437]
+              - combobox "查看检验因子" [ref=e1375] [cursor=pointer]:
+                - generic [ref=e1376]: GTJA 107 · 开盘相对前价三重排名
+            - group [ref=e1379]:
+              - generic "公式、数据要求与版本" [ref=e1380] [cursor=pointer]
+            - generic [ref=e1381]:
+              - generic [ref=e1382]:
+                - generic [ref=e1383]:
+                  - heading "秩相关时间序列" [level=3] [ref=e1384]
+                  - paragraph [ref=e1385]: 每日秩相关与连续 20 个有效观测日均值；缺口保持为空
+                - button "全屏查看秩相关时间序列" [ref=e1387] [cursor=pointer]:
+                  - generic [ref=e1390]: 全屏
+              - img "因子检验图；对应数值见下方明细表" [ref=e1392]
+            - generic [ref=e1395]:
+              - generic [ref=e1396]:
+                - generic [ref=e1397]:
+                  - heading "分层平均远期收益" [level=3] [ref=e1398]
+                  - paragraph [ref=e1399]: 第 1 组为因子低值组 · 149 个完整分层截面 · 非策略净值
+                - button "全屏查看分层平均远期收益" [ref=e1401] [cursor=pointer]:
+                  - generic [ref=e1404]: 全屏
+              - img "因子检验图；对应数值见下方明细表" [ref=e1406]
+            - group [ref=e1409]:
+              - generic "未参与统计的原因" [ref=e1410] [cursor=pointer]
+            - group [ref=e1414]:
+              - generic "每日检验明细" [ref=e1415] [cursor=pointer]
+            - group [ref=e1416]:
+              - generic "最新因子排序 · 2026-10-09" [ref=e1417] [cursor=pointer]
+            - group [ref=e1418]:
+              - generic "因子相关性 · 重复信息检查" [ref=e1419] [cursor=pointer]
+            - group [ref=e1420]:
+              - generic "计算口径与研究边界" [ref=e1421] [cursor=pointer]
+              - paragraph [ref=e1422]:
+                - text: 统计版本：
+                - code [ref=e1423]: factor-cross-section-numerics-v2
+              - paragraph [ref=e1424]: 覆盖率统计原始有效因子值，不代表相关系数有效。近常数收益仍可显示描述性分层均值，但不能据此判断因子排序能力。
+              - list [ref=e1425]:
+                - listitem [ref=e1426]: 自选样本的回顾性检验，不代表全市场或独立样本外验证；未使用历史成分股。
+                - listitem [ref=e1427]: 远期收益是信号日收盘至随后合并观测日收盘的价格变化，不是可成交策略收益；未计成本、涨跌停与停牌。
+                - listitem [ref=e1428]: 远期窗口含缺失行情或尚未完成时不参与统计；不填零、不前向补值。
+                - listitem [ref=e1429]: 多日收益窗口重叠，信息比率未年化；分层均值不复利为净值。复权数据不保证历史当时可得。
+                - listitem [ref=e1430]: 正相关不自动成为买入建议；负相关不自动反转方向。未做行业／市值中性化和多重检验。
+                - listitem [ref=e1431]: 数值规则 v2：32 倍 float64 精度的同尺度差异视为并列；因子无固定绝对阈值，价格比远期收益采用单位算术尺度。近常数不计算相关，标准化不放大其噪声。
+                - listitem [ref=e1432]: 分层保留原始收益均值；高低组差在收益算术分辨率内记数值零（不是缺失填零）。容差是明确的工程规则，不是经济显著性或严格误差传播证明。
+              - paragraph [ref=e1433]:
+                - text: 合并日期中的缺失行情：0 条。数据指纹：
+                - code [ref=e1434]: 0f0277a82fb09d1fab08b11085ef525180ec61f70bd9f1185f3cfc36dd59144b
+            - group [ref=e1435]:
+              - generic "各标的数据来源" [ref=e1436] [cursor=pointer]
+              - text: › › › › › › › ›
+```

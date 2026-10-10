@@ -1,0 +1,6 @@
+### Result
+{"exactPlottedSeries":13,"bars":240}
+### Ran Playwright code
+```js
+await (async page=>{const result=await page.evaluate(async()=>{const {r:echarts}=await import("/assets/echarts-setup-6XypGsNX.js");const list=await(await fetch("/api/v1/research/archives")).json();const record=await(await fetch("/api/v1/research/archives/"+list.items[0].id)).json();const frozen=record.payload.charts[0].frozenIndicators;const element=document.querySelector(".cloud-dialog .chanlun-chart");const series=echarts.getInstanceByDom(element).getOption().series;const expected=[...frozen.averages.map(ma=>({name:"MA"+ma.period,values:ma.values})),...frozen.indicators.flatMap((item,i)=>item.series.map(s=>({name:"indicator-"+i+"-"+s.name,values:s.values})))];for(const item of expected){const actual=series.find(s=>s.name===item.name);if(!actual)throw Error("missing "+item.name);const values=actual.data.map(v=>v&&typeof v==="object"?v.value:v);if(JSON.stringify(values)!==JSON.stringify(item.values))throw Error("changed "+item.name);}return {exactPlottedSeries:expected.length,bars:frozen.dates.length};});return result;})(page);
+```

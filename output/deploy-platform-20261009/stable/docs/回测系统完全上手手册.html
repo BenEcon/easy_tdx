@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>easy-tdx 回测系统完全上手手册</title>
+<style>
+  :root {
+    --bg: #fafafa;
+    --card: #ffffff;
+    --text: #2c3338;
+    --text-muted: #6b7280;
+    --text-dim: #9ca3af;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --up: #dc2626;
+    --down: #16a34a;
+    --warn: #d97706;
+    --warn-light: #fef3c7;
+    --code-bg: #1e293b;
+    --code-text: #e2e8f0;
+    --code-comment: #94a3b8;
+    --s-grade: #d4a017;
+    --a-grade: #16a34a;
+    --b-grade: #2563eb;
+    --c-grade: #d97706;
+    --d-grade: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 16px;
+    padding: 0;
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* 封面 */
+  .cover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #3b82f6 100%);
+    color: white;
+    padding: 56px 32px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .cover h1 { font-size: 32px; margin-bottom: 12px; font-weight: 700; }
+  .cover .subtitle { font-size: 17px; opacity: 0.92; margin-bottom: 24px; }
+  .cover .meta {
+    display: inline-flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+    background: rgba(255,255,255,0.15); padding: 10px 20px; border-radius: 999px;
+    font-size: 13px;
+  }
+  .cover .meta span { display: inline-flex; align-items: center; gap: 6px; }
+
+  /* 目录 */
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+  }
+  .toc h2 { font-size: 18px; margin-bottom: 16px; color: var(--text); }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 8px; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .toc .sub { padding-left: 24px; font-size: 14px; color: var(--text-muted); }
+
+  /* 章节 */
+  section.chapter {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-bottom: 24px;
+    scroll-margin-top: 20px;
+  }
+  section.chapter h2 {
+    font-size: 24px;
+    color: var(--text);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+  section.chapter h3 {
+    font-size: 19px;
+    color: var(--text);
+    margin: 28px 0 14px;
+    font-weight: 600;
+  }
+  section.chapter h4 {
+    font-size: 16px;
+    color: var(--text);
+    margin: 20px 0 10px;
+    font-weight: 600;
+  }
+  section.chapter p { margin-bottom: 14px; }
+  section.chapter ul, section.chapter ol { padding-left: 22px; margin-bottom: 14px; }
+  section.chapter li { margin-bottom: 6px; }
+
+  /* 步骤卡 */
+  .step {
+    background: #f8fafc;
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    margin: 16px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .step-num {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-weight: 700;
+    margin-right: 10px;
+    font-size: 14px;
+  }
+
+  /* 代码块 */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 16px 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 14px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+  }
+  pre .comment { color: var(--code-comment); }
+  code {
+    background: #eef2f7;
+    color: var(--accent);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", Consolas, monospace;
+    font-size: 0.9em;
+  }
+  pre code { background: none; color: inherit; padding: 0; }
+
+  /* 提示框 */
+  .tip, .warn, .danger {
+    padding: 14px 18px;
+    border-radius: 8px;
+    margin: 16px 0;
+    border-left: 4px solid;
+  }
+  .tip { background: var(--accent-light); border-color: var(--accent); }
+  .tip strong { color: #1e40af; }
+  .warn { background: var(--warn-light); border-color: var(--warn); }
+  .warn strong { color: #92400e; }
+  .danger { background: #fee2e2; border-color: var(--up); }
+  .danger strong { color: #991b1b; }
+
+  /* 表格 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+  }
+  th { background: #f1f5f9; font-weight: 600; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  /* 评级徽章 */
+  .grade-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 999px;
+    font-weight: 700; font-size: 14px;
+    border: 2px solid;
+  }
+  .grade-S { color: var(--s-grade); border-color: var(--s-grade); background: #fef9e7; }
+  .grade-A { color: var(--a-grade); border-color: var(--a-grade); background: #dcfce7; }
+  .grade-B { color: var(--b-grade); border-color: var(--b-grade); background: #dbeafe; }
+  .grade-C { color: var(--c-grade); border-color: var(--c-grade); background: #fef3c7; }
+  .grade-D { color: var(--d-grade); border-color: var(--d-grade); background: #fee2e2; }
+
+  /* 指标解释卡 */
+  .metric-card {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+  }
+  .metric-card .name {
+    font-weight: 700; color: var(--accent);
+    display: inline-block; min-width: 100px;
+  }
+  .metric-card .formula {
+    font-family: monospace; font-size: 13px;
+    color: var(--text-muted); margin-left: 8px;
+  }
+
+  /* 截图占位 */
+  .screenshot-ph {
+    background: #f1f5f9;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    color: var(--text-dim);
+    margin: 16px 0;
+    font-size: 14px;
+  }
+
+  /* FAQ */
+  details {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 10px 0;
+    cursor: pointer;
+  }
+  details summary { font-weight: 600; color: var(--text); }
+  details[open] summary { margin-bottom: 10px; }
+  details p { margin-top: 8px; }
+
+  footer {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  .keyboard {
+    display: inline-block;
+    background: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 8px;
+    font-family: monospace;
+    font-size: 13px;
+    color: var(--text);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="cover">
+  <h1>easy-tdx 回测系统完全上手手册</h1>
+  <p class="subtitle">从零开始,手把手教你在浏览器里完成股票策略回测</p>
+  <div class="meta">
+    <span>适用版本 v1.19.1</span>
+    <span>适用系统 Windows 10 / 11</span>
+    <span>读者:零基础新手</span>
+  </div>
+</div>
+
+<div class="toc">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#ch1">第一章 准备工作:选一种方式开始(EXE / Python / 源码)</a></li>
+    <li><a href="#ch2">第二章 下载项目并启动系统(方式二/三用户)</a></li>
+    <li><a href="#ch3">第三章 第一次回测:验证策略靠不靠谱</a></li>
+    <li><a href="#ch4">第四章 参数寻优:让电脑帮你找最佳参数</a></li>
+    <li><a href="#ch5">第五章 怎么确认寻优结果是不是真的好</a></li>
+    <li><a href="#ch6">第六章 保存策略 + 策略库:把好策略存下来</a></li>
+    <li><a href="#ch7">第七章 看懂评级徽章:S/A/B/C/D 五档</a></li>
+    <li><a href="#ch8">第八章 看懂 19 项绩效指标</a></li>
+    <li><a href="#ch9">第九章 看懂交易记录:怎么跟买跟卖</a></li>
+    <li><a href="#ch10">第十章 多股票组合分仓:不把鸡蛋放一个篮子</a></li>
+    <li><a href="#ch10b">第十章补 充:保存策略组合 + 一键看今日信号(新)</a></li>
+    <li><a href="#ch11">第十一章 常见问题与排错</a></li>
+    <li><a href="#ch12">第十二章 重要提醒(必读)</a></li>
+    <li><a href="#appendix-packaging">附录:自己打包 EXE 分发给朋友(方式三)</a></li>
+  </ol>
+</div>
+
+<!-- ==================== 第一章 ==================== -->
+<section class="chapter" id="ch1">
+<h2>第一章 准备工作:选一种方式开始</h2>
+
+<p>easy-tdx 提供三种使用方式,难度从低到高。<strong>请根据自己的情况选一种</strong>,不需要三种都试。</p>
+
+<div class="tip">
+<strong>不知道选哪个?</strong> 选<strong>方式一(下载 EXE)</strong>。它不用装任何软件,双击就能用,最适合零基础的朋友。
+</div>
+
+<h3>方式一:下载 EXE,双击即用(零基础首选)</h3>
+
+<p>这是最简单的方式。我们提供了打包好的单个 EXE 文件(约 80-150MB),里面已经包含了所有需要的东西,<strong>不用装 Python、不用装 Node.js、不用敲命令</strong>。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>下载 EXE</strong>
+<p>用浏览器打开项目主页的 <strong>Releases(发布)</strong> 页面:<br>
+<code>https://github.com/handsomejustin/easy_tdx/releases</code></p>
+<p>找到最新版本,下载那个名字像 <code>easy-tdx-1.19.0-windows.exe</code> 的文件。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>双击运行</strong>
+<p>下载后直接双击这个 EXE。</p>
+<p><strong>第一次运行会被 Windows 拦截</strong>(弹出蓝色"已保护你的电脑"窗口),这是正常的,因为我们的 EXE 还没有花钱买"数字签名"。处理方法:</p>
+<ol>
+  <li>点蓝色窗口里的 <strong>"更多信息"</strong></li>
+  <li>会出现 <strong>"仍要运行"</strong> 按钮,点它</li>
+</ol>
+</div>
+
+<div class="screenshot-ph">
+[此处应放截图:SmartScreen 蓝色窗口 → 点"更多信息" → 点"仍要运行"]
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>等待 2-5 秒,浏览器自动打开</strong>
+<p>EXE 首次启动需要解压(所以会慢几秒),然后浏览器会自动打开回测界面。看到顶部导航栏有"单标的回测 / 组合回测 / 参数寻优 / 结果对比 / 策略库"五个标签,就大功告成了!</p>
+</div>
+
+<div class="warn">
+<strong>怎么关闭?</strong> 直接关浏览器标签页<strong>不会</strong>停止后台服务。完整退出请看屏幕<strong>右下角任务栏的小图标</strong>(一个 K 线图样式的图标),<strong>右键 → 退出</strong>即可干净关闭。
+</div>
+
+<div class="tip">
+<strong>选了方式一?</strong> 直接跳到 <a href="#ch3">第三章 第一次回测</a> 开始用。第二、十一章可以跳过(那是给方式二/三的用户看的)。
+</div>
+
+<h3>方式二:装 Python,一条命令启动(会点电脑的)</h3>
+
+<p>如果你愿意装一个软件(Python),用一条命令启动,这种方式更灵活,启动也更快。只需要装 <strong>Python</strong>,<strong>不需要 Node.js</strong>(网页界面已经预先编译好了,由后端自动提供)。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>下载 Python</strong>
+<p>打开浏览器,访问官网下载页:<br>
+<code>https://www.python.org/downloads/</code></p>
+<p>页面会自动推荐 Windows 版本,点黄色按钮 <strong>"Download Python 3.12.x"</strong>(3.12 是目前最稳定的版本)。如果推荐的是 3.13 也可以。<strong>必须 3.10 或更高版本</strong>。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>运行安装包,一定要勾选 "Add Python to PATH"</strong>
+<p>双击下载的安装包,看到第一个界面时,<strong>最下方有一个复选框 "Add python.exe to PATH"</strong>,<strong>必须勾上</strong>!这是新手最容易漏的一步,漏了后面所有命令都跑不了。</p>
+<p>勾上之后,点 <strong>"Install Now"</strong>,等几分钟安装完成。</p>
+</div>
+
+<div class="screenshot-ph">
+[此处应放截图:Python 安装界面,红色圈出 "Add Python to PATH" 复选框]
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>验证安装成功</strong>
+<p>按键盘 <span class="keyboard">Win</span> + <span class="keyboard">R</span>,输入 <code>cmd</code> 回车,打开黑色命令行窗口。在里面输入:</p>
+<pre><code>python --version</code></pre>
+<p>如果显示 <code>Python 3.12.x</code>(数字无所谓,3.10 以上都行),就成功了。如果提示"不是内部或外部命令",说明上一步 PATH 没勾,请卸载重装一次。</p>
+</div>
+
+<div class="tip">
+<strong>选了方式二?</strong> 接下来按 <a href="#ch2">第二章 下载项目并启动系统</a> 操作。不需要装 Node.js。
+</div>
+
+<h3>方式三:从源码运行 + 自己打包 EXE(开发者)</h3>
+
+<p>如果你想看代码、改代码,或者<strong>想自己打包一个 EXE 分发给朋友</strong>,用这种方式。需要同时装 <strong>Python</strong> 和 <strong>Node.js</strong>(Node.js 仅用于修改前端界面后重新编译,日常使用不需要)。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>装 Python</strong>
+<p>按上面"方式二"的第 1-3 步装好 Python 3.10+。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>装 Node.js(LTS 长期支持版)</strong>
+<p>访问官网 <code>https://nodejs.org/zh-cn</code>,下载左边那个 <strong>"LTS"</strong> 版本。双击安装包,全部点"下一步"即可。</p>
+<p>验证:打开命令行输入 <code>node --version</code>,显示 <code>v20.x.x</code> 或更高就成功了。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>按第二章操作,然后看附录"自己打包 EXE"</strong>
+<p>先按 <a href="#ch2">第二章</a> 把项目跑起来。打包 EXE 的方法见第十二章附录 <a href="#appendix-packaging">"自己打包 EXE 分发"</a>。</p>
+</div>
+
+<div class="tip">
+<strong>三个方式都介绍完了。</strong> 方式一最简单,方式二最常用,方式三适合爱折腾的人。选好后翻到下一章。
+</div>
+
+</section>
+
+<!-- ==================== 第二章 ==================== -->
+<section class="chapter" id="ch2">
+<h2>第二章 下载项目并启动系统(方式二/三用户)</h2>
+
+<div class="tip">
+<strong>选了"方式一(下载 EXE)"的朋友请跳过这一章</strong>,直接翻到 <a href="#ch3">第三章 第一次回测</a>。这一章是给用 Python 启动的朋友准备的。
+</div>
+
+<p>easy-tdx 是一个开源项目,代码托管在 GitHub。我们需要把代码下载到本地,装好 Python 依赖,然后<strong>一条命令启动</strong>。</p>
+
+<h3>2.1 下载项目代码</h3>
+
+<div class="step">
+<span class="step-num">1</span><strong>下载 ZIP 压缩包(推荐新手)</strong>
+<p>打开浏览器访问:<br>
+<code>https://github.com/handsomejustin/easy_tdx</code></p>
+<p>点页面右上角绿色的 <strong>"Code"</strong> 按钮,选 <strong>"Download ZIP"</strong>。下载后解压到 D 盘根目录,建议重命名为 <code>easy_tdx</code>,完整路径就是 <code>D:\easy_tdx</code>。</p>
+</div>
+
+<div class="warn">
+<strong>路径千万别用中文!</strong> 不要解压到"我的文档"或"桌面",因为 Windows 用户名如果是中文,后续安装会出各种莫名其妙的错。直接放 <code>D:\easy_tdx</code> 最稳。
+</div>
+
+<h3>2.2 创建虚拟环境并安装依赖(只做一次)</h3>
+
+<div class="step">
+<span class="step-num">1</span><strong>打开命令行,进入项目目录</strong>
+<p>按 <span class="keyboard">Win</span> + <span class="keyboard">R</span>,输入 <code>cmd</code> 回车。然后输入:</p>
+<pre><code><span class="comment"># 进入项目目录(根据你的实际路径调整)</span>
+D:
+cd \easy_tdx</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>创建虚拟环境(强烈推荐)</strong>
+<p>虚拟环境可以把这个项目的依赖和系统里其他 Python 程序隔离开,避免冲突。在项目目录下输入:</p>
+<pre><code><span class="comment"># 创建一个叫 venv 的虚拟环境(只做一次)</span>
+python -m venv venv
+
+<span class="comment"># 激活虚拟环境(每次开新窗口都要做)</span>
+<span class="comment"># Windows cmd 用这句:</span>
+venv\Scripts\activate
+
+<span class="comment"># Windows Git Bash 用这句:</span>
+<span class="comment"># source venv/Scripts/activate</span></code></pre>
+<p>激活成功后,命令行最前面会多出一个 <code>(venv)</code> 标记,说明你已经在虚拟环境里了。</p>
+</div>
+
+<div class="warn">
+<strong>为什么要虚拟环境?</strong> 如果直接用系统 Python 装依赖,以后装别的 Python 软件可能版本冲突报错。虚拟环境就像给这个项目单独开了一个"小房间",干净不干扰。<strong>每次重新开 cmd 窗口,都要先 <code>venv\Scripts\activate</code> 激活</strong>,看到 <code>(venv)</code> 才说明进对了。
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>安装项目本体 + Web 服务依赖</strong>
+<pre><code><span class="comment"># 确认命令行前面有 (venv) 后执行</span>
+<span class="comment"># 一次性安装项目本体和 Web 服务所需的所有 Python 依赖</span>
+<span class="comment"># 包括 FastAPI、Uvicorn、pandas、numpy 等</span>
+pip install -e ".[web]"</code></pre>
+<p>这步会下载很多文件(约 100MB),需要等 3 到 5 分钟。看到最后有 <code>Successfully installed ...</code> 就成功了。</p>
+</div>
+
+<div class="tip">
+<strong>如果下载很慢怎么办?</strong> 可以临时用国内镜像源加速:<br>
+<pre><code>pip install -e ".[web]" -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>验证安装成功</strong>
+<pre><code><span class="comment"># 看到帮助信息就说明安装好了</span>
+easy-tdx --help</code></pre>
+</div>
+
+<h3>2.3 启动系统(每次使用都要做)</h3>
+
+<p>装好之后,<strong>每次用只需要一条命令</strong>。打开命令行,激活虚拟环境,进入项目目录,然后:</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>激活虚拟环境 + 进入项目目录</strong>
+<pre><code><span class="comment"># 每次开新窗口都先做这两步</span>
+D:
+cd \easy_tdx
+venv\Scripts\activate</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>一条命令启动</strong>
+<pre><code>easy-tdx serve</code></pre>
+<p>看到类似下面的输出就成功了:</p>
+<pre><code>INFO:     Uvicorn running on http://0.0.0.0:8000
+INFO:     Application startup complete.</code></pre>
+<p><strong>大约 1-2 秒后,浏览器会自动打开</strong> <code>http://localhost:8000</code>,直接看到回测界面。不用再手动开浏览器,也不用跑第二个命令。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>关闭系统</strong>
+<p>用完后,在跑 <code>easy-tdx serve</code> 的命令行窗口里按 <span class="keyboard">Ctrl</span> + <span class="keyboard">C</span> 就能停止服务。然后关掉窗口即可。</p>
+</div>
+
+<div class="tip">
+<strong>关机后下次怎么用?</strong> 不用重新装,只要:<br>
+1. 开一个 cmd 窗口<br>
+2. <code>D:</code> → <code>cd \easy_tdx</code> → <code>venv\Scripts\activate</code>(激活虚拟环境)<br>
+3. <code>easy-tdx serve</code><br>
+浏览器会自动弹出来。<strong>不用再跑 npm,不用开两个窗口了</strong>。
+</div>
+
+<h3>2.4 常用启动参数(可选)</h3>
+
+<pre><code><span class="comment"># 自定义端口(默认 8000,被占用时换一个)</span>
+easy-tdx serve --port 8080
+
+<span class="comment"># 不自动开浏览器(比如想用别的浏览器手动打开)</span>
+easy-tdx serve --no-open-browser
+
+<span class="comment"># 让局域网其他电脑也能访问(比如手机同 WiFi 访问)</span>
+easy-tdx serve --host 0.0.0.0</code></pre>
+
+</section>
+
+<!-- ==================== 第三章 ==================== -->
+<section class="chapter" id="ch3">
+<h2>第三章 第一次回测:验证策略靠不靠谱</h2>
+
+<p>现在你已经打开了浏览器,进入"单标的回测"页面(就是首页 <code>/</code>)。我们用一只大家熟悉的股票演示:贵州茅台(SH:600519)。</p>
+
+<h3>3.1 界面布局</h3>
+
+<p>整个页面分左右两栏:</p>
+<ul>
+  <li><strong>左栏:配置面板</strong>(填参数的地方)</li>
+  <li><strong>右栏:结果面板</strong>(出图、出指标的地方,一开始是空的)</li>
+</ul>
+
+<h3>3.2 第一次回测:跑个双均线交叉策略</h3>
+
+<p>我们从上到下填配置:</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>行情数据区</strong>
+<ul>
+  <li>市场:选 <strong>沪市</strong>(SH)</li>
+  <li>代码:填 <code>600519</code>(贵州茅台)</li>
+  <li>周期:选 <strong>DAY</strong>(日线,新手只用日线就够)</li>
+  <li>开始日期:<code>2020-01-06</code>(默认值,不动)</li>
+  <li>结束日期:默认就是今天</li>
+</ul>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>策略区</strong>
+<ul>
+  <li>下拉选 <strong>"双均线交叉"(ma_cross)</strong></li>
+  <li>参数会自动出现两个:fast(快线)和 slow(慢线)</li>
+  <li>用默认值 <code>fast=5, slow=20</code> 先跑</li>
+</ul>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>资金与成本区</strong>
+<p>新手默认值不用动:</p>
+<ul>
+  <li>初始资金 1,000,000(100 万模拟)</li>
+  <li>佣金率 0.0003(万三,券商普遍费率)</li>
+  <li>滑点 0(可以先不管)</li>
+  <li>成交价:开盘价(下一根开盘成交)</li>
+</ul>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>点底部蓝色按钮 "开始回测"</strong>
+<p>等几秒,右侧依次出现四块东西:</p>
+<ol>
+  <li><strong>K 线主图</strong>:红色三角形 ▲ 是买入点,绿色钉子 ▼ 是卖出点</li>
+  <li><strong>净值曲线 + 回撤</strong>:上面那条线是你的资金变化,下面填充的是回撤(从最高点跌了多少)</li>
+  <li><strong>评级徽章</strong>:S/A/B/C/D 五档(详见第七章)</li>
+  <li><strong>绩效指标表</strong>:19 项指标(详见第八章)</li>
+  <li><strong>成交记录表</strong>:每一笔买卖的明细</li>
+</ol>
+</div>
+
+<h3>3.3 怎么读这个结果</h3>
+
+<p>先别急着看那一堆数字,先看图。</p>
+
+<h4>看 K 线主图</h4>
+<p>红三角密集的地方,说明策略在那里频繁买入。理想情况下,红三角(买入)应该出现在股价低点附近,绿钉(卖出)出现在高点附近。如果买卖点和股价走势明显相反,说明这个策略在这个股票上不灵。</p>
+
+<h4>看净值曲线</h4>
+<p>如果净值曲线一路向右上方走,说明赚钱了。如果一路向下,或者大幅震荡,说明策略不行。同时观察<strong>下方的回撤填充</strong>:回撤越大,说明中途亏得越狠,套牢风险越大。</p>
+
+<div class="danger">
+<strong>新手最大的误区</strong>:只看"总收益率"是不是高。总收益 200% 的策略如果最大回撤 60%,意味着中途你的钱从 100 万跌到 40 万,普通人根本扛不住会割肉离场。<strong>评级徽章</strong>就是为了帮你一眼识别这种情况。
+</div>
+
+</section>
+
+<!-- ==================== 第四章 ==================== -->
+<section class="chapter" id="ch4">
+<h2>第四章 参数寻优:让电脑帮你找最佳参数</h2>
+
+<p>双均线策略的 fast 和 slow 用 5 和 20 不一定最好。让电脑把所有组合都试一遍,找出最赚钱的那一组,这就是"参数寻优"。</p>
+
+<h3>4.1 进入寻优页面</h3>
+
+<p>点顶部导航的 <strong>"参数寻优"</strong> 标签。</p>
+
+<h3>4.2 配置寻优</h3>
+
+<div class="step">
+<span class="step-num">1</span><strong>行情数据</strong>:跟单标的回测一样,填贵州茅台 SH:600519,日线,2020-01-06 至今。</li>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>选策略</strong>:下拉选 "双均线交叉"(ma_cross)。</li>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>勾选要寻优的参数</strong>
+<p>在"寻优参数"区,你会看到 fast 和 slow 两个参数。每个参数右边有个复选框。</p>
+<ul>
+  <li>勾选 <strong>fast</strong>,取值填:<code>5, 10, 15, 20, 25</code>(逗号分隔)</li>
+  <li>勾选 <strong>slow</strong>,取值填:<code>20, 30, 40, 50, 60</code></li>
+</ul>
+<p>下方会实时显示"网格点数 = 25"(5 × 5 = 25 种组合)。网格点数上限是 200,超过会被拒绝。</p>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>点 "开始寻优"</strong>
+<p>等几秒到几十秒(取决于网格点数),右侧出结果。</p>
+</div>
+
+<h3>4.3 看寻优结果</h3>
+
+<p>结果区有三块:</p>
+
+<h4>最优结果摘要</h4>
+<p>顶部显示评级徽章、最佳参数组合、总收益率、夏普、最大回撤。比如可能显示:</p>
+<pre><code>评级 [B] | {"fast": 10, "slow": 30} | 总收益 156% | 夏普 1.2 | 回撤 32%</code></pre>
+
+<h4>参数热力图(只有 2 参数时才有)</h4>
+<p>一个颜色方格图,横轴是 fast,纵轴是 slow,颜色越红表示这个组合收益率越高。一眼能看出哪个区域好。</p>
+
+<h4>网格点排名表</h4>
+<p>所有 25 种组合按总收益降序排列,每行有评级徽章 + 各项指标。点最右边的"查看"按钮,会跳回单标的回测页,自动用这个参数组合跑一遍完整回测,看 K 线和净值曲线。</p>
+
+<h3>4.4 一键寻优所有策略(超实用)</h3>
+
+<p>页面上还有一个橙色按钮 <strong>"一键寻优所有策略"</strong>。点它,系统会用每个策略自带的预设参数网格,把所有 18 个内置策略都跑一遍寻优,然后给你一个全局排名。</p>
+
+<p>这对<strong>不知道用哪个策略的新手</strong>特别有用:让电脑告诉你,这个股票上哪个策略历史表现最好。</p>
+
+<h4>等待不枯燥:投资大师名言轮播</h4>
+
+<p>一键寻优所有策略通常要跑 30 秒到几分钟(策略多、网格密就慢)。这段时间按钮文字会变成"一键寻优所有策略中…",<strong>右侧页面会出现一张名言卡片</strong>,每 3 秒随机轮播一条全球投资大师的话:</p>
+
+<ul>
+  <li>巴菲特:"价格是你付出的,价值是你得到的。"</li>
+  <li>格雷厄姆:"市场短期是一台投票机,长期是一台称重机。"</li>
+  <li>利弗莫尔:"赚大钱的诀窍不在于买进卖出,而在于等待。"</li>
+  <li>塔勒布:"风险意味着可能发生的事情比将要发生的事情多得多。"</li>
+  <li>共 100 条,覆盖价值投资、宏观对冲、技术趋势、行为金融等流派</li>
+</ul>
+
+<p>卡片顶部有一条橙色进度条循环填充,暗示"还在跑";底部有橙色脉动小点 + "后台寻优进行中,大师智慧伴你等待…"。等结果跑完,卡片自动消失,排名表正常显示。</p>
+
+<div class="tip">
+<strong>这不是花架子。</strong> 等待 1 分钟最容易让人以为系统卡住、烦躁关掉。轮播名言既给"系统还在工作"的视觉反馈,又能让你趁等待学点投资大师的智慧。沉住气,慢慢变富。
+</div>
+
+</section>
+
+<!-- ==================== 第五章 ==================== -->
+<section class="chapter" id="ch5">
+<h2>第五章 怎么确认寻优结果是不是真的好</h2>
+
+<div class="warn">
+<strong>这是整本手册最重要的一章。</strong> 寻优出来的"最佳参数",很可能是<strong>过拟合</strong>:在历史数据上完美,实盘却亏成狗。新手最容易在这里栽跟头,以为找到了印钞机。
+</div>
+
+<h3>5.1 千万别只看"总收益最高"那一个</h3>
+
+<p>寻优排名表按总收益降序排,第一名往往收益最高但回撤也最大、交易最频繁。这种策略通常是"碰巧"赶上了某段大行情,换个时段可能就崩了。</p>
+
+<p><strong>正确的做法:看评级徽章,挑 B 档或更高的,而不是挑收益最高的。</strong></p>
+
+<h3>5.2 评级徽章是最好的过滤器</h3>
+
+<p>寻优排名表每行都有一个评级徽章(S/A/B/C/D)。这个评级综合了六个维度,帮你过滤掉那些"虚胖"的高收益策略。具体含义见第七章。</p>
+
+<p>原则:</p>
+<ul>
+  <li><span class="grade-badge grade-S">S</span> 或 <span class="grade-badge grade-A">A</span>:可以重点考虑</li>
+  <li><span class="grade-badge grade-B">B</span>:可以,但要警惕</li>
+  <li><span class="grade-badge grade-C">C</span>:不建议普通人参与</li>
+  <li><span class="grade-badge grade-D">D</span>:别碰</li>
+</ul>
+
+<h3>5.3 怎么验证某个参数组合真的靠谱</h3>
+
+<p>假设你看中了 <code>fast=10, slow=30</code> 这个组合(B 档)。验证步骤:</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>点"查看"跳到单标的回测页</strong>
+<p>系统会用这个参数组合自动跑一遍完整回测,你能看到 K 线、净值曲线、成交明细。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>看净值曲线是不是"稳步上行"</strong>
+<p>好的策略净值曲线应该<strong>稳步向上,回撤浅,恢复快</strong>。如果净值像过山车一样大起大落,说明不稳定。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>看最大回撤能不能接受</strong>
+<p>普通人能承受的最大回撤通常在 20% 到 30% 以内。如果你看到最大回撤 45%,意味着最坏的时候你的 100 万会跌到 55 万,你确定自己能扛住不割肉吗?</p>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>看交易次数和胜率</strong>
+<ul>
+  <li>交易次数太少(< 10 次):说明样本不够,胜率不可信(系统会标"⚠ 交易样本有限")</li>
+  <li>胜率低于 35%:意味着 3 笔里亏 2 笔,心态容易崩</li>
+</ul>
+</div>
+
+<h3>5.4 终极验证:换个时间段再跑一遍</h3>
+
+<p>这是最关键的一步,但需要手动操作:</p>
+
+<ol>
+  <li>当前是 2020 年至今的全周期回测</li>
+  <li>把开始日期改成 <code>2023-01-01</code>(只测最近两年),看收益和回撤是否稳定</li>
+  <li>再改成 <code>2020-01-06 至 2022-12-31</code>(只测前三年),对比一下</li>
+</ol>
+
+<p>如果<strong>三个时段表现都不错</strong>,这个策略相对靠谱。如果只在某个时段特别猛,其他时段拉胯,那就是过拟合,实盘会原形毕露。</p>
+
+<div class="tip">
+<strong>新手记住一句话</strong>:宁可要一个"稳稳赚 50%"的策略,也不要一个"有时赚 300% 有时亏 70%"的策略。前者你能拿住,后者你一定会割在最坏的时候。
+</div>
+
+</section>
+
+<!-- ==================== 第六章 ==================== -->
+<section class="chapter" id="ch6">
+<h2>第六章 保存策略 + 策略库:把好策略存下来</h2>
+
+<p>好不容易找到一个好策略,关机就丢了多可惜。easy-tdx 提供了"策略库"功能,把策略永久存在本地数据库里。</p>
+
+<h3>6.1 保存策略</h3>
+
+<div class="step">
+<span class="step-num">1</span><strong>在单标的回测或组合回测的结果区</strong>
+<p>右上角有一个 <strong>"💾 保存策略"</strong> 按钮,点它。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>填写弹窗</strong>
+<ul>
+  <li><strong>名称</strong>:给策略起个好记的名字,比如"茅台双均线 10/30"</li>
+  <li><strong>标签</strong>(可选):逗号分隔,比如"白酒,长线"</li>
+  <li><strong>备注</strong>(可选):写为什么觉得它好,比如"近 5 年夏普 1.2,回撤 25%,心态稳"</li>
+</ul>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>点"保存"</strong>
+<p>看到"✓ 已保存到策略库"就成功了。数据存在 <code>C:\Users\你的用户名\.easy_tdx\strategies.db</code>(SQLite 文件,重启电脑不丢)。</p>
+</div>
+
+<h3>6.2 策略库页面</h3>
+
+<p>点顶部导航的 <strong>"策略库"</strong> 标签。</p>
+
+<p>页面顶部有<strong>两个 Tab</strong>,把策略分成两类:</p>
+
+<ul>
+  <li><strong>「单标的」Tab</strong>:你在单标的回测页保存的策略(一只股票 + 一个策略 + 一组参数)。每张卡片左上角有复选框,可勾选多个做组合回测。</li>
+  <li><strong>「组合」Tab</strong>:你在策略库勾选多个策略跑完组合回测后,点"保存为组合"存下来的整体配置(详见<a href="#ch10b">第十章补充</a>)。组合卡片右上角是橙色"🗂"图标,按钮是橙色的"↻ 重跑到今天",不是普通的"载入"。</li>
+</ul>
+
+<div class="tip">
+<strong>为什么要分 Tab?</strong> 策略存多了之后混在一起难找。单标的策略用于组合回测(勾选 N 个一起跑),组合策略用于一键看今日信号(直接重跑)。两类操作完全不同,分开放更清晰。切换 Tab 会清空勾选,避免跨 Tab 看不见的残留。
+</div>
+
+<p>每个 Tab 里,你会看到对应类型的卡片,每张卡片显示:</p>
+<ul>
+  <li>策略名 / 标的 / 标签 / 备注</li>
+  <li>保存时的成绩快照(总收益 / 夏普 / 回撤)</li>
+  <li>创建时间</li>
+</ul>
+
+<h4>每张卡片能做的事</h4>
+
+<ul>
+  <li><strong>载入</strong>(单标的):点一下,自动跳到回测页,回填标的、日期、参数,直接点"开始回测"就能用最新行情重跑</li>
+  <li><strong>↻ 重跑到今天</strong>(组合):一键用今天作为结束日重跑整个组合,得到截至今天的策略信号,详见<a href="#ch10b">第十章补充</a></li>
+  <li><strong>删除</strong>:二次确认后删除(慎用)</li>
+  <li><strong>左上角复选框</strong>(仅单标的):勾选多个,做组合回测(见第十章)</li>
+</ul>
+
+<h3>6.3 多策略组合回测(策略库的杀手锏)</h3>
+
+<p>这是策略库最强大的功能。详见第十章。跑完之后还能<a href="#ch10b">把整个组合保存下来</a>,下次一键看今日信号。</p>
+
+</section>
+
+<!-- ==================== 第七章 ==================== -->
+<section class="chapter" id="ch7">
+<h2>第七章 看懂评级徽章:S/A/B/C/D 五档</h2>
+
+<p>这是 v1.17.14 新增的功能,目的就是让普通人<strong>一眼判断</strong>"这个策略/品种适不适合经常参与"。</p>
+
+<h3>7.1 五档的含义</h3>
+
+<table>
+<tr><th>档位</th><th>颜色</th><th>含义</th><th>适合普通人?</th></tr>
+<tr><td><span class="grade-badge grade-S">S</span></td><td>金色</td><td>长期持有体验优秀,回撤浅、胜率稳</td><td>✅ 推荐经常参与</td></tr>
+<tr><td><span class="grade-badge grade-A">A</span></td><td>绿色</td><td>风险可控,套牢后能较快回本</td><td>✅ 适合</td></tr>
+<tr><td><span class="grade-badge grade-B">B</span></td><td>蓝色</td><td>可参与但需择时,套牢回本有压力</td><td>⚠️ 谨慎参与</td></tr>
+<tr><td><span class="grade-badge grade-C">C</span></td><td>橙色</td><td>风险偏高,长期套牢风险大</td><td>⚠️ 不建议经常参与</td></tr>
+<tr><td><span class="grade-badge grade-D">D</span></td><td>红色</td><td>持有体验差,或系统亏损</td><td>❌ 别碰</td></tr>
+</table>
+
+<div class="tip">
+<strong>颜色遵循 A 股惯例</strong>:绿色代表好(涨),红色代表危险(跌),金色代表顶级。这和西方惯例相反,但符合中国股民直觉。
+</div>
+
+<h3>7.2 一个真实案例:为什么收益 126% 却是 D 档</h3>
+
+<p>有一只股票(京东方)用某策略回测,总收益率 126%,看起来很美。但仔细看:</p>
+
+<ul>
+  <li>胜率只有 <strong>35.56%</strong>(3 笔交易里亏 2 笔)</li>
+  <li>最大回撤 <strong>41.65%</strong>(100 万最低跌到 58 万)</li>
+  <li>卡玛比率 0.336(回本难度高)</li>
+</ul>
+
+<p>系统给它评了 <span class="grade-badge grade-D">D</span> 档。</p>
+
+<p>为什么?因为普通人根本拿不住这种策略。它的高收益是靠少数几次大涨撑起来的,大部分时间在亏钱。等你熬不住割肉了,后面的大涨就和你无关了。这就是评级系统的价值:<strong>不被高收益迷惑,看穿持有体验的真相</strong>。</p>
+
+<h3>7.3 评级看什么(不看收益率!)</h3>
+
+<p>评级<strong>故意不看总收益率</strong>,只看风险调整后的持有体验:</p>
+
+<table>
+<tr><th>维度</th><th>权重</th><th>通俗解释</th></tr>
+<tr><td>卡玛比率</td><td>18%</td><td>套牢后回本的难度,越高越容易回本</td></tr>
+<tr><td>利润因子</td><td>18%</td><td>赚的钱总和 vs 亏的钱总和的比值,大于 1 才不亏</td></tr>
+<tr><td>最大回撤</td><td>17%</td><td>从最高点跌多少,跌越深套越牢</td></tr>
+<tr><td>胜率</td><td>17%</td><td>100 笔交易里赢几笔,普通人拿不住低胜率</td></tr>
+<tr><td>夏普比率</td><td>15%</td><td>每承担 1 分风险换多少收益,通用指标</td></tr>
+<tr><td>波动率</td><td>15%</td><td>价格上下抖动的程度,抖得越狠心越慌</td></tr>
+</table>
+
+<h3>7.4 一票否决规则</h3>
+
+<p>有些情况直接判低档,不管其他指标多好:</p>
+
+<table>
+<tr><th>触发条件</th><th>结果</th><th>原因</th></tr>
+<tr><td>利润因子 &lt; 1</td><td>直接 D</td><td>系统实际在亏钱</td></tr>
+<tr><td>最大回撤 &gt; 60%</td><td>直接 D</td><td>深度套牢几乎无法回本</td></tr>
+<tr><td>最大回撤 &gt; 50%</td><td>最高 B</td><td>套牢很难回本</td></tr>
+<tr><td>胜率 &lt; 30% 且交易够多</td><td>最高 C</td><td>普通人拿不住</td></tr>
+<tr><td>利润因子 &lt; 1.2</td><td>最高 B</td><td>系统勉强盈亏平衡</td></tr>
+</table>
+
+<h3>7.5 关于"⚠ 交易样本有限"</h3>
+
+<p>如果你看到评级徽章旁边有个橙色标签 <strong>"⚠ 交易样本有限"</strong>,意思是这只股票/策略在回测期间交易笔数少于 10 笔。</p>
+
+<p>系统不会因此否定整个评级(长线策略本来就交易少,但净值曲线很健康)。它的处理方式是:<strong>把胜率和利润因子的权重降到 0</strong>,只看基于净值曲线的指标(夏普/卡玛/回撤/波动率)。这种处理对长线策略是公平的。</p>
+
+<p>你看到这个标签时,知道"胜率这个数字不太靠谱,但其他指标可信"就行。</p>
+
+</section>
+
+<!-- ==================== 第八章 ==================== -->
+<section class="chapter" id="ch8">
+<h2>第八章 看懂 19 项绩效指标</h2>
+
+<p>回测结果区的绩效表分三组:<strong>收益、风险、交易</strong>。下面用大白话逐个解释。</p>
+
+<h3>8.1 收益类指标</h3>
+
+<div class="metric-card">
+<span class="name">总收益率</span>
+<p>从开始到结束,你的钱涨了多少。1.2643 表示涨了 126.43%。这是最容易看懂但最容易被骗的指标。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">年化收益</span>
+<p>把总收益换算成"平均每年赚多少"。比如 6 年赚 100%,年化大约 12.2%。年化比总收益更公平,因为时间长短不同没法直接比。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">夏普比率 <span class="formula">Sharpe</span></span>
+<p>每承担 1 分风险(波动)能换多少收益。一般认为:</p>
+<ul>
+  <li>&lt; 0.5:不太行</li>
+  <li>0.5 到 1:可以</li>
+  <li>1 到 2:不错</li>
+  <li>&gt; 2:优秀</li>
+</ul>
+</div>
+
+<div class="metric-card">
+<span class="name">索提诺比率 <span class="formula">Sortino</span></span>
+<p>夏普的升级版,只看"下跌的波动"(因为上涨的波动是好事)。同样越高越好,通常比夏普数值大一些。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">卡玛比率 <span class="formula">Calmar = 年化 / 最大回撤</span></span>
+<p>这是<strong>套牢回本难度</strong>的最佳代理。卡玛越高,说明回撤越浅、收益越高,套牢后越容易回本。卡玛 &gt; 1 算不错,&gt; 2 算优秀。</p>
+</div>
+
+<h3>8.2 风险类指标</h3>
+
+<div class="metric-card">
+<span class="name">最大回撤 <span class="formula">Max Drawdown</span></span>
+<p><strong>最重要的风险指标。</strong> 从历史最高点跌到最低点的百分比。比如最大回撤 41%,意味着你曾经从 100 万跌到 59 万。</p>
+<p>普通人能承受的极限:</p>
+<ul>
+  <li>&lt; 15%:很稳</li>
+  <li>15% 到 25%:可接受</li>
+  <li>25% 到 35%:有压力</li>
+  <li>&gt; 35%:很难拿住</li>
+  <li>&gt; 50%:基本会割肉</li>
+</ul>
+</div>
+
+<div class="metric-card">
+<span class="name">回撤持续 <span class="formula">Max DD Duration</span></span>
+<p>从峰值跌到最深点经历了多少个交易日(bar)。数字越大,套牢时间越长。注意:这是"跌到最深"的时间,不是"跌下去再涨回来"的总时间。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">波动率 <span class="formula">Volatility</span></span>
+<p>价格上下波动的剧烈程度,年化后的标准差。&lt; 15% 算平稳,&gt; 30% 算剧烈。</p>
+</div>
+
+<h3>8.3 交易类指标</h3>
+
+<div class="metric-card">
+<span class="name">总交易数</span>
+<p>整个回测期间买卖了多少次。少于 10 次说明样本不足(胜率不可信),多于 100 次说明交易太频繁(手续费会吃掉利润)。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">盈利次数 / 亏损次数</span>
+<p>赚的笔数和亏的笔数。两者加起来等于总交易数。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">胜率 <span class="formula">Win Rate</span></span>
+<p>盈利次数 ÷ 总交易数。35% 意味着 100 笔里只赢了 35 笔。普通人 &lt; 35% 会很难受。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">盈亏比 / 利润因子 <span class="formula">Profit Factor</span></span>
+<p>总盈利金额 ÷ 总亏损金额(取绝对值)。&lt; 1 表示亏 &gt; 赚(系统亏损),1 到 1.5 算勉强,1.5 到 2 算健康,&gt; 2 算优秀。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">平均盈利 / 平均亏损</span>
+<p>每笔赚钱交易平均赚多少,每笔亏钱交易平均亏多少。如果平均盈利 4%、平均亏损 2%,即使胜率只有 35%,整体也可能赚钱(因为赚的笔大,亏的笔小)。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">最大盈利 / 最大亏损</span>
+<p>最赚的一笔和最亏的一笔。如果最大亏损 &gt; 10%,要警惕单笔爆雷风险。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">平均持仓天数</span>
+<p>每笔交易平均持有多久。&lt; 5 天算短线,&gt; 30 天算长线。这反映了策略的交易风格。</p>
+</div>
+
+<div class="metric-card">
+<span class="name">拒单数</span>
+<p>系统想下单但被拒绝的次数(通常是资金不足或持仓冲突)。正常应该是 0。</p>
+</div>
+
+<h3>8.4 新手只需要重点看这 5 个</h3>
+
+<p>19 个指标太多记不住?新手抓住这 5 个就够了:</p>
+
+<ol>
+  <li><strong>评级徽章</strong>(S/A/B/C/D):一眼过滤</li>
+  <li><strong>最大回撤</strong>:能不能扛住</li>
+  <li><strong>夏普比率</strong>:质量高不高</li>
+  <li><strong>胜率</strong>:拿不拿得住</li>
+  <li><strong>利润因子</strong>:系统到底赚不赚</li>
+</ol>
+
+</section>
+
+<!-- ==================== 第九章 ==================== -->
+<section class="chapter" id="ch9">
+<h2>第九章 看懂交易记录:怎么跟买跟卖</h2>
+
+<p>回测结果最下方是"成交记录"表,每一笔买卖都列出来了。这是你"跟单"的依据。</p>
+
+<h3>9.1 表格字段含义</h3>
+
+<table>
+<tr><th>列</th><th>含义</th></tr>
+<tr><td>datetime(时间)</td><td>这笔交易发生在哪一天</td></tr>
+<tr><td>direction(方向)</td><td>BUY = 买入,SELL = 卖出</td></tr>
+<tr><td>size(数量)</td><td>买/卖了多少股</td></tr>
+<tr><td>price(价格)</td><td>成交价(开盘价或收盘价,取决于你的设置)</td></tr>
+<tr><td>commission(佣金)</td><td>给券商的手续费</td></tr>
+<tr><td>slippage(滑点)</td><td>成交价和理想价的偏差</td></tr>
+<tr><td>pnl(盈亏)</td><td>这笔卖出对应的盈亏金额(只有卖出时有)</td></tr>
+<tr><td>rejected(拒单)</td><td>false = 正常成交,true = 被拒绝</td></tr>
+</table>
+
+<h3>9.2 怎么用这个表"跟买"</h3>
+
+<div class="warn">
+<strong>重要声明:回测不是实盘信号!</strong> 回测结果是"如果过去这样操作会怎样",不等于"未来这样操作一定赚钱"。市场在变,策略会失效。下面只讲方法,不构成投资建议。
+</div>
+
+<h4>方法 A:看最后一笔交易方向</h4>
+
+<ol>
+  <li>翻到表格最后一行</li>
+  <li>如果最后一笔是 <strong>BUY</strong>,说明策略当前持有这只股票,你"跟"的话就是同样持有</li>
+  <li>如果最后一笔是 <strong>SELL</strong>,说明策略当前空仓,你"跟"的话就是观望</li>
+</ol>
+
+<h4>方法 B:重跑回测看最新信号</h4>
+
+<p>因为回测结束日期默认是"今天",最后一笔交易就是最近的信号。每天收盘后重新跑一次回测(日期范围保持到今天),观察最后一笔是否有变化(从 SELL 变 BUY 就是新买入信号)。</p>
+
+<h3>9.3 一个完整的跟单思路</h3>
+
+<div class="step">
+<span class="step-num">1</span><strong>选定一只股票和一个策略</strong>(比如贵州茅台 + 双均线 10/30)</li>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>每天收盘后(15:00 之后)重跑回测</strong>
+<p>开始日期不变,结束日期保持今天。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>看成交记录表的最后一行</strong>
+<ul>
+  <li>如果今天新出现一笔 BUY,且你目前空仓 → 考虑明天开盘买入</li>
+  <li>如果今天新出现一笔 SELL,且你目前持仓 → 考虑明天开盘卖出</li>
+  <li>如果没有新交易 → 继续持有/观望</li>
+</ul>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>务必设置止损</strong>
+<p>即使策略说持有,也要给自己设一个止损线(比如亏 10% 就走),防止策略失效时深套。</p>
+</div>
+
+<div class="danger">
+<strong>跟单的风险提醒(必读)</strong>:
+<ul>
+  <li>回测用的成交价是"下一根开盘价",实盘你可能买不到那个价</li>
+  <li>滑点和佣金实盘会比回测高</li>
+  <li>策略会在某段时间持续亏损,你必须严格执行,不能凭感觉改</li>
+  <li>过去赚钱的策略未来可能失效,要持续观察,失效就停用</li>
+</ul>
+</div>
+
+</section>
+
+<!-- ==================== 第十章 ==================== -->
+<section class="chapter" id="ch10">
+<h2>第十章 多股票组合分仓:不把鸡蛋放一个篮子</h2>
+
+<p>单只股票风险太大,用多只股票组合可以分散风险。easy-tdx 提供两种组合方式。</p>
+
+<h3>10.1 方式一:组合回测页面(同一策略跑多只股票)</h3>
+
+<p>点导航的 <strong>"组合回测"</strong> 标签。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>添加多只标的</strong>
+<p>在"标的列表"区,默认有 SZ:000001(平安银行)和 SH:600519(贵州茅台)。你可以增减,比如加:</p>
+<pre><code>SZ:000001  平安银行
+SH:600519  贵州茅台
+SH:600036  招商银行
+SZ:000858  五粮液</code></pre>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>选同一个策略</strong>
+<p>下拉选"双均线交叉",参数用你寻优出来的最佳组合。所有股票用同一个策略。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>设置周期和日期</strong>
+<p>日线,2020-01-06 至今。</p>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>点"开始组合回测"</strong>
+<p>系统把总资金平均分给每只股票(100 万 ÷ 4 = 每只 25 万),各自独立跑策略,然后净值曲线按日期对齐加总。</p>
+</div>
+
+<h4>结果区会出什么</h4>
+<ul>
+  <li><strong>组合评级</strong>:整体评级徽章</li>
+  <li><strong>组合整体绩效</strong>:总收益、标的数量、总资金</li>
+  <li><strong>组合净值曲线</strong>:四只股票加总后的资金变化</li>
+  <li><strong>各标的绩效对比表</strong>:哪只赚得多、哪只拖后腿</li>
+  <li><strong>净值叠加图</strong>:四条线归一化对比,看谁走势最强</li>
+</ul>
+
+<h3>10.2 方式二:策略库多策略组合(不同策略跑各自股票)</h3>
+
+<p>这是更强大的玩法:你在策略库里存了多个策略(比如茅台用双均线、招行用 MACD、五粮液用布林带),把它们组合起来。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>先在策略库保存多个单标的策略</strong>
+<p>每个策略在单标的回测页跑完后,点"保存策略"存进策略库。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>进入策略库页面</strong>
+<p>每张卡片左上角有个复选框,勾选你想组合的多个策略(比如勾 3 个)。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>点顶部"组合回测(N)"按钮</strong>
+<p>N 是你勾选的数量。系统会:每个策略各拿 1/N 资金、各跑在它保存时的原标的(用最新行情)、净值曲线按日期对齐求和。</p>
+</div>
+
+<div class="step">
+<span class="step-num">4</span><strong>看结果</strong>
+<p>结果和组合回测页一样:组合净值曲线、19 项绩效指标、各策略对比表、<strong>各策略当前持仓表</strong>(这个特别有用:看回测结束时每个策略还持有多少钱,有没有套牢)。</p>
+</div>
+
+<h3>10.3 组合为什么能降低风险</h3>
+
+<p>举个简单例子:单只股票最大回撤可能是 40%,但 4 只不相关的股票组合在一起,最大回撤可能降到 25% 左右。因为它们不会同时跌到最低点,有的跌时有的涨,相互抵消。</p>
+
+<p>但要注意:<strong>组合降低的是"非系统性风险"(单只股票暴雷),不能降低"系统性风险"(整个大盘崩盘)</strong>。2008 年、2015 年股灾时,所有股票一起跌,组合也救不了。</p>
+
+<h3>10.4 组合的注意事项</h3>
+
+<ul>
+  <li><strong>选相关性低的股票</strong>:别全选银行股(都跟着大盘走),银行 + 消费 + 科技分散更好</li>
+  <li><strong>每个策略都要单独靠谱</strong>:不要把一个 D 档策略塞进组合拖累大家</li>
+  <li><strong>资金均分不一定最优</strong>:风险低的可以多分点,但新手均分最简单</li>
+</ul>
+
+</section>
+
+<!-- ==================== 第十章补充 ==================== -->
+<section class="chapter" id="ch10b">
+<h2>第十章补充:保存策略组合 + 一键看今日信号</h2>
+
+<p>这是 v1.18.0 新加的能力。读完第十章你已经会<strong>勾选 N 个策略跑组合回测</strong>了,但跑完关机就丢,下次要重新勾选重新跑。更麻烦的是,你真正想知道的是<strong>"今天我该买哪个、该卖哪个"</strong>,而不是"过去 6 年平均表现如何"。</p>
+
+<p>本次更新把这两件事一次解决:把组合存下来,以后一键用今天重跑,直接得到"截至今天的持仓信号"。</p>
+
+<h3>10b.1 保存策略组合</h3>
+
+<p>前提:你已经在策略库的「单标的」Tab 勾选了多个策略(比如 4 个),点了"组合回测",结果区已经出来。</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>找"💾 保存为组合"按钮</strong>
+<p>结果区标题"组合回测结果"右边,有一个橙色的 <strong>"💾 保存为组合"</strong> 按钮(不是结果区下方的"保存策略",那是单标的用的)。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>填写弹窗</strong>
+<ul>
+  <li><strong>组合名称</strong>:起个好记的名字,比如"科技+消费+银行 防守反击组合"。系统会预填一个默认名(组合·4策略·2026-07-05),你可以直接改。</li>
+  <li><strong>备注</strong>(可选):写为什么觉得这个组合好,比如"牛市跑得好,震荡市待验证"。</li>
+</ul>
+<p>弹窗里会写明:存的是各策略的 strategy+params+标的+资金配比,以及组合级绩效快照。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>点"保存"</strong>
+<p>保存成功后,策略库页面切到「组合」Tab,会看到一张橙色边框的<strong>组合卡片</strong>,右上角带 🗂 图标,显示"4 策略 · 总收益 417%"。</p>
+</div>
+
+<div class="tip">
+<strong>存了什么?</strong> 组合卡片存的是<strong>配置</strong>(哪几个策略、各自什么参数、各自跑什么标的),不是结果数据。结果每次重跑都会重新算。所以下次哪怕行情变了,重跑得到的也是最新信号。
+</div>
+
+<h3>10b.2 载入组合 + 一键重跑到今天(核心功能)</h3>
+
+<p>这是本次更新最重要的功能。点组合卡片的 <strong>"↻ 重跑到今天"</strong> 橙色按钮:</p>
+
+<div class="step">
+<span class="step-num">1</span><strong>确认弹窗</strong>
+<p>系统会弹一个确认框,告诉你"将自动用今天作为结束日重跑 N 个策略",并提示策略信号是模型仓位,不是投资建议。点"确认"开始。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>自动重跑</strong>
+<p>系统把组合里所有策略的结束日期<strong>全部覆盖为今天</strong>,然后用最新行情重新跑一遍组合回测。这一步可能要等 10 到 60 秒(取决于策略数和标的数),按钮文字会变成"重跑中…"。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>看"当前持仓"表</strong>
+<p>跑完后页面自动滚动到结果区。重点看最下面的 <strong>"当前持仓"表</strong>,它显示的就是<strong>截至今天的策略信号</strong>(哪些该持有、哪些该空仓)。</p>
+</div>
+
+<h3>10b.3 看懂"当前持仓"三态</h3>
+
+<p>当前持仓表的状态列,从原来的两态(持仓/空仓)升级成了三态,让你一眼分辨"该继续拿"还是"该警惕":</p>
+
+<table>
+<tr><th>状态徽章</th><th>颜色</th><th>含义</th><th>你怎么应对</th></tr>
+<tr>
+  <td><strong>🟢 持有</strong></td>
+  <td>绿底</td>
+  <td>策略说继续持有,且当前是浮盈</td>
+  <td>继续拿着,但别得意,设好止盈线</td>
+</tr>
+<tr>
+  <td><strong>🟠 持有·浮亏</strong></td>
+  <td>橙底</td>
+  <td>策略说继续持有,但当前浮亏</td>
+  <td>警惕!盯紧止损线,跌破就坚决走</td>
+</tr>
+<tr>
+  <td><strong>⚪ 空仓·等买点</strong></td>
+  <td>灰底,行半透明</td>
+  <td>策略说现在不该持有</td>
+  <td>观望,等下次出现"持有"信号再考虑</td>
+</tr>
+</table>
+
+<p>表里其他列也要看:</p>
+<ul>
+  <li><strong>持仓数量 / 成本价 / 市值</strong>:模型说该持仓多少股、成本是多少、现在值多少钱</li>
+  <li><strong>未实现盈亏 / 收益率</strong>:浮动赚了多少 / 亏了多少(红色是赚,绿色是亏,A 股惯例)</li>
+</ul>
+
+<h3>10b.4 三处必须看懂的警示</h3>
+
+<p>本次更新特意加了三处警示,因为"模型仓位"和"真实账户"是两回事,新手很容易混淆:</p>
+
+<div class="warn">
+<strong>① 过拟合警示条</strong>(结果区顶部)<br>
+"组合的历史回测表现优秀,不代表未来一定有效。收益可能来自特定时段的市场环境(如某段主升浪),切换到震荡/熊市可能失效。"
+</div>
+
+<div class="warn">
+<strong>② 模型仓位水印</strong>(持仓表上方)<br>
+"表中是<strong>模型仓位</strong>(策略说'该持仓'),<strong>不是你真实账户的持仓</strong>。基于回测结束日收盘价计算,过夜后可能因新 K 线触发买卖而变化。"
+</div>
+
+<div class="warn">
+<strong>③ 载入确认弹窗</strong><br>
+点击"↻ 重跑到今天"时,系统明确告知"策略信号是模型仓位,不是投资建议,也不是你真实账户的持仓"。
+</div>
+
+<h3>10b.5 一个完整的日常使用流程</h3>
+
+<p>假设你保存了一个"4 策略组合",想每天看信号:</p>
+
+<ol>
+  <li><strong>每天收盘后(15:00 之后)</strong>打开 easy-tdx 系统</li>
+  <li>进入<strong>策略库 →「组合」Tab</strong></li>
+  <li>点你那个组合的 <strong>"↻ 重跑到今天"</strong></li>
+  <li>等 10 到 60 秒重跑完成</li>
+  <li>看"当前持仓"表的三态徽章:
+    <ul>
+      <li>🟢 持有 → 继续拿</li>
+      <li>🟠 持有·浮亏 → 警惕,盯止损</li>
+      <li>⚪ 空仓 → 观望</li>
+    </ul>
+  </li>
+  <li>对比昨天和今天的徽章变化:
+    <ul>
+      <li>从 🟢 变 ⚪ = 卖出信号(策略今天清仓了)</li>
+      <li>从 ⚪ 变 🟢 = 买入信号(策略今天开仓了)</li>
+      <li>没变化 = 继续持有/观望</li>
+    </ul>
+  </li>
+</ol>
+
+<div class="danger">
+<strong>关键认知:信号会漂移。</strong>
+今天重跑说"🟢 持有",明天大跌触发止损可能就变成"⚪ 空仓"。所以<strong>必须每天重跑</strong>看最新信号,不能拿昨天的信号当今天的操作依据。系统水印会标"基于 X 月 X 日收盘价的策略信号",过夜就过期。
+</div>
+
+<h3>10b.6 组合的局限(老实告诉你)</h3>
+
+<ul>
+  <li><strong>模型仓位 ≠ 真实账户</strong>:系统不知道你实际买了多少股、成本多少。它只告诉你"策略说该持有 6100 股",但你可能根本没买。真实账户追踪(记录你实际买卖)是更高级的功能,目前没做。</li>
+  <li><strong>资金均分</strong>:目前组合里每个策略各拿 1/N 资金,不能给某个策略多分钱。新手均分最简单,够用。</li>
+  <li><strong>同一只股票不能在组合里出现两次</strong>:如果两个策略都跑同一只股票,组合会算两份资金,可能重复持仓。选组合时尽量挑不同股票。</li>
+  <li><strong>过拟合风险依然存在</strong>:组合历史表现再漂亮,也是历史。第十二章的三大陷阱(过拟合/幸存者偏差/理想成交)对组合同样有效。</li>
+</ul>
+
+<div class="tip">
+<strong>一句话总结</strong>:组合保存功能让你不用每次重新勾选、重新跑。点"↻ 重跑到今天",看三态徽章,知道今天该不该动。但它<strong>不能替你做决定,也不能保证赚钱</strong>。把它当成一个"今日参考信号",配合自己的判断和止损纪律使用。
+</div>
+
+</section>
+
+<!-- ==================== 第十一章 ==================== -->
+<section class="chapter" id="ch11">
+<h2>第十一章 常见问题与排错</h2>
+
+<details>
+<summary>Q1: 双击 EXE 没反应 / 浏览器没打开</summary>
+<p>EXE 启动需要 2-5 秒解压,请耐心等待。如果超过 30 秒还没反应:</p>
+<ol>
+  <li>看屏幕右下角任务栏有没有出现 K 线图标——有的话说明后台已启动,手动打开浏览器访问 <code>http://localhost:8000</code></li>
+  <li>没有图标的话,打开任务管理器(Ctrl+Shift+Esc)看有没有 <code>easy-tdx.exe</code> 进程</li>
+  <li>还不行就在 cmd 里拖入 EXE 加 <code> serve --no-open-browser</code> 跑,看报错信息</li>
+</ol>
+</details>
+
+<details>
+<summary>Q2: 双击 EXE 提示"SmartScreen 已保护你的电脑"</summary>
+<p>这是正常的。我们的 EXE 没有花钱买"数字签名",Windows 会拦截。处理方法:</p>
+<ol>
+  <li>点蓝色窗口里的 <strong>"更多信息"</strong></li>
+  <li>会出现 <strong>"仍要运行"</strong> 按钮,点它</li>
+</ol>
+<p>只需第一次这样做,之后 Windows 会记住。</p>
+</details>
+
+<details>
+<summary>Q3: 怎么完全退出 EXE?</summary>
+<p>直接关浏览器标签页<strong>不会</strong>停止后台服务。完整退出看屏幕<strong>右下角任务栏</strong>:</p>
+<ol>
+  <li>找到 K 线图样式的小图标</li>
+  <li><strong>右键 → 退出</strong></li>
+</ol>
+<p>或者打开任务管理器(Ctrl+Shift+Esc),结束 <code>easy-tdx.exe</code> 进程。</p>
+</details>
+
+<details>
+<summary>Q4: Python 方式启动报错 "easy-tdx 不是内部或外部命令"</summary>
+<p>两种可能:</p>
+<ol>
+  <li><strong>没激活虚拟环境</strong>:命令行前面没有 <code>(venv)</code> 标记。先 <code>cd \easy_tdx</code> 再 <code>venv\Scripts\activate</code>。</li>
+  <li><strong>Python 没装好或 PATH 没配</strong>:回到第一章"方式二"重装 Python,务必勾选 "Add Python to PATH"。</li>
+</ol>
+<p>如果已装,在项目目录下(激活 venv 后)重新执行 <code>pip install -e ".[web]"</code>。</p>
+</details>
+
+<details>
+<summary>Q5: 浏览器打开 localhost:8000 显示空白或报错</summary>
+<p>检查两点:</p>
+<ol>
+  <li>后端窗口是否还开着?如果关了,重新跑 <code>easy-tdx serve</code></li>
+  <li>看后端窗口有没有报错。如果有红色错误,截图反馈</li>
+  <li>EXE 用户看 <code>%USERPROFILE%\.easy_tdx\easy_tdx_runtime.log</code> 日志文件</li>
+</ol>
+</details>
+
+<details>
+<summary>Q6: 回测时提示"取行情失败"或"连接通达信服务器超时"</summary>
+<p>easy-tdx 需要连接通达信的行情服务器取数据。可能原因:</p>
+<ul>
+  <li>网络问题:换网络或等一会再试</li>
+  <li>防火墙拦截:检查是否有安全软件拦截了 Python 或 EXE</li>
+  <li>非交易时段:周末和晚上有时连接不稳定</li>
+</ul>
+<p>可以换个时间再试,或者用其他股票代码试试。</p>
+</details>
+
+<details>
+<summary>Q7: 回测结果关机后就没了</summary>
+<p>这是正常的。回测结果存在后端进程内存,重启就清空。<strong>重要的策略一定要点"保存策略"存进策略库</strong>,策略库的数据存在 SQLite 文件里,重启不丢。</p>
+</details>
+
+<details>
+<summary>Q8: 评级徽章显示 "⚠ 交易样本有限" 是什么意思</summary>
+<p>这只股票/策略在回测期间交易笔数少于 10 笔。系统已经把胜率和利润因子的权重降到 0,只看净值类指标(夏普/卡玛/回撤)。长线策略常常这样,不一定是坏事。详见第七章 7.5 节。</p>
+</details>
+
+<details>
+<summary>Q9: 寻优网格点数提示超过 200</summary>
+<p>参数取值组合太多。减少参数取值的数量,比如 fast 从 10 个值减到 5 个值,或者只寻优一个参数(不勾另一个)。</p>
+</details>
+
+<details>
+<summary>Q10: 评级看起来不准,某个明显好的策略却是 C 档</summary>
+<p>评级阈值是基于金融惯例校准的,可能在某些边界情况不完美。每个维度的打分逻辑在 <code>web-ui/src/grading/thresholds.ts</code> 文件里,如果你懂技术可以微调。或者截图反馈。</p>
+</details>
+
+<details>
+<summary>Q11: 我想用分钟线或周线回测</summary>
+<p>在行情数据区的"周期"下拉里选 MIN_5(5 分钟)、WEEK(周线)等。注意:分钟线数据量很大,回测会慢很多,新手建议只用日线(DAY)。</p>
+</details>
+
+</section>
+
+<!-- ==================== 第十二章 ==================== -->
+<section class="chapter" id="ch12">
+<h2>第十二章 重要提醒(必读)</h2>
+
+<div class="danger">
+<strong>回测 ≠ 实盘。回测 ≠ 实盘。回测 ≠ 实盘。</strong>
+</div>
+
+<p>请把这六个字刻在脑子里。以下是新手必须知道的真相:</p>
+
+<h3>12.1 回测的三大陷阱</h3>
+
+<h4>陷阱一:过拟合</h4>
+<p>寻优出来的"最佳参数"在历史数据上完美,可能只是巧合。验证方法见第五章 5.4 节(分段重跑)。</p>
+
+<h4>陷阱二:幸存者偏差</h4>
+<p>你现在能回测的股票都是"还活着"的股票。那些退市的、ST 的、破产的你回测不了。所以回测收益天然偏高。</p>
+
+<h4>陷阱三:未来函数与理想成交</h4>
+<p>回测假设你能以"开盘价"成交,但实盘中你可能买不到那个价。实盘的滑点和佣金也比回测设的高。</p>
+
+<h3>12.2 实操建议</h3>
+
+<ol>
+  <li><strong>先用模拟盘跑 1 个月</strong>:不要一上来就真金白银,用模拟盘验证策略实盘表现</li>
+  <li><strong>单只仓位不超过 30%</strong>:永远留有余地,别 all in 一只股票</li>
+  <li><strong>设止损</strong>:亏 10% 或 15% 强制走,不要扛</li>
+  <li><strong>策略失效就停用</strong>:如果实盘连续 3 个月表现和回测差异巨大,这个策略可能已经失效</li>
+  <li><strong>不要频繁换策略</strong>:今天用双均线,明天用 MACD,后天用布林带,最后一定亏。选定一个,严格执行</li>
+</ol>
+
+<h3>12.3 这个工具能帮你什么,不能帮你什么</h3>
+
+<table>
+<tr><th>能帮你</th><th>不能帮你</th></tr>
+<tr>
+  <td>验证一个策略在历史数据上是否有效</td>
+  <td>预测未来(未来不可预测)</td>
+</tr>
+<tr>
+  <td>对比多个策略哪个更适合某只股票</td>
+  <td>告诉你哪只股票会涨(没人能知道)</td>
+</tr>
+<tr>
+  <td>找到相对合理的参数区间</td>
+  <td>找到"绝对最佳"的参数(不存在)</td>
+</tr>
+<tr>
+  <td>评估风险(最大回撤、波动率)</td>
+  <td>消除风险(风险永远存在)</td>
+</tr>
+<tr>
+  <td>建立纪律性的交易习惯</td>
+  <td>替代你自己的判断和止损</td>
+</tr>
+</table>
+
+<h3>12.4 最后的话</h3>
+
+<p>easy-tdx 给了你一把尺子,让你不再凭感觉炒股。但尺子本身不会替你赚钱,<strong>赚钱靠的是纪律和耐心</strong>。</p>
+
+<p>用这个工具找到 1 到 2 个你理解、能拿住的策略,严格执行,长期坚持。这比追逐"收益最高的策略"重要 100 倍。</p>
+
+<p>市场永远在变,工具会迭代,策略会失效。不变的是:<strong>不懂不投、分散风险、严格止损、长期主义</strong>。</p>
+
+<p>祝你在市场里活得更久,走得更远。</p>
+
+</section>
+
+<!-- ==================== 附录:打包 EXE ==================== -->
+<section class="chapter" id="appendix-packaging">
+<h2>附录:自己打包 EXE 分发给朋友(方式三)</h2>
+
+<p>如果你想把 easy-tdx 打包成单个 EXE,发给不会装 Python 的朋友/家人用,按下面的步骤操作。打包后的 EXE 双击即用,对方不用装任何东西。</p>
+
+<h3>A.1 打包前提</h3>
+
+<ul>
+  <li>Windows 10/11(PyInstaller 不能跨系统打包,Mac 用户打不了 Windows EXE)</li>
+  <li>已按"方式三"装好 Python 3.10+ 和 Node.js 20+</li>
+  <li>已按第二章下载项目代码、创建虚拟环境、安装 <code>[web,packaging]</code> 依赖</li>
+</ul>
+
+<h3>A.2 安装打包所需的额外依赖</h3>
+
+<p>在项目目录、激活虚拟环境后,执行:</p>
+<pre><code><span class="comment"># web 依赖 + 打包依赖(系统托盘 pystray + 图标 Pillow)一起装</span>
+pip install -e ".[web,packaging]"
+
+<span class="comment"># 装 PyInstaller 打包工具</span>
+pip install pyinstaller</code></pre>
+
+<h3>A.3 构建前端</h3>
+
+<pre><code><span class="comment"># 进入前端目录</span>
+cd web-ui
+
+<span class="comment"># 装前端依赖(首次需要)</span>
+npm install
+
+<span class="comment"># 编译前端到 web-ui/dist/</span>
+npm run build
+
+<span class="comment"># 回到项目根目录</span>
+cd ..</code></pre>
+
+<div class="warn">
+<strong>这步必须做!</strong> 如果不编译前端,打包出来的 EXE 启动后浏览器会显示空白——因为前端文件还没有。
+</div>
+
+<h3>A.4 打包 EXE</h3>
+
+<pre><code><span class="comment"># 在项目根目录执行(venv 已激活)</span>
+pyinstaller easy_tdx.spec --noconfirm</code></pre>
+
+<p>打包过程约 1-3 分钟。完成后,在 <code>dist\</code> 目录下会出现 <code>easy-tdx.exe</code>(约 80-150MB)。</p>
+
+<h3>A.5 验证</h3>
+
+<div class="step">
+<span class="step-num">1</span><strong>双击 <code>dist\easy-tdx.exe</code></strong>
+<p>等待 2-5 秒,浏览器应自动打开 <code>http://localhost:8000</code>。</p>
+</div>
+
+<div class="step">
+<span class="step-num">2</span><strong>检查右下角任务栏</strong>
+<p>应出现 K 线图样式的小图标,右键有"打开浏览器 / 退出"菜单。</p>
+</div>
+
+<div class="step">
+<span class="step-num">3</span><strong>跑一次完整回测</strong>
+<p>选一只股票 + 一个策略,确认能完整出图、出指标。再试一次"一键寻优"(选 4 或 8 进程),确认多进程正常。</p>
+</div>
+
+<h3>A.6 分发给朋友</h3>
+
+<p>把 <code>dist\easy-tdx.exe</code> 这个<strong>单文件</strong>直接发给朋友即可(可以通过微信传文件、网盘等)。对方:</p>
+<ol>
+  <li>下载这个 EXE</li>
+  <li>双击运行(首次 SmartScreen 拦截,点"更多信息 → 仍要运行")</li>
+  <li>等 2-5 秒,浏览器自动打开</li>
+</ol>
+
+<p><strong>不用装任何东西,不用敲任何命令。</strong></p>
+
+<h3>A.7 常见打包问题</h3>
+
+<details>
+<summary>打包后双击 EXE 报错 "NoneType object has no attribute 'isatty'"</summary>
+<p>这是因为 Windows GUI 模式下标准流为 None,而 uvicorn 假设它们存在。我们的代码已经在 <code>__main__.py</code> 里做了重定向处理,如果还报这个错,说明你用的是旧版入口代码。请拉取最新代码后重新打包。</p>
+</details>
+
+<details>
+<summary>双击 EXE 后一键寻优报错 "day datetime: 数据不足"</summary>
+<p>多进程在打包模式下需要特殊处理。我们的代码已经在 <code>__main__.py</code> 加了 <code>freeze_support()</code> 和子进程检测。如果还报错,确认你拉的是最新代码。</p>
+</details>
+
+<details>
+<summary>打包过程 WARNING 一堆 "not found"</summary>
+<p>大部分是无害的:numba(可选加速库,没装正常)、jinja2(模板引擎,本项目用不到)、scipy 内部模块改名。只要最后 <code>dist\easy-tdx.exe</code> 能正常启动,这些 WARNING 都可以忽略。</p>
+</details>
+
+<div class="tip">
+<strong>想自动发版?</strong> 如果你在维护这个项目,可以打 git tag 触发 GitHub Actions 自动打包并发布到 Releases 页。详见项目根目录的 <code>.github/workflows/release.yml</code> 和 <code>docs/packaging.md</code>。
+</div>
+
+</section>
+
+<footer>
+  easy-tdx 回测系统完全上手手册 · 适用版本 v1.19.1 · 内部教学资料,请勿外传<br>
+  本手册不构成任何投资建议,市场有风险,投资需谨慎
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,6 @@
+gtja-series.json PASS read-only without compute; frozen recompute without live fetch; unchanged results and original object
+old: ['gtja191-complete-window-v1'] new: ['gtja191-complete-window-v3']
+gtja-panel.json PASS read-only without compute; frozen recompute without live fetch; unchanged results and original object
+old: ['gtja191-complete-window-v1'] new: ['gtja191-complete-window-v3']
+gtja-rolling-series.json PASS read-only without compute; frozen recompute without live fetch; unchanged results and original object
+old: ['gtja191-complete-window-v2'] new: ['gtja191-complete-window-v3']

@@ -1,0 +1,43 @@
+Local checkpoint 2026-10-10; no production deployment.
+
+Before: source-after-factor-time-validation.tar.gz
+SHA256: d7b0ddd9c1ec85fd755f1bcd62222db43af7e7b070efc976b7e61616d1fb986e
+After: source-after-factor-horizons.tar.gz
+SHA256: 48e9af1443d34862e5621f1d8390bb4b63a884d20ca9b9f994eb874ec11e5e45
+
+The bundle includes existing dirty source/docs/tests. It is not a clean Git
+baseline. User databases, node_modules, dist, caches and output are excluded.
+Extract into a NEW temporary directory and compare individual files; restore
+only this batch if required. Never overwrite account/research databases or
+unrelated local work. Rebuild the frontend after any source rollback.
+
+New: horizons.py / factor-horizons.ts; shared per-horizon daily reporting;
+strict request and frozen archive validation/migration; compact comparison UI
+in live and readonly reports; 24 independent backend cases and 6 frontend cases.
+
+Evidence:
+- horizons-backend-final.log: 908 factor/archive/activity-related tests passed.
+- horizons-targeted-final.log: 24 multi-horizon tests passed.
+- horizons-frontend-final.log: 598 + 28 tests passed.
+- horizons-mypy.log: 316 source files; horizons-ruff.log: passed.
+- horizons-build-final.log: successful, known chunk-size warning remains.
+- horizons-performance.json: 20 x 800 x 4 factors x 4 horizons, 23 folds each,
+  48.336 seconds, 11,352,458 serialized bytes WITHOUT full input snapshots.
+- output/playwright/horizons-export.json: complete actual browser export,
+  backend validation passed; 8 inputs, 4 horizons; test counts 48/40/30/10.
+- output/playwright/horizons-readonly-20day.yml: 20-day volatility selection
+  matches both archived factor and temporal diagnostics.
+- horizons-mobile-layout.txt: viewport/document 390, dialog 374,
+  table client width 338 / scroll width 598. No whole-page overflow.
+- Browser console: zero errors and warnings. Activity remained 1 login and
+  1 manual evaluation through display switches, save, export, reload, readonly.
+
+All browser pool data was explicitly SYNTHETIC, based on a frozen 000001
+snapshot with time-varying multipliers. Not actual returns of 8 named stocks.
+Chanlun and MyTT match the earlier recovery comparison tree.
+Dedicated browser factor-horizons closed; local test server PID 45888 stopped.
+
+Goal is NOT complete: other libraries/audits, all-factor edge acceptance,
+composition/backtest/tracking, tasks/cache, favorites/multi-series and other
+original requirements remain. See docs/factor-multi-horizon-20261010.md and
+docs/factor-system-plan-20261010.md. No deployment approval assumed.

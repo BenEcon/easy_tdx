@@ -1,0 +1,6 @@
+PASS gtja-series.json series read without compute; frozen recompute without fetch; original unchanged
+PASS gtja-panel.json evaluation read without compute; frozen recompute without fetch; original unchanged
+PASS gtja-rolling-series.json series read without compute; frozen recompute without fetch; original unchanged
+PASS gtja-smoothing-series.json series read without compute; frozen recompute without fetch; original unchanged
+PASS gtja-compound-series.json series read without compute; frozen recompute without fetch; original unchanged
+browser configuration {'lag': 7, 'smooth': 9, 'short': 12, 'long': 20, 'signal': 9} warmup 45 rows 160

@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from easy_tdx.factor.analysis import FactorAnalyzer, FactorReport
-from easy_tdx.factor.base import FACTORY_REGISTRY, Factor, register_factor
+from easy_tdx.factor.base import FACTORY_REGISTRY, Factor, PanelFactor, register_factor
 
 # 导入 builtin 触发自动注册
 from easy_tdx.factor.builtin import get_factor, list_factors  # noqa: F401
@@ -20,6 +20,7 @@ from easy_tdx.factor.transform import (
 
 __all__ = [
     "Factor",
+    "PanelFactor",
     "register_factor",
     "FACTORY_REGISTRY",
     "FactorEngine",

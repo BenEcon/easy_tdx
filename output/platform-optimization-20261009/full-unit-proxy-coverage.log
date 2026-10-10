@@ -1,0 +1,5 @@
+ERROR: usage: pytest [options] [file_or_dir] [file_or_dir] [...]
+pytest: error: unrecognized arguments: --cov src/easy_tdx --cov-report=term --cov-fail-under=60
+  inifile: /Users/bowen/Documents/Python/Google/TDX-work/pyproject.toml
+  rootdir: /Users/bowen/Documents/Python/Google/TDX-work
+

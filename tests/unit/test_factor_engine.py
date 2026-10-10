@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from easy_tdx.factor.base import Factor
+from easy_tdx.factor.base import Factor, PanelFactor
 from easy_tdx.factor.engine import FactorEngine
 
 
@@ -194,13 +194,27 @@ class TestFactorEngineWithBuiltins:
         assert np.isnan(result["forward_5d"].iloc[-1])
 
     def test_all_builtin_factors_compute(self):
-        """验证所有内置因子都能无报错地计算。"""
+        """验证每个内置因子按其单股／整池范围计算，截面不冒充单股。"""
         engine = FactorEngine()
         df = _make_df(200)
+        # Explicit synthetic inputs for kernels requiring verified canonical
+        # fields. Production must never infer these from native vol/amount.
+        df["volume"] = np.arange(200, dtype=float) * 1100 + 25000
+        df["vwap"] = (df["open"] + df["close"]) / 2
 
         from easy_tdx.factor.builtin import list_factors
 
         for f_info in list_factors():
             name = f_info["name"]
+            from easy_tdx.factor import get_factor
+
+            if issubclass(get_factor(name), PanelFactor):
+                with pytest.raises(ValueError, match="整池截面"):
+                    engine.compute_single(df, [name])
+                result = engine.compute_matrix({"A": df, "B": df.copy()}, name)
+                assert result.shape == (len(df), 2)
+                assert result.iloc[65:].notna().all().all()
+                pd.testing.assert_series_equal(result.A, result.B, check_names=False)
+                continue
             result = engine.compute_single(df, [name])
             assert name in result.columns, f"因子 {name} 计算失败"

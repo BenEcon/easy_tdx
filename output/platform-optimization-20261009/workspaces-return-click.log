@@ -1,0 +1,6 @@
+### Result
+{"returnedCategory":"MIN_30","selectedDate":"图表日期 · 2026-09-21 14:30","nativePopovers":0}
+### Ran Playwright code
+```js
+await (async (page) => { await page.getByRole("button",{name:"返回图表",exact:true}).click(); await page.locator(".period-chart-cell:visible").waitFor(); if(await page.locator(".period-chart-cell:visible").count()!==1)throw Error("mobile chart count"); if(await page.getByRole("button",{name:"显示30 分钟 对照"}).getAttribute("aria-pressed")!=="true")throw Error("wrong returned period"); const graph=page.locator(".period-chart-cell:visible").getByRole("region",{name:"蜡烛图绘图区"}); await graph.scrollIntoViewIfNeeded(); await graph.click({position:{x:170,y:180}}); const review=page.locator(".period-chart-cell:visible").getByRole("button",{name:"查看所选日期证据",exact:true}); if(!await review.isEnabled())throw Error("date not selected"); await review.click(); await page.locator(".period-audit-surface").waitFor(); const text=await page.locator(".period-audit-surface").innerText(); if(!text.includes("30 分钟")||!text.includes("图表日期"))throw Error("missing precise evidence"); return {returnedCategory:"MIN_30",selectedDate:text.match(/图表日期[^\n]*/)?.[0],nativePopovers:await page.locator(":popover-open").count()}; })(page);
+```

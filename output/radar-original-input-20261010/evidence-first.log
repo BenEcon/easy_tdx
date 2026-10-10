@@ -1,0 +1,12 @@
+......................                                                   [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_scan_evidence.py::test_evidence_http_owner_version_restart_and_tamper[memory]
+  /Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_scan_evidence.py:99: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value 'corrupted copy' has dtype incompatible with datetime64[ns], please explicitly cast to a compatible dtype first.
+    a,_=runner.completed_input(alice.id,task_id);a.frames[0].iloc[0,0]='corrupted copy'
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+22 passed, 2 warnings in 4.17s

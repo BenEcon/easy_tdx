@@ -1,0 +1,104 @@
+### Result
+{
+  "errors": [],
+  "dialogs": [
+    "重跑「QA 多策略完整执行」？保留各槽位保存的原区间。\n2 个槽位，组合资金 200000，每槽位等额分仓。\n复权 QFQ；次根收盘价；佣金率 0.0002；最低佣金 1.23；印花税率 0.0005；滑点 0.002。\n使用当前可取得的行情重新计算，不是原版本成绩回放。回测信号不等同于实际持仓或交易建议。",
+    "重跑「QA 多策略完整执行」？各槽位结束日期改为今天（2026-10-10）。\n2 个槽位，组合资金 200000，每槽位等额分仓。\n复权 QFQ；次根收盘价；佣金率 0.0002；最低佣金 1.23；印花税率 0.0005；滑点 0.002。\n使用当前可取得的行情重新计算，不是原版本成绩回放。回测信号不等同于实际持仓或交易建议。"
+  ],
+  "requests": [
+    {
+      "cash": 200000,
+      "commission": 0.0002,
+      "min_commission": 1.23,
+      "stamp_tax": 0.0005,
+      "slippage": 0.002,
+      "execution": "next_close",
+      "adjust": "QFQ",
+      "items": [
+        {
+          "strategy": "ma_cross",
+          "strategy_label": "双均线",
+          "params": {
+            "fast": 7,
+            "slow": 31
+          },
+          "symbol": "SZ:300450",
+          "category": "DAY",
+          "start_date": "2025-01-02",
+          "end_date": "2026-09-29"
+        },
+        {
+          "strategy": "ma_cross",
+          "strategy_label": "双均线",
+          "params": {
+            "fast": 7,
+            "slow": 31
+          },
+          "symbol": "SH:600699",
+          "category": "DAY",
+          "start_date": "2025-01-02",
+          "end_date": "2026-09-29"
+        }
+      ]
+    },
+    {
+      "cash": 200000,
+      "commission": 0.0002,
+      "min_commission": 1.23,
+      "stamp_tax": 0.0005,
+      "slippage": 0.002,
+      "execution": "next_close",
+      "adjust": "QFQ",
+      "items": [
+        {
+          "strategy": "ma_cross",
+          "strategy_label": "双均线",
+          "params": {
+            "fast": 7,
+            "slow": 31
+          },
+          "symbol": "SZ:300450",
+          "category": "DAY",
+          "start_date": "2025-01-02",
+          "end_date": "2026-10-10"
+        },
+        {
+          "strategy": "ma_cross",
+          "strategy_label": "双均线",
+          "params": {
+            "fast": 7,
+            "slow": 31
+          },
+          "symbol": "SH:600699",
+          "category": "DAY",
+          "start_date": "2025-01-02",
+          "end_date": "2026-10-10"
+        }
+      ]
+    }
+  ],
+  "widths": [
+    {
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "width": 320,
+      "actual": 320
+    }
+  ]
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__multiReport)');
+```
+### Page
+- Page URL: http://127.0.0.1:8768/strategies
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: ../.playwright-cli/console-2026-10-09T19-03-37-053Z.log#L2-L5

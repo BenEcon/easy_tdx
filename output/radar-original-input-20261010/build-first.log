@@ -1,0 +1,6 @@
+
+> web-ui@0.0.0 build
+> vue-tsc -b && vite build
+
+src/radar-evidence.ts(19,9): error TS2322: Type '{ datetime: string; period_end: string; is_closed: true; open: number; high: number; low: number; close: number; volume: number; amount: number; }[]' is not assignable to type 'Bar[]'.
+  Property 'vol' is missing in type '{ datetime: string; period_end: string; is_closed: true; open: number; high: number; low: number; close: number; volume: number; amount: number; }' but required in type 'Bar'.

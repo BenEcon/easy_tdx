@@ -1,0 +1,10 @@
+
+> web-ui@0.0.0 build
+> vue-tsc -b && vite build
+
+src/components/MultiPeriodResearch.vue(94,39): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/study-archive.ts(42,12): error TS2352: Conversion of type '{ category: "DAY" | "WEEK" | "MONTH" | "MIN_1" | "MIN_5" | "MIN_15" | "MIN_30" | "MIN_60" | "MIN_120"; error: string; failure_stage: string; }' to type 'StudyRow' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type '{ category: "DAY" | "WEEK" | "MONTH" | "MIN_1" | "MIN_5" | "MIN_15" | "MIN_30" | "MIN_60" | "MIN_120"; error: string; failure_stage: string; }' is missing the following properties from type 'StudyRow': bar_count, last_date, last_closed_at, excluded_bars, and 15 more.
+src/study-archive.ts(61,40): error TS18046: 'c.selected_periods' is of type 'unknown'.
+src/study-archive.ts(62,50): error TS18046: 'c.selected_periods' is of type 'unknown'.

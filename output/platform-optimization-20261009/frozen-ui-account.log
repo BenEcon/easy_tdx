@@ -1,0 +1,6 @@
+### Result
+{"requests":[],"fatal":[],"charts":1}
+### Ran Playwright code
+```js
+await (async page=>{const requests=[],fatal=[];const onrequest=r=>{if(/\/api\/v1\/(indicator|bars|chanlun\/)/.test(r.url()))requests.push(r.url())};const onerror=e=>fatal.push(e.message);page.on("request",onrequest);page.on("pageerror",onerror);try{const cloud=page.locator(".cloud-archives");await cloud.locator(":scope > summary").click();await cloud.getByRole("button",{name:"查看原档",exact:true}).first().click();const dialog=page.getByRole("dialog",{name:"云端研究原档",exact:true});await dialog.getByText("原档指标 · 数值及参数已冻结，不重算；图例可临时隐藏曲线。",{exact:true}).waitFor();await page.screenshot({path:"../output/playwright/frozen-account-chart-390.png"});if(requests.length||fatal.length)throw Error(JSON.stringify({requests,fatal}));return {requests,fatal,charts:await dialog.getByRole("region",{name:"蜡烛图绘图区",exact:true}).count()};}finally{page.off("request",onrequest);page.off("pageerror",onerror);}})(page);
+```

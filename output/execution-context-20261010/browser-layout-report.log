@@ -1,0 +1,73 @@
+### Result
+{
+  "layouts": [
+    {
+      "width": 1440,
+      "buttons": [
+        {
+          "label": "按原区间重跑",
+          "whiteSpace": "nowrap",
+          "height": 32
+        },
+        {
+          "label": "重跑到今天",
+          "whiteSpace": "nowrap",
+          "height": 32
+        },
+        {
+          "label": "删除",
+          "whiteSpace": "nowrap",
+          "height": 32
+        }
+      ],
+      "scrollWidth": 1440
+    },
+    {
+      "width": 390,
+      "buttons": [
+        {
+          "label": "按原区间重跑",
+          "whiteSpace": "nowrap",
+          "height": 32
+        },
+        {
+          "label": "重跑到今天",
+          "whiteSpace": "nowrap",
+          "height": 32
+        },
+        {
+          "label": "删除",
+          "whiteSpace": "nowrap",
+          "height": 32
+        }
+      ],
+      "scrollWidth": 390
+    },
+    {
+      "width": 320,
+      "buttons": [
+        {
+          "label": "按原区间重跑",
+          "whiteSpace": "nowrap",
+          "height": 32
+        },
+        {
+          "label": "重跑到今天",
+          "whiteSpace": "nowrap",
+          "height": 32
+        },
+        {
+          "label": "删除",
+          "whiteSpace": "nowrap",
+          "height": 32
+        }
+      ],
+      "scrollWidth": 320
+    }
+  ],
+  "globalAdjustment": "HFQ"
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__layoutReport)');
+```

@@ -1,0 +1,2 @@
+### Error
+Error: {"requests":["http://127.0.0.1:8766/api/v1/bars?market=SZ&code=300750&category=WEEK&count=800&start=0&adjust=QFQ&bar_time=native","http://127.0.0.1:8766/api/v1/bars?market=SZ&code=300750&category=MIN_30&count=800&start=0&adjust=QFQ&bar_time=native","http://127.0.0.1:8766/api/v1/bars?market=SZ&code=300750&category=MIN_15&count=800&start=0&adjust=QFQ&bar_time=native","http://127.0.0.1:8766/api/v1/bars?market=SZ&code=300750&category=MIN_5&count=800&start=0&adjust=QFQ&bar_time=native","http://127.0.0.1:8766/api/v1/chanlun/observations"],"fatal":[]}

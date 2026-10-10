@@ -1,0 +1,17 @@
+Synthetic fixture, next_open, no network or production data
+Expected BUY: signal=09:50, execution=09:55, price=24
+Expected SELL: signal=10:00, execution=10:05, price=26
+           datetime direction  size  price  commission  slippage   pnl  cost_basis  rejected
+2026-10-09 09:40:00       BUY   100   21.0         5.0       0.0   0.0         0.0     False
+2026-10-09 09:40:00      SELL   100   21.0         7.1       0.0 -12.1      2105.0     False
+Positions:
+           datetime  size  avg_price  market_value  unrealized_pnl
+2026-10-09 09:35:00   0.0        0.0           0.0             0.0
+2026-10-09 09:40:00   0.0        0.0           0.0             0.0
+2026-10-09 09:45:00   0.0        0.0           0.0             0.0
+2026-10-09 09:50:00   0.0        0.0           0.0             0.0
+2026-10-09 09:55:00   0.0        0.0           0.0             0.0
+2026-10-09 10:00:00   0.0        0.0           0.0             0.0
+2026-10-09 10:05:00   0.0        0.0           0.0             0.0
+2026-10-09 10:10:00   0.0        0.0           0.0             0.0
+REPRODUCED: date-only signal matching chooses earlier intraday bars

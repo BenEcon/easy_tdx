@@ -1,0 +1,25 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+.....................F
+=================================== FAILURES ===================================
+___________ test_invalid_vendor_bars_produce_explicit_industry_error ___________
+tests/unit/test_chanlun_input_integrity.py:187: in test_invalid_vendor_bars_produce_explicit_industry_error
+    assert '行业行情数据异常' in exc.value.detail and '严格递增' in exc.value.detail
+E   AssertionError: assert ('行业行情数据异常' in '行情质量检查失败：行情时间重复或非严格递增；未自动排序或覆盖重复数据')
+E    +  where '行情质量检查失败：行情时间重复或非严格递增；未自动排序或覆盖重复数据' = HTTPException(status_code=502, detail='行情质量检查失败：行情时间重复或非严格递增；未自动排序或覆盖重复数据').detail
+E    +    where HTTPException(status_code=502, detail='行情质量检查失败：行情时间重复或非严格递增；未自动排序或覆盖重复数据') = <ExceptionInfo HTTPException(status_code=502, detail='行情质量检查失败：行情时间重复或非严格递增；未自动排序或覆盖重复数据') tblen=3>.value
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_chanlun_input_integrity.py::test_invalid_vendor_bars_produce_explicit_industry_error
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 525 passed, 1 warning in 41.84s

@@ -1,0 +1,197 @@
+### Page
+- Page URL: http://127.0.0.1:18094/chanlun?symbol=300750
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=e4]:
+  - complementary [ref=e5]:
+    - button "收起左侧栏" [ref=e11] [cursor=pointer]
+    - link "返回股票分析" [ref=e15]:
+      - /url: /
+      - generic [ref=e20]:
+        - strong [ref=e21]: 股票分析
+        - generic [ref=e22]: Analysis Studio
+    - navigation "主要导航" [ref=e23]:
+      - generic [ref=e24]:
+        - paragraph [ref=e25]: 分析
+        - link "个股分析" [ref=e26]:
+          - /url: /
+        - link "市场行情" [ref=e33]:
+          - /url: /market
+        - link "盘中研究" [ref=e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=e51]:
+          - /url: /signals
+      - generic [ref=e58]:
+        - paragraph [ref=e59]: 研究
+        - link "板块研究" [ref=e60]:
+          - /url: /boards
+        - link "公司资料" [ref=e69]:
+          - /url: /company
+        - link "扩展市场" [ref=e77]:
+          - /url: /extended
+        - link "量化研究" [ref=e84]:
+          - /url: /quant-research
+        - link "组合回测" [ref=e90]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=e99]:
+          - /url: /optimize
+        - link "结果对比" [ref=e104]:
+          - /url: /compare
+        - link "策略库" [ref=e109]:
+          - /url: /strategies
+      - generic [ref=e115]:
+        - paragraph [ref=e116]: 系统
+        - link "行情服务器" [ref=e117]:
+          - /url: /settings
+        - link "个人账户" [ref=e124]:
+          - /url: /account
+        - link "账户管理" [ref=e131]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=e140]:
+          - /url: /admin/data
+    - link "本 本机证据验收 管理员" [ref=e148]:
+      - /url: /account
+      - generic [ref=e149]: 本
+      - generic [ref=e150]:
+        - strong [ref=e151]: 本机证据验收
+        - generic [ref=e152]: 管理员
+  - generic [ref=e153]:
+    - generic [ref=e154]:
+      - generic [ref=e155]:
+        - heading "缠论结构" [level=1] [ref=e167]
+        - paragraph [ref=e157]: 识别笔、线段、中枢、买卖点与背驰
+      - generic [ref=e158]:
+        - link "个人账户" [ref=e159]:
+          - /url: /account
+          - generic [ref=e160]: 本
+          - generic [ref=e161]: 本机证据验收
+          - generic [ref=e162]: ADMIN
+        - button "退出登录" [ref=e163] [cursor=pointer]
+    - main [ref=e166]:
+      - generic [ref=e168]:
+        - complementary [ref=e169]:
+          - generic [ref=e170]:
+            - generic [ref=e171]: ⌘
+            - generic [ref=e172]:
+              - heading "结构分析" [level=2] [ref=e173]
+              - paragraph [ref=e174]: 从 K 线递进识别走势结构
+          - generic [ref=e175]:
+            - heading "标的与周期" [level=3] [ref=e176]
+            - generic [ref=e177]:
+              - generic [ref=e178]: 标的类型
+              - combobox "缠论标的类型" [ref=e180] [cursor=pointer]:
+                - generic [ref=e181]: 个股
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - generic [ref=e186]: 证券代码
+                - button "股票历史" [ref=e188] [cursor=pointer]
+              - textbox "000001" [ref=e194]: "300750"
+              - generic [ref=e195]: 深市
+            - generic [ref=e196]:
+              - generic [ref=e197]: 分析周期
+              - combobox "缠论分析周期" [ref=e199] [cursor=pointer]:
+                - generic [ref=e200]: 日线
+            - generic [ref=e203]:
+              - generic [ref=e204]: 历史窗口
+              - combobox "缠论历史窗口" [ref=e206] [cursor=pointer]:
+                - generic [ref=e207]: 600 根 · 推荐
+            - generic [ref=e210]:
+              - generic [ref=e211]: 复权方式
+              - combobox "全局复权方式" [ref=e213] [cursor=pointer]:
+                - generic [ref=e214]: 前复权
+              - generic [ref=e217]: 自动应用到行情、分析与回测，并保存到当前账号
+          - group [ref=e218]:
+            - generic "均线系统 周期 · K 线数" [ref=e219] [cursor=pointer]:
+              - heading "均线系统" [level=3] [ref=e220]
+              - generic [ref=e221]: 周期 · K 线数
+          - generic [ref=e223]:
+            - heading "图层" [level=3] [ref=e224]
+            - generic [ref=e225] [cursor=pointer]:
+              - generic [ref=e226]: 三笔盘整
+              - checkbox "三笔盘整" [checked] [ref=e227]
+            - generic [ref=e228] [cursor=pointer]:
+              - generic [ref=e229]: 笔
+              - checkbox "笔" [checked] [ref=e230]
+            - generic [ref=e231] [cursor=pointer]:
+              - generic [ref=e232]: 中枢
+              - checkbox "中枢" [ref=e233]
+            - generic [ref=e234] [cursor=pointer]:
+              - generic [ref=e235]: 线段
+              - checkbox "线段" [ref=e236]
+            - generic [ref=e237] [cursor=pointer]:
+              - generic [ref=e238]: 买卖点
+              - checkbox "买卖点" [checked] [ref=e239]
+            - generic [ref=e240] [cursor=pointer]:
+              - generic [ref=e241]: 背离 / 背驰
+              - checkbox "背离 / 背驰" [checked] [ref=e242]
+            - generic [ref=e243] [cursor=pointer]:
+              - generic [ref=e244]: 待成笔方向
+              - checkbox "待成笔方向" [checked] [ref=e245]
+            - paragraph [ref=e246]: 虚线连接末笔端点与其后的反向极值，尚未成笔，端点可变；无反向区间或原笔继续延伸时不显示。不预测未来价格。
+            - generic [ref=e247]:
+              - generic [ref=e248] [cursor=pointer]:
+                - generic [ref=e249]: 悬停显示对象信息
+                - checkbox "悬停显示对象信息" [ref=e250]
+              - paragraph [ref=e251]: 右键打开，或按住 ⌘ Command 悬停预览；松开隐藏。 图下详情按钮仍可使用，设置按账户保存。
+          - region "结构线宽" [ref=e252]:
+            - generic [ref=e253]:
+              - heading "线条粗细" [level=3] [ref=e254]
+              - button "恢复默认" [disabled] [ref=e255]
+            - generic [ref=e256]:
+              - generic [ref=e257]: 笔
+              - generic [ref=e259]:
+                - textbox "笔线宽" [ref=e260]: "1.35"
+                - generic [ref=e261]:
+                  - button "笔线宽增加" [ref=e262] [cursor=pointer]
+                  - button "笔线宽减少" [ref=e265] [cursor=pointer]
+              - generic [ref=e268]: px
+            - generic [ref=e269]:
+              - generic [ref=e270]: 线段
+              - generic [ref=e272]:
+                - textbox "线段线宽" [ref=e273]: "1.8"
+                - generic [ref=e274]:
+                  - button "线段线宽增加" [ref=e275] [cursor=pointer]
+                  - button "线段线宽减少" [ref=e278] [cursor=pointer]
+              - generic [ref=e281]: px
+            - paragraph [ref=e282]: 0.5–6 px · 即时生效，个股与行业同步。
+          - region "蜡烛填充" [ref=e283]:
+            - generic [ref=e284]:
+              - heading "蜡烛填充" [level=3] [ref=e285]
+              - button "恢复默认" [disabled] [ref=e286]
+            - generic [ref=e287]:
+              - generic [ref=e288]: 透明度
+              - generic [ref=e289]:
+                - textbox "蜡烛填充透明度" [ref=e290]: "80"
+                - generic [ref=e291]:
+                  - button "蜡烛填充透明度增加" [ref=e292] [cursor=pointer]
+                  - button "蜡烛填充透明度减少" [ref=e295] [cursor=pointer]
+              - generic [ref=e298]: "%"
+            - slider "透明度" [ref=e299] [cursor=pointer]: "80"
+            - generic [aria-hidden] [ref=e300]:
+              - generic [ref=e301]: 实心
+              - generic [ref=e302]: 空心
+            - paragraph [ref=e303]: 80% 透明 · 20% 填充。仅调整实体，边框与影线不变；未收盘 K 线仍为空心虚线。
+          - generic [ref=e304]:
+            - strong [ref=e305]: 计算管道
+            - paragraph [ref=e306]: K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰
+          - button "开始分析" [ref=e307] [cursor=pointer]
+        - main [ref=e308]:
+          - generic [ref=e309]:
+            - generic [aria-hidden] [ref=e310]:
+              - generic:
+                - generic: 结构演化
+                - generic: 已确认
+              - img [ref=e311]:
+                - generic [ref=e356]: 中枢
+              - generic [ref=e371]:
+                - generic [ref=e372]: K 线
+                - generic [ref=e374]: 笔
+                - generic [ref=e376]: 线段
+                - generic [ref=e378]: 中枢
+            - heading "观察价格如何形成结构" [level=2] [ref=e380]
+            - paragraph [ref=e381]: 选择标的和周期，系统会把走势拆成笔、线段和中枢，并标出买卖点与背驰。
+            - button "分析 300750" [ref=e382] [cursor=pointer]
+```

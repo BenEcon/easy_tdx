@@ -1,0 +1,49 @@
+async (page) => {
+  const report={cases:[],errors:[],cancels:[]},root='http://127.0.0.1:8768';
+  const records=await (await page.request.get(root+'/api/v1/strategies')).json();
+  const original={recordId:records.strategies.find(r=>r.name==='QA 完整组合往返')?.id};
+  if(!original.recordId)throw Error('缺少先前完整流程保存记录');
+  const me=await (await page.request.get(root+'/api/v1/auth/me')).json();
+  const check=(yes,message)=>{if(!yes)throw Error(message)};
+  page.on('pageerror',e=>report.errors.push(String(e)));
+  page.on('request',r=>{if(r.url().includes('/cancel'))report.cancels.push(r.url())});
+  await page.setViewportSize({width:1440,height:1000});
+  for(const mode of ['input','unmount']){
+    await page.goto(root+'/portfolio?savedStrategyId='+original.recordId);
+    await page.getByRole('heading',{name:'已载入：QA 完整组合往返',exact:true}).waitFor();
+    let release,arrived;const held=new Promise(r=>release=r),ready=new Promise(r=>arrived=r);
+    const pattern='**/api/v1/backtest/tasks/*';
+    const handler=async route=>{const response=await route.fetch();arrived();await held;try{await route.fulfill({response})}catch{}};
+    await page.route(pattern,handler);
+    const submit=page.waitForResponse(r=>r.url().includes('/portfolio/run/async'));
+    await page.getByRole('button',{name:'开始组合回测',exact:true}).click();
+    const id=(await (await submit).json()).task_id;
+    await ready;
+    if(mode==='input'){
+      await page.getByRole('textbox',{name:'组合总资金',exact:true}).fill('250000');
+      await page.getByText(/后台任务未取消/).waitFor();
+    }else {
+      await page.getByRole('link',{name:'策略库',exact:true}).click();
+      await page.getByRole('tab',{name:/单标的/}).waitFor();
+      await page.getByRole('button',{name:'组合回测中…',exact:true}).waitFor({state:'detached'});
+    }
+    release();await page.unroute(pattern,handler);
+    let server;
+    for(let attempt=0;attempt<30;attempt++){
+      server=await (await page.request.get(root+'/api/v1/backtest/tasks/'+id,{headers:{'X-Task-Owner':me.user.id}})).json();
+      if(server.status==='done'||server.status==='failed')break;
+      await page.waitForTimeout(100);
+    }
+    check(server.status==='done','后台任务不应被页面离开取消');
+    if(mode==='unmount'){
+      await page.getByRole('link',{name:'组合回测',exact:true}).click();
+      await page.getByRole('tab',{name:/单标的/}).waitFor({state:'detached'});
+      await page.getByRole('button',{name:'开始组合回测',exact:true}).waitFor();
+    }
+    check(await page.getByRole('button',{name:'保存策略',exact:true}).count()===0,'旧结果被重新附着');
+    check(await page.getByRole('button',{name:'开始组合回测',exact:true}).isEnabled(),'旧任务卡住新查询');
+    report.cases.push({mode,taskId:id,server:server.status,staleResult:false});
+  }
+  check(report.cancels.length===0,'不应暗中取消服务器任务');check(report.errors.length===0,'pageerror');
+  await page.evaluate(r=>window.__portfolioRaces=r,report);
+}

@@ -2,14 +2,30 @@
 
 from __future__ import annotations
 
+import logging
 import os
 import re
 from typing import Any, Literal
 
-from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
+from fastapi import (
+    APIRouter,
+    Cookie,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    status,
+)
 from pydantic import BaseModel, Field, field_validator
 
-from easy_tdx.web.account_store import UserRecord, get_account_store
+from easy_tdx.web.account_store import (
+    LoginThrottled,
+    SetupAlreadyComplete,
+    UserRecord,
+    get_account_store,
+)
 from easy_tdx.web.strategy_store import get_store
 
 router = APIRouter(tags=["accounts"])
@@ -39,6 +55,7 @@ class CreateUserRequest(Credentials):
 class UserUpdateRequest(BaseModel):
     role: Literal["admin", "user"] | None = None
     active: bool | None = None
+    tracking_allowed: bool | None = Field(default=None, strict=True)
 
 
 class PasswordChangeRequest(BaseModel):
@@ -52,6 +69,7 @@ class PasswordResetRequest(BaseModel):
 
 class PreferencesRequest(BaseModel):
     preferences: dict[str, Any] = Field(default_factory=dict)
+    tracking_revision: str | None = Field(default=None, max_length=100)
 
 
 def _public_user(user: UserRecord, *, include_stats: bool = False) -> dict[str, Any]:
@@ -80,6 +98,7 @@ def _clear_session_cookie(response: Response) -> None:
 
 def get_current_user(
     session: str | None = Cookie(default=None, alias=SESSION_COOKIE),
+    tracking_owner: str | None = Header(default=None, alias="X-Tracking-Owner"),
 ) -> UserRecord:
     user = get_account_store().get_user_for_session(session or "")
     if user is None:
@@ -87,6 +106,11 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="请先登录",
         )
+    if isinstance(tracking_owner, str):
+        if tracking_owner != user.id:
+            raise HTTPException(409, "账户已切换，追踪分析已停止")
+        if not user.can_track:
+            raise HTTPException(403, "追踪标的权限已撤销，分析已停止")
     return user
 
 
@@ -110,22 +134,29 @@ async def auth_status(
 
 
 @router.post("/auth/setup", status_code=201)
-async def setup_admin(req: Credentials, response: Response) -> dict[str, Any]:
+def setup_admin(req: Credentials, request: Request, response: Response) -> dict[str, Any]:
     store = get_account_store()
     if store.count_users() != 0:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="系统已经完成初始化")
-    admin = store.create_user(req.username, req.password, role="admin")
+    _reserve_attempt(req, request)
+    try:
+        admin = store.create_user(req.username, req.password, role="admin", initial=True)
+    except SetupAlreadyComplete as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     get_store().claim_unowned(admin.id)
     admin = store.authenticate(req.username, req.password) or admin
     token = store.create_session(admin.id)
     _set_session_cookie(response, token)
+    _record_login(admin, request)
     return {"user": _public_user(admin), "message": "管理员账户已创建"}
 
 
 @router.post("/auth/login")
-async def login(req: Credentials, response: Response) -> dict[str, Any]:
+def login(req: Credentials, request: Request, response: Response) -> dict[str, Any]:
     store = get_account_store()
+    _reserve_attempt(req, request)
     user = store.authenticate(req.username, req.password)
+    store.audit_login(user)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -133,7 +164,29 @@ async def login(req: Credentials, response: Response) -> dict[str, Any]:
         )
     token = store.create_session(user.id)
     _set_session_cookie(response, token)
+    _record_login(user, request)
     return {"user": _public_user(user)}
+
+
+def _record_login(user: UserRecord, request: Request) -> None:
+    from easy_tdx.web.user_activity import get_activity_store
+
+    try:
+        get_activity_store().record(
+            user.id, "login", request.client.host if request.client else "", "登录", "accepted"
+        )
+    except Exception:
+        logging.getLogger(__name__).warning("Login activity could not be persisted", exc_info=True)
+
+
+def _reserve_attempt(req: Credentials, request: Request) -> None:
+    peer = request.client.host if request.client else "unknown"
+    try:
+        get_account_store().reserve_login_attempt(req.username, peer)
+    except LoginThrottled as exc:
+        raise HTTPException(
+            status_code=429, detail=str(exc), headers={"Retry-After": str(exc.retry_after)}
+        ) from exc
 
 
 @router.post("/auth/logout")
@@ -141,7 +194,19 @@ async def logout(
     response: Response,
     session: str | None = Cookie(default=None, alias=SESSION_COOKIE),
 ) -> dict[str, bool]:
-    get_account_store().delete_session(session or "")
+    store = get_account_store()
+    user = store.get_user_for_session(session or "")
+    store.delete_session(session or "")
+    if user:
+        store.audit_operation("logout", user.id)
+    _clear_session_cookie(response)
+    return {"ok": True}
+
+
+@router.post("/auth/logout-all")
+def logout_all(response: Response, user: UserRecord = Depends(get_current_user)) -> dict[str, bool]:
+    get_account_store().invalidate_user_sessions(user.id)
+    get_account_store().audit_operation("logout_all", user.id)
     _clear_session_cookie(response)
     return {"ok": True}
 
@@ -156,12 +221,55 @@ async def save_preferences(
     req: PreferencesRequest,
     user: UserRecord = Depends(get_current_user),
 ) -> dict[str, Any]:
-    updated = get_account_store().set_preferences(user.id, req.preferences)
+    try:
+        updated = get_account_store().set_preferences(
+            user.id,
+            req.preferences,
+            expected_tracking_revision=req.tracking_revision,
+            require_tracking_revision=True,
+        )
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+    except ValueError as exc:
+        from easy_tdx.web.account_store import TrackingRevisionConflict
+
+        raise HTTPException(
+            409 if isinstance(exc, TrackingRevisionConflict) else 422, str(exc)
+        ) from exc
+    return {"user": _public_user(updated)}
+
+
+@router.patch("/auth/me/preferences")
+def patch_preferences(
+    req: PreferencesRequest,
+    request: Request,
+    user: UserRecord = Depends(get_current_user),
+) -> dict[str, Any]:
+    # The header is not authentication: it binds a queued browser write to the
+    # already authenticated cookie owner, including cross-tab login changes.
+    if request.headers.get("x-preferences-owner") != user.id:
+        raise HTTPException(409, "登录账户已变化或缺少偏好归属，请刷新页面后重试")
+    try:
+        updated = get_account_store().set_preferences(
+            user.id,
+            req.preferences,
+            merge=True,
+            expected_tracking_revision=req.tracking_revision,
+            require_tracking_revision=True,
+        )
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+    except ValueError as exc:
+        from easy_tdx.web.account_store import TrackingRevisionConflict
+
+        raise HTTPException(
+            409 if isinstance(exc, TrackingRevisionConflict) else 422, str(exc)
+        ) from exc
     return {"user": _public_user(updated)}
 
 
 @router.post("/auth/change-password")
-async def change_password(
+def change_password(
     req: PasswordChangeRequest,
     response: Response,
     user: UserRecord = Depends(get_current_user),
@@ -173,7 +281,7 @@ async def change_password(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="新密码不能与当前密码相同"
         )
-    store.set_password(user.id, req.new_password)
+    store.set_password(user.id, req.new_password, actor_id=user.id)
     token = store.create_session(user.id)
     _set_session_cookie(response, token)
     return {"ok": True}
@@ -189,12 +297,27 @@ async def list_users(_: UserRecord = Depends(require_admin)) -> dict[str, Any]:
     }
 
 
-@router.post("/admin/users", status_code=201)
-async def create_user(
-    req: CreateUserRequest,
+@router.get("/admin/audit")
+def list_audit(
+    before: int | None = Query(None, ge=1),
+    limit: int = Query(50, ge=1, le=100),
+    action: str | None = Query(None, max_length=40, pattern=r"^[a-z_]+$"),
+    outcome: Literal["success", "denied", "failed"] | None = None,
     _: UserRecord = Depends(require_admin),
 ) -> dict[str, Any]:
-    user = get_account_store().create_user(req.username, req.password, role=req.role)
+    return get_account_store().list_audit(
+        before=before, limit=limit, action=action, outcome=outcome
+    )
+
+
+@router.post("/admin/users", status_code=201)
+def create_user(
+    req: CreateUserRequest,
+    admin: UserRecord = Depends(require_admin),
+) -> dict[str, Any]:
+    user = get_account_store().create_user(
+        req.username, req.password, role=req.role, actor_id=admin.id
+    )
     return {"user": _public_user(user, include_stats=True)}
 
 
@@ -215,15 +338,21 @@ async def update_user(
         )
     if user_id == admin.id and req.active is False:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="不能停用当前登录账户")
-    updated = store.update_user(user_id, role=req.role, active=req.active)
+    updated = store.update_user(
+        user_id,
+        role=req.role,
+        active=req.active,
+        tracking_allowed=req.tracking_allowed,
+        actor_id=admin.id,
+    )
     return {"user": _public_user(updated, include_stats=True)}
 
 
 @router.post("/admin/users/{user_id}/reset-password")
-async def reset_password(
+def reset_password(
     user_id: str,
     req: PasswordResetRequest,
-    _: UserRecord = Depends(require_admin),
+    admin: UserRecord = Depends(require_admin),
 ) -> dict[str, bool]:
-    get_account_store().set_password(user_id, req.new_password)
+    get_account_store().set_password(user_id, req.new_password, actor_id=admin.id)
     return {"ok": True}

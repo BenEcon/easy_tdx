@@ -1,0 +1,17 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_shutdown_stops_owned_child_even_when_database_is_unavailable _______
+tests/unit/test_task_worker.py:256: in test_shutdown_stops_owned_child_even_when_database_is_unavailable
+    supervisor.close()
+src/easy_tdx/web/task_supervisor.py:181: in close
+    self.step(admit=False)
+src/easy_tdx/web/task_supervisor.py:155: in step
+    reason = self.store.heartbeat(running.lease)
+src/easy_tdx/web/task_store.py:385: in heartbeat
+    with self.connect() as conn:
+tests/unit/test_task_worker.py:251: in unavailable
+    raise sqlite3.OperationalError("database unavailable during shutdown")
+E   sqlite3.OperationalError: database unavailable during shutdown
+=========================== short test summary info ============================
+FAILED tests/unit/test_task_worker.py::test_shutdown_stops_owned_child_even_when_database_is_unavailable
+1 failed in 1.03s

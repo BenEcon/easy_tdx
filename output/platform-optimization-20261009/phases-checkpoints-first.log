@@ -1,0 +1,12 @@
+......................................................F................. [ 43%]
+........................................................................ [ 86%]
+......................                                                   [100%]
+=================================== FAILURES ===================================
+_ test_ordinary_strategies_and_external_builtin_subclasses_do_not_claim_stateless_resume _
+tests/unit/test_backtest_signal_checkpoints.py:192: in test_ordinary_strategies_and_external_builtin_subclasses_do_not_claim_stateless_resume
+    assert not journal.entries and not journal.used_counts
+E   AssertionError: assert (not {'unsupported/orders': {'schema': 'backtest-order-signals-v1', 'input_records': [{'datetime': 20250402, 'direction': '...sh': 100000.0, 'array_dtypes': {'cash': 'float64', 'position': 'float64', 'avg_price': 'float64'}}, 'total': 160, ...}})
+E    +  where {'unsupported/orders': {'schema': 'backtest-order-signals-v1', 'input_records': [{'datetime': 20250402, 'direction': '...sh': 100000.0, 'array_dtypes': {'cash': 'float64', 'position': 'float64', 'avg_price': 'float64'}}, 'total': 160, ...}} = <tests.unit.test_backtest_signal_checkpoints.Journal object at 0x10eefbe80>.entries
+=========================== short test summary info ============================
+FAILED tests/unit/test_backtest_signal_checkpoints.py::test_ordinary_strategies_and_external_builtin_subclasses_do_not_claim_stateless_resume
+1 failed, 165 passed in 55.33s

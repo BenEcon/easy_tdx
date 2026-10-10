@@ -1,0 +1,2 @@
+src/easy_tdx/web/task_supervisor.py:296: error: Item "None" of "TaskGuard | None" has no attribute "close"  [union-attr]
+Found 1 error in 1 file (checked 275 source files)

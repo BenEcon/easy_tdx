@@ -1,0 +1,9 @@
+### Result
+{"staleResultDiscarded":true,"code":"300450"}
+### Ran Playwright code
+```js
+await (async (page) => { await page.reload(); await page.getByRole("link",{name:"返回信号雷达"}).click(); await page.getByRole("button",{name:"复核信号",exact:true}).nth(1).waitFor(); let arrived,release,finished; const ready=new Promise(r=>arrived=r), gate=new Promise(r=>release=r), done=new Promise(r=>finished=r); await page.route("**/api/v1/backtest/run",async route=>{const response=await route.fetch(); arrived(); await gate; await route.fulfill({response}); finished()}); await page.getByRole("button",{name:"复核信号",exact:true}).nth(1).click(); await ready; await page.getByPlaceholder("6位代码（市场自动识别）").fill("300450"); release(); await done; await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))); await page.getByText("当前分析条件已改变",{exact:false}).waitFor(); if(await page.locator(".report-content").count())throw Error("stale result rendered"); await page.unroute("**/api/v1/backtest/run"); return {staleResultDiscarded:true,code:await page.getByPlaceholder("6位代码（市场自动识别）").inputValue()}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:18094/?review=signal&autoRun=1&symbol=300750&market=SZ&category=MIN_30&adjust=QFQ&scanAsOf=2026-09-30+14:30:00&scanFingerprint=7f6b0a06acaf9e5bb871995809dbd72bc16239f3edf32342b5d653db1b6522e1&signal=BUY&signalDate=2026-09-30+13:30&strategy=ma_cross&strategyName=%E6%9C%AC%E6%9C%BA%E7%9C%9F%E5%AE%9E+ma_cross&strategyLabel=%E5%9D%87%E7%BA%BF%E4%BA%A4%E5%8F%89&params={}&count=800&startDate=2024-09-30&endDate=2026-09-30
+- Page Title: 股票分析 · Analysis Studio

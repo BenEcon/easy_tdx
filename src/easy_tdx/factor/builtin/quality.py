@@ -14,11 +14,12 @@ class Sharpe20D(Factor):
     category = "quality"
     description = "20 日夏普比率（收益率均值 / 收益率标准差）"
     inputs = ("close",)
+    window = 20
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
-        ret = df["close"].pct_change()
-        rolling_mean = ret.rolling(20).mean()
-        rolling_std = ret.rolling(20).std()
+        ret = df["close"].pct_change(fill_method=None)
+        rolling_mean = ret.rolling(self.window).mean()
+        rolling_std = ret.rolling(self.window).std()
         return rolling_mean / rolling_std.replace(0, np.nan)
 
 
@@ -28,13 +29,16 @@ class MaxDrawdown20D(Factor):
     category = "quality"
     description = "20 日滚动最大回撤（负值，0 = 无回撤）"
     inputs = ("close",)
+    window = 20
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
         close = df["close"]
         result = pd.Series(np.nan, index=df.index, dtype=np.float64)
 
-        for i in range(19, len(close)):
-            window = close.iloc[i - 19 : i + 1]
+        for i in range(self.window - 1, len(close)):
+            window = close.iloc[i - self.window + 1 : i + 1]
+            if not np.isfinite(window).all() or (window <= 0).any():
+                continue
             peak = window.cummax()
             dd = (window - peak) / peak
             result.iloc[i] = dd.min()
@@ -48,8 +52,9 @@ class WinRate20D(Factor):
     category = "quality"
     description = "20 日内上涨天数占比（0-1）"
     inputs = ("close",)
+    window = 20
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
-        ret = df["close"].pct_change()
-        up = (ret > 0).astype(float)
-        return up.rolling(20).mean()
+        ret = df["close"].pct_change(fill_method=None)
+        up = (ret > 0).astype(float).where(ret.notna())
+        return up.rolling(self.window).mean()

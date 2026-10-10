@@ -1,0 +1,10 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+easy-tdx
+fc5b03eb4f5ab9bac4f7619f4c25bfded112233369794b2d5996a9925cb80c3c  /home/opc/backups/tdx-20261009-period-evidence/data.tar.gz
+ Container easy-tdx  Recreate
+ Container easy-tdx  Recreated
+ Container easy-tdx  Starting
+ Container easy-tdx  Started
+{"setup_required":false,"authenticated":false,"user":null}easy-tdx:period-evidence-20261009 sha256:2532172e84c5b6be17cc713eeb6f077ec378eda3c6de447288a2ed868c5c73c0 running healthy

@@ -1,0 +1,119 @@
+......................................FFFF
+=================================== FAILURES ===================================
+_ test_actual_process_recovery_preserves_full_minute_identity[backtest-signal-bars-v1-signal_bars-backtest] _
+tests/unit/test_backtest_intraday_identity.py:289: in test_actual_process_recovery_preserves_full_minute_identity
+    assert ready.wait(25)
+E   assert False
+E    +  where False = wait(25)
+E    +    where wait = <multiprocessing.synchronize.Event object at 0x10a750730>.wait
+----------------------------- Captured stderr call -----------------------------
+Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_backtest_intraday_identity.py", line 264, in _child
+    result = dispatch_task(store.load_input(lease, execution_version="intraday-identity-test"))
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/task_dispatch.py", line 123, in dispatch_task
+    return backtest._run_backtest(value.frames[0], request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/backtest.py", line 472, in _run_backtest
+    frame_evidence(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/research_provenance.py", line 29, in frame_evidence
+    measured = annotate_snapshot(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 186, in annotate_snapshot
+    quality = quality_report(records, category, bar_time)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 94, in quality_report
+    raise ValueError("行情时间必须为有效的交易所本地时间，不得混入时区或空时间")
+ValueError: 行情时间必须为有效的交易所本地时间，不得混入时区或空时间
+_ test_actual_process_recovery_preserves_full_minute_identity[backtest-signal-bars-v1-signal_bars-portfolio] _
+tests/unit/test_backtest_intraday_identity.py:289: in test_actual_process_recovery_preserves_full_minute_identity
+    assert ready.wait(25)
+E   assert False
+E    +  where False = wait(25)
+E    +    where wait = <multiprocessing.synchronize.Event object at 0x10a71bcd0>.wait
+----------------------------- Captured stderr call -----------------------------
+Process SpawnProcess-2:
+Traceback (most recent call last):
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_backtest_intraday_identity.py", line 264, in _child
+    result = dispatch_task(store.load_input(lease, execution_version="intraday-identity-test"))
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/task_dispatch.py", line 131, in dispatch_task
+    return backtest._run_portfolio_backtest(stocks, portfolio)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/backtest.py", line 571, in _run_portfolio_backtest
+    [
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/backtest.py", line 572, in <listcomp>
+    frame_evidence(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/research_provenance.py", line 29, in frame_evidence
+    measured = annotate_snapshot(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 186, in annotate_snapshot
+    quality = quality_report(records, category, bar_time)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 94, in quality_report
+    raise ValueError("行情时间必须为有效的交易所本地时间，不得混入时区或空时间")
+ValueError: 行情时间必须为有效的交易所本地时间，不得混入时区或空时间
+_ test_actual_process_recovery_preserves_full_minute_identity[backtest-signal-bars-v1-signal_bars-multi_strategy] _
+tests/unit/test_backtest_intraday_identity.py:289: in test_actual_process_recovery_preserves_full_minute_identity
+    assert ready.wait(25)
+E   assert False
+E    +  where False = wait(25)
+E    +    where wait = <multiprocessing.synchronize.Event object at 0x10a71aad0>.wait
+----------------------------- Captured stderr call -----------------------------
+Process SpawnProcess-3:
+Traceback (most recent call last):
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_backtest_intraday_identity.py", line 264, in _child
+    result = dispatch_task(store.load_input(lease, execution_version="intraday-identity-test"))
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/task_dispatch.py", line 147, in dispatch_task
+    return backtest._run_multi_strategy_backtest(slots, multi)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/backtest.py", line 736, in _run_multi_strategy_backtest
+    [
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/backtest.py", line 737, in <listcomp>
+    frame_evidence(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/research_provenance.py", line 29, in frame_evidence
+    measured = annotate_snapshot(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 186, in annotate_snapshot
+    quality = quality_report(records, category, bar_time)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 94, in quality_report
+    raise ValueError("行情时间必须为有效的交易所本地时间，不得混入时区或空时间")
+ValueError: 行情时间必须为有效的交易所本地时间，不得混入时区或空时间
+_ test_actual_process_recovery_preserves_full_minute_identity[backtest-order-signals-v1-order_signals-backtest] _
+tests/unit/test_backtest_intraday_identity.py:289: in test_actual_process_recovery_preserves_full_minute_identity
+    assert ready.wait(25)
+E   assert False
+E    +  where False = wait(25)
+E    +    where wait = <multiprocessing.synchronize.Event object at 0x106c53c70>.wait
+----------------------------- Captured stderr call -----------------------------
+Process SpawnProcess-4:
+Traceback (most recent call last):
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_backtest_intraday_identity.py", line 264, in _child
+    result = dispatch_task(store.load_input(lease, execution_version="intraday-identity-test"))
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/task_dispatch.py", line 123, in dispatch_task
+    return backtest._run_backtest(value.frames[0], request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/backtest.py", line 472, in _run_backtest
+    frame_evidence(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/research_provenance.py", line 29, in frame_evidence
+    measured = annotate_snapshot(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 186, in annotate_snapshot
+    quality = quality_report(records, category, bar_time)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/bar_snapshot.py", line 94, in quality_report
+    raise ValueError("行情时间必须为有效的交易所本地时间，不得混入时区或空时间")
+ValueError: 行情时间必须为有效的交易所本地时间，不得混入时区或空时间
+=========================== short test summary info ============================
+FAILED tests/unit/test_backtest_intraday_identity.py::test_actual_process_recovery_preserves_full_minute_identity[backtest-signal-bars-v1-signal_bars-backtest]
+FAILED tests/unit/test_backtest_intraday_identity.py::test_actual_process_recovery_preserves_full_minute_identity[backtest-signal-bars-v1-signal_bars-portfolio]
+FAILED tests/unit/test_backtest_intraday_identity.py::test_actual_process_recovery_preserves_full_minute_identity[backtest-signal-bars-v1-signal_bars-multi_strategy]
+FAILED tests/unit/test_backtest_intraday_identity.py::test_actual_process_recovery_preserves_full_minute_identity[backtest-order-signals-v1-order_signals-backtest]
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! KeyboardInterrupt !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+/Users/bowen/.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/multiprocessing/synchronize.py:261: KeyboardInterrupt
+(to show a full traceback on KeyboardInterrupt use --full-trace)
+4 failed, 38 passed in 120.75s (0:02:00)

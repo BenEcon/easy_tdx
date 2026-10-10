@@ -1,0 +1,33 @@
+async(page)=>{
+  const report={errors:[]},check=(ok,msg)=>{if(!ok)throw Error(msg)};
+  page.on('pageerror',e=>report.errors.push(String(e)));
+  await page.setViewportSize({width:1440,height:1000});
+  await page.getByRole('textbox',{name:'6位代码（市场自动识别）'}).fill('300450');
+  await page.locator('input[type=date]').nth(0).fill('2025-01-02');
+  await page.locator('input[type=date]').nth(1).fill('2026-09-29');
+  for(const [name,value] of Object.entries({'快线周期取值列表':'7','慢线周期取值列表':'31','初始资金':'200000','佣金率':'0.0002','最低佣金':'83.21','印花税率':'0.004','滑点':'0.002'}))await page.getByRole('textbox',{name,exact:true}).fill(value);
+  const submitted=page.waitForResponse(r=>r.url().includes('/backtest/optimize/run/async'));
+  const done=page.waitForResponse(async r=>r.url().includes('/backtest/tasks/')&&r.status()===200&&(await r.json()).status==='done');
+  await page.getByRole('button',{name:'开始寻优',exact:true}).click();
+  const submitResponse=await submitted;report.request=submitResponse.request().postDataJSON();
+  const result=(await(await done).json()).result;report.best=result.best;
+  await page.getByRole('button',{name:'查看',exact:true}).waitFor();
+  // Completed results must retain submitted parameters even after form editing.
+  await page.getByRole('textbox',{name:'初始资金',exact:true}).fill('777777');
+  await page.getByRole('button',{name:'查看',exact:true}).click();
+  await page.getByRole('heading',{name:'已载入：寻优结果配置',exact:true}).waitFor();
+  for(const [name,value] of Object.entries({'初始资金':'200000','佣金率':'0.0002','最低佣金':'83.21','印花税率':'0.004','滑点':'0.002','快线周期':'7','慢线周期':'31'}))check(await page.getByRole('textbox',{name,exact:true}).inputValue()===value,name+' 丢失');
+  report.query=JSON.parse(new URL(page.url()).searchParams.get('optimizationContext'));
+  const backtest=page.waitForResponse(r=>r.url().endsWith('/backtest/run')&&r.request().method()==='POST');
+  await page.getByRole('button',{name:'开始回测',exact:true}).click();
+  const response=await backtest;check(response.ok(),await response.text());report.backtest=(await response.json()).performance;
+  for(const key of ['total_return','sharpe','max_drawdown','total_trades','win_rate','profit_factor'])check(report.backtest[key]===report.best[key],key+' 寻优与复跑不一致');
+  report.widths=[];
+  for(const width of [1440,390,320]){
+    await page.setViewportSize({width,height:1000});
+    await page.getByRole('heading',{name:'已载入：寻优结果配置',exact:true}).scrollIntoViewIfNeeded();
+    await page.screenshot({path:`output/playwright/execution-context-${width}.png`});
+    const actual=await page.evaluate(()=>document.documentElement.scrollWidth);check(actual<=width,'页面横向溢出');report.widths.push({width,actual});
+  }
+  check(!report.errors.length,'页面错误');await page.evaluate(r=>window.__executionReport=r,report);
+}

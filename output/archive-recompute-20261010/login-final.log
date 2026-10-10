@@ -1,0 +1,9 @@
+### Ran Playwright code
+```js
+await page.goto('http://127.0.0.1:8768/login?redirect=/account');
+```
+### Page
+- Page URL: http://127.0.0.1:8768/login?redirect=/account
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+- [Snapshot](.playwright-cli/page-2026-10-09T16-55-22-774Z.yml)

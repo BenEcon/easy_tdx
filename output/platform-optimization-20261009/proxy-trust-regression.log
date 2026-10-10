@@ -1,0 +1,53 @@
+...........................................................FF.........   [100%]
+=================================== FAILURES ===================================
+___ test_only_trusted_transport_can_change_client_and_scheme[trusted-proxy] ____
+tests/integration/test_proxy_transport.py:90: in test_only_trusted_transport_can_change_client_and_scheme
+    assert response.json() == {
+.venv/lib/python3.10/site-packages/httpx/_models.py:832: in json
+    return jsonlib.loads(self.content, **kwargs)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/json/decoder.py:355: in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+E   json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+___ test_only_trusted_transport_can_change_client_and_scheme[untrusted-peer] ___
+tests/integration/test_proxy_transport.py:90: in test_only_trusted_transport_can_change_client_and_scheme
+    assert response.json() == {
+.venv/lib/python3.10/site-packages/httpx/_models.py:832: in json
+    return jsonlib.loads(self.content, **kwargs)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/json/decoder.py:337: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/json/decoder.py:355: in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+E   json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/integration/test_proxy_transport.py::test_only_trusted_transport_can_change_client_and_scheme[trusted-proxy]
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+tests/integration/test_proxy_transport.py::test_only_trusted_transport_can_change_client_and_scheme[trusted-proxy]
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/websockets/websockets_impl.py:41: UvicornDeprecationWarning: The `websockets` implementation is deprecated, and `--ws websockets` will point at the `websockets-sansio` implementation in a future release. Use `--ws websockets-sansio` or `--ws auto` to switch now.
+    warnings.warn(
+
+tests/integration/test_proxy_transport.py::test_forwarded_websocket_scheme_must_come_from_trusted_peer[trusted-proxy]
+tests/integration/test_proxy_transport.py::test_forwarded_websocket_scheme_must_come_from_trusted_peer[untrusted-peer]
+tests/integration/test_realtime_transport.py::test_transport_rejects_oversize_before_application_consumes_message[False]
+tests/integration/test_realtime_transport.py::test_transport_rejects_oversize_before_application_consumes_message[True]
+tests/integration/test_realtime_transport.py::test_actual_connection_quota_close_reason_reaches_client
+tests/integration/test_realtime_transport.py::test_actual_connection_quota_close_reason_reaches_client
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/integration/test_proxy_transport.py::test_only_trusted_transport_can_change_client_and_scheme[trusted-proxy]
+FAILED tests/integration/test_proxy_transport.py::test_only_trusted_transport_can_change_client_and_scheme[untrusted-peer]
+2 failed, 68 passed, 9 warnings in 14.67s

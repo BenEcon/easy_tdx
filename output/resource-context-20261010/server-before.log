@@ -1,0 +1,91 @@
+INFO:     Started server process [35306]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8768 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53351 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53351 - "PUT /api/v1/research/archives/76b59d0d-6f79-41ee-9622-d48cf8eae7d6 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53351 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53351 - "PUT /api/v1/research/archives/d02db68e-6689-431c-ae6c-c531990a3af5 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53351 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53351 - "PUT /api/v1/research/archives/2f0c6b63-9227-4818-b373-dd9ddeae17ed HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53351 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53351 - "PUT /api/v1/research/archives/032c34d7-1880-458f-a631-02e86072967f HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53351 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53351 - "PUT /api/v1/research/archives/e78e4502-a269-4d0e-9cd1-9df9a782f60b HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53351 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53453 - "GET /login?redirect=/account HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53454 - "GET /assets/index-BagQfGGq.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53453 - "GET /assets/index-BVSB2M49.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53453 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53454 - "GET /assets/LoginView-CJVTASap.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53453 - "GET /assets/LoginView-C6otUSAi.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "GET /assets/AccountView-DaSY36Po.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53588 - "GET /assets/CloudResearchArchives-MvfVdy9P.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53589 - "GET /assets/ChartFrame-C58Hu0oB.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /assets/TechnicalIndicatorPicker-BBJp3n1h.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53592 - "GET /assets/NumberStepper-D_sxCVJk.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53592 - "GET /assets/MacSelect-UPn_NPgw.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /assets/period-comparison-BOYUmVhF.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53588 - "GET /assets/MultiPeriodOverviewTable-jwXzvNIj.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "GET /assets/CloudResearchArchives-DBUIy7Tn.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53591 - "GET /assets/AccountView-DFlKvEz4.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53592 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53588 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53589 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "POST /api/v1/chanlun/archive-recompute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53590 - "PUT /api/v1/research/archives/f35c3034-867d-41a0-bc25-dad03d62f592 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53591 - "POST /api/v1/chanlun/archive-recompute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53592 - "PUT /api/v1/research/archives/3c042a72-2dd8-4297-bb14-547790142a5d HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53588 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53589 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53583 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53654 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53681 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53681 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53681 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53721 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53732 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53734 - "PUT /api/v1/research/archives/9e5c73eb-0652-478b-a0fb-0771cbbab98d HTTP/1.1" 201 Created
+ERROR:root:STALE_CONTEXT refs=0 lost=False ordinary=False upload=True
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/output/resource-context-20261010/qa_context_app.py", line 12, in diagnostic_retain
+    return _retain(self)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/resource_admission.py", line 166, in retain
+    raise HTTPException(503, "研究资源租约已失效，请重新提交")
+fastapi.exceptions.HTTPException: 503: 研究资源租约已失效，请重新提交
+INFO:     127.0.0.1:53734 - "GET /api/v1/research/archives HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:53748 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53748 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53748 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53790 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53806 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53806 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53806 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53875 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53907 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53932 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53970 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53997 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54043 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54072 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54109 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54148 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54166 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54204 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54236 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54264 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54295 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54328 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54366 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54400 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [35306]

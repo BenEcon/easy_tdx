@@ -1,0 +1,60 @@
+{
+  "hash": "c611dd9c",
+  "configHash": "a542927e",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "319402ac",
+  "optimized": {
+    "echarts/charts": {
+      "src": "../../../../web-ui/node_modules/echarts/charts.js",
+      "file": "echarts_charts.js",
+      "fileHash": "583afd30",
+      "needsInterop": false
+    },
+    "echarts/components": {
+      "src": "../../../../web-ui/node_modules/echarts/components.js",
+      "file": "echarts_components.js",
+      "fileHash": "b4336a78",
+      "needsInterop": false
+    },
+    "echarts/core": {
+      "src": "../../../../web-ui/node_modules/echarts/core.js",
+      "file": "echarts_core.js",
+      "fileHash": "64e6fc53",
+      "needsInterop": false
+    },
+    "echarts/renderers": {
+      "src": "../../../../web-ui/node_modules/echarts/renderers.js",
+      "file": "echarts_renderers.js",
+      "fileHash": "d077344d",
+      "needsInterop": false
+    },
+    "vue": {
+      "src": "../../../../web-ui/node_modules/vue/dist/vue.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "cc603ad4",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "createSeriesData-TyZtHZLU": {
+      "file": "createSeriesData-TyZtHZLU.js",
+      "isDynamicEntry": false
+    },
+    "customGraphicKeyframeAnimation-IYqEjvTm": {
+      "file": "customGraphicKeyframeAnimation-IYqEjvTm.js",
+      "isDynamicEntry": false
+    },
+    "graphic-CKloBv3l": {
+      "file": "graphic-CKloBv3l.js",
+      "isDynamicEntry": false
+    },
+    "parseGeoJson-BuroNMpY": {
+      "file": "parseGeoJson-BuroNMpY.js",
+      "isDynamicEntry": false
+    },
+    "rolldown-runtime-D7D4PA-g": {
+      "file": "rolldown-runtime-D7D4PA-g.js",
+      "isDynamicEntry": false
+    }
+  }
+}

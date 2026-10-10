@@ -1,0 +1,6 @@
+### Result
+[{"view":1440,"content":1440},{"view":390,"content":390},{"view":320,"content":320}]
+### Ran Playwright code
+```js
+await (async (page) => { const findings=[]; for(const width of [1440,390,320]) { await page.setViewportSize({width,height:900}); await page.getByRole("region",{name:"信号人工复核上下文"}).scrollIntoViewIfNeeded(); const size=await page.evaluate(()=>({view:innerWidth,content:document.documentElement.scrollWidth})); if(size.content>width)throw Error(JSON.stringify(size)); await page.screenshot({path:`../output/playwright/radar-context-${width}.png`}); findings.push(size); } return findings; })(page);
+```

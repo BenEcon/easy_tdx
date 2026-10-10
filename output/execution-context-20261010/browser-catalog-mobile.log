@@ -1,0 +1,4 @@
+### Ran Playwright code
+```js
+await (async(page)=>{const url=page.url();await page.route('**/api/v1/backtest/strategies',r=>r.fulfill({json:{strategies:[]}}),{times:1});await page.setViewportSize({width:320,height:1000});await page.goto(url);const retry=page.getByRole('button',{name:'重新载入',exact:true});await retry.scrollIntoViewIfNeeded();if(await page.evaluate(()=>document.documentElement.scrollWidth)>320)throw Error('overflow');await page.screenshot({path:'/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/catalog-error-320.png'});await retry.click();await page.getByRole('heading',{name:'已载入：QA 目录延迟 portfolio',exact:true}).waitFor();})(page);
+```

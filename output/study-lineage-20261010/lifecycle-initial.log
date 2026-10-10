@@ -1,0 +1,15 @@
+✔ actual component captures every selected period and failure; automatic work stays system-origin (16.614417ms)
+✔ all collection failures are exportable reports, never empty success or recomputable invented bars (1.600583ms)
+✔ missing response rows are retained as explicit errors; unexpected rows or cutoff cannot enter a saved result (5.70475ms)
+✔ late study response cannot be saved after account (0.860375ms)
+✔ late study response cannot be saved after input (0.830875ms)
+✔ late study response cannot be saved after unmount (0.76ms)
+✔ invalid collection coverage cannot silently omit a period during import (1.590125ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 510.413208

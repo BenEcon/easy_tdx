@@ -1,0 +1,5 @@
+
+> web-ui@0.0.0 build
+> vue-tsc -b && vite build
+
+src/views/StrategiesView.vue(373,10): error TS6133: 'pct' is declared but its value is never read.

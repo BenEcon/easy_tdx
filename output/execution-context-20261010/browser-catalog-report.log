@@ -1,0 +1,43 @@
+### Result
+{
+  "cases": [
+    {
+      "kind": "single",
+      "stoppedWithoutOverwrite": true,
+      "retryRestored": true
+    },
+    {
+      "kind": "portfolio",
+      "stoppedWithoutOverwrite": true,
+      "retryRestored": true
+    },
+    {
+      "kind": "single",
+      "emptyCatalogRetry": true
+    },
+    {
+      "kind": "portfolio",
+      "emptyCatalogRetry": true
+    }
+  ],
+  "errors": [],
+  "widths": [
+    {
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "width": 320,
+      "actual": 320
+    }
+  ],
+  "taskRequests": []
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__catalogReport)');
+```

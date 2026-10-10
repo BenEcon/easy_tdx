@@ -1,0 +1,12 @@
+### Result
+{"failure":"验收：模拟计算暂不可用；未替换原审核结果。","original":"30 分钟 · 对比快照\n2026-10-09 15:00:00\n240 / 240 根","switched":"日线 · 对比快照\n2026-10-09 15:00:00\n240 / 240 根","final":"日线 · 对比快照\n2026-10-09 15:00:00\n240 / 240 根"}
+### Ran Playwright code
+```js
+await (async (page) => { const panel=page.locator(".period-evidence"); await panel.getByRole("button",{name:"返回审核快照末尾",exact:true}).click(); await panel.getByRole("button",{name:/^背离事件 /}).click(); let row=panel.locator("article.confirmed").first(); await row.locator("summary").click(); const original=await panel.locator(".evidence-context").innerText(); const pattern="**/chanlun/replay**"; await page.route(pattern,r=>r.fulfill({status:503,contentType:"application/json",body:JSON.stringify({detail:"验收：模拟计算暂不可用"})}),{times:1}); await row.getByRole("button",{name:/回放到确认时刻$/}).click(); await panel.getByRole("alert").waitFor(); const failure=await panel.getByRole("alert").innerText(); if(await panel.locator(".evidence-context").innerText()!==original) throw Error("Failed replay replaced original result"); let release,ready; const gate=new Promise(r=>release=r); const fetched=new Promise(r=>ready=r); const handler=async route=>{const response=await route.fetch(); ready(); await gate; try{await route.fulfill({response})}catch(e){if(!String(e).includes("closed")&&!String(e).includes("aborted")) throw e}}; await page.route(pattern,handler); await row.getByRole("button",{name:/回放到确认时刻$/}).click(); await fetched; await page.getByRole("combobox",{name:"明细周期",exact:true}).click(); await page.getByRole("option",{name:"日线",exact:true}).click(); const switched=await panel.locator(".evidence-context").innerText(); release(); await page.waitForTimeout(300); await page.unroute(pattern,handler); const final=await panel.locator(".evidence-context").innerText(); if(!final.includes("日线 · 对比快照")||final!==switched) throw Error(final); return {failure,original,switched,final}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:18094/chanlun?symbol=300750
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T11-42-16-297Z.log#L5

@@ -1,0 +1,114 @@
+.........EEEEEEEEEEFE................................................... [ 91%]
+.......                                                                  [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_lossless_checkpoint_survives_restart_and_is_never_public_result _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_recovery_fences_old_lease_and_preserves_checkpoint_bytes _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_same_lease_cas_and_write_failure_preserve_last_valid_snapshot _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_stop_never_resumes_or_publishes_checkpoint[cancelled] _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_stop_never_resumes_or_publishes_checkpoint[timed_out] _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+__ ERROR at setup of test_pending_cancellation_releases_recovered_checkpoint ___
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_corruption_or_other_input_cannot_be_silently_restarted[checkpoint] _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_corruption_or_other_input_cannot_be_silently_restarted[checkpoint_fingerprint] _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_corruption_or_other_input_cannot_be_silently_restarted[fingerprint] _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_corruption_or_other_input_cannot_be_silently_restarted[kind] _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+_ ERROR at setup of test_actual_process_restart_only_executes_remaining_grid_points _
+tests/unit/test_task_checkpoints.py:48: in active
+    record, _ = store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+=================================== FAILURES ===================================
+______ test_quota_failure_keeps_old_checkpoint_and_counts_all_namespaces _______
+tests/unit/test_task_checkpoints.py:172: in test_quota_failure_keeps_old_checkpoint_and_counts_all_namespaces
+    store.submit("alice", frozen())
+tests/unit/test_task_checkpoints.py:39: in frozen
+    req = OptimizeBacktestRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E     Value error, 必须提供 ohlcv 或 symbol 之一 [type=value_error, input_value={'strategy': 'ma_cross', ..., 20], 'slow': [5, 10]}}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/value_error
+=========================== short test summary info ============================
+FAILED tests/unit/test_task_checkpoints.py::test_quota_failure_keeps_old_checkpoint_and_counts_all_namespaces
+ERROR tests/unit/test_task_checkpoints.py::test_lossless_checkpoint_survives_restart_and_is_never_public_result
+ERROR tests/unit/test_task_checkpoints.py::test_recovery_fences_old_lease_and_preserves_checkpoint_bytes
+ERROR tests/unit/test_task_checkpoints.py::test_same_lease_cas_and_write_failure_preserve_last_valid_snapshot
+ERROR tests/unit/test_task_checkpoints.py::test_stop_never_resumes_or_publishes_checkpoint[cancelled]
+ERROR tests/unit/test_task_checkpoints.py::test_stop_never_resumes_or_publishes_checkpoint[timed_out]
+ERROR tests/unit/test_task_checkpoints.py::test_pending_cancellation_releases_recovered_checkpoint
+ERROR tests/unit/test_task_checkpoints.py::test_corruption_or_other_input_cannot_be_silently_restarted[checkpoint]
+ERROR tests/unit/test_task_checkpoints.py::test_corruption_or_other_input_cannot_be_silently_restarted[checkpoint_fingerprint]
+ERROR tests/unit/test_task_checkpoints.py::test_corruption_or_other_input_cannot_be_silently_restarted[fingerprint]
+ERROR tests/unit/test_task_checkpoints.py::test_corruption_or_other_input_cannot_be_silently_restarted[kind]
+ERROR tests/unit/test_task_checkpoints.py::test_actual_process_restart_only_executes_remaining_grid_points
+1 failed, 67 passed, 11 errors in 3.52s

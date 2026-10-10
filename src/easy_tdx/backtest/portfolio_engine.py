@@ -6,14 +6,16 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import pandas as pd
 
+from easy_tdx.backtest.combined_performance import aggregate_performance, combine_equity
 from easy_tdx.backtest.engine import BacktestEngine
 from easy_tdx.backtest.strategy import Strategy
 from easy_tdx.backtest.types import BacktestResult
+from easy_tdx.computation import computation_checkpoint
 
 
 @dataclass
@@ -48,6 +50,7 @@ class PortfolioResult:
     individual_results: dict[str, BacktestResult]
     equity_allocation: dict[str, float]
     combined_equity: pd.DataFrame
+    performance_basis: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """转为可序列化字典。"""
@@ -56,6 +59,7 @@ class PortfolioResult:
             "individual_results": {k: v.to_dict() for k, v in self.individual_results.items()},
             "equity_allocation": self.equity_allocation,
             "combined_equity": self.combined_equity.to_dict(orient="records"),
+            "performance_basis": self.performance_basis,
         }
 
 
@@ -91,6 +95,7 @@ class PortfolioBacktestEngine:
         slippage: float = 0.0,
         execution: str = "next_open",
         chanlun_level: str | None = None,
+        category: str | None = None,
     ) -> None:
         """初始化组合回测引擎。
 
@@ -118,6 +123,7 @@ class PortfolioBacktestEngine:
         self._slippage = slippage
         self._execution = execution
         self._chanlun_level = chanlun_level
+        self._category = category
 
     def _compute_allocations(self) -> dict[str, float]:
         """计算每只标的的资金分配。"""
@@ -142,10 +148,14 @@ class PortfolioBacktestEngine:
         Returns:
             PortfolioResult 包含整体绩效和各标的详细结果
         """
+        keys = [f"{stock.market}{stock.code}" for stock in self._stocks]
+        if len(keys) != len(set(keys)):
+            raise ValueError("组合包含重复标的，未合并或减少资金分仓；请移除重复项")
         allocations = self._compute_allocations()
         individual_results: dict[str, BacktestResult] = {}
 
-        for stock in self._stocks:
+        for index, stock in enumerate(self._stocks):
+            computation_checkpoint()
             key = f"{stock.market}{stock.code}"
             cash = allocations.get(key, 0)
 
@@ -158,12 +168,10 @@ class PortfolioBacktestEngine:
                 slippage=self._slippage,
                 execution=self._execution,
                 chanlun_level=self._chanlun_level,
+                category=self._category,
             )
-            result = engine.run(stock.df)
+            result = engine.run(stock.df, checkpoint_key=f"portfolio/{index}/signals")
             individual_results[key] = result
-
-        # 汇总整体绩效
-        total_perf = self._aggregate_performance(individual_results, allocations)
 
         # 计算资金占比
         total_alloc = sum(allocations.values())
@@ -171,12 +179,14 @@ class PortfolioBacktestEngine:
 
         # 生成组合整体净值曲线（各标的按日期对齐求和）
         combined_equity = self._build_combined_equity(individual_results, allocations)
+        total_perf, basis = aggregate_performance(individual_results, allocations, combined_equity)
 
         return PortfolioResult(
             total_performance=total_perf,
             individual_results=individual_results,
             equity_allocation=equity_pct,
             combined_equity=combined_equity,
+            performance_basis=basis,
         )
 
     def _aggregate_performance(
@@ -195,24 +205,8 @@ class PortfolioBacktestEngine:
         Returns:
             组合整体绩效指标
         """
-        total_cash = sum(allocations.values())
-        if total_cash == 0:
-            return {"total_return": 0.0, "annual_return": 0.0}
-
-        # 资金加权收益率
-        weighted_return = 0.0
-        for key, result in results.items():
-            alloc = allocations.get(key, 0)
-            weight = alloc / total_cash
-            ret = result.performance.get("total_return", 0.0)
-            weighted_return += weight * ret
-
-        return {
-            "total_return": weighted_return,
-            "annual_return": weighted_return,  # 简化，实际应根据周期年化
-            "total_stocks": len(results),
-            "total_cash": total_cash,
-        }
+        curve = self._build_combined_equity(results, allocations)
+        return aggregate_performance(results, allocations, curve)[0]
 
     def _build_combined_equity(
         self,
@@ -228,46 +222,4 @@ class PortfolioBacktestEngine:
             DataFrame: datetime / total / drawdown / drawdown_pct。
             空结果时返回带表头的空 DataFrame。
         """
-        empty = pd.DataFrame(columns=["datetime", "total", "drawdown", "drawdown_pct"])
-        if not results:
-            return empty
-
-        # 收集各标的的 (datetime, total) 系列，以 datetime 为索引
-        series_list: list[pd.Series] = []
-        for key, result in results.items():
-            ec = result.equity_curve
-            if len(ec) == 0:
-                continue
-            # datetime 列可能是 int(YYYYMMDD) 或 datetime；统一转可比字符串/时间戳
-            dt = ec["datetime"]
-            if dt.dtype.kind in "iu":  # int YYYYMMDD
-                dt = pd.to_datetime(dt.astype(str), format="%Y%m%d")
-            elif dt.dtype != "datetime64[ns]":
-                dt = pd.to_datetime(dt)
-            s = pd.Series(ec["total"].to_numpy(), index=dt, name=key)
-            series_list.append(s)
-
-        if not series_list:
-            return empty
-
-        # 外连接对齐（并集日期），forward-fill 各标的在缺失日期的净值（持有不动），
-        # 再求和得组合总净值。缺失值填 0 是为应对某标的完全无该日期数据的情况。
-        aligned = pd.concat(series_list, axis=1).sort_index()
-        aligned = aligned.ffill().fillna(0)
-        total = aligned.sum(axis=1)
-
-        # 计算回撤
-        peak = total.cummax()
-        drawdown = total - peak
-        # drawdown_pct：以初始总资金为基准（peak 的首个值），避免除零
-        initial = peak.iloc[0] if len(peak) > 0 and peak.iloc[0] != 0 else 1.0
-        drawdown_pct = drawdown / initial
-
-        return pd.DataFrame(
-            {
-                "datetime": total.index,
-                "total": total.to_numpy(),
-                "drawdown": drawdown.to_numpy(),
-                "drawdown_pct": drawdown_pct.to_numpy(),
-            }
-        ).reset_index(drop=True)
+        return combine_equity(results, allocations)

@@ -1,0 +1,10 @@
+### Ran Playwright code
+```js
+await (async(page)=>{await page.setViewportSize({width:1440,height:1000});const results=[];for(const path of ['/portfolio','/']){await page.goto('http://127.0.0.1:8768'+path);const input=page.getByRole('textbox',{name:'最低佣金',exact:true});await input.fill('1.23');await input.press('Tab');if(await input.inputValue()!=='1.23')throw Error('失焦取整');results.push({path,value:await input.inputValue()});}await page.evaluate(r=>window.__precisionReport=r,results);})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8768/
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: ../.playwright-cli/console-2026-10-09T19-03-37-053Z.log#L11-L16

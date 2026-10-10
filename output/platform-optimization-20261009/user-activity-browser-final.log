@@ -1,0 +1,78 @@
+### Result
+{"checks":[{"ordinaryUserTrackingRedirect":true,"memberAdminEventsStatus":403},{"grantSave":true,"revokeWriteStatus":403,"originalGroupsRetained":true},{"serverObservedQuery":{"code":"SZ:300750","category":"DAY","visible_count":20},"publicTestIPLookupText":"archive-other\n登录\n请求已受理\n10/09 23:34:04\n8.8.4.4\n美国 · 加利福尼亚州 · 聖荷西 · Google LLC\n查询于 10/09 23:34:08"},{"realHeartbeatActiveSeconds":30}],"layouts":[{"width":1440,"document":1440,"viewport":1440},{"width":390,"document":390,"viewport":390},{"width":320,"document":320,"viewport":320}],"errors":[]}
+### Ran Playwright code
+```js
+await (async (page) => {
+  const base='http://127.0.0.1:8767',errors=[],checks=[],layouts=[];
+  const require=(value,msg)=>{if(!value)throw Error(msg)};
+  page.on('pageerror',e=>errors.push(String(e)));
+  await page.setViewportSize({width:1440,height:1000});
+  const other=await page.context().browser().newContext({viewport:{width:390,height:1000}});
+  try{
+    const login=await other.request.post(`${base}/api/v1/auth/login`,{data:{username:'archive-other',password:'Local-archive-QA-only-2026!'},headers:{'X-Forwarded-For':'8.8.4.4'}});
+    require(login.ok(),'member login failed');
+    const member=(await login.json()).user;
+    const memberPage=await other.newPage();memberPage.on('pageerror',e=>errors.push(String(e)));
+    await memberPage.goto(`${base}/tracking`);await memberPage.waitForURL(/\/account(?:\?|$)/);
+    require((await other.request.get(`${base}/api/v1/admin/activity/events`)).status()===403,'member read admin events');
+    checks.push({ordinaryUserTrackingRedirect:true,memberAdminEventsStatus:403});
+    await page.bringToFront();
+    await page.getByRole('checkbox',{name:'archive-other 的追踪标的权限'}).check();
+    await page.waitForFunction(async()=>{const r=await fetch('/api/v1/admin/users');const d=await r.json();return d.users.find(u=>u.username==='archive-other')?.tracking_allowed===true});
+    await memberPage.goto(`${base}/tracking`);await memberPage.getByRole('heading',{name:'追踪标的',exact:true}).last().waitFor();
+    await memberPage.getByLabel('新建分组',{exact:true}).fill('授权验证保留组');
+    await memberPage.getByRole('button',{name:'添加',exact:true}).click();
+    await memberPage.getByText('已保存到当前账户',{exact:true}).waitFor();
+    const before=(await (await other.request.get(`${base}/api/v1/auth/me`)).json()).user.preferences.tracking_groups;
+    require(before.groups.some(g=>g.name==='授权验证保留组'),'authorized save failed');
+    await page.bringToFront();
+    await page.getByRole('checkbox',{name:'archive-other 的追踪标的权限'}).uncheck();
+    await page.waitForFunction(async()=>{const r=await fetch('/api/v1/admin/users');const d=await r.json();return d.users.find(u=>u.username==='archive-other')?.tracking_allowed===false});
+    const denied=await other.request.put(`${base}/api/v1/auth/me/preferences`,{data:{preferences:{tracking_groups:{groups:[]}}}});
+    require(denied.status()===403,'revoked write accepted');
+    await memberPage.goto(`${base}/tracking`);await memberPage.waitForURL(/\/account(?:\?|$)/);
+    const after=(await (await other.request.get(`${base}/api/v1/auth/me`)).json()).user.preferences.tracking_groups;
+    require(JSON.stringify(before)===JSON.stringify(after),'revocation destroyed data');
+    checks.push({grantSave:true,revokeWriteStatus:denied.status(),originalGroupsRetained:true});
+    const bars=Array.from({length:20},(_,i)=>({datetime:`2026-09-${String(i+1).padStart(2,'0')} 15:00:00`,open:10+i/10,high:11+i/10,low:9+i/10,close:10.5+i/10,vol:100,amount:1000,is_closed:true}));
+    const replay=await other.request.post(`${base}/api/v1/chanlun/replay`,{data:{code:'SZ:300750',category:'DAY',visible_count:20,bars}});
+    require(replay.status()===200,`real route replay status ${replay.status()}`);
+    await page.getByRole('button',{name:'用户活动',exact:true}).click();
+    await page.getByRole('heading',{name:'用户活动',exact:true}).waitFor();
+    await page.getByText('标的：SZ:300750 · 周期：DAY · 可见根数：20',{exact:true}).waitFor();
+    const rows=await (await page.request.get(`${base}/api/v1/admin/activity/events`)).json();
+    const query=rows.items.find(r=>r.owner===member.id&&r.feature==='缠论回放');
+    require(query&&query.outcome==='accepted'&&!JSON.stringify(query).includes('bars'),'query metadata failed');
+    const publicLogin=page.locator('.event-list li').filter({has:page.getByText('8.8.4.4',{exact:true})});
+    await publicLogin.getByRole('button',{name:'查询归属地'}).click();
+    await page.waitForFunction(()=>[...document.querySelectorAll('.ip-row')].some(el=>el.textContent.includes('8.8.4.4')&&(el.textContent.includes('美国')||el.textContent.includes('暂不可用'))));
+    checks.push({serverObservedQuery:query.details,publicTestIPLookupText:await publicLogin.innerText()});
+    // Native popover and Escape must work outside a modal as well as in archive dialogs.
+    const menu=page.getByRole('combobox',{name:'活动时间范围'});
+    await menu.click();await page.getByRole('option',{name:'最近 30 天',exact:true}).click();
+    await menu.click();await menu.press('Escape');
+    require(await page.getByRole('listbox',{name:'活动时间范围'}).count()===0,'Escape did not close menu');
+    await page.bringToFront();await page.mouse.click(680,190);
+    const presence=await page.waitForResponse(r=>r.url().endsWith('/auth/activity')&&r.status()===200,{timeout:25000});
+    require((await presence.json()).ok===true,'heartbeat failed');
+    await page.mouse.move(681,191);
+    await page.waitForResponse(r=>r.url().endsWith('/auth/activity')&&r.status()===200,{timeout:25000});
+    const summary=await (await page.request.get(`${base}/api/v1/admin/activity/summary?days=1`)).json();
+    require(summary.items.find(u=>u.username==='archive-qa').active_seconds>0,'focused active time not counted');
+    checks.push({realHeartbeatActiveSeconds:summary.items.find(u=>u.username==='archive-qa').active_seconds});
+    for(const width of [1440,390,320]){
+      await page.setViewportSize({width,height:1000});
+      await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+      const size=await page.evaluate(()=>({document:document.documentElement.scrollWidth,viewport:innerWidth}));
+      require(size.document===width,`activity overflow ${JSON.stringify(size)}`);
+      await menu.click();
+      const box=await page.getByRole('listbox',{name:'活动时间范围'}).boundingBox();
+      require(box&&box.x>=0&&box.x+box.width<=width+1,'menu outside viewport');
+      await menu.press('Escape');
+      await page.screenshot({path:`output/playwright/user-activity-${width}.png`});layouts.push({width,...size});
+    }
+    require(errors.length===0,`pageerrors ${errors}`);
+    return {checks,layouts,errors};
+  }finally{await other.close()}
+})(page);
+```

@@ -1,0 +1,8 @@
+.......................................................                  [100%]
+=============================== warnings summary ===============================
+tests/unit/test_factor_panel.py::test_panel_archive_reopens_without_execution_and_explicit_recompute
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+55 passed, 1 warning in 2.95s

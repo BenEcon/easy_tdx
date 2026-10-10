@@ -1,0 +1,9 @@
+### Result
+{"exportName":"300750-缠论研究-2026-10-09-15-00-00.json","requestedPeriods":["WEEK","DAY","MIN_30","MIN_15","MIN_5"],"oldStockTableRemoved":true}
+### Ran Playwright code
+```js
+await (async page => { await page.setViewportSize({width:1920,height:1100}); const section=page.locator(".multi-study"); await section.scrollIntoViewIfNeeded(); const region=page.getByRole("region",{name:"多周期概览数据，可横向滚动",exact:true}); await region.focus(); await page.keyboard.press("ArrowLeft"); await page.screenshot({path:"../output/playwright/period-overview-desktop-final.png"}); const downloaded=page.waitForEvent("download"); await page.getByRole("button",{name:"保存研究快照",exact:true}).click(); const download=await downloaded; await download.saveAs("../output/platform-optimization-20261009/overview-export.json"); await page.getByRole("checkbox",{name:"自动更新",exact:true}).uncheck(); let requestBody; await page.route("**/api/v1/chanlun/observations", async route => { requestBody=route.request().postDataJSON(); await new Promise(resolve=>setTimeout(resolve,1200)); try { await route.continue(); } catch {} }); const pending=page.waitForRequest("**/api/v1/chanlun/observations"); await page.getByRole("button",{name:"更新概览",exact:true}).click(); await pending; const textbox=page.getByRole("textbox",{name:"000001",exact:true}); await textbox.fill("600699"); await page.waitForFunction(()=>!document.querySelector(".multi-study")); await page.unroute("**/api/v1/chanlun/observations"); return {exportName:download.suggestedFilename(),requestedPeriods:requestBody.series.map(s=>s.category),oldStockTableRemoved:await section.count()===0}; })(page);
+```
+### Events
+- Downloading file 300750-缠论研究-2026-10-09-15-00-00.json ...
+- Downloaded file 300750-缠论研究-2026-10-09-15-00-00.json to ".playwright-cli/300750-缠论研究-2026-10-09-15-00-00.json"

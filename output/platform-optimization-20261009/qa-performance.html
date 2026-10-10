@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>绩效口径组件验收 · 合成数据</title><div id="qa"></div>
+<script type="module">
+import { createApp } from 'vue'
+import ResultDataProvenance from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/ResultDataProvenance.vue'
+import MetricTable from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/MetricTable.vue'
+import GradeDetails from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/GradeDetails.vue'
+import { gradePerformance } from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/grading/index.ts'
+import '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/style.css'
+const perf={total_return:.05,annual_return:null,max_drawdown:.06,max_dd_duration:12,sharpe:null,sortino:null,calmar:null,total_trades:4,win_trades:3,lose_trades:1,rejected_trades:0,win_rate:.75,profit_factor:2,avg_win:.08,avg_loss:-.03,max_win:.12,max_loss:-.03,avg_holding_days:.04,volatility:null}
+const evidence={datasets:[],request:{category:'MIN_5'},performance_basis:{sample_category:'DAY',annual_periods:252,return_count:1,sample_start:'2026-09-14T15:00:00',sample_end:'2026-09-15T15:00:00',unavailable_reason:'有效收盘收益不足 2 个，年化与风险指标不可用',warnings:['分钟年化与风险指标仅使用 15:00 收盘净值；首个收盘前和末个收盘后的收益仅计入总收益']}}
+createApp({components:{ResultDataProvenance,MetricTable,GradeDetails},data:()=>({perf,evidence,grade:gradePerformance(perf)}),template:`<main><header><h1>绩效口径验收</h1><p>本地合成数据，不连接生产服务。</p></header><ResultDataProvenance :evidence="evidence" /><section><GradeDetails :result="grade" expanded /></section><section><MetricTable :perf="perf" /></section></main>`}).mount('#qa')
+</script>
+<style>body{overflow:auto!important}main{max-width:1000px;margin:32px auto;padding:0 20px}section{min-width:0;margin:24px 0}h1{font-size:22px}p{color:var(--text-dim)}#qa{width:100%}</style></html>

@@ -4,6 +4,7 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import echarts, { DOWN_COLOR, UP_COLOR } from '../echarts-setup'
 import { clickTooltipOptions, installClickChartTooltip } from '../click-chart-tooltip'
 import { fmt2 } from '../format'
+import { createBarTimeLookup, formatMarketTime } from '../bar-time'
 import {
   buildIndicatorSeries,
   calculateIndicatorRows,
@@ -17,10 +18,10 @@ import {
 import type { Bar, Trade } from '../types'
 import TechnicalIndicatorPicker from './TechnicalIndicatorPicker.vue'
 
-const props = defineProps<{ bars: Bar[]; trades: Trade[] }>()
+const props = defineProps<{ bars: Bar[]; trades: Trade[]; readonlyArchive?:boolean }>()
 
 const container = ref<HTMLDivElement>()
-const selectedIndicator = ref<TechnicalIndicator>('macd')
+const selectedIndicator = ref<TechnicalIndicator>(props.readonlyArchive?'none':'macd')
 const indicatorParams = ref<IndicatorParams>(getIndicatorDefinition('macd').defaultParams)
 const indicatorRows = ref<Array<Record<string, unknown>>>([])
 const indicatorLoading = ref(false)
@@ -31,10 +32,8 @@ let resizeObserver: ResizeObserver | null = null
 
 function buildOption(): echarts.EChartsCoreOption {
   const keys = props.bars.map((bar) => bar.datetime)
-  const keyIndex = new Map<string, number>()
-  keys.forEach((key, index) => keyIndex.set(key, index))
-  const isIntraday = keys.some((key) => key.slice(11, 19) && key.slice(11, 19) !== '00:00:00')
-  const dates = keys.map((key) => (isIntraday ? key.replace('T', ' ').slice(5, 16) : key.slice(0, 10)))
+  const findBar = createBarTimeLookup(keys)
+  const dates = keys.map(formatMarketTime)
   const ohlc = props.bars.map((bar) => [bar.open, bar.close, bar.low, bar.high])
   const hasIndicator = indicatorUsesPanel(selectedIndicator.value)
   const indicatorDefinition = getIndicatorDefinition(selectedIndicator.value)
@@ -43,12 +42,8 @@ function buildOption(): echarts.EChartsCoreOption {
   const markPoints: Array<Record<string, unknown>> = []
   for (const trade of props.trades) {
     if (trade.rejected) continue
-    const tradeKey = trade.datetime.slice(0, 19).replace(' ', 'T')
-    let index = keyIndex.get(tradeKey)
-    if (index === undefined) {
-      index = keys.findIndex((key) => key.startsWith(tradeKey.slice(0, 10)))
-      if (index === -1) continue
-    }
+    const index = findBar(trade.datetime)
+    if (index === undefined) continue
     const isBuy = trade.direction === 'BUY'
     markPoints.push({
       name: isBuy ? '买入' : '卖出', value: isBuy ? 'B' : 'S', date: dates[index], price: trade.price,
@@ -193,6 +188,7 @@ let indicatorRequest = 0
 async function refreshIndicator() {
   const requestId = ++indicatorRequest
   indicatorError.value = ''
+  if(props.readonlyArchive){indicatorRows.value=[];indicatorLoading.value=false;render();return}
   const definition = getIndicatorDefinition(selectedIndicator.value)
   if (!props.bars.length || definition.code === 'NONE' || definition.code === 'VOLUME') {
     indicatorRows.value = []
@@ -238,6 +234,7 @@ watch(() => [props.bars, selectedIndicator.value, indicatorParams.value], () => 
   <div class="market-chart-shell">
     <div ref="container" class="kline-chart" :class="{ 'has-indicator': indicatorUsesPanel(selectedIndicator) }"></div>
     <TechnicalIndicatorPicker
+      v-if="!readonlyArchive"
       v-model="selectedIndicator"
       v-model:params="indicatorParams"
       :loading="indicatorLoading"

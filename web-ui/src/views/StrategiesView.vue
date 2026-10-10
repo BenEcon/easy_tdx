@@ -1,15 +1,19 @@
 <script setup lang="ts">
+import PortfolioArchiveTools from '../components/PortfolioArchiveTools.vue'
+import ResultDataProvenance from '../components/ResultDataProvenance.vue'
 // 策略库页面：列出用户保存的策略，支持「载入」（回填到对应回测页）+「删除」，
 // 以及「组合回测」——勾选多个策略，各拿 1/N 资金、各跑原标的，看综合表现。
 // 数据来自后端 SQLite（GET /api/v1/strategies）。空态提示去回测页保存。
 
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import ChartFrame from '../components/ChartFrame.vue'
 import EquityChart from '../components/EquityChart.vue'
 import GradeDetails from '../components/GradeDetails.vue'
 import MetricTable from '../components/MetricTable.vue'
+import MetricStateNotes from '../components/MetricStateNotes.vue'
+import { metricText, type MetricStates } from '../metric-state'
 import PortfolioCompareChart from '../components/PortfolioCompareChart.vue'
 import PortfolioSummaryTable from '../components/PortfolioSummaryTable.vue'
 import MacSelect from '../components/MacSelect.vue'
@@ -24,15 +28,23 @@ import {
   saveStrategy,
 } from '../api'
 import { gradePortfolio } from '../grading'
+import PerformanceContextNote from '../components/PerformanceContextNote.vue'
+import { performanceSnapshot, portfolioBasis } from '../performance-context'
 import { detectMarket } from '../market'
 import { useMarketPreferences } from '../market-preferences'
 import { useSelectedStock, recordStockHistory } from '../stock-history'
 import type { Category, MultiStrategyItem, Performance, SavedStrategy, StrategySchema } from '../types'
 import { useBacktestStore } from '../stores/backtest'
+import { useAuth } from '../auth'
+import { copyTaskInput } from '../task-execution'
+import { combineSavedSingles, savedMultiInput, multiExecutionSummary } from '../execution-context'
 
 const router = useRouter()
 const store = useBacktestStore()
 const { adjustMode } = useMarketPreferences()
+const {currentUser}=useAuth()
+let alive=true,epoch=0,listVersion=0,creatorVersion=0
+function accountTicket(){const owner=currentUser.value?.id,version=epoch;return{owner,current:()=>!!owner&&alive&&version===epoch&&currentUser.value?.id===owner}}
 
 const strategies = ref<SavedStrategy[]>([])
 const loading = ref(false)
@@ -55,6 +67,9 @@ const categoryOptions = ['DAY', 'WEEK', 'MONTH', 'MIN_5', 'MIN_15', 'MIN_30', 'M
 }))
 
 async function createFromBuiltin() {
+  if(templateSaving.value)return
+  const ticket=accountTicket(),version=creatorVersion
+  if(!ticket.owner){error.value='请先登录再保存';return}
   if (!/^\d{6}$/.test(templateCode.value)) {
     error.value = '股票代码必须是 6 位数字'
     return
@@ -71,38 +86,41 @@ async function createFromBuiltin() {
   if (!schema) return
   templateSaving.value = true
   error.value = ''
+  const input=copyTaskInput({code:templateCode.value,params:templateParams.value,category:templateCategory.value,start:templateStartDate.value,end:templateEndDate.value,adjust:adjustMode.value})
   try {
-    const market = detectMarket(templateCode.value)
+    const market = detectMarket(input.code)
     const names: Record<string, string> = await fetchStockNames([
-      { market, code: templateCode.value },
+      { market, code: input.code },
     ]).catch((): Record<string, string> => ({}))
-    const stockLabel = names[templateCode.value]
-      ? `${templateCode.value}-${names[templateCode.value]}`
-      : templateCode.value
+    if(!ticket.current()||version!==creatorVersion)return
+    const stockLabel = names[input.code] ? `${input.code}-${names[input.code]}` : input.code
     const created = await saveStrategy({
       name: `${schema.label} · ${stockLabel}`,
       kind: 'single',
       strategy: schema.name,
       strategy_label: schema.label,
-      params: templateParams.value,
+      params: input.params,
       context: {
-        symbol: `${market}:${templateCode.value}`,
-        category: templateCategory.value,
-        start_date: templateStartDate.value,
-        end_date: templateEndDate.value,
+        symbol: `${market}:${input.code}`,
+        category: input.category,
+        start_date: input.start,
+        end_date: input.end,
+        adjust:input.adjust,
       },
-      trade_config: { cash: 1_000_000, commission: 0.0003, slippage: 0 },
+      trade_config: { cash: 1_000_000, commission: 0.0003, min_commission:5,stamp_tax:.001,slippage: 0,execution:'next_open' },
       snapshot: {},
       tags: ['内置模板'],
       notes: '从内置策略模板创建，可直接载入个股分析或加入组合回测。',
-    })
+    },ticket.owner)
+    if(!ticket.current()||version!==creatorVersion)return
+    listVersion++;loading.value=false
     strategies.value = [created, ...strategies.value]
-    recordStockHistory({ code: templateCode.value, category: templateCategory.value })
+    recordStockHistory({ code: input.code, category: input.category })
     creatorOpen.value = false
   } catch (e) {
-    error.value = formatError(e)
+    if(ticket.current()&&version===creatorVersion)error.value = formatError(e)
   } finally {
-    templateSaving.value = false
+    if(ticket.current()&&version===creatorVersion)templateSaving.value = false
   }
 }
 
@@ -157,51 +175,26 @@ function clearSelection() {
   selectedIds.value = new Set()
 }
 
-/** 纠正历史保存策略的市场前缀。
- *  早期 BacktestView.fullSymbol 硬编码市场判断（漏判 5 开头的沪市基金/ETF），
- *  导致部分历史保存的策略 symbol 被错标（如 SZ:515030，应为 SH:515030），
- *  后端按错配市场取到 0 根 K 线被静默跳过。
- *  这里在发请求前用 detectMarket 重算前缀，纠正历史数据 + 兜底未来。 */
-function normalizeSymbol(raw: string): string {
-  if (!raw) return raw
-  const code = raw.includes(':') ? raw.split(':').pop()! : raw
-  return `${detectMarket(code)}:${code}`
-}
-
 /** 组合回测：把勾选的策略组装成 MultiStrategyItem[]，各跑原标的，资金均分。 */
 async function onComboBacktest() {
+  const ticket=accountTicket()
+  if(!ticket.current())return
   if (selectedStrategies.value.length === 0) return
   store.error = ''
-  // 只取有单标的上下文（symbol）的策略；组合类策略没有单一 symbol，跳过并提示。
-  const usable = selectedStrategies.value.filter((s) => s.context?.symbol)
-  const skipped = selectedStrategies.value.length - usable.length
-  if (usable.length === 0) {
-    store.error = '勾选的策略缺少标的上下文（symbol），无法组合回测。请勾选单标的策略。'
-    return
-  }
-  const items: MultiStrategyItem[] = usable.map((s) => ({
-    strategy: s.strategy,
-    strategy_label: s.strategy_label || s.strategy,
-    params: s.params,
-    symbol: normalizeSymbol(s.context.symbol as string),
-    category: (s.context.category as MultiStrategyItem['category']) || 'DAY',
-    start_date: (s.context.start_date as string) || undefined,
-    end_date: (s.context.end_date as string) || undefined,
-  }))
-  lastComboItems.value = items
-  lastComboCash.value = 1_000_000
-  await store.runMultiStrategy({ items, cash: 1_000_000, adjust: adjustMode.value })
-  if (skipped > 0) {
-    store.error = `已跳过 ${skipped} 个缺少单一标的的策略（组合策略无 symbol）。`
-  }
+  try{
+    const {request,warnings}=combineSavedSingles(selectedStrategies.value,builtinStrategies.value.map(s=>s.name),isoToday())
+    if(!confirm('按各策略保存区间组合回测？\n'+multiExecutionSummary(request,warnings))||!ticket.current())return
+    lastComboItems.value=request.items;lastComboCash.value=request.cash!
+    await store.runMultiStrategy(request)
+  }catch(e){if(ticket.current())store.error=formatError(e)}
 }
 
 // ── 保存组合（kind: 'multi'）─────────────────────────────────────────────────
 
 /** 打开保存组合弹窗：预填名称 + 自动聚焦输入框。 */
 function openSaveCombo() {
-  if (!store.multiStrategyResult) return
-  saveComboName.value = `组合·${lastComboItems.value.length}策略·${new Date().toISOString().slice(0, 10)}`
+  if (!store.multiStrategyResult || !store.multiStrategyRequest) return
+  saveComboName.value = `组合·${store.multiStrategyRequest.items.length}策略·${new Date().toISOString().slice(0, 10)}`
   saveComboNotes.value = ''
   saveComboOpen.value = true
   // 等弹窗渲染完再聚焦
@@ -215,7 +208,8 @@ function closeSaveCombo() {
 
 /** 提交保存组合：把 items + cash 存进 context，组合级绩效存 snapshot。 */
 async function submitSaveCombo() {
-  if (!store.multiStrategyResult || lastComboItems.value.length === 0) return
+  const request=store.multiStrategyRequest,ticket=accountTicket()
+  if (!store.multiStrategyResult || !request || !ticket.current() || saveComboLoading.value) return
   if (!saveComboName.value.trim()) {
     error.value = '请填写组合名称'
     return
@@ -228,80 +222,62 @@ async function submitSaveCombo() {
       name: saveComboName.value.trim(),
       kind: 'multi',
       strategy: 'multi',
-      strategy_label: `${lastComboItems.value.length} 策略组合`,
+      strategy_label: `${request.items.length} 策略组合`,
       context: {
-        items: lastComboItems.value,
-        cash: lastComboCash.value,
-        adjust: adjustMode.value,
+        items: request.items,
+        cash: request.cash,
+        adjust: request.adjust,
       },
-      trade_config: { cash: lastComboCash.value },
-      snapshot: {
-        total_return: tp.total_return,
-        annual_return: tp.annual_return,
-        total_stocks: tp.total_stocks,
-        total_cash: tp.total_cash,
-      },
+      trade_config: { cash: request.cash,commission:request.commission,min_commission:request.min_commission,stamp_tax:request.stamp_tax,slippage:request.slippage,execution:request.execution },
+      snapshot: performanceSnapshot({ ...tp }, portfolioBasis(store.multiStrategyResult)),
       tags: ['组合'],
       notes: saveComboNotes.value.trim(),
-    })
+    },ticket.owner)
+    if(!ticket.current()||request!==store.multiStrategyRequest)return
+    listVersion++;loading.value=false
     strategies.value = [created, ...strategies.value]
     saveComboOpen.value = false
   } catch (e) {
-    error.value = formatError(e)
+    if(ticket.current()&&request===store.multiStrategyRequest)error.value = formatError(e)
   } finally {
-    saveComboLoading.value = false
+    if(ticket.current()&&request===store.multiStrategyRequest)saveComboLoading.value = false
   }
 }
 
 // ── 载入组合（kind: 'multi'）→ 自动重跑到今天 ────────────────────────────────
 
 function isoToday(): string {
-  return new Date().toISOString().slice(0, 10)
+  return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())
 }
 
 /** 载入组合：把保存的 items 的 end_date 全部覆盖为今天，自动触发组合回测。
  *  这样跑出来的"当前持仓"= 截至今天的策略信号（哪些该买/该卖）。 */
-async function onLoadMulti(s: SavedStrategy) {
-  const ctx = s.context || {}
-  const rawItems = Array.isArray(ctx.items) ? (ctx.items as MultiStrategyItem[]) : []
-  if (rawItems.length === 0) {
-    error.value = '该组合没有保存策略明细（items），可能数据损坏。'
-    return
-  }
-  // 运行时校验：每条至少要有 strategy + symbol，否则带病跑到后端才报错
-  const valid = rawItems.every(
-    (it) => it && typeof it.strategy === 'string' && typeof it.symbol === 'string',
-  )
-  if (!valid) {
-    error.value = '组合数据损坏：部分策略缺少 strategy 或 symbol 字段。'
-    return
-  }
-  if (!confirm(
-    `载入「${s.name}」并用今天（${isoToday()}）重跑 ${rawItems.length} 个策略？\n\n` +
-    `结果区会显示截至今天的策略信号（"哪些该买/该卖"）。`,
-  )) return
-  const today = isoToday()
-  const items = rawItems.map((it) => ({
-    ...it,
-    symbol: normalizeSymbol(it.symbol),
-    end_date: today,
-  }))
-  const cash = typeof ctx.cash === 'number' ? ctx.cash : 1_000_000
-  lastComboItems.value = items
-  lastComboCash.value = cash
-  await store.runMultiStrategy({ items, cash, adjust: adjustMode.value })
+async function onLoadMulti(s: SavedStrategy, extend=true) {
+  const ticket=accountTicket()
+  if(!ticket.current())return
+  error.value=''
+  try{
+    const {request,warnings}=savedMultiInput(s,builtinStrategies.value.map(v=>v.name),isoToday(),extend)
+    if(!confirm(`重跑「${s.name}」？${extend?`各槽位结束日期改为今天（${isoToday()}）`:'保留各槽位保存的原区间'}。\n`+multiExecutionSummary(request,warnings))||!ticket.current())return
+    lastComboItems.value=request.items;lastComboCash.value=request.cash!
+    await store.runMultiStrategy(request)
+  }catch(e){if(ticket.current())error.value=formatError(e);return}
   // 跑完滚动到结果区
   await nextTick()
+  if(!ticket.current())return
   comboResultRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }
 
-onMounted(load)
+onMounted(()=>{store.clearMultiStrategy();void load()})
 
 async function load() {
+  const ticket=accountTicket(),version=++listVersion
+  if(!ticket.current())return
   loading.value = true
   error.value = ''
   try {
-    const [resp, builtin] = await Promise.all([fetchSavedStrategies(), fetchStrategies()])
+    const [resp, builtin] = await Promise.all([fetchSavedStrategies(ticket.owner), fetchStrategies()])
+    if(!ticket.current()||version!==listVersion)return
     strategies.value = resp.strategies
     builtinStrategies.value = builtin.strategies
     if (!templateStrategy.value && builtin.strategies.length) {
@@ -309,27 +285,24 @@ async function load() {
     }
     if (resp.strategies.length === 0) creatorOpen.value = true
   } catch (e) {
-    error.value = formatError(e)
+    if(ticket.current()&&version===listVersion)error.value = formatError(e)
   } finally {
-    loading.value = false
+    if(ticket.current()&&version===listVersion)loading.value = false
   }
 }
 
 /** 载入：把保存的策略 + 标的上下文塞进 URL query，跳转对应回测页（页面 onMounted 时回填）。 */
 function onLoad(s: SavedStrategy) {
+  if (s.kind === 'single') {
+    void router.push({path:'/',query:{savedStrategyId:s.id}})
+    return
+  }
   const ctx = s.context
   const params = JSON.stringify(s.params)
   if (s.kind === 'portfolio') {
     router.push({
       path: '/portfolio',
-      query: {
-        strategy: s.strategy,
-        params,
-        stocks: Array.isArray(ctx.stocks) ? (ctx.stocks as string[]).join(',') : '',
-        startDate: (ctx.start_date as string) || undefined,
-        endDate: (ctx.end_date as string) || undefined,
-        category: (ctx.category as string) || undefined,
-      },
+      query: {savedStrategyId:s.id},
     })
   } else {
     // 保存的 symbol 带"市场:6位代码"前缀（如 SH:601088，便于策略库展示），
@@ -352,27 +325,36 @@ function onLoad(s: SavedStrategy) {
 }
 
 async function onDelete(s: SavedStrategy) {
+  const ticket=accountTicket()
+  if(!ticket.current()||deletingId.value)return
   if (!confirm(`确定删除「${s.name}」？此操作不可撤销。`)) return
   deletingId.value = s.id
   try {
-    await deleteSavedStrategy(s.id)
+    await deleteSavedStrategy(s.id,ticket.owner)
+    if(!ticket.current())return
+    listVersion++;loading.value=false
     strategies.value = strategies.value.filter((x) => x.id !== s.id)
   } catch (e) {
-    error.value = formatError(e)
+    if(ticket.current())error.value = formatError(e)
   } finally {
-    deletingId.value = null
+    if(ticket.current())deletingId.value = null
   }
 }
+watch([templateCode,templateStrategy,templateParams,templateCategory,templateStartDate,templateEndDate,adjustMode],()=>{
+  creatorVersion++;templateSaving.value=false
+},{deep:true,flush:'sync'})
+watch(()=>store.multiStrategyRequest,()=>{saveComboLoading.value=false;saveComboOpen.value=false},{flush:'sync'})
+watch(()=>currentUser.value?.id,()=>{
+  epoch++;listVersion++;creatorVersion++;strategies.value=[];selectedIds.value=new Set()
+  loading.value=false;error.value='';deletingId.value=null;templateSaving.value=false;creatorOpen.value=false
+  saveComboOpen.value=false;saveComboLoading.value=false;lastComboItems.value=[];store.clearMultiStrategy()
+},{flush:'sync'})
+onBeforeUnmount(()=>{alive=false;epoch++;store.clearMultiStrategy()})
 
 // ── 展示辅助 ────────────────────────────────────────────────────────────────
 
-function pct(v: unknown): string {
-  const n = typeof v === 'number' ? v : Number(v)
-  return Number.isFinite(n) ? `${(n * 100).toFixed(2)}%` : '-'
-}
-function num(v: unknown, d = 2): string {
-  const n = typeof v === 'number' ? v : Number(v)
-  return Number.isFinite(n) ? n.toFixed(d) : '-'
+function snapshotStates(s: SavedStrategy): MetricStates | undefined {
+  return (s.snapshot.performance_basis as { metric_status?: MetricStates } | undefined)?.metric_status
 }
 function ctxLabel(s: SavedStrategy): string {
   const ctx = s.context
@@ -388,6 +370,14 @@ function ctxLabel(s: SavedStrategy): string {
 }
 function dateRange(s: SavedStrategy): string {
   const ctx = s.context
+  if(s.kind==='multi'&&Array.isArray(ctx.items)){
+    const ranges=[...new Set(ctx.items.map(item=>{
+      if(!item||typeof item!=='object'||Array.isArray(item))return '区间未记录'
+      const value=item as Record<string,unknown>
+      return `${typeof value.start_date==='string'?value.start_date:'未记录'} ~ ${typeof value.end_date==='string'?value.end_date:'未记录'}`
+    }))]
+    return ranges.length===1?ranges[0]!: `${ranges.length} 个独立区间（按各槽位保存日期）`
+  }
   const s0 = (ctx.start_date as string) || ''
   const s1 = (ctx.end_date as string) || ''
   if (!s0 && !s1) return '-'
@@ -463,11 +453,11 @@ const holdingViews = computed<HoldingView[]>(() =>
 )
 
 // 组合整体绩效（19 项指标）。后端 total_performance 现含完整指标，转成
-// MetricTable 需要的 Performance 类型（缺失字段补 0 兜底，保证渲染不崩）。
+// MetricTable 需要的 Performance 类型；缺失字段保留不可用，不补零。
 const comboPerf = computed<Performance | null>(() => {
   const tp = store.multiStrategyResult?.total_performance
   if (!tp) return null
-  const get = (k: string, d = 0): number => {
+  const get = (k: string, d = Number.NaN): number => {
     const v = (tp as Record<string, unknown>)[k]
     return typeof v === 'number' ? v : d
   }
@@ -482,6 +472,7 @@ const comboPerf = computed<Performance | null>(() => {
     total_trades: get('total_trades'),
     win_trades: get('win_trades'),
     lose_trades: get('lose_trades'),
+    breakeven_trades: get('breakeven_trades'),
     rejected_trades: get('rejected_trades'),
     win_rate: get('win_rate'),
     profit_factor: get('profit_factor'),
@@ -649,17 +640,19 @@ const comboGrade = computed(() =>
           <div class="snap-item">
             <span class="k">总收益</span>
             <span class="v mono" :class="Number(s.snapshot.total_return) > 0 ? 'pos' : 'neg'">
-              {{ pct(s.snapshot.total_return) }}
+              {{ metricText(s.snapshot.total_return, snapshotStates(s)?.total_return, 'percent') }}
             </span>
           </div>
           <div class="snap-item">
-            <span class="k">夏普</span><span class="v mono">{{ num(s.snapshot.sharpe) }}</span>
+            <span class="k">夏普</span><span class="v mono">{{ metricText(s.snapshot.sharpe, snapshotStates(s)?.sharpe) }}</span>
           </div>
           <div class="snap-item">
-            <span class="k">回撤</span><span class="v mono neg">{{ pct(s.snapshot.max_drawdown) }}</span>
+            <span class="k">回撤</span><span class="v mono neg">{{ metricText(s.snapshot.max_drawdown, snapshotStates(s)?.max_drawdown, 'percent') }}</span>
           </div>
         </div>
 
+        <MetricStateNotes v-if="Object.keys(s.snapshot).length" :states="snapshotStates(s)" :legacy="!snapshotStates(s)" />
+        <PerformanceContextNote v-if="Object.keys(s.snapshot).length" :basis="s.snapshot.performance_basis as import('../types').PerformanceBasis | undefined" />
         <div v-if="s.tags.length" class="card-tags">
           <span v-for="t in s.tags" :key="t" class="tag">{{ t }}</span>
         </div>
@@ -669,6 +662,7 @@ const comboGrade = computed(() =>
         <div class="card-foot">
           <span class="created">{{ createdShort(s) }}</span>
           <span class="actions">
+            <button v-if="s.kind==='multi'" class="sm" :disabled="store.multiStrategyRunning" @click="onLoadMulti(s,false)">按原区间重跑</button>
             <button
               v-if="s.kind === 'multi'"
               class="rerun-btn sm"
@@ -780,6 +774,8 @@ const comboGrade = computed(() =>
       </div>
 
       <div v-if="store.multiStrategyResult" class="combo-content">
+        <PortfolioArchiveTools kind="multi_strategy" :task-id="store.multiStrategyTaskId" :request="store.multiStrategyRequest" :result="store.multiStrategyResult" :busy="store.multiStrategyRunning" />
+        <ResultDataProvenance :evidence="store.multiStrategyResult.data_provenance" />
         <div v-if="comboGrade" class="combo-chart-block">
           <h4>组合评级</h4>
           <GradeDetails :result="comboGrade" expanded />
@@ -805,7 +801,7 @@ const comboGrade = computed(() =>
 
         <div v-if="comboPerf" class="combo-chart-block">
           <h4>绩效指标</h4>
-          <MetricTable :perf="comboPerf" />
+          <MetricTable :perf="comboPerf" :states="store.multiStrategyResult?.performance_basis?.metric_status" />
         </div>
 
         <div class="combo-chart-block">
@@ -1185,12 +1181,15 @@ const comboGrade = computed(() =>
 }
 .card-foot {
   display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
   padding-top: 6px;
 }
 .created {
+  flex: 1 0 100%;
   font-size: 11px;
   color: var(--text-dim);
   font-family: var(--font-mono);
@@ -1199,6 +1198,8 @@ const comboGrade = computed(() =>
   display: flex;
   gap: 8px;
 }
+.card-foot .actions { margin-left:auto; flex-wrap:wrap; justify-content:flex-end; }
+.card-foot .actions button { flex:0 0 auto; white-space:nowrap; min-height:32px; line-height:1.2; }
 .sm {
   font-size: 12px;
   padding: 4px 12px;

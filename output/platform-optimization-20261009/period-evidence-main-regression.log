@@ -1,0 +1,6 @@
+### Result
+{"mainEvents":"背离事件\n12","category":"DAY","position":169,"comparisonPanelCount":0}
+### Ran Playwright code
+```js
+await (async (page) => { await page.setViewportSize({width:1440,height:1000}); await page.getByRole("button",{name:"主周期 · 日线",exact:true}).click(); await page.getByRole("button",{name:/^背离 \/ 背驰/}).click(); const evidence=page.getByRole("region",{name:"信号证据检索",exact:true}); const eventTab=evidence.getByRole("button",{name:/^背离事件 /}); const count=await eventTab.innerText(); if(!count.includes("12")) throw Error(count); await eventTab.click(); const row=evidence.locator("article.confirmed").first(); await row.locator("summary").click(); const reqPromise=page.waitForRequest(r=>r.url().includes("/chanlun/replay")&&r.method()==="POST"); await row.getByRole("button",{name:/回放到确认时刻$/}).click(); const req=(await reqPromise).postDataJSON(); if(req.category!=="DAY")throw Error(req.category); await page.waitForFunction(()=>document.body.textContent?.includes("169/240")); return {mainEvents:count,category:req.category,position:req.visible_count,comparisonPanelCount:await page.locator(".period-evidence").count()}; })(page);
+```

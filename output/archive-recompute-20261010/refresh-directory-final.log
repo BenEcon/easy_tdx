@@ -1,0 +1,10 @@
+### Ran Playwright code
+```js
+await page.getByRole('button', { name: '刷新云目录' }).click();
+```
+### Page
+- Page URL: http://127.0.0.1:8768/account
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Snapshot
+- [Snapshot](.playwright-cli/page-2026-10-09T16-58-49-725Z.yml)

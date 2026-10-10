@@ -1,0 +1,55 @@
+✔ library original/extended multi replay uses saved costs despite global preference changes (82.6455ms)
+✔ portfolio load -> actual store task lifecycle -> save uses identical context and all costs (29.439ms)
+✔ portfolio catalog-stage input is isolated before saved fetch (21.995666ms)
+✔ portfolio catalog-stage params is isolated before saved fetch (25.052458ms)
+✔ portfolio catalog-stage owner is isolated before saved fetch (17.012792ms)
+✔ portfolio catalog-stage failure is isolated before saved fetch (14.945584ms)
+✔ portfolio catalog-stage empty is isolated before saved fetch (15.926917ms)
+✔ pending portfolio cannot survive input (14.191584ms)
+✔ pending portfolio cannot survive owner (15.533917ms)
+✔ pending portfolio cannot survive unmount (17.919042ms)
+✔ store account epoch clears completed results in all four task families (13.035958ms)
+✔ runPortfolio old account error is ignored even after switching back (13.584708ms)
+✔ runMultiStrategy old account error is ignored even after switching back (15.423083ms)
+✔ runOptimize old account error is ignored even after switching back (12.34525ms)
+✔ runOptimizeAll old account error is ignored even after switching back (13.34475ms)
+✔ optimizer takes an input snapshot before awaiting bars and hands off the result strategy/adjustment (18.659583ms)
+✔ portfolio late save cannot close or annotate newly changed configuration (16.900459ms)
+✔ library name lookup cannot mix later input or account into a save (66.7465ms)
+✔ library saves a multi result with submitted adjustment, not the later global preference (20.049166ms)
+✔ late library list cannot replace a newly created record and owner change clears all personal rows (18.998958ms)
+✔ portfolio identity rejects mixed markets, repeats and invalid lengths (0.24275ms)
+✔ catalog-stage input cannot restore saved inputs or dispatch a task (8.092209ms)
+✔ catalog-stage params cannot restore saved inputs or dispatch a task (2.167708ms)
+✔ catalog-stage owner cannot restore saved inputs or dispatch a task (1.727375ms)
+✔ catalog-stage failure cannot restore saved inputs or dispatch a task (1.474292ms)
+✔ optimization context restores every execution field and malformed context blocks dispatch (1.844334ms)
+✔ actual backtest view loads exact saved context without running, then saves the configuration used (1.528916ms)
+✖ saving original radar warmup uses loaded input dates, not hidden form defaults (1.558125ms)
+✔ late saved record cannot overwrite owner (1.953917ms)
+✔ late saved record cannot overwrite route (1.244042ms)
+✔ late saved record cannot overwrite input (1.126917ms)
+✔ late saved record cannot overwrite unmount (1.027208ms)
+✔ invalid saved context blocks run, while legacy missing fields disclose fallback (4.158ms)
+✔ every execution input invalidates the old result before it can be saved (14.363708ms)
+✔ editing a cost while bars are pending never runs the new form on the old request (1.244334ms)
+✔ save completion after owner cannot write into a different page or account (1.042ms)
+✔ save completion after route cannot write into a different page or account (1.075625ms)
+✔ save completion after unmount cannot write into a different page or account (0.927375ms)
+ℹ tests 38
+ℹ suites 0
+ℹ pass 37
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 992.161209
+
+✖ failing tests:
+
+test at scripts/saved-strategy-view.test.mjs:112:1
+✖ saving original radar warmup uses loaded input dates, not hidden form defaults (1.558125ms)
+  TypeError: Cannot read properties of undefined (reading '2')
+      at TestContext.<anonymous> (file:///Users/bowen/Documents/Python/Google/TDX-work/web-ui/scripts/saved-strategy-view.test.mjs:118:61)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)

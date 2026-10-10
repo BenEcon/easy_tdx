@@ -1,0 +1,20 @@
+..............F......................................................... [ 56%]
+.......................................................                  [100%]
+=================================== FAILURES ===================================
+__________________ test_backup_restore_supports_full_backtest __________________
+tests/unit/test_backtest_archive.py:121: in test_backup_restore_supports_full_backtest
+    create_backup(root, tmp_path / "backup")
+src/easy_tdx/web/research_backup.py:265: in create_backup
+    counts = _validate_pair(target, deadline)
+src/easy_tdx/web/research_backup.py:179: in _validate_pair
+    raise BackupError("账户库没有可用管理员，不能宣称可恢复")
+E   easy_tdx.web.research_backup.BackupError: 账户库没有可用管理员，不能宣称可恢复
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_backtest_archive.py::test_backup_restore_supports_full_backtest
+1 failed, 126 passed, 1 warning in 19.59s

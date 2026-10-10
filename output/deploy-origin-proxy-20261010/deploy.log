@@ -1,0 +1,9 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+ Container easy-tdx  Recreate
+ Container easy-tdx  Recreated
+ Container easy-tdx  Starting
+ Container easy-tdx  Started
+{"setup_required":false,"authenticated":false,"user":null}easy-tdx:tracking-history-signals-20261010 running healthy
+f948b0eb33797caa5dd6de9bf419f8db47d6d0eaf2b035832808ef1efcd2cb6f  /home/opc/apps/easy_tdx-release-20261010-tracking-history-signals/compose.yaml

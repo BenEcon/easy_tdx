@@ -15,13 +15,17 @@ class MACDHistSignal(Factor):
     category = "technical"
     description = "MACD 柱状线信号（正值=多头区域，负值=空头区域）"
     inputs = ("close",)
+    short = 12
+    long = 26
+    signal = 9
+    scale_window = 20
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
         close = df["close"].to_numpy(dtype=np.float64)
-        _, _, hist = MyTT.MACD(close, SHORT=12, LONG=26, M=9)
-        hist_series = pd.Series(hist)
-        rolling_std = hist_series.abs().rolling(20).mean().replace(0, np.nan)
-        return (hist_series / rolling_std).fillna(0)
+        _, _, hist = MyTT.MACD(close, SHORT=self.short, LONG=self.long, M=self.signal)
+        hist_series = pd.Series(hist, index=df.index)
+        rolling_std = hist_series.abs().rolling(self.scale_window).mean().replace(0, np.nan)
+        return hist_series / rolling_std
 
 
 @register_factor
@@ -30,11 +34,12 @@ class RSI14(Factor):
     category = "technical"
     description = "RSI(14) 归一化到 [-1, 1]（0 = 中性）"
     inputs = ("close",)
+    window = 14
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
         close = df["close"].to_numpy(dtype=np.float64)
-        rsi = MyTT.RSI(close, N=14)
-        return (pd.Series(rsi) - 50) / 50
+        rsi = MyTT.RSI(close, N=self.window)
+        return (pd.Series(rsi, index=df.index) - 50) / 50
 
 
 @register_factor
@@ -43,13 +48,15 @@ class BollPosition(Factor):
     category = "technical"
     description = "价格在布林带中的相对位置（0=下轨，0.5=中轨，1=上轨）"
     inputs = ("close",)
+    window = 20
+    std_multiplier = 2.0
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
         close = df["close"].to_numpy(dtype=np.float64)
-        upper, mid, lower = MyTT.BOLL(close, N=20, P=2)
-        upper = pd.Series(upper)
-        lower = pd.Series(lower)
-        close_s = pd.Series(close)
+        upper, mid, lower = MyTT.BOLL(close, N=self.window, P=self.std_multiplier)
+        upper = pd.Series(upper, index=df.index)
+        lower = pd.Series(lower, index=df.index)
+        close_s = pd.Series(close, index=df.index)
         bandwidth = (upper - lower).replace(0, np.nan)
         position = (close_s - lower) / bandwidth
         return position.clip(0, 1)

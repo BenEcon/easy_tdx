@@ -1,0 +1,140 @@
+### Page
+- Page URL: http://127.0.0.1:8768/account
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e362]:
+    - generic [ref=e363]:
+      - button "打开导航" [ref=e2789] [cursor=pointer]: ☰
+      - heading "个人账户" [level=1] [ref=e2790]
+      - generic [ref=e367]:
+        - link "个人账户" [ref=e368]:
+          - /url: /account
+          - generic [ref=e369]: H
+        - button "退出登录" [ref=e372] [cursor=pointer]
+    - main [ref=e375]:
+      - generic [ref=e2791]:
+        - generic [ref=e2792]:
+          - generic [ref=e2793]: H
+          - generic [ref=e2794]:
+            - paragraph [ref=e2795]: PERSONAL DATA
+            - heading "horizonqa" [level=2] [ref=e2796]
+            - paragraph [ref=e2797]: 你的策略、扫描信号和偏好设置均与此账户关联。
+          - generic [ref=e2798]: 管理员
+        - region "账户概况" [ref=e2799]:
+          - article [ref=e2800]:
+            - generic [ref=e2801]: 已保存策略
+            - strong [ref=e2802]: "0"
+            - generic [ref=e2803]: 仅你可见
+          - article [ref=e2804]:
+            - generic [ref=e2805]: 账户状态
+            - strong [ref=e2806]: 正常
+            - generic [ref=e2807]: 数据持续保存
+          - article [ref=e2808]:
+            - generic [ref=e2809]: 上次登录
+            - strong [ref=e2810]: 2026年10月10日 08:57
+            - generic [ref=e2811]: 服务器时间记录
+        - group [ref=e2812]:
+          - generic "› 账户云存档 手动保存 · 跨设备查看" [ref=e2813] [cursor=pointer]:
+            - text: ›
+            - strong [ref=e2814]: 账户云存档
+            - generic [ref=e2815]: 手动保存 · 跨设备查看
+        - group [ref=e2816]:
+          - generic "活动记录与隐私" [ref=e2817] [cursor=pointer]
+        - generic [ref=e2818]:
+          - generic [ref=e2819]:
+            - paragraph [ref=e2820]: SECURITY
+            - heading "修改密码" [level=3] [ref=e2821]
+            - paragraph [ref=e2822]: 设置新密码后，除当前浏览器外的既有会话将失效。
+          - generic [ref=e2823]:
+            - generic [ref=e2824]:
+              - generic [ref=e2825]: 当前密码
+              - textbox "当前密码" [ref=e2826]
+            - generic [ref=e2827]:
+              - generic [ref=e2828]: 新密码
+              - textbox "新密码" [ref=e2829]
+            - generic [ref=e2830]:
+              - generic [ref=e2831]: 确认新密码
+              - textbox "确认新密码" [ref=e2832]
+            - button "保存新密码" [ref=e2833] [cursor=pointer]
+        - region [ref=e2834]:
+          - generic [ref=e2835]:
+            - generic [ref=e2836]:
+              - heading "后台计算" [level=3] [ref=e2837]
+              - paragraph [ref=e2838]: 仅显示你的最近 20 个任务；页面可见时每 5 秒更新。
+            - button "刷新" [ref=e2839] [cursor=pointer]
+          - paragraph [ref=e2840]: 记录已持久保存，刷新或重启网页服务后仍可查询。排队任务等待匹配版本的计算服务。
+          - list [ref=e2841]:
+            - listitem [ref=e2842]:
+              - generic [ref=e2843]:
+                - strong [ref=e2844]: 因子序列 · SZ:000001 · DAY · 4 个因子
+                - generic [ref=e2845]: 10/10 08:57 · 上海时间 · 0 秒
+                - paragraph [ref=e2846]: 完整结果校验 1/1 · 阶段处理量
+              - generic [ref=e2847]: 已完成
+              - button "打开因子结果" [ref=e2850] [cursor=pointer]
+              - button "删除任务记录 因子序列 · SZ:000001 · DAY · 4 个因子" [ref=e2852] [cursor=pointer]: 删除记录
+            - listitem [ref=e2853]:
+              - generic [ref=e2854]:
+                - strong [ref=e2855]: 因子序列 · SZ:000001 · DAY · 4 个因子
+                - generic [ref=e2856]: 10/10 08:57 · 上海时间 · 15 秒
+              - generic [ref=e2857]: 已取消
+              - button "查看原因" [ref=e2859] [cursor=pointer]
+              - button "删除任务记录 因子序列 · SZ:000001 · DAY · 4 个因子" [ref=e2861] [cursor=pointer]: 删除记录
+            - listitem [ref=e2862]:
+              - generic [ref=e2863]:
+                - strong [ref=e2864]: 因子检验 · 8 只标的 · 2 个因子
+                - generic [ref=e2865]: 10/10 08:25 · 上海时间 · 3 秒
+                - paragraph [ref=e2866]: 此记录属于其他执行版本，原始结果保留，不会改写为当前规则。
+                - paragraph [ref=e2867]: 完整结果校验 1/1 · 阶段处理量
+              - generic [ref=e2868]: 已完成
+              - button "打开因子结果" [ref=e2871] [cursor=pointer]
+              - button "删除任务记录 因子检验 · 8 只标的 · 2 个因子" [ref=e2873] [cursor=pointer]: 删除记录
+        - region [ref=e2874]:
+          - generic [ref=e2875]:
+            - heading "登录会话" [level=3] [ref=e2876]
+            - paragraph [ref=e2877]: 退出所有浏览器与设备的登录，已保存的数据不会删除。
+          - button "退出全部设备" [ref=e2878] [cursor=pointer]
+  - dialog "后台因子研究结果" [ref=e2879]:
+    - banner [ref=e2880]:
+      - generic [ref=e2881]:
+        - strong [ref=e2882]: 后台因子序列 · 只读结果
+        - paragraph [ref=e2883]: 保留任务计算时的行情、参数和数值。保存为个人研究档后，不受任务清理影响。
+      - button "关闭结果" [active] [ref=e2884] [cursor=pointer]
+    - generic [ref=e2885]:
+      - region "因子研究存档" [ref=e2886]:
+        - generic [ref=e2887]:
+          - button "导出完整研究" [ref=e2888] [cursor=pointer]
+          - paragraph [ref=e2889]: 保存原始输入、实际参数、公式版本及结果；重开只读，不自动取数或计算。
+        - group [ref=e2890]:
+          - generic "› 账户云存档 手动保存 · 跨设备查看" [ref=e2891] [cursor=pointer]:
+            - text: ›
+            - strong [ref=e2892]: 账户云存档
+            - generic [ref=e2893]: 手动保存 · 跨设备查看
+      - region "只读因子研究" [ref=e2894]:
+        - generic [ref=e2895]:
+          - generic [ref=e2896]:
+            - heading "000001 · 日线 · 因子研究" [level=3] [ref=e2897]
+            - paragraph [ref=e2898]: 2026/10/10 08:59:03 · 日线 · 前复权 · 时间序列
+          - generic [ref=e2899]: 只读原档
+        - generic [ref=e2900]:
+          - combobox "存档因子" [ref=e2902] [cursor=pointer]:
+            - generic [ref=e2903]: 二十周期动量
+          - combobox "存档数值精度" [ref=e2907] [cursor=pointer]:
+            - generic [ref=e2908]: 易读精度
+        - group [ref=e2911]:
+          - generic "公式、数据要求与版本" [ref=e2912] [cursor=pointer]
+        - combobox "存档曲线布局" [ref=e2914] [cursor=pointer]:
+          - generic [ref=e2915]: 单因子原值
+        - generic [ref=e2918]:
+          - generic [ref=e2919]:
+            - generic [ref=e2920]:
+              - heading "原始因子序列" [level=3] [ref=e2921]
+              - paragraph [ref=e2922]: 仅绘制保存时的数值；缺失保持为空
+            - button "全屏查看原始因子序列" [ref=e2924] [cursor=pointer]
+          - img "因子检验图；对应数值见下方明细表" [ref=e2928]
+        - group [ref=e2931]:
+          - generic "完整序列 · 160 根" [ref=e2932] [cursor=pointer]
+        - group [ref=e2933]:
+          - generic "原始输入与完整配置 · 1 个标的" [ref=e2934] [cursor=pointer]
+```

@@ -1,0 +1,6 @@
+### Result
+{"headers":["周期","均线 / 价格","成交量","MACD","严格笔与当前方向","背离","其他"],"labels":["周线 ↗已收盘截止2026-10-09 15:00:00","日线 ↗已收盘截止2026-10-09 15:00:00","30 分钟 ↗已收盘截止2026-10-09 15:00:00","15 分钟","5 分钟"],"failures":2}
+### Ran Playwright code
+```js
+await (async page => { const table=page.getByRole("region",{name:"多周期概览表",exact:true}); const headers=await table.getByRole("columnheader").allTextContents(); const labels=await table.getByRole("rowheader").allTextContents(); const failures=await table.getByRole("cell",{name:/本机验收：该周期冻结行情尚未提供/}).count(); if(headers.length!==7 || labels.length!==5 || failures!==2) throw new Error(JSON.stringify({headers,labels,failures})); return {headers,labels,failures}; })(page);
+```

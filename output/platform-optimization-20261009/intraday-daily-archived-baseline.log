@@ -1,0 +1,3 @@
+48 archived-source comparisons passed: trades, costs, equity and positions exact
+default: matching-only accumulated seconds, old=66.799145, new=0.509325
+custom: matching-only accumulated seconds, old=65.834830, new=8.787483

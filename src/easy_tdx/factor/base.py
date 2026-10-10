@@ -4,8 +4,12 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 import pandas as pd
+
+if TYPE_CHECKING:
+    from easy_tdx.factor.panel import FactorPanel
 
 
 class Factor(ABC):
@@ -34,6 +38,23 @@ class Factor(ABC):
         for attr in ("name", "category", "description", "inputs"):
             if not hasattr(self, attr):
                 raise TypeError(f"Factor 子类 {type(self).__name__} 必须定义类属性 '{attr}'")
+
+
+class PanelFactor(Factor):
+    """Whole-universe factor; never substitute a single stock for a cross-section.
+
+    Uses the same registry and configuration as Factor. Inputs are aligned on
+    exact observation timestamps, not row positions. Missing observations stay
+    missing; the supplied universe is not asserted to be historical PIT membership.
+    """
+
+    def compute(self, df: pd.DataFrame) -> pd.Series:
+        raise ValueError(f"{self.name} 需要明确股票池的整池截面计算，不能用于独立单股序列")
+
+    @abstractmethod
+    def compute_panel(self, panel: FactorPanel) -> pd.DataFrame:
+        """Return exactly the panel's timestamp × symbol axes."""
+        ...
 
 
 FACTORY_REGISTRY: dict[str, type[Factor]] = {}

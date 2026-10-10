@@ -1,0 +1,6 @@
+### Result
+{"confirmation":"历史回放\n上一根\n下一根\n2026-06-24 · 169/240\n返回末尾\n按当前标的快照回放，不代表历史当天的数据版本；个股与行业对比时采用共同截止点。","position":"169","returnedChart":true}
+### Ran Playwright code
+```js
+await (async (page) => { const event=page.getByRole("article").filter({has:page.getByRole("heading",{name:"非标准波段底背离",exact:true})}); await event.locator("summary").click(); await event.getByRole("button",{name:"非标准波段底背离：回放到确认时刻",exact:true}).click(); const nav=page.getByRole("navigation",{name:"缠论工作区"}); await page.waitForFunction(()=>document.querySelector(".research-workspace-nav button")?.getAttribute("aria-pressed")==="true"); const slider=page.getByRole("slider",{name:"K 线回放位置",exact:true}); const date=await page.locator(".replay-toolbar").innerText(); if(!date.includes("2026-06-24"))throw Error("wrong confirmation cutoff: "+date); return {confirmation:date,position:await slider.inputValue(),returnedChart:true}; })(page);
+```

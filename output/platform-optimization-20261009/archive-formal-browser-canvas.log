@@ -1,0 +1,6 @@
+### Result
+{"sizes":[{"width":278,"parent":278}]}
+### Ran Playwright code
+```js
+await (async (page) => {const row=page.locator(".cloud-archives li").filter({hasText:"旧版研究导入验收"});await row.getByRole("button",{name:"查看原档",exact:true}).click();const dialog=page.getByRole("dialog",{name:"云端研究原档",exact:true});await dialog.getByText("旧档未保存指标 · 仅展示原行情与原结构，未补算。",{exact:true}).waitFor();await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));await page.screenshot({path:"../output/playwright/archive-formal-legacy-stable-320.png"});const sizes=await dialog.locator("canvas").evaluateAll(nodes=>nodes.map(node=>({width:node.getBoundingClientRect().width,parent:node.parentElement.getBoundingClientRect().width})));await page.getByRole("button",{name:"关闭云存档",exact:true}).click();return {sizes};})(page);
+```

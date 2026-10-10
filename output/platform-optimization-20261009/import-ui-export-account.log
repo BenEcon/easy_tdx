@@ -1,0 +1,11 @@
+### Result
+{"cloudExportRoundTrip":true,"oldCloudIdNotReused":true,"accountChangeRejected":true}
+### Ran Playwright code
+```js
+await (async page=>{const cloud=page.locator(".cloud-archives"),input=cloud.locator("input[type=file]");const list=async()=>await(await page.request.get("http://127.0.0.1:8766/api/v1/research/archives")).json();const before=await list();const original=await(await page.request.get("http://127.0.0.1:8766/api/v1/research/archives/"+before.items[0].id)).json();await cloud.locator(".archive-toolbar button:not([disabled])").filter({hasText:"导入研究备份"}).waitFor();await input.setInputFiles({name:"cloud-export.json",mimeType:"application/json",buffer:Buffer.from(JSON.stringify(original))});await page.getByRole("button",{name:"确认导入到当前账户",exact:true}).click();await cloud.getByText("已保存到当前账户，可在其他设备刷新云目录查看。",{exact:true}).waitFor();const after=await list(),newItem=after.items.find(x=>!before.items.some(y=>y.id===x.id));const imported=await(await page.request.get("http://127.0.0.1:8766/api/v1/research/archives/"+newItem.id)).json();if(JSON.stringify(imported.payload)!==JSON.stringify(original.payload)||newItem.id===original.id)throw Error("cloud import changed original");await cloud.locator(".archive-toolbar button:not([disabled])").filter({hasText:"导入研究备份"}).waitFor();await input.setInputFiles("../output/playwright/import-legacy-research.json");await page.getByRole("region",{name:"待导入研究备份",exact:true}).waitFor();await page.request.post("http://127.0.0.1:8766/api/v1/qa/switch/second");try{await page.getByRole("button",{name:"确认导入到当前账户",exact:true}).click();await cloud.getByRole("alert").filter({hasText:"登录账户已变化"}).waitFor();if((await list()).items.length)throw Error("import crossed account");return {cloudExportRoundTrip:true,oldCloudIdNotReused:true,accountChangeRejected:true};}finally{await page.request.post("http://127.0.0.1:8766/api/v1/qa/switch/first");await page.reload();}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/account
+- Page Title: 股票分析 · Analysis Studio
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T14-01-16-502Z.log#L3

@@ -34,8 +34,8 @@ class ChanlunBiDir(Factor):
                 if known is not None and 0 <= known < len(df):
                     result.iloc[known:] = direction
 
-        except Exception:
-            pass
+        except Exception as exc:
+            raise RuntimeError("缠论笔方向计算失败，不能以 0 代替结果") from exc
 
         return result
 
@@ -79,7 +79,7 @@ class ChanlunMMD(Factor):
                     if abs(value) > abs(result.iloc[mmd_index]):
                         result.iloc[mmd_index] = value
 
-        except Exception:
-            pass
+        except Exception as exc:
+            raise RuntimeError("缠论买卖点计算失败，不能以 0 代替结果") from exc
 
         return result

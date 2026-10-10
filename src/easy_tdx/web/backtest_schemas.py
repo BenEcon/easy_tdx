@@ -7,9 +7,10 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 __all__ = [
     "BacktestRequest",
@@ -36,7 +37,25 @@ __all__ = [
 # ── 请求模型 ───────────────────────────────────────────────────────────────────
 
 
-class BacktestRequest(BaseModel):
+class DateRangeInput(BaseModel):
+    start_date: str | None = None
+    end_date: str | None = None
+
+    @field_validator("start_date", "end_date")
+    @classmethod
+    def valid_date(cls, value: str | None) -> str | None:
+        if value is not None and date.fromisoformat(value).isoformat() != value:
+            raise ValueError("日期必须使用 YYYY-MM-DD 格式")
+        return value
+
+    @model_validator(mode="after")
+    def ordered_dates(self) -> DateRangeInput:
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise ValueError("开始日期不得晚于结束日期")
+        return self
+
+
+class BacktestRequest(DateRangeInput):
     """单标的回测请求。
 
     两种数据来源（二选一）：
@@ -82,11 +101,11 @@ class BacktestRequest(BaseModel):
         return self
 
 
-class PortfolioBacktestRequest(BaseModel):
+class PortfolioBacktestRequest(DateRangeInput):
     """组合（多标的）回测请求。
 
     与单标的 BacktestRequest 的区别：用 ``stocks`` 列表替代单个 ``symbol``，
-    资金按 equal 模式均分到各标的。日期范围过滤由前端完成（取满 800 根后过滤）。
+    资金按 equal 模式均分到各标的。日期范围由后端使用重叠校验分页获取。
     """
 
     strategy: str = Field(..., description="策略名")
@@ -118,7 +137,7 @@ class PortfolioBacktestRequest(BaseModel):
         return self
 
 
-class OptimizeBacktestRequest(BaseModel):
+class OptimizeBacktestRequest(DateRangeInput):
     """参数网格寻优请求。
 
     在单个标的上，对策略的 1-2 个参数做网格搜索。数据来源与单标的回测一致
@@ -129,6 +148,8 @@ class OptimizeBacktestRequest(BaseModel):
     strategy: str = Field(..., description="策略名")
     cash: float = Field(default=1_000_000.0, gt=0)
     commission: float = Field(default=0.0003, ge=0, le=0.01)
+    min_commission: float = Field(default=5.0, ge=0)
+    stamp_tax: float = Field(default=0.001, ge=0, le=0.01)
     slippage: float = Field(default=0.0, ge=0, le=0.05)
     execution: Literal["next_open", "next_close"] = Field(default="next_open")
     param_grid: dict[str, list[int | float | str]] = Field(
@@ -158,7 +179,7 @@ class OptimizeBacktestRequest(BaseModel):
         return self
 
 
-class OptimizeAllBacktestRequest(BaseModel):
+class OptimizeAllBacktestRequest(DateRangeInput):
     """一键寻优所有策略请求。
 
     在单个标的上，对所有策略的预设参数网格（见
@@ -169,6 +190,8 @@ class OptimizeAllBacktestRequest(BaseModel):
 
     cash: float = Field(default=1_000_000.0, gt=0)
     commission: float = Field(default=0.0003, ge=0, le=0.01)
+    min_commission: float = Field(default=5.0, ge=0)
+    stamp_tax: float = Field(default=0.001, ge=0, le=0.01)
     slippage: float = Field(default=0.0, ge=0, le=0.05)
     execution: Literal["next_open", "next_close"] = Field(default="next_open")
     workers: int = Field(
@@ -217,31 +240,57 @@ class BacktestResultResponse(BaseModel):
     trades: list[dict[str, Any]]
     positions: list[dict[str, Any]]
     config: dict[str, Any]
+    data_provenance: dict[str, Any] | None = None
+    execution_version: str | None = None
 
 
 class TaskSubmitResponse(BaseModel):
     """后台任务提交响应。"""
 
     task_id: str
-    status: Literal["pending", "running"]
+    status: Literal["pending", "running", "cancelling", "done", "failed", "cancelled", "timed_out"]
+    storage: Literal["memory", "persistent"] = "memory"
+    reused: bool = False
 
 
-class TaskStateResponse(BaseModel):
+class TaskExecutionInfo(BaseModel):
+    progress: dict[str, Any] | None = None
+    checkpoint_scan_targets: int = 0
+    resumed_scan_targets: int = 0
+    checkpoint_signal_bars: int = 0
+    resumed_signal_bars: int = 0
+    checkpoint_order_signals: int = 0
+    resumed_order_signals: int = 0
+    checkpoint_pnl_trades: int = 0
+    resumed_pnl_trades: int = 0
+    checkpoint_equity_bars: int = 0
+    resumed_equity_bars: int = 0
+    checkpoint_grid_points: int = 0
+    resumed_grid_points: int = 0
+    storage: Literal["memory", "persistent"] = "memory"
+    kind: str | None = None
+    execution_compatible: bool | None = None
+    recovery_count: int = 0
+    last_recovery_at: float | None = None
+    last_recovery_reason: Literal["service_shutdown", "supervisor_lost"] | None = None
+
+
+class TaskStateResponse(TaskExecutionInfo):
     """后台任务状态响应。"""
 
     task_id: str
-    status: Literal["pending", "running", "done", "failed"]
+    status: Literal["pending", "running", "cancelling", "done", "failed", "cancelled", "timed_out"]
     result: dict[str, Any] | None = None
     error: str | None = None
     description: str = ""
     elapsed: float = 0.0
 
 
-class TaskSummary(BaseModel):
+class TaskSummary(TaskExecutionInfo):
     """任务摘要（列表用，不含完整 result）。"""
 
     task_id: str
-    status: Literal["pending", "running", "done", "failed"]
+    status: Literal["pending", "running", "cancelling", "done", "failed", "cancelled", "timed_out"]
     description: str = ""
     created_at: float = 0.0
     elapsed: float = 0.0
@@ -252,6 +301,7 @@ class TaskListResponse(BaseModel):
 
     tasks: list[TaskSummary]
     count: int
+    storage: Literal["memory", "persistent"] = "memory"
 
 
 class OptimizeAllRankEntry(BaseModel):
@@ -266,6 +316,7 @@ class OptimizeAllRankEntry(BaseModel):
     total_trades: int = 0
     win_rate: float = 0.0
     profit_factor: float = 0.0
+    metric_status: dict[str, dict[str, str]] = Field(default_factory=dict)
     grid_points: int = 0  # 该策略本轮寻优的网格点数
 
 
@@ -340,7 +391,7 @@ class SavedStrategyListResponse(BaseModel):
 # ── 多策略组合回测（资金分仓 / 并行制）──────────────────────────────────────────
 
 
-class MultiStrategyItem(BaseModel):
+class MultiStrategyItem(DateRangeInput):
     """多策略组合回测的单条策略槽位。
 
     每条 = 一个策略 + 它的参数 + 它要跑的原标的 + 日期范围。资金由请求体的

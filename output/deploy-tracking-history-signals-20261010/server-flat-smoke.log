@@ -1,0 +1,54 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+sha256:3e11e70af3208dee777b22fecbc54cdc18d61246cb52b4565c71ca9c6d0cbd9e
+9d9f257d6ae05beaf252b30eb96b944fec219b4c25d4b455b82cea38b12905e6
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 651B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/easy-tdx:tracking-background-flat-20261010
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/5] FROM docker.io/library/easy-tdx:tracking-background-flat-20261010
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 11.95kB done
+#5 DONE 0.1s
+
+#6 [2/5] COPY --chown=10001:10001 backend/ /opt/easy_tdx/src/easy_tdx/
+#6 DONE 1.9s
+
+#7 [3/5] COPY --chown=10001:10001 backend/ /usr/local/lib/python3.12/site-packages/easy_tdx/
+#7 DONE 0.2s
+
+#8 [4/5] COPY --chown=10001:10001 dist/ /opt/easy_tdx/web-ui/dist/
+#8 DONE 0.2s
+
+#9 [5/5] COPY --chown=10001:10001 dist/ /usr/local/lib/python3.12/site-packages/easy_tdx/web/dist/
+#9 DONE 0.3s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 1.4s done
+#10 writing image sha256:936c3f3a821773aba7162c02c95b6e7d223e93e2d69001d0446dda99ac29094e done
+#10 naming to docker.io/library/easy-tdx:tracking-history-signals-20261010 done
+#10 DONE 1.4s
+PASS tracking owner binding, access grant and revoke
+PASS legacy migration, secure authentication, grant/revoke/preserve, admin-only activity
+Traceback (most recent call last):
+  File "/qa/smoke.py", line 92, in <module>
+    fixture=json.loads(path.read_text())
+                       ^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/pathlib.py", line 1028, in read_text
+    return f.read()
+           ^^^^^^^^
+  File "<frozen codecs>", line 322, in decode
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa3 in position 45: invalid start byte

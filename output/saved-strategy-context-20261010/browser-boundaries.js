@@ -1,0 +1,45 @@
+async (page) => {
+  const base='http://127.0.0.1:8768', url=page.url(), id=new URL(url).searchParams.get('savedStrategyId')
+  const record=await(await page.request.get(`${base}/api/v1/strategies/${id}`)).json()
+  const owner=(await(await page.request.get(`${base}/api/v1/auth/me`)).json()).user.id
+  const errors=[],computations=[]
+  page.on('pageerror',e=>errors.push(String(e)))
+  page.on('request',r=>{if(/\/bars\/range|\/backtest\/run/.test(r.url()))computations.push(r.url())})
+  await page.reload()
+  await page.getByRole('status',{name:'保存策略载入状态'}).getByRole('heading',{name:`已载入：${record.name}`,exact:true}).waitFor()
+  for(const width of [1440,390,320]){
+    await page.setViewportSize({width,height:1000})
+    await page.getByRole('textbox',{name:'印花税率',exact:true}).scrollIntoViewIfNeeded()
+    await page.screenshot({path:`output/playwright/saved-costs-${width}.png`})
+    if(width!==1440)await page.getByRole('button',{name:'分析设置 收起'}).click()
+    await page.getByRole('status',{name:'保存策略载入状态'}).scrollIntoViewIfNeeded()
+    await page.screenshot({path:`output/playwright/saved-context-${width}.png`})
+    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error(`Overflow ${width}`)
+    if(width!==1440)await page.getByRole('button',{name:'分析设置 展开'}).click()
+  }
+  const legacyResponse=await page.request.post(`${base}/api/v1/strategies`,{headers:{'X-Strategy-Owner':owner},data:{name:'QA 旧记录缺项',kind:'single',strategy:'ma_cross',params:{fast:5,slow:20},context:{symbol:'000001'},trade_config:{}}})
+  if(legacyResponse.status()!==201)throw Error(await legacyResponse.text())
+  const legacy=await legacyResponse.json()
+  await page.goto(`${base}/?savedStrategyId=${legacy.id}`)
+  await page.getByRole('heading',{name:'已载入：QA 旧记录缺项',exact:true}).waitFor()
+  if(await page.getByRole('list',{name:'旧策略缺失配置'}).getByRole('listitem').count()!==11)throw Error('Legacy warnings missing')
+  await page.getByRole('button',{name:'分析设置 收起'}).click()
+  await page.screenshot({path:'output/playwright/saved-legacy-320.png'})
+  await page.goto(`${base}/?savedStrategyId=${id}&adjust=HFQ`)
+  await page.getByText('策略载入不能混用自动运行、雷达或其他参数',{exact:false}).waitFor()
+  if(!await page.getByRole('button',{name:'开始回测',exact:true}).isDisabled())throw Error('Invalid load still enabled')
+  let release,started
+  const gate=new Promise(r=>release=r), pending=new Promise(r=>started=r)
+  await page.route(`**/api/v1/strategies/${id}`,async r=>{started();await gate;await r.continue()})
+  await page.goto(url)
+  await pending
+  await page.getByRole('textbox',{name:'初始资金',exact:true}).fill('123456')
+  await page.getByRole('textbox',{name:'初始资金',exact:true}).press('Tab')
+  release()
+  await page.getByText('载入期间参数已修改，请从策略库重新载入',{exact:false}).waitFor()
+  if(await page.getByRole('textbox',{name:'初始资金',exact:true}).inputValue()!=='123456')throw Error('Late load overwrote input')
+  if(!await page.getByRole('button',{name:'开始回测',exact:true}).isDisabled())throw Error('Interrupted load still enabled')
+  await page.unroute(`**/api/v1/strategies/${id}`)
+  if(computations.length)throw Error('Boundary inspection triggered computation')
+  await page.evaluate(report=>window.__savedBoundaryReport=report,{legacyWarnings:11,invalidLinkBlocked:true,lateInputPreserved:true,automaticComputations:0,errors})
+}

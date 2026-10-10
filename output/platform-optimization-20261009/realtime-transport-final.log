@@ -1,0 +1,19 @@
+...                                                                      [100%]
+=============================== warnings summary ===============================
+tests/integration/test_realtime_transport.py::test_transport_rejects_oversize_before_application_consumes_message[False]
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/websockets/legacy/__init__.py:6: DeprecationWarning: websockets.legacy is deprecated; see https://websockets.readthedocs.io/en/stable/howto/upgrade.html for upgrade instructions
+    warnings.warn(  # deprecated in 14.0 - 2024-11-09
+
+tests/integration/test_realtime_transport.py::test_transport_rejects_oversize_before_application_consumes_message[False]
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/websockets/websockets_impl.py:41: UvicornDeprecationWarning: The `websockets` implementation is deprecated, and `--ws websockets` will point at the `websockets-sansio` implementation in a future release. Use `--ws websockets-sansio` or `--ws auto` to switch now.
+    warnings.warn(
+
+tests/integration/test_realtime_transport.py::test_transport_rejects_oversize_before_application_consumes_message[False]
+tests/integration/test_realtime_transport.py::test_transport_rejects_oversize_before_application_consumes_message[True]
+tests/integration/test_realtime_transport.py::test_actual_connection_quota_close_reason_reaches_client
+tests/integration/test_realtime_transport.py::test_actual_connection_quota_close_reason_reaches_client
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/websockets/legacy/server.py:1178: DeprecationWarning: remove second argument of ws_handler
+    warnings.warn("remove second argument of ws_handler", DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+3 passed, 6 warnings in 1.62s

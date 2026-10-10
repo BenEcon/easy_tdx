@@ -1,0 +1,13 @@
+Local completion snapshot: source-after-builtin-parameters.tar.gz
+SHA256: 85c106e4cdc4a02e0565fef741ad8570c4b90b2898ad0af07fc63cf7255efaa8
+Previous baseline: source-after-factor-parameters.tar.gz
+Previous SHA256: f5d1e120ef3f8dca28df60306e7e1d13d4208c37e875104cdd6d5cd329b04354
+
+Archives include pre-existing user source changes; no commit/reset performed.
+Extract into a new temporary directory, compare only relevant files, and apply selected differences.
+Never extract over a live installation or restore/overwrite user databases from source archives.
+No production deployment. QA browser builtin-params closed; isolated server PID 95128 terminated (143).
+
+Evidence: builtin-parameters-backend-final.log (1008 passed), frontend (577 + 28),
+mypy (310 sources), build; output/playwright/builtin-parameters-*.
+Plan and remaining scope: docs/factor-system-plan-20261010.md.

@@ -1,0 +1,302 @@
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=stock&symbol=300750&market=SZ&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=DAY&adjust=QFQ
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=f1e4]:
+  - complementary [ref=f1e5]:
+    - button "收起左侧栏" [ref=f1e11] [cursor=pointer]
+    - link "返回股票分析" [ref=f1e15]:
+      - /url: /
+      - generic [ref=f1e20]:
+        - strong [ref=f1e21]: 股票分析
+        - generic [ref=f1e22]: Analysis Studio
+    - navigation "主要导航" [ref=f1e23]:
+      - generic [ref=f1e24]:
+        - paragraph [ref=f1e25]: 分析
+        - link "个股分析" [ref=f1e26]:
+          - /url: /
+        - link "市场行情" [ref=f1e33]:
+          - /url: /market
+        - link "盘中研究" [ref=f1e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=f1e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=f1e51]:
+          - /url: /signals
+        - link "追踪标的" [ref=f1e58]:
+          - /url: /tracking
+      - generic [ref=f1e64]:
+        - paragraph [ref=f1e65]: 研究
+        - link "板块研究" [ref=f1e66]:
+          - /url: /boards
+        - link "公司资料" [ref=f1e75]:
+          - /url: /company
+        - link "扩展市场" [ref=f1e83]:
+          - /url: /extended
+        - link "量化研究" [ref=f1e90]:
+          - /url: /quant-research
+        - link "组合回测" [ref=f1e96]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=f1e105]:
+          - /url: /optimize
+        - link "结果对比" [ref=f1e110]:
+          - /url: /compare
+        - link "策略库" [ref=f1e115]:
+          - /url: /strategies
+      - generic [ref=f1e121]:
+        - paragraph [ref=f1e122]: 系统
+        - link "行情服务器" [ref=f1e123]:
+          - /url: /settings
+        - link "个人账户" [ref=f1e130]:
+          - /url: /account
+        - link "账户管理" [ref=f1e137]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=f1e146]:
+          - /url: /admin/data
+    - link "T tracking-qa 管理员" [ref=f1e154]:
+      - /url: /account
+      - generic [ref=f1e155]: T
+      - generic [ref=f1e156]:
+        - strong [ref=f1e157]: tracking-qa
+        - generic [ref=f1e158]: 管理员
+  - generic [ref=f1e159]:
+    - generic [ref=f1e160]:
+      - generic [ref=f1e161]:
+        - heading "缠论结构" [level=1] [ref=f1e173]
+        - paragraph [ref=f1e163]: 识别笔、线段、中枢、买卖点与背驰
+      - generic [ref=f1e164]:
+        - link "个人账户" [ref=f1e165]:
+          - /url: /account
+          - generic [ref=f1e166]: T
+          - generic [ref=f1e167]: tracking-qa
+          - generic [ref=f1e168]: ADMIN
+        - button "退出登录" [ref=f1e169] [cursor=pointer]
+    - main [ref=f1e172]:
+      - generic [ref=f1e174]:
+        - complementary [ref=f1e175]:
+          - generic [ref=f1e176]:
+            - generic [ref=f1e177]: ⌘
+            - generic [ref=f1e178]:
+              - heading "结构分析" [level=2] [ref=f1e179]
+              - paragraph [ref=f1e180]: 从 K 线递进识别走势结构
+          - generic [ref=f1e181]:
+            - heading "标的与周期" [level=3] [ref=f1e182]
+            - generic [ref=f1e183]:
+              - generic [ref=f1e184]: 标的类型
+              - combobox "缠论标的类型" [ref=f1e186] [cursor=pointer]:
+                - generic [ref=f1e187]: 个股
+            - generic [ref=f1e190]:
+              - generic [ref=f1e191]:
+                - generic [ref=f1e192]: 证券代码
+                - button "股票历史 1" [ref=f1e194] [cursor=pointer]:
+                  - generic [ref=f1e197]: 股票历史
+                  - generic [ref=f1e198]: "1"
+              - textbox "000001" [ref=f1e201]: "300750"
+              - generic [ref=f1e202]: 深市
+            - generic [ref=f1e203]:
+              - generic [ref=f1e204]: 分析周期
+              - combobox "缠论分析周期" [ref=f1e206] [cursor=pointer]:
+                - generic [ref=f1e207]: 日线
+            - generic [ref=f1e210]:
+              - generic [ref=f1e211]: 历史窗口
+              - combobox "缠论历史窗口" [ref=f1e213] [cursor=pointer]:
+                - generic [ref=f1e214]: 800 根 · 完整
+            - generic [ref=f1e217]:
+              - generic [ref=f1e218]: 复权方式
+              - combobox "全局复权方式" [ref=f1e220] [cursor=pointer]:
+                - generic [ref=f1e221]: 前复权
+              - generic [ref=f1e224]: 自动应用到行情、分析与回测，并保存到当前账号
+          - group [ref=f1e225]:
+            - generic "均线系统 周期 · K 线数" [ref=f1e226] [cursor=pointer]:
+              - heading "均线系统" [level=3] [ref=f1e227]
+              - generic [ref=f1e228]: 周期 · K 线数
+          - generic [ref=f1e230]:
+            - heading "图层" [level=3] [ref=f1e231]
+            - generic [ref=f1e232] [cursor=pointer]:
+              - generic [ref=f1e233]: 三笔盘整
+              - checkbox "三笔盘整" [checked] [ref=f1e234]
+            - generic [ref=f1e235] [cursor=pointer]:
+              - generic [ref=f1e236]: 笔
+              - checkbox "笔" [checked] [ref=f1e237]
+            - generic [ref=f1e238] [cursor=pointer]:
+              - generic [ref=f1e239]: 中枢
+              - checkbox "中枢" [ref=f1e240]
+            - generic [ref=f1e241] [cursor=pointer]:
+              - generic [ref=f1e242]: 线段
+              - checkbox "线段" [ref=f1e243]
+            - generic [ref=f1e244] [cursor=pointer]:
+              - generic [ref=f1e245]: 买卖点
+              - checkbox "买卖点" [checked] [ref=f1e246]
+            - generic [ref=f1e247] [cursor=pointer]:
+              - generic [ref=f1e248]: 背离 / 背驰
+              - checkbox "背离 / 背驰" [checked] [ref=f1e249]
+            - generic [ref=f1e250] [cursor=pointer]:
+              - generic [ref=f1e251]: 待成笔方向
+              - checkbox "待成笔方向" [checked] [ref=f1e252]
+            - paragraph [ref=f1e253]: 虚线连接末笔端点与其后的反向极值，尚未成笔，端点可变；无反向区间或原笔继续延伸时不显示。不预测未来价格。
+            - generic [ref=f1e254]:
+              - generic [ref=f1e255] [cursor=pointer]:
+                - generic [ref=f1e256]: 悬停显示对象信息
+                - checkbox "悬停显示对象信息" [ref=f1e257]
+              - paragraph [ref=f1e258]: 右键打开，或按住 ⌘ Command 悬停预览；松开隐藏。 图下详情按钮仍可使用，设置按账户保存。
+          - region "结构线宽" [ref=f1e259]:
+            - generic [ref=f1e260]:
+              - heading "线条粗细" [level=3] [ref=f1e261]
+              - button "恢复默认" [disabled] [ref=f1e262]
+            - generic [ref=f1e263]:
+              - generic [ref=f1e264]: 笔
+              - generic [ref=f1e266]:
+                - textbox "笔线宽" [ref=f1e267]: "1.35"
+                - generic [ref=f1e268]:
+                  - button "笔线宽增加" [ref=f1e269] [cursor=pointer]
+                  - button "笔线宽减少" [ref=f1e272] [cursor=pointer]
+              - generic [ref=f1e275]: px
+            - generic [ref=f1e276]:
+              - generic [ref=f1e277]: 线段
+              - generic [ref=f1e279]:
+                - textbox "线段线宽" [ref=f1e280]: "1.8"
+                - generic [ref=f1e281]:
+                  - button "线段线宽增加" [ref=f1e282] [cursor=pointer]
+                  - button "线段线宽减少" [ref=f1e285] [cursor=pointer]
+              - generic [ref=f1e288]: px
+            - paragraph [ref=f1e289]: 0.5–6 px · 即时生效，个股与行业同步。
+          - region "蜡烛填充" [ref=f1e290]:
+            - generic [ref=f1e291]:
+              - heading "蜡烛填充" [level=3] [ref=f1e292]
+              - button "恢复默认" [disabled] [ref=f1e293]
+            - generic [ref=f1e294]:
+              - generic [ref=f1e295]: 透明度
+              - generic [ref=f1e296]:
+                - textbox "蜡烛填充透明度" [ref=f1e297]: "80"
+                - generic [ref=f1e298]:
+                  - button "蜡烛填充透明度增加" [ref=f1e299] [cursor=pointer]
+                  - button "蜡烛填充透明度减少" [ref=f1e302] [cursor=pointer]
+              - generic [ref=f1e305]: "%"
+            - slider "透明度" [ref=f1e306] [cursor=pointer]: "80"
+            - generic [aria-hidden] [ref=f1e307]:
+              - generic [ref=f1e308]: 实心
+              - generic [ref=f1e309]: 空心
+            - paragraph [ref=f1e310]: 80% 透明 · 20% 填充。仅调整实体，边框与影线不变；未收盘 K 线仍为空心虚线。
+          - generic [ref=f1e311]:
+            - strong [ref=f1e312]: 计算管道
+            - paragraph [ref=f1e313]: K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰
+          - button "开始分析" [ref=f1e314] [cursor=pointer]
+        - main [ref=f1e315]:
+          - generic [ref=f1e316]:
+            - navigation "缠论工作区" [ref=f1e317]:
+              - button "看图 行情与周期对比" [pressed] [ref=f1e318] [cursor=pointer]:
+                - strong [ref=f1e319]: 看图
+                - generic [ref=f1e320]: 行情与周期对比
+              - button "研究 多周期观察与快照" [ref=f1e321] [cursor=pointer]:
+                - strong [ref=f1e322]: 研究
+                - generic [ref=f1e323]: 多周期观察与快照
+              - button "审核 结构、信号与确认依据" [ref=f1e324] [cursor=pointer]:
+                - strong [ref=f1e325]: 审核
+                - generic [ref=f1e326]: 结构、信号与确认依据
+            - generic [ref=f1e328]:
+              - generic [ref=f1e329]:
+                - generic "个股 · 300750" [ref=f1e330]
+                - generic [ref=f1e331]: DAY
+              - paragraph [ref=f1e334]: 当前 向下笔 · 进行中，尚未形成中枢
+            - region "看图工作区" [ref=f1e335]:
+              - region "行情数据口径" [ref=f1e336]:
+                - group [ref=f1e337]:
+                  - generic "› 数据口径 MAC 行情 · 前复权 收盘截至 2026-10-09 15:00:00" [ref=f1e338] [cursor=pointer]:
+                    - text: ›
+                    - strong [ref=f1e339]: 数据口径
+                    - generic [ref=f1e340]: MAC 行情 · 前复权
+                    - time [ref=f1e341]: 收盘截至 2026-10-09 15:00:00
+              - paragraph [ref=f1e342]: 线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。
+              - generic [ref=f1e343]:
+                - generic [ref=f1e344]:
+                  - generic [ref=f1e345]:
+                    - strong [ref=f1e346]: 快照末尾
+                    - button "回放上一根 K 线" [ref=f1e347] [cursor=pointer]: 上一根
+                    - slider "K 线回放位置" [ref=f1e348] [cursor=pointer]: "240"
+                    - button "回放下一根 K 线" [disabled] [ref=f1e349]: 下一根
+                  - generic [ref=f1e350]:
+                    - status [ref=f1e351]: 2026-10-09 · 240/240
+                    - button "返回末尾" [disabled] [ref=f1e352]
+                - generic [ref=f1e353]: 按当前标的快照回放，不代表历史当天的数据版本；个股与行业对比时采用共同截止点。
+              - generic [ref=f1e354]:
+                - generic [ref=f1e355]: 所属行业
+                - generic [ref=f1e356]: 暂无行业归属数据
+              - region "多周期图表对比" [ref=f1e357]:
+                - generic [ref=f1e358]:
+                  - generic [ref=f1e359]:
+                    - generic [ref=f1e360]:
+                      - strong [ref=f1e361]: 多周期图表
+                      - generic [ref=f1e362]: 主周期 日线
+                    - generic [ref=f1e363]:
+                      - generic [ref=f1e364]: 对照周期
+                      - combobox "对照周期" [ref=f1e366] [cursor=pointer]:
+                        - generic [ref=f1e367]: 30 分钟
+                      - button "生成对比" [ref=f1e370] [cursor=pointer]
+                  - status [ref=f1e371]: 选择另一个周期，查看同一标的的独立分析，或与主周期上下对比。
+                  - generic [ref=f1e373]:
+                    - generic [ref=f1e374]:
+                      - generic [ref=f1e375]:
+                        - heading "个股 · 300750 · 日线" [level=3] [ref=f1e376]
+                        - paragraph [ref=f1e377]: 均线与缠论结构叠加；可在下方选择技术指标。
+                      - generic [ref=f1e378]:
+                        - generic [ref=f1e379]:
+                          - generic [ref=f1e380]: 笔
+                          - generic [ref=f1e381]: 盘整进行中
+                          - generic [ref=f1e385]: 待成笔方向 · 观察
+                          - generic [ref=f1e386]: 中枢
+                          - generic [ref=f1e387]: 线段
+                          - generic [ref=f1e388]: 底背离／背驰
+                          - generic [ref=f1e389]: 顶背离／背驰
+                        - generic [ref=f1e390] [cursor=pointer]:
+                          - checkbox "显示失效历史" [checked] [ref=f1e391]
+                          - generic [ref=f1e392]: 显示失效历史
+                        - button "全屏查看个股 · 300750 · 日线" [ref=f1e393] [cursor=pointer]:
+                          - generic [ref=f1e396]: 全屏
+                    - generic [ref=f1e398]:
+                      - region "蜡烛图绘图区" [ref=f1e399]
+                      - generic [ref=f1e402]:
+                        - generic [ref=f1e403]: 点击主图 K 线，可查找该日期关联证据
+                        - button "查看所选日期证据" [disabled] [ref=f1e404]
+                      - generic [ref=f1e405]:
+                        - generic [ref=f1e406]: 右键盘整矩形，查看区间详情
+                        - button "查看盘整详情" [ref=f1e407] [cursor=pointer]
+                      - generic [ref=f1e408]:
+                        - generic [ref=f1e409]: 右键背离／背驰标记，查看状态与依据
+                        - button "查看背离详情" [ref=f1e410] [cursor=pointer]
+                      - paragraph [ref=f1e411]: 琥珀虚线＝待成笔方向 · 仅连接可见已收盘行情的反向运动，端点可变；突破观察极值即撤销，不改变严格笔。
+                      - paragraph [ref=f1e412]: 圆形＝双线 · 菱形＝标准 · 三角形＝非标准 · 大菱形＝特殊 · 底紫顶绿 · 彩色空心＝候选 · 实心＝确认 · 灰色空心＝已失效／被替代
+                      - generic [ref=f1e413]:
+                        - generic [ref=f1e414]: 技术指标 · 可同时显示多个
+                        - button "＋ 添加指标" [ref=f1e415] [cursor=pointer]
+                      - generic [ref=f1e416]:
+                        - button "移除第 1 个指标" [ref=f1e417] [cursor=pointer]: 移除
+                        - generic [ref=f1e418]:
+                          - generic [ref=f1e421]:
+                            - strong [ref=f1e422]: 技术指标
+                            - generic [ref=f1e423]: 比较成交活跃程度，并显示 5、10 周期平均成交量。
+                          - generic [ref=f1e424]:
+                            - radiogroup "常用技术指标" [ref=f1e425]:
+                              - radio "无指标" [ref=f1e426] [cursor=pointer]
+                              - radio "成交量" [checked] [ref=f1e427] [cursor=pointer]
+                              - radio "MACD" [ref=f1e428] [cursor=pointer]
+                              - radio "KDJ" [ref=f1e429] [cursor=pointer]
+                              - radio "RSI" [ref=f1e430] [cursor=pointer]
+                              - radio "BOLL" [ref=f1e431] [cursor=pointer]
+                            - button "全部指标" [ref=f1e432] [cursor=pointer]
+                      - generic [ref=f1e436]:
+                        - button "移除第 2 个指标" [ref=f1e437] [cursor=pointer]: 移除
+                        - generic [ref=f1e438]:
+                          - generic [ref=f1e441]:
+                            - strong [ref=f1e442]: 技术指标
+                            - generic [ref=f1e443]: 用快慢均线差观察趋势方向与动能变化。
+                          - generic [ref=f1e444]:
+                            - radiogroup "常用技术指标" [ref=f1e445]:
+                              - radio "无指标" [ref=f1e446] [cursor=pointer]
+                              - radio "成交量" [ref=f1e447] [cursor=pointer]
+                              - radio "MACD" [checked] [ref=f1e448] [cursor=pointer]
+                              - radio "KDJ" [ref=f1e449] [cursor=pointer]
+                              - radio "RSI" [ref=f1e450] [cursor=pointer]
+                              - radio "BOLL" [ref=f1e451] [cursor=pointer]
+                            - button "全部指标" [ref=f1e452] [cursor=pointer]
+```

@@ -1,0 +1,14 @@
+usage: research_backup.py [-h] --source SOURCE [--destination DESTINATION]
+                          [--timeout TIMEOUT]
+                          {create,verify,restore}
+
+账户＋研究存档备份；恢复仅写入新的隔离目录
+
+positional arguments:
+  {create,verify,restore}
+
+options:
+  -h, --help            show this help message and exit
+  --source SOURCE
+  --destination DESTINATION
+  --timeout TIMEOUT

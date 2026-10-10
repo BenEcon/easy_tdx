@@ -1,0 +1,2 @@
+src/easy_tdx/backtest/signal_checkpoint.py:106: error: Incompatible types in assignment (expression has type "Integral", variable has type "int | None")  [assignment]
+Found 1 error in 1 file (checked 280 source files)

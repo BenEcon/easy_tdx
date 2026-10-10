@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { queryAction } from '../query-origin'
 import { computed, onMounted, ref } from 'vue'
 import DataGrid from '../components/DataGrid.vue'
 import MacSelect from '../components/MacSelect.vue'
@@ -69,10 +70,10 @@ function numberText(input: unknown, suffix = ''): string {
   return Number.isFinite(number) ? `${number.toLocaleString('zh-CN', { maximumFractionDigits: 2 })}${suffix}` : '—'
 }
 
-async function loadOverview(market: string) {
+async function loadOverview(market: string, manual = false) {
   const results = await Promise.allSettled([
     fetchQuote(market, code.value),
-    fetchSymbolInfo(market, code.value),
+    queryAction(manual)(() => fetchSymbolInfo(market, code.value)),
     fetchFinanceInfo(market, code.value),
   ])
   quoteRows.value = results[0].status === 'fulfilled' ? results[0].value.data : []
@@ -84,33 +85,34 @@ async function loadOverview(market: string) {
   }
 }
 
-async function selectCompanyCategory(category: Row) {
+async function selectCompanyCategory(category: Row, manual = false) {
   selectedCategory.value = category
   companyContent.value = ''
   try {
-    companyContent.value = (await fetchCompanyContent(detectMarket(code.value), code.value, category)).content
+    companyContent.value = (await queryAction(manual)(() => fetchCompanyContent(detectMarket(code.value), code.value, category))).content
   } catch (e) {
     error.value = formatError(e)
   }
 }
 
-async function loadCompanyF10(market: string) {
-  companyCategories.value = (await fetchCompanyCategories(market, code.value)).data
+async function loadCompanyF10(market: string, manual = false) {
+  companyCategories.value = (await queryAction(manual)(() => fetchCompanyCategories(market, code.value))).data
   if (companyCategories.value.length) await selectCompanyCategory(companyCategories.value[0])
   else { selectedCategory.value = null; companyContent.value = '' }
 }
 
-async function loadProfessionalFinance() {
+async function loadProfessionalFinance(manual = false) {
   if (!financialFiles.value.length) financialFiles.value = (await fetchFinancialFiles()).data
   if (!selectedFinancialFile.value && financialFiles.value.length) {
     selectedFinancialFile.value = String(financialFiles.value[0].filename ?? '')
   }
   rows.value = selectedFinancialFile.value
-    ? (await fetchFinancialRecords(selectedFinancialFile.value, code.value)).data
+    ? (await queryAction(manual)(() => fetchFinancialRecords(selectedFinancialFile.value, code.value))).data
     : []
 }
 
-async function load() {
+async function load(manual = false) {
+  const query = queryAction(manual)
   if (!/^\d{6}$/.test(code.value)) {
     error.value = '股票代码必须是 6 位数字'
     return
@@ -119,18 +121,18 @@ async function load() {
   error.value = ''
   const market = detectMarket(code.value)
   try {
-    if (tab.value === 'overview') await loadOverview(market)
-    else if (tab.value === 'f10') await loadCompanyF10(market)
+    if (tab.value === 'overview') await loadOverview(market, manual)
+    else if (tab.value === 'f10') await loadCompanyF10(market, manual)
     else if (tab.value === 'flow') {
       const [capital, current, history] = await Promise.all([
-        fetchCapitalFlow(market, code.value), fetchCurrentFundFlow(market, code.value), fetchFundFlowHistory(market, code.value, 100),
+        query(() => fetchCapitalFlow(market, code.value)), fetchCurrentFundFlow(market, code.value), fetchFundFlowHistory(market, code.value, 100),
       ])
       rows.value = [...current.data, ...history.data, ...capital.data]
-    } else if (tab.value === 'announcements') rows.value = (await fetchAnnouncements(code.value, 50)).data
-    else if (tab.value === 'reports') rows.value = (await fetchFinancialReport(code.value, reportType.value, 12)).data
-    else if (tab.value === 'professional') await loadProfessionalFinance()
-    else if (tab.value === 'events') rows.value = (await fetchXdxrInfo(market, code.value)).data
-    else rows.value = (await fetchAuction(market, code.value)).data
+    } else if (tab.value === 'announcements') rows.value = (await query(() => fetchAnnouncements(code.value, 50))).data
+    else if (tab.value === 'reports') rows.value = (await query(() => fetchFinancialReport(code.value, reportType.value, 12))).data
+    else if (tab.value === 'professional') await loadProfessionalFinance(manual)
+    else if (tab.value === 'events') rows.value = (await query(() => fetchXdxrInfo(market, code.value))).data
+    else rows.value = (await query(() => fetchAuction(market, code.value))).data
     recordStockHistory({ code: code.value, category: 'DAY' })
   } catch (e) {
     error.value = formatError(e)
@@ -143,18 +145,18 @@ async function load() {
 function switchTab(next: Tab) {
   tab.value = next
   rows.value = []
-  void load()
+  void load(true)
 }
 
-onMounted(load)
+onMounted(() => load())
 </script>
 
 <template>
   <div class="company-page">
     <section class="query-card">
       <div class="query-title"><span>COMPANY DESK</span><h2>公司资料</h2><p>行情、资金、公告与财务信息集中查阅。</p></div>
-      <StockQueryField v-model="code" @keyup.enter="load" />
-      <button class="primary query-btn action-button" :disabled="loading" @click="load">
+      <StockQueryField v-model="code" @keyup.enter="load(true)" />
+      <button class="primary query-btn action-button" :disabled="loading" @click="load(true)">
         <svg class="button-icon" :class="{ spinning: loading }" viewBox="0 0 20 20"><path d="M10 3a7 7 0 1 1-5.2 2.3M3 3v4h4" /></svg>
         {{ loading ? '查询中' : '查询公司' }}
       </button>
@@ -171,9 +173,9 @@ onMounted(load)
 
     <nav class="tab-bar">
       <button v-for="item in tabs" :key="item.value" :class="{ active: tab === item.value }" @click="switchTab(item.value)">{{ item.label }}</button>
-      <div v-if="tab === 'reports'" class="report-select"><MacSelect v-model="reportType" :options="reportTypes" @update:model-value="load" /></div>
+      <div v-if="tab === 'reports'" class="report-select"><MacSelect v-model="reportType" :options="reportTypes" @update:model-value="load(true)" /></div>
       <div v-else-if="tab === 'professional'" class="report-select professional-select">
-        <MacSelect v-model="selectedFinancialFile" :options="financialFiles.map(file => ({ value: String(file.filename ?? ''), label: String(file.filename ?? '') }))" @update:model-value="load" />
+        <MacSelect v-model="selectedFinancialFile" :options="financialFiles.map(file => ({ value: String(file.filename ?? ''), label: String(file.filename ?? '') }))" @update:model-value="load(true)" />
       </div>
     </nav>
 
@@ -183,7 +185,7 @@ onMounted(load)
     </section>
     <section v-else-if="tab === 'f10'" class="f10-workspace">
       <aside class="f10-index">
-        <button v-for="(category, index) in companyCategories" :key="String(category.name ?? index)" :class="{ active: selectedCategory === category }" @click="selectCompanyCategory(category)">
+        <button v-for="(category, index) in companyCategories" :key="String(category.name ?? index)" :class="{ active: selectedCategory === category }" @click="selectCompanyCategory(category, true)">
           <span>{{ category.name ?? '未命名资料' }}</span><small>{{ Number(category.length ?? 0).toLocaleString('zh-CN') }} B</small>
         </button>
       </aside>
@@ -199,7 +201,7 @@ onMounted(load)
       </article>
     </section>
     <section v-else class="content-card">
-      <header><div><h3>{{ tabs.find(item => item.value === tab)?.label }}</h3><p>{{ rows.length }} 条记录 · 数据按最新时间优先</p></div><button class="sm" :disabled="loading" @click="load">刷新</button></header>
+      <header><div><h3>{{ tabs.find(item => item.value === tab)?.label }}</h3><p>{{ rows.length }} 条记录 · 数据按最新时间优先</p></div><button class="sm" :disabled="loading" @click="load(true)">刷新</button></header>
       <div v-if="tab === 'announcements' && rows.length" class="announcement-list">
         <a v-for="(row, index) in rows" :key="String(row.announcement_id ?? index)" :href="String(row.url ?? row.pdf_url ?? '#')" target="_blank" rel="noopener">
           <span class="announcement-date">{{ row.date ?? '—' }}</span><strong>{{ row.title ?? '未命名公告' }}</strong><small>{{ row.type ?? '公告' }}</small>

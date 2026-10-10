@@ -1,10 +1,20 @@
 <script setup lang="ts">
+import { queryAction } from '../query-origin'
+import ResultDataProvenance from '../components/ResultDataProvenance.vue'
+import RadarReviewContext from '../components/RadarReviewContext.vue'
+import { readRadarReview, sameReviewInput, sameReviewStrategy } from '../radar-review'
 // 回测主页面：左配置面板 / 右报告面板。
 // 编排：点击「开始回测」→ 自动取行情 → 回测 → 展示 K线+净值+指标+成交。
 // 取行情已整合进「开始回测」（不再有单独的取行情按钮）。
 
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { readResearchNavigation, canOpenBacktest } from '../research-navigation'
+import ResearchEntryContext from '../components/ResearchEntryContext.vue'
+import { useAuth } from '../auth'
+import { savedStrategyInput, savedStrategyRequestId } from '../saved-strategy-input'
+import { readOptimizationQuery } from '../execution-context'
+import { researchInputFields } from '../research-input'
 
 import ChartFrame from '../components/ChartFrame.vue'
 import { useMobileSettings } from '../mobile-settings'
@@ -13,6 +23,7 @@ import GradeDetails from '../components/GradeDetails.vue'
 import KlineChart from '../components/KlineChart.vue'
 import MacSelect from '../components/MacSelect.vue'
 import MetricTable from '../components/MetricTable.vue'
+import { resultBasis } from '../metric-state'
 import NumberStepper from '../components/NumberStepper.vue'
 import StrategyPicker from '../components/StrategyPicker.vue'
 import SymbolPicker from '../components/SymbolPicker.vue'
@@ -21,14 +32,43 @@ import { fetchSavedStrategy, formatError, saveStrategy, updateSavedStrategy } fr
 import { detectMarket } from '../market'
 import { useMarketPreferences } from '../market-preferences'
 import { useSelectedStock } from '../stock-history'
-import { gradePerformance } from '../grading'
+import { gradeBacktestResult } from '../grading'
+import { performanceSnapshot } from '../performance-context'
 import type { Category, ExecutionMode, SavedStrategy, SavedStrategyCreate } from '../types'
 import { useBacktestStore } from '../stores/backtest'
+import CloudResearchArchives from '../components/CloudResearchArchives.vue'
+import { detachBacktest, validateBacktestArchive } from '../backtest-archive'
+import type { ArchiveDraft } from '../cloud-archives'
 
 const store = useBacktestStore()
+function captureBacktest():ArchiveDraft {
+  const saved=store.completed
+  if(!saved||store.running||saved.owner!==currentUser.value?.id)throw Error('当前没有可保存的完整回测，请重新运行')
+  const title=`${saved.request.symbol} · ${saved.request.category} · ${saved.request.strategy}`
+  const payload=validateBacktestArchive(detachBacktest({format:'backtest-research-v1',title,savedAt:saved.finishedAt,
+    request:saved.request,metadata:saved.metadata,result:saved.result,...(saved.radarSource?{radarSource:saved.radarSource}:{})}))
+  return {kind:'backtest',name:title,note:'',payload}
+}
+function exportBacktest(){
+  try{
+    const draft=captureBacktest(),url=URL.createObjectURL(new Blob([JSON.stringify(draft.payload,null,2)],{type:'application/json'}))
+    const anchor=document.createElement('a');anchor.href=url;anchor.download=`tdx-backtest-${Date.now()}.json`;anchor.click()
+    setTimeout(()=>URL.revokeObjectURL(url),1000)
+  }catch(error){saveMsg.value=formatError(error)}
+}
 const { mobile, settingsOpen } = useMobileSettings(() => Boolean(store.result))
 const { adjustMode } = useMarketPreferences()
 const route = useRoute()
+const {currentUser} = useAuth()
+const isSavedLoad = computed(() => route.query.savedStrategyId !== undefined)
+const isOptimizationLoad=computed(()=>route.query.optimizationContext!==undefined)
+const isContextLoad=computed(()=>isSavedLoad.value||isOptimizationLoad.value)
+const savedLoadState = ref<'idle'|'loading'|'ready'|'error'>('idle')
+const savedLoadName = ref('')
+const savedLoadWarnings = ref<string[]>([])
+const catalogLoading = ref(true), catalogError = ref(false)
+const entryContext = computed(() => readResearchNavigation(route.query))
+const entryError = computed(() => entryContext.value.error || (entryContext.value.value && !canOpenBacktest(entryContext.value.value.target) ? '指数与板块请在缠论结构中分析，不能当作普通股票回测' : ''))
 
 // SymbolPicker 实例引用，用于触发取行情
 const symbolPicker = ref<InstanceType<typeof SymbolPicker> | null>(null)
@@ -50,6 +90,8 @@ const strategy = ref('ma_cross')
 const params = ref<Record<string, number | string | boolean>>({})
 const cash = ref(1000000)
 const commission = ref(0.0003)
+const minCommission = ref(5)
+const stampTax = ref(0.001)
 const slippage = ref(0)
 const execution = ref<ExecutionMode>('next_open')
 
@@ -60,20 +102,88 @@ const EXECUTIONS: { value: ExecutionMode; label: string }[] = [
 ]
 
 const isSignalReview = computed(() => route.query.review === 'signal')
-const reviewSignalLabel = computed(() =>
-  route.query.signal === 'BUY' ? '买入信号' : route.query.signal === 'SELL' ? '卖出信号' : '策略信号',
-)
-const reviewSignalDate = computed(() => String(route.query.signalDate || '日期未知'))
+const reviewContext = computed(() => readRadarReview(route.query))
+const reviewInputMatches = computed(() => sameReviewInput(reviewContext.value.value, code.value, category.value, adjustMode.value))
+const reviewMatches = computed(() => reviewInputMatches.value && sameReviewStrategy(reviewContext.value.value, strategy.value, params.value))
+const reviewStatus = computed(() => store.error ? `复核未完成：${store.error}` : store.running || symbolPicker.value?.loading ? (reviewContext.value.value?.evidence?'正在读取原任务行情并核验…':'正在按原截止时间重新取数核验…') : store.result ? '已生成当前策略回测；资金、成本和执行方式采用本页设置，回测成交不等于原雷达信号。' : '尚未生成本次复核结果。')
 const reviewSourceName = computed(() => String(route.query.strategyName || route.query.strategyLabel || strategy.value))
 const editStrategyId = computed(() => typeof route.query.editStrategyId === 'string' ? route.query.editStrategyId : '')
 const editingRecord = ref<SavedStrategy | null>(null)
 const isStrategyEdit = computed(() => Boolean(editStrategyId.value))
 const isStrategyCopyEdit = computed(() => route.query.editMode === 'copy')
 
-onMounted(async () => {
-  await store.loadStrategies().catch((e) => {
-    store.error = `加载策略列表失败：${e instanceof Error ? e.message : e}`
-  })
+let routeGeneration = 0
+async function loadRoute() {
+  const generation = ++routeGeneration
+  const initialInputVersion = inputGeneration, initialOwner = currentUser.value?.id
+  catalogLoading.value = true; catalogError.value = false
+  showSaveForm.value=false;saving.value=false;saveMsg.value=''
+  store.clearResult()
+  editingRecord.value = null
+  savedLoadState.value = isContextLoad.value ? 'loading' : 'idle'
+  savedLoadName.value = ''
+  savedLoadWarnings.value = []
+  if (isContextLoad.value) store.setOhlcv([], '', null, null)
+  if (route.query.researchContext !== undefined) {
+    store.setOhlcv([], '', null, null)
+    if (entryError.value) { catalogLoading.value=false;catalogError.value=true;store.error = entryError.value; return }
+  }
+  if (isSignalReview.value) {
+    store.clearResult()
+    store.setOhlcv([], '', null, null)
+    if (!reviewContext.value.value) { catalogLoading.value=false;catalogError.value=true;store.error = reviewContext.value.error; return }
+  }
+  try {
+    await store.loadStrategies()
+    if (generation !== routeGeneration || currentUser.value?.id !== initialOwner) return
+    if (initialInputVersion !== inputGeneration) throw Error('载入期间参数已修改，已保留当前输入；请确认后重新载入')
+    if (!store.strategies.length) throw Error('策略目录为空，请重试')
+  } catch(e) {
+    if(generation === routeGeneration) {
+      catalogError.value=true;savedLoadState.value='error'
+      store.error=`载入执行配置失败：${formatError(e)}`
+    }
+    return
+  } finally {
+    if(generation === routeGeneration)catalogLoading.value=false
+  }
+  if (generation !== routeGeneration) return
+
+  if (isContextLoad.value) {
+    const owner = currentUser.value?.id
+    try {
+      if (!owner) throw Error('请先登录再载入策略')
+      const id = isOptimizationLoad.value?'':savedStrategyRequestId(route.query)
+      await nextTick()
+      const inputVersion = inputGeneration
+      const record = isOptimizationLoad.value?null:await fetchSavedStrategy(id, owner)
+      if (generation !== routeGeneration || currentUser.value?.id !== owner) return
+      if (inputVersion !== inputGeneration) throw Error('载入期间参数已修改，请从策略库重新载入')
+      if (record && record.id !== id) throw Error('返回的策略与所选记录不一致')
+      const input = record?savedStrategyInput(record, {category:category.value,adjust:adjustMode.value,startDate:startDate.value,endDate:endDate.value,
+        cash:cash.value,commission:commission.value,minCommission:minCommission.value,stampTax:stampTax.value,slippage:slippage.value,execution:execution.value},store.strategies.map(s=>s.name))
+        :readOptimizationQuery(route.query,store.strategies.map(s=>s.name))
+      code.value=input.code;category.value=input.category;adjustMode.value=input.adjust
+      startDate.value=input.startDate;endDate.value=input.endDate;strategy.value=input.strategy
+      cash.value=input.cash;commission.value=input.commission;minCommission.value=input.minCommission
+      stampTax.value=input.stampTax;slippage.value=input.slippage;execution.value=input.execution
+      await nextTick()
+      if (generation !== routeGeneration || currentUser.value?.id !== owner) return
+      params.value=input.params
+      savedLoadName.value=record?.name??'寻优结果配置';savedLoadWarnings.value=input.warnings;savedLoadState.value='ready'
+    } catch(e) {
+      if(generation===routeGeneration){savedLoadState.value='error';store.error=formatError(e)}
+    }
+    return
+  }
+
+  if (entryContext.value.value) {
+    const entry = entryContext.value.value
+    code.value = entry.target.code
+    category.value = entry.category
+    adjustMode.value = entry.adjust
+    return
+  }
 
   // 从 URL query 读取寻优页传来的 strategy + params（跳转自动填充）
   const qStrategy = route.query.strategy as string | undefined
@@ -83,6 +193,7 @@ onMounted(async () => {
     // 等待 StrategyPicker 的 watch(selectedSchema) 触发完默认值重置后，
     // 再用 query 的 params 覆盖，避免被 watch 重置掉
     await nextTick()
+    if (generation !== routeGeneration) return
   }
   if (qParams) {
     try {
@@ -102,43 +213,73 @@ onMounted(async () => {
   if (qStartDate) startDate.value = qStartDate
   if (qEndDate) endDate.value = qEndDate
   if (qCategory) category.value = qCategory
+  const qAdjust = route.query.adjust
+  if (qAdjust === 'QFQ' || qAdjust === 'HFQ' || qAdjust === 'NONE') adjustMode.value = qAdjust
+  if (reviewContext.value.value) {
+    const review = reviewContext.value.value
+    code.value = review.symbol; category.value = review.category; adjustMode.value = review.adjust
+    strategy.value = review.strategy
+    await nextTick()
+    if (generation !== routeGeneration) return
+    params.value = { ...review.params }
+    endDate.value = review.asOf.slice(0, 10)
+  }
 
   if (editStrategyId.value) {
     try {
-      editingRecord.value = await fetchSavedStrategy(editStrategyId.value)
+      const record = await fetchSavedStrategy(editStrategyId.value, currentUser.value?.id)
+      if (generation !== routeGeneration) return
+      editingRecord.value = record
       const trade = editingRecord.value.trade_config
       if (typeof trade.cash === 'number') cash.value = trade.cash
       if (typeof trade.commission === 'number') commission.value = trade.commission
+      if (typeof trade.min_commission === 'number') minCommission.value = trade.min_commission
+      if (typeof trade.stamp_tax === 'number') stampTax.value = trade.stamp_tax
       if (typeof trade.slippage === 'number') slippage.value = trade.slippage
       if (trade.execution === 'next_open' || trade.execution === 'next_close') execution.value = trade.execution
     } catch (e) {
-      store.error = `读取待修改策略失败：${formatError(e)}`
+      if(generation===routeGeneration) store.error = `读取待修改策略失败：${formatError(e)}`
     }
   }
 
-  // 从信号雷达进入时直接重放同一标的与策略，落地即可进行人工复核。
+  // New scans use frozen task inputs; legacy scans explicitly refetch to cutoff.
   if (isSignalReview.value && route.query.autoRun === '1' && qSymbol) {
     await nextTick()
+    if (generation !== routeGeneration) return
     await onRun()
   }
-})
+}
+onMounted(loadRoute)
+watch(() => route.fullPath, () => { if (route.path === '/') void loadRoute() })
 
 // 取行情 + 回测 串联（点击「开始回测」触发）
-async function onRun() {
+async function onRun(manual = false) {
+  if(catalogLoading.value || catalogError.value){store.error='策略目录及执行配置尚未有效载入，请重新载入';return}
+  if(isContextLoad.value && savedLoadState.value!=='ready'){store.error='执行配置尚未有效载入，请从来源重新打开';return}
+  if (entryError.value) { store.error = entryError.value; return }
+  if (isSignalReview.value && !reviewContext.value.value) { store.error = reviewContext.value.error; return }
   store.error = ''
+  const version = inputGeneration
+  const request = { strategy: strategy.value, params: { ...params.value }, cash: cash.value,
+    commission: commission.value, min_commission:minCommission.value, stamp_tax:stampTax.value, slippage: slippage.value, execution: execution.value }
   // 1. 先取行情（SymbolPicker.loadBars 会校验并填充 store.ohlcv）
-  const ok = await symbolPicker.value?.loadBars()
-  if (!ok) return // 校验/取数失败，错误已在 store.error
+  const ok = await symbolPicker.value?.loadBars(manual)
+  if (!ok || version !== inputGeneration) return // 不将后来修改的参数套到已提交行情
   // 2. 再回测
-  await store.run({
-    strategy: strategy.value,
-    params: params.value,
-    cash: cash.value,
-    commission: commission.value,
-    slippage: slippage.value,
-    execution: execution.value,
-  })
+  await queryAction(manual)(() => store.run(request))
 }
+let inputGeneration = 0
+watch([code, category, adjustMode, startDate, endDate, strategy, params, cash, commission, minCommission, stampTax, slippage, execution], () => {
+  inputGeneration++
+  store.clearResult()
+}, { deep: true, flush: 'sync' })
+onBeforeUnmount(() => { routeGeneration++; inputGeneration++; store.clearResult() })
+watch(()=>currentUser.value?.id,()=>{
+  catalogLoading.value=false;catalogError.value=true
+  routeGeneration++;inputGeneration++;store.clearResult();store.setOhlcv([], '', null, null)
+  showSaveForm.value=false;saving.value=false;saveMsg.value='';editingRecord.value=null
+  savedLoadState.value='error';savedLoadName.value='';savedLoadWarnings.value=[]
+},{flush:'sync'})
 
 // ── 保存策略（把当前结果 + 配置 + 上下文存进策略库）──────────────────────────
 const showSaveForm = ref(false)
@@ -156,7 +297,7 @@ const strategyLabel = computed(
 // total_return 不直接计入评分（只通过卡玛/夏普间接体现），
 // 体现「哪怕近期收益率高，长期风险大也该低评」的产品诉求。
 const grade = computed(() =>
-  store.result ? gradePerformance(store.result.performance) : null,
+  store.result ? gradeBacktestResult(store.result) : null,
 )
 
 // 当前股票完整代码（市场:6位），从 SymbolPicker 同步来的 code 是纯数字，
@@ -175,7 +316,9 @@ function openSaveForm() {
 }
 
 async function onSave() {
-  if (!store.result || !saveName.value.trim()) return
+  if (!store.result || !saveName.value.trim() || saving.value) return
+  const owner=currentUser.value?.id, generation=routeGeneration
+  if(!owner){saveMsg.value='请先登录再保存';return}
   saving.value = true
   saveMsg.value = ''
   try {
@@ -191,23 +334,17 @@ async function onSave() {
         start_date: startDate.value,
         end_date: endDate.value,
         adjust: adjustMode.value,
+        ...researchInputFields(store.barsContext),
       },
       trade_config: {
         cash: cash.value,
         commission: commission.value,
-        min_commission: 5,
-        stamp_tax: 0.001,
+        min_commission: minCommission.value,
+        stamp_tax: stampTax.value,
         slippage: slippage.value,
         execution: execution.value,
       },
-      snapshot: {
-        total_return: store.result.performance.total_return,
-        annual_return: store.result.performance.annual_return,
-        max_drawdown: store.result.performance.max_drawdown,
-        sharpe: store.result.performance.sharpe,
-        win_rate: store.result.performance.win_rate,
-        trades_count: store.result.performance.total_trades,
-      },
+      snapshot: performanceSnapshot({ ...store.result.performance }, resultBasis(store.result)),
       tags: saveTags.value
         .split(/[,，]/)
         .map((t) => t.trim())
@@ -215,17 +352,20 @@ async function onSave() {
       notes: saveNotes.value,
     }
     if (editingRecord.value) {
-      editingRecord.value = await updateSavedStrategy(editingRecord.value.id, payload)
+      const saved = await updateSavedStrategy(editingRecord.value.id, payload, owner)
+      if(generation!==routeGeneration||currentUser.value?.id!==owner)return
+      editingRecord.value = saved
       saveMsg.value = '✓ 策略修改已保存'
     } else {
-      await saveStrategy(payload)
+      await saveStrategy(payload, owner)
+      if(generation!==routeGeneration||currentUser.value?.id!==owner)return
       saveMsg.value = '✓ 已保存到策略库'
     }
     showSaveForm.value = false
   } catch (e) {
-    saveMsg.value = `保存失败：${formatError(e)}`
+    if(generation===routeGeneration&&currentUser.value?.id===owner)saveMsg.value = `保存失败：${formatError(e)}`
   } finally {
-    saving.value = false
+    if(generation===routeGeneration&&currentUser.value?.id===owner)saving.value = false
   }
 }
 </script>
@@ -245,6 +385,7 @@ async function onSave() {
           v-model:category="category"
           v-model:start-date="startDate"
           v-model:end-date="endDate"
+          :review="reviewInputMatches ? reviewContext.value : null"
         />
       </section>
 
@@ -253,6 +394,7 @@ async function onSave() {
         <StrategyPicker
           v-if="store.strategies.length"
           :strategies="store.strategies"
+          :suspend-defaults="catalogLoading || catalogError"
           v-model:strategy="strategy"
           v-model:params="params"
         />
@@ -263,17 +405,21 @@ async function onSave() {
         <h3>资金与成本</h3>
         <div class="field">
           <label>初始资金</label>
-          <NumberStepper v-model="cash" :min="1000" :step="10000" aria-label="初始资金" />
+          <NumberStepper v-model="cash" :min="1" :step="10000" aria-label="初始资金" />
         </div>
         <div class="row">
           <div class="field">
             <label>佣金率</label>
-            <NumberStepper v-model="commission" :min="0" :step="0.0001" aria-label="佣金率" />
+            <NumberStepper v-model="commission" :min="0" :max="0.01" :step="0.0001" aria-label="佣金率" />
           </div>
           <div class="field">
             <label>滑点</label>
-            <NumberStepper v-model="slippage" :min="0" :step="0.001" aria-label="滑点" />
+            <NumberStepper v-model="slippage" :min="0" :max="0.05" :step="0.001" aria-label="滑点" />
           </div>
+        </div>
+        <div class="row">
+          <div class="field"><label>最低佣金</label><NumberStepper v-model="minCommission" :min="0" :step="0.01" aria-label="最低佣金" /></div>
+          <div class="field"><label>印花税率</label><NumberStepper v-model="stampTax" :min="0" :max="0.01" :step="0.0001" aria-label="印花税率" /></div>
         </div>
         <div class="field">
           <label>成交价</label>
@@ -281,10 +427,14 @@ async function onSave() {
         </div>
       </section>
 
+      <p v-if="catalogLoading || catalogError" class="loading-text" role="status">
+        {{ catalogLoading ? '正在载入策略目录…' : '配置载入已停止，当前输入未被覆盖。' }}
+        <button v-if="catalogError" class="ghost" type="button" @click="loadRoute">重新载入</button>
+      </p>
       <button
         class="primary run-btn action-button"
-        :disabled="store.running"
-        @click="onRun"
+        :disabled="catalogLoading || catalogError || store.running || (isContextLoad && savedLoadState !== 'ready')"
+        @click="onRun(true)"
       >
         <svg class="button-icon" :class="{ spinning: store.running }" viewBox="0 0 20 20" aria-hidden="true">
           <path v-if="store.running" d="M16.5 10a6.5 6.5 0 1 1-1.9-4.6" />
@@ -296,7 +446,14 @@ async function onSave() {
 
     <!-- 右栏：报告 -->
     <main class="report-panel">
-      <section v-if="isSignalReview || isStrategyEdit || isStrategyCopyEdit" class="review-context" :aria-label="isStrategyEdit || isStrategyCopyEdit ? '修改策略上下文' : '信号人工复核上下文'">
+      <section v-if="isContextLoad" class="saved-context" aria-label="执行配置载入状态" role="status" :aria-busy="savedLoadState==='loading'">
+        <h3>{{ savedLoadState==='loading'?'正在读取执行配置':savedLoadState==='ready'?`已载入：${savedLoadName}`:'执行配置未有效载入' }}</h3>
+        <p>载入仅恢复配置，不自动回测。重新计算使用当前可取得的行情，不是原成绩重放。</p>
+        <ul v-if="savedLoadWarnings.length" aria-label="旧策略缺失配置"><li v-for="warning in savedLoadWarnings" :key="warning">{{ warning }}</li></ul>
+      </section>
+      <ResearchEntryContext v-if="route.query.researchContext !== undefined" :value="entryContext.value" :error="entryError" backtest />
+      <RadarReviewContext v-if="isSignalReview" :review="reviewContext.value" :error="reviewContext.error" :matches="reviewMatches" :status="reviewStatus" :metadata="store.barsMetadata" />
+      <section v-if="isStrategyEdit || isStrategyCopyEdit" class="review-context" aria-label="修改策略上下文">
         <div class="review-context-icon">
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <template v-if="isStrategyEdit || isStrategyCopyEdit"><path d="m4 14.8.5-3.2L12.2 4l2.8 2.8-7.7 7.6zM10.8 5.4l2.8 2.8M4 16h12" /></template>
@@ -310,21 +467,17 @@ async function onSave() {
             <p v-if="isStrategyEdit">调整左侧参数后运行验证，再点击“保存修改”覆盖原策略</p>
             <p v-else>这是组合中的子策略；调整并验证后可保存为独立策略，不影响原组合</p>
           </template>
-          <template v-else>
-            <span>雷达信号 · 人工复核</span>
-            <strong>{{ reviewSourceName }} · {{ code }}</strong>
-            <p>{{ reviewSignalLabel }} · {{ reviewSignalDate }} · {{ category }} · 已还原策略参数并自动运行</p>
-          </template>
         </div>
         <RouterLink class="review-back" to="/signals">返回信号雷达</RouterLink>
       </section>
       <div v-if="store.error" class="error-banner">⚠ {{ store.error }}</div>
 
       <div v-if="!store.result && !store.running && !store.error" class="placeholder">
-        <p>输入代码、配置策略后点击「开始回测」（自动取行情）</p>
+        <p>{{ isSavedLoad ? '核对分析设置后，点击「开始回测」' : '输入代码、配置策略后点击「开始回测」（自动取行情）' }}</p>
       </div>
 
       <div v-if="store.result" class="report-content">
+        <ResultDataProvenance :evidence="store.result.data_provenance" />
         <div class="result-toolbar">
           <button class="ghost" @click="openSaveForm">
             <svg class="button-icon" viewBox="0 0 20 20" aria-hidden="true">
@@ -332,8 +485,10 @@ async function onSave() {
             </svg>
             <span>{{ isStrategyEdit ? '保存修改' : '保存策略' }}</span>
           </button>
+          <button class="ghost" :disabled="store.running||!store.completed" @click="exportBacktest">导出回测原档</button>
           <span v-if="saveMsg" class="save-msg">{{ saveMsg }}</span>
         </div>
+        <CloudResearchArchives :capture="captureBacktest" :busy="store.running||!store.completed" />
 
         <section class="report-section">
           <ChartFrame title="K线、买卖点与技术指标" description="主副图同步缩放；支持完整指标库、参数设置与主图叠加。">
@@ -354,7 +509,7 @@ async function onSave() {
 
         <section class="report-section">
           <h3>绩效指标</h3>
-          <MetricTable :perf="store.result.performance" />
+          <MetricTable :perf="store.result.performance" :states="resultBasis(store.result)?.metric_status" />
         </section>
 
         <section class="report-section">
@@ -444,9 +599,20 @@ async function onSave() {
 /* 右栏报告面板 */
 .report-panel {
   flex: 1;
+  min-width: 0;
   overflow-y: auto;
   padding: 16px 20px;
 }
+.saved-context {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+.saved-context h3 { margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+.saved-context p, .saved-context ul { margin: 0; color: var(--text-muted); font-size: 12px; line-height: 1.7; }
+.saved-context ul { margin-top: 8px; padding-left: 18px; }
+.saved-context + .placeholder { height: auto; min-height: 50vh; }
 .placeholder {
   display: flex;
   align-items: center;

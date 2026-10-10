@@ -1,0 +1,32 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+easy-tdx
+ae3c333a53324e25fac58c780540322edf642495acdb81e360ba4f1710e9ce14  /home/opc/backups/tdx-20261009-activity-access/data.tar.gz
+nginx: [warn] conflicting server name "tikz.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "sub.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "www.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "math.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "tikz.rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "sub.rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "www.rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "math.rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: the configuration file /www/server/nginx/conf/nginx.conf syntax is ok
+nginx: configuration file /www/server/nginx/conf/nginx.conf test is successful
+nginx: [warn] conflicting server name "tikz.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "sub.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "www.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "math.rationalworld.tk" on 0.0.0.0:80, ignored
+nginx: [warn] conflicting server name "tikz.rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "sub.rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "www.rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "rationalworld.tk" on 0.0.0.0:443, ignored
+nginx: [warn] conflicting server name "math.rationalworld.tk" on 0.0.0.0:443, ignored
+ Container easy-tdx  Recreate
+ Container easy-tdx  Recreated
+ Container easy-tdx  Starting
+ Container easy-tdx  Started
+{"setup_required":false,"authenticated":false,"user":null}easy-tdx:activity-access-20261009 sha256:9877d278e47e125d34a9d9c88213fab0d01bd9ac228f37330ef863a265ca2c7a running healthy

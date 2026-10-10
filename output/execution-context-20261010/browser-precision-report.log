@@ -1,0 +1,15 @@
+### Result
+[
+  {
+    "path": "/portfolio",
+    "value": "1.23"
+  },
+  {
+    "path": "/",
+    "value": "1.23"
+  }
+]
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__precisionReport)');
+```

@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>休市采样验收 · 合成数据</title><div id="qa"></div>
+<script type="module">
+import { createApp } from 'vue'
+import ResultDataProvenance from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/ResultDataProvenance.vue'
+import '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/style.css'
+const closure={period:'2026-02-16/2026-02-22',datetime:'2026-02-22T15:00:00',source_time:'2026-02-13T00:00:00',valuation:103,reason:'交易所整周期休市，沿用前次估值；非行情或交易记录'}
+const basis={sample_category:'WEEK',annual_periods:52,sample_count:5,observed_sample_count:4,return_count:4,sample_start:'2026-02-06T15:00:00',sample_end:'2026-03-06T15:00:00',unavailable_reason:null,warnings:['含 1 个经日历核验的整周期休市估值，沿用前值以保留周期长度；不补造行情，不改变交易和完整净值'],closed_period_samples:[closure]}
+const single={datasets:[],request:{category:'WEEK'},performance_basis:basis}
+const makeRow=(datetime,closed=false)=>({datetime,valid:true,closed_period:closed,members:[{member:'周线策略@SH:600000',category:'WEEK',expected_time:closed?'2026-02-13T15:00:00':datetime,valuation_time:closed?'2026-02-13T15:00:00':datetime,source_time:closed?'2026-02-13T00:00:00':datetime,asof_age_seconds:closed?9*86400:0,reason:null}]})
+const common={datasets:[],request:{categories:['DAY','WEEK']},performance_basis:{...basis,valuation_samples:[makeRow('2026-02-06T15:00:00'),makeRow('2026-02-13T15:00:00'),makeRow('2026-02-22T15:00:00',true),makeRow('2026-02-27T15:00:00'),makeRow('2026-03-06T15:00:00')],excluded_targets:[]}}
+createApp({components:{ResultDataProvenance},data:()=>({single,common,mode:false}),template:`<main><h1>休市采样验收</h1><p>本地合成数据；休市估值不增加真实观测数。</p><button type="button" @click="mode=!mode">{{ mode ? '切换到单股示例' : '切换到组合示例' }}</button><ResultDataProvenance :evidence="mode?common:single" /></main>`}).mount('#qa')
+</script>
+<style>body{overflow:auto!important}main{max-width:1000px;margin:32px auto;padding:0 20px}h1{font-size:22px}p{color:var(--text-muted);margin:8px 0 16px}button{font:inherit;border:1px solid var(--border);background:var(--bg-panel);color:var(--text);padding:8px 12px;border-radius:6px;cursor:pointer;margin-bottom:12px}#qa{width:100%}</style></html>

@@ -1,4 +1,4 @@
-import { computed, ref, watch } from 'vue'
+import { computed, effectScope, ref, watch } from 'vue'
 
 import { updatePreferences, useAuth } from './auth'
 
@@ -20,13 +20,13 @@ function normalizeAdjust(value: unknown): AdjustMode {
 export function useMarketPreferences() {
   const { currentUser } = useAuth()
   if (!initialized) {
-    watch(
+    effectScope(true).run(() => watch(
       currentUser,
       (user) => {
         adjustState.value = normalizeAdjust(user?.preferences?.adjust_mode)
       },
-      { immediate: true },
-    )
+      { immediate: true, flush: 'sync' },
+    ))
     initialized = true
   }
 

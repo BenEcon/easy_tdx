@@ -1,0 +1,157 @@
+✔ disabled combination does not add implicit weights; enabled selection is explicit (1.895542ms)
+✖ actual Python report preserves the combination through export and read-only reopen (65.790292ms)
+✔ incomplete or contradictory composition archive is rejected, never repaired (69.981292ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 2
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8345.767708
+
+✖ failing tests:
+
+test at scripts/factor-composition.test.mjs:32:1
+✖ actual Python report preserves the combination through export and read-only reopen (65.790292ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+    {
+      config: {
+        components: [
+          {
+            direction: 1,
+  ...
+            {
+  +           contribution: 0,
+  -           contribution: -0,
+              name: 'volatility_20d',
+              rank: 0,
+              raw: 0.011792588843951752
+            }
+          ],
+  
+      at TestContext.<anonymous> (file:///Users/bowen/Documents/Python/Google/TDX-work/web-ui/scripts/factor-composition.test.mjs:36:10)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: {
+      version: 'factor-composition-rank-v1',
+      config: { method: 'rank_centered', components: [Array] },
+      effective_components: [ [Object], [Object] ],
+      score_name: 'composite_score',
+      symbols: [ 'SZ:000001', 'SZ:000002', 'SZ:000003', 'SZ:000004', 'SZ:000005' ],
+      scores: [
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object],
+        ... 60 more items
+      ],
+      coverage: [
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object],
+        ... 60 more items
+      ],
+      latest: [ [Object], [Object], [Object], [Object], [Object] ],
+      error: null,
+      trade_eligible: false,
+      policy: { pool: 'same_date_complete_intersection', minimum_assets: 5, missing: 'no_imputation_no_weight_renormalization', fit: 'fixed_user_weights_no_return_fitting' },
+      limitations: [ '各因子在同日、全部组成因子齐全的标的交集内取平均并列排名，线性映射至 [-1,1]。', '正方向保留排名，负方向反向；权重除以总和。方向和权重由用户指定，不按收益自动拟合。', '不足 5 只不评分，缺失标的保留为空；常数组成因子得 0，仍保留原权重，不重新分配。', '组合使用原始因子排名，不套用单因子预处理选项；没有行业／市值中性化。', '这是固定配置研究评分与回顾性检验，不是交易持仓权重或可交易净值。' ],
+      reports: [ [Object] ],
+      validation: { version: 'factor-time-validation-v1', config: [Object], folds: [Array], test_reports: [Array], policy: [Object], limitations: [Array] },
+      horizon_comparison: { version: 'factor-multi-horizon-v1', horizons: [Array], results: [Array], sample_policy: 'each_horizon_own_complete_labels' }
+    },
+    expected: {
+      version: 'factor-composition-rank-v1',
+      config: { method: 'rank_centered', components: [Array] },
+      effective_components: [ [Object], [Object] ],
+      score_name: 'composite_score',
+      symbols: [ 'SZ:000001', 'SZ:000002', 'SZ:000003', 'SZ:000004', 'SZ:000005' ],
+      scores: [
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object],
+        ... 60 more items
+      ],
+      coverage: [
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object], [Object], [Object],
+        [Object], [Object], [Object], [Object],
+        ... 60 more items
+      ],
+      latest: [ [Object], [Object], [Object], [Object], [Object] ],
+      error: null,
+      trade_eligible: false,
+      policy: { pool: 'same_date_complete_intersection', minimum_assets: 5, missing: 'no_imputation_no_weight_renormalization', fit: 'fixed_user_weights_no_return_fitting' },
+      limitations: [ '各因子在同日、全部组成因子齐全的标的交集内取平均并列排名，线性映射至 [-1,1]。', '正方向保留排名，负方向反向；权重除以总和。方向和权重由用户指定，不按收益自动拟合。', '不足 5 只不评分，缺失标的保留为空；常数组成因子得 0，仍保留原权重，不重新分配。', '组合使用原始因子排名，不套用单因子预处理选项；没有行业／市值中性化。', '这是固定配置研究评分与回顾性检验，不是交易持仓权重或可交易净值。' ],
+      reports: [ [Object] ],
+      validation: { version: 'factor-time-validation-v1', config: [Object], folds: [Array], test_reports: [Array], policy: [Object], limitations: [Array] },
+      horizon_comparison: { version: 'factor-multi-horizon-v1', horizons: [Array], results: [Array], sample_policy: 'each_horizon_own_complete_labels' }
+    },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

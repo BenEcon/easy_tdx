@@ -1,0 +1,33 @@
+Local numerical stability checkpoint, 2026-10-10. No production deployment.
+
+Before: source-after-factor-archives.tar.gz
+SHA256: 2686cb875156ccdd95d9c1156a26264347ed5cb965415de8f77c9dc26ba22b1f
+After: source-after-factor-numerics.tar.gz
+SHA256: 637c1b404673bf2fd4d7458a807b50c46c542a2b2d82bc0fc0f35e8fc764e155
+
+Includes the preexisting dirty source tree. Extract into a fresh temporary
+directory and selectively compare/recover files; never overwrite user databases
+or reset the worktree. Secrets, DBs, output, dependencies and dist excluded.
+Chanlun and MyTT.py/.pyi are unchanged against the before archive.
+
+Statistics: factor-cross-section-numerics-v2, explicit policy in the fingerprint.
+Legacy archives stay readonly and unchanged. Explicit replay creates a new
+draft and separately saved ID; source version/ID/digest retained in lineage.
+
+Verification: 21 new numerical tests; backend relevant regressions 1185 passed;
+frontend 584 + 28 passed; Ruff and Mypy 313 sources passed; build passed.
+Existing Starlette deprecation / large-build-chunk notices remain.
+Synthetic max load 20 assets * 800 bars * 4 factors: raw 17.81s, MAD 19.29s,
+one local measurement, no truncation. Not real market validation or an SLA.
+WebKit: old frozen synthetic pool readonly -> explicit new-rule replay -> save
+new ID -> readonly reopen. Original digest unchanged. Mobile screenshots checked,
+document width 390. Dialog measurement selected a hidden dialog and yielded 0;
+that number is NOT evidence of visible-dialog width. Visible screenshot inspected.
+Automatic initialization/refresh/readonly requests do not count as manual queries;
+only explicit replay and evaluation generated two user query records.
+
+Evidence: numerics-*.log / numerics-performance.json and ../playwright/numerics-*.
+QA server /private/tmp/tdx-factor-numerics-qa.DcytXe/server.py PID 21975 stopped;
+dedicated factor-numerics browser closed. Temporary QA DB retained, no real data.
+Details/remaining work: docs/factor-numerics-20261010.md and factor-system-plan-20261010.md.
+Entire factor goal remains ACTIVE. No additional formula kernels in this batch.

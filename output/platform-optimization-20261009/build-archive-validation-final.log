@@ -1,0 +1,108 @@
+
+> web-ui@0.0.0 build
+> vue-tsc -b && vite build
+
+vite v8.1.3 building client environment for production...
+[2Ktransforming...✓ 975 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                      0.65 kB │ gzip:   0.44 kB
+dist/assets/KlineChart-CB8YVHs-.css                  0.28 kB │ gzip:   0.19 kB
+dist/assets/AdjustPicker-D00KpYkY.css                0.38 kB │ gzip:   0.20 kB
+dist/assets/ChanlunTargetPicker-D-d8ErAX.css         0.42 kB │ gzip:   0.22 kB
+dist/assets/StockQueryField-DZM9BaFv.css             0.51 kB │ gzip:   0.31 kB
+dist/assets/SymbolPicker-D_pnul3P.css                0.56 kB │ gzip:   0.30 kB
+dist/assets/PortfolioSummaryTable-Mpax1D9i.css       0.62 kB │ gzip:   0.27 kB
+dist/assets/MetricStateNotes-Ds5ln-hd.css            0.65 kB │ gzip:   0.32 kB
+dist/assets/MetricTable-C8YU7S37.css                 0.67 kB │ gzip:   0.31 kB
+dist/assets/StocksPicker-DtZSuV36.css                0.87 kB │ gzip:   0.36 kB
+dist/assets/PerformanceContextNote-B1O3ZqFf.css      1.09 kB │ gzip:   0.51 kB
+dist/assets/RadarReviewContext-CPdL_EKk.css          1.22 kB │ gzip:   0.46 kB
+dist/assets/DataGrid-CaL60_Lc.css                    1.51 kB │ gzip:   0.63 kB
+dist/assets/DataProvenance-rwYj3IKj.css              1.71 kB │ gzip:   0.60 kB
+dist/assets/NumberStepper-8K7Mvx4I.css               1.78 kB │ gzip:   0.66 kB
+dist/assets/StrategyPicker-DUptAOq2.css              1.95 kB │ gzip:   0.65 kB
+dist/assets/CompareView-BlFR-tV5.css                 2.53 kB │ gzip:   0.75 kB
+dist/assets/MultiPeriodOverviewTable-uRgExktS.css    2.53 kB │ gzip:   0.87 kB
+dist/assets/MarketCenterView-CJs8ve4U.css            2.71 kB │ gzip:   0.85 kB
+dist/assets/ServerSettingsView-Dr8cBAAI.css          2.99 kB │ gzip:   0.85 kB
+dist/assets/ChartFrame-DpbssJ_h.css                  3.16 kB │ gzip:   0.82 kB
+dist/assets/BoardResearchView-aGshXhM0.css           3.19 kB │ gzip:   0.96 kB
+dist/assets/ExtendedMarketView-C7xIY1Yr.css          3.27 kB │ gzip:   0.97 kB
+dist/assets/IntradayResearchView-TO8z0DIh.css        3.44 kB │ gzip:   1.06 kB
+dist/assets/PortfolioView-nmEIKVib.css               3.56 kB │ gzip:   0.89 kB
+dist/assets/MacSelect-BpcWxKlu.css                   3.60 kB │ gzip:   1.09 kB
+dist/assets/AdminDataCenterView-CxKBhypf.css         4.03 kB │ gzip:   1.09 kB
+dist/assets/StockHistoryMenu-BZAt5rDk.css            4.53 kB │ gzip:   1.28 kB
+dist/assets/backtest-VGZlEwbn.css                    4.77 kB │ gzip:   1.33 kB
+dist/assets/BacktestView-BbLqqCE8.css                5.55 kB │ gzip:   1.44 kB
+dist/assets/OptimizeView-BXwBa1qG.css                6.61 kB │ gzip:   1.78 kB
+dist/assets/AccountView-B4teTYKs.css                 7.21 kB │ gzip:   1.70 kB
+dist/assets/TrackingView-ysTdfNE4.css                7.25 kB │ gzip:   1.73 kB
+dist/assets/LoginView-CHTOH9F6.css                   7.39 kB │ gzip:   2.13 kB
+dist/assets/TechnicalIndicatorPicker-DK8CWXik.css    8.24 kB │ gzip:   2.02 kB
+dist/assets/AdminAccountsView-DeErSA8e.css          10.22 kB │ gzip:   2.42 kB
+dist/assets/StrategiesView-Brd0IHJR.css             10.63 kB │ gzip:   2.30 kB
+dist/assets/CloudResearchArchives-CFskKiDV.css      12.66 kB │ gzip:   2.88 kB
+dist/assets/QuantResearchView-nRWBRRer.css          12.86 kB │ gzip:   2.66 kB
+dist/assets/SignalRadarView-DtJSO1F7.css            12.89 kB │ gzip:   2.91 kB
+dist/assets/CompanyResearchView-Cp_oyn4p.css        22.45 kB │ gzip:   4.10 kB
+dist/assets/index-CU7gZYqk.css                      28.67 kB │ gzip:   6.64 kB
+dist/assets/ChanlunView-esywHo6b.css               117.43 kB │ gzip:  18.50 kB
+dist/assets/format-BbMv5Yas.js                       0.08 kB │ gzip:   0.10 kB
+dist/assets/mobile-settings-CrKPQHD9.js              0.18 kB │ gzip:   0.16 kB
+dist/assets/market-0_OJ8xZw.js                       0.24 kB │ gzip:   0.20 kB
+dist/assets/market-preferences-e9M7zyBs.js           0.65 kB │ gzip:   0.48 kB
+dist/assets/AdjustPicker-CTkOoUYP.js                 0.78 kB │ gzip:   0.56 kB
+dist/assets/bar-time-CQCKboTN.js                     0.90 kB │ gzip:   0.48 kB
+dist/assets/StockQueryField-G-8gPmNz.js              1.06 kB │ gzip:   0.67 kB
+dist/assets/period-comparison-BOYUmVhF.js            1.15 kB │ gzip:   0.70 kB
+dist/assets/StocksPicker-C8vPU2AU.js                 1.69 kB │ gzip:   1.01 kB
+dist/assets/PerformanceContextNote-09zktiNV.js       1.77 kB │ gzip:   1.06 kB
+dist/assets/RadarReviewContext-C9raCnEv.js           1.99 kB │ gzip:   1.19 kB
+dist/assets/NumberStepper-BiRWJa_R.js                2.51 kB │ gzip:   1.20 kB
+dist/assets/ChartFrame-Cq1Yl5Si.js                   2.69 kB │ gzip:   1.16 kB
+dist/assets/MetricTable-BovTfGDV.js                  2.80 kB │ gzip:   1.15 kB
+dist/assets/PortfolioSummaryTable-BsBc7w_J.js        2.92 kB │ gzip:   1.55 kB
+dist/assets/DataProvenance-Di6Cg7-R.js               3.31 kB │ gzip:   1.45 kB
+dist/assets/DataGrid-DxeSJGmj.js                     3.44 kB │ gzip:   1.93 kB
+dist/assets/AdminDataCenterView-BrNkgEQF.js          3.73 kB │ gzip:   1.91 kB
+dist/assets/ServerSettingsView-BfpNpudv.js           4.00 kB │ gzip:   1.96 kB
+dist/assets/SymbolPicker-BmcpSm5p.js                 4.18 kB │ gzip:   2.08 kB
+dist/assets/MetricStateNotes-CvGAV6j1.js             4.88 kB │ gzip:   2.57 kB
+dist/assets/radar-review-0xhTwL1L.js                 5.12 kB │ gzip:   2.36 kB
+dist/assets/MacSelect-Bny6I3rC.js                    5.16 kB │ gzip:   2.17 kB
+dist/assets/LoginView-BZV7Jdk2.js                    5.31 kB │ gzip:   2.42 kB
+dist/assets/ExtendedMarketView-pSIvlsOC.js           5.62 kB │ gzip:   2.60 kB
+dist/assets/MultiPeriodOverviewTable-BtnyUAPH.js     5.68 kB │ gzip:   3.06 kB
+dist/assets/StrategyPicker-D5X4B_-o.js               5.97 kB │ gzip:   2.71 kB
+dist/assets/MarketCenterView-B-0MMM41.js             6.05 kB │ gzip:   2.58 kB
+dist/assets/KlineChart-km_uV4gq.js                   6.14 kB │ gzip:   2.78 kB
+dist/assets/StockHistoryMenu-Dfw4QRcE.js             6.17 kB │ gzip:   2.85 kB
+dist/assets/CompareView-DU8H1p2x.js                  6.32 kB │ gzip:   2.92 kB
+dist/assets/BoardResearchView-B6ixfqFv.js            7.86 kB │ gzip:   3.31 kB
+dist/assets/AccountView-CV5dd_7B.js                  8.38 kB │ gzip:   3.52 kB
+dist/assets/ChanlunTargetPicker-DMj91hJG.js          8.62 kB │ gzip:   3.78 kB
+dist/assets/IntradayResearchView-BGfN9AZ1.js         9.34 kB │ gzip:   4.31 kB
+dist/assets/PortfolioView-C4O-hRZ6.js                9.86 kB │ gzip:   4.01 kB
+dist/assets/SignalRadarView-1zGhjo2U.js             10.37 kB │ gzip:   4.55 kB
+dist/assets/AdminAccountsView-D_PjtLqF.js           12.42 kB │ gzip:   5.05 kB
+dist/assets/BacktestView-CdlSvGUj.js                13.35 kB │ gzip:   5.87 kB
+dist/assets/TechnicalIndicatorPicker-CsvdOxIz.js    14.73 kB │ gzip:   6.62 kB
+dist/assets/QuantResearchView-dShYPhqe.js           16.59 kB │ gzip:   6.89 kB
+dist/assets/backtest-lbxGXFap.js                    18.21 kB │ gzip:   6.66 kB
+dist/assets/TrackingView-CM4SmX1d.js                18.56 kB │ gzip:   7.56 kB
+dist/assets/StrategiesView-DVfG89sI.js              22.04 kB │ gzip:   8.37 kB
+dist/assets/OptimizeView-DaHJl20P.js                26.91 kB │ gzip:  10.75 kB
+dist/assets/CompanyResearchView-Bcs2Hcje.js         98.84 kB │ gzip:  33.60 kB
+dist/assets/CloudResearchArchives-C20Mcp9O.js      105.82 kB │ gzip:  37.73 kB
+dist/assets/index-DT3UOees.js                      143.89 kB │ gzip:  54.97 kB
+dist/assets/ChanlunView-C-zNzIa_.js                227.79 kB │ gzip:  69.49 kB
+dist/assets/echarts-setup-6XypGsNX.js              679.24 kB │ gzip: 226.81 kB
+
+✓ built in 700ms
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.

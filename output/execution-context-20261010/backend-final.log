@@ -1,0 +1,40 @@
+FF...................................................................... [ 87%]
+..........                                                               [100%]
+=================================== FAILURES ===================================
+______ test_nondefault_costs_match_single_and_all_optimization[next_open] ______
+tests/unit/test_optimization_execution_costs.py:74: in test_nondefault_costs_match_single_and_all_optimization
+    assert actual[key] == pytest.approx(expected[key]), key
+E   AssertionError: total_return
+E   assert 1.1418849999999998 == 1.1419415179214476 ± 1.1e-06
+E     
+E     comparison failed
+E     Obtained: 1.1418849999999998
+E     Expected: 1.1419415179214476 ± 1.1e-06
+_____ test_nondefault_costs_match_single_and_all_optimization[next_close] ______
+tests/unit/test_optimization_execution_costs.py:74: in test_nondefault_costs_match_single_and_all_optimization
+    assert actual[key] == pytest.approx(expected[key]), key
+E   AssertionError: total_return
+E   assert 1.11855 == 1.1186013067066196 ± 1.1e-06
+E     
+E     comparison failed
+E     Obtained: 1.11855
+E     Expected: 1.1186013067066196 ± 1.1e-06
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:343: RuntimeWarning: invalid value encountered in divide
+    ADX = MA(ABS(MDI - PDI) / (PDI + MDI) * 100, M2)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_optimization_execution_costs.py::test_nondefault_costs_match_single_and_all_optimization[next_open]
+FAILED tests/unit/test_optimization_execution_costs.py::test_nondefault_costs_match_single_and_all_optimization[next_close]
+2 failed, 80 passed, 7 warnings in 25.15s

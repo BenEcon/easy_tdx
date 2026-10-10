@@ -135,6 +135,7 @@ export interface ChanlunSignal {
 }
 
 export interface ChanlunDivergence {
+  related_events?: WaveEventSummary[]
   preliminary_index?: number | null
   preliminary_date?: string | null
   invalidated_index?: number | null
@@ -459,9 +460,15 @@ export interface WaveAudit {
   closed: boolean
 }
 export interface WaveComparison extends WaveAudit {
-  mode: 'full_a' | 'equal_price' | 'full_a_equal_price' | 'dea_tolerance'
+  mode: 'full_a' | 'equal_price' | 'full_a_equal_price' | 'dea_tolerance' | 'legacy_standard'
+  events?: WaveEventSummary[]
   research_only: true
   passed: boolean
+}
+export interface WaveEventSummary {
+  type?: string; signal_date: string; detected_date: string; status: string
+  preliminary_date?: string | null; confirmed_date?: string | null
+  invalidated_date?: string | null; failure_reason?: string
 }
 export interface WaveDiagnostic extends WaveAudit {
   family?: 'standard' | 'nonstandard' | 'special' | 'double'
@@ -529,11 +536,15 @@ export interface BacktestRequest {
   symbol?: string
   category?: Category
   count?: number
+  adjust?: AdjustMode
+  start_date?: string
+  end_date?: string
 }
 
 // ── 回测结果 ──────────────────────────────────────────────────────────────────
 
 export interface Performance {
+  breakeven_trades?: number
   total_return: number
   annual_return: number
   max_drawdown: number
@@ -575,7 +586,63 @@ export interface Trade {
   rejected: boolean
 }
 
+export interface ResultDataProvenance {
+  performance_basis?: PerformanceBasis | null
+  contract_version: string
+  request: Record<string, unknown>
+  datasets: Array<{ label: string; symbol: string | null; bar_count: number; metadata: import('./market-data-contract').MarketDataMetadata }>
+  historical_data_vintage: boolean
+  alignment?: string
+}
+
+export interface PerformanceBasis {
+  annualization_method?: string
+  risk_free_method?: string
+  risk_free_rate?: number
+  sortino_definition?: string
+  metric_contract?: string
+  metric_status?: import('./metric-state').MetricStates
+  contract_version: string
+  input_category: string
+  sample_category: string
+  category_source: string
+  annual_periods: number
+  sample_count: number
+  observed_sample_count?: number
+  return_count: number
+  sample_start?: string | null
+  sample_end?: string | null
+  unavailable_reason?: string | null
+  warnings: string[]
+  scope?: string
+  valuation_contract?: string
+  closed_period_samples?: Array<{
+    period: string
+    datetime: string
+    source_time?: string
+    valuation: number | null
+    reason: string
+  }>
+  valuation_samples?: Array<{
+    datetime: string
+    valid: boolean
+    closed_period?: boolean
+    members: Array<{
+      member: string
+      category: string
+      expected_time: string
+      valuation_time: string | null
+      source_time: string | null
+      asof_age_seconds: number | null
+      reason: string | null
+    }>
+  }>
+  excluded_targets?: Array<{ datetime: string; members: string[]; reason: string }>
+}
+
 export interface BacktestResult {
+  execution_version?: string | null
+  data_provenance?: ResultDataProvenance | null
   performance: Performance
   equity_curve: EquityPoint[]
   trades: Trade[]
@@ -587,15 +654,42 @@ export interface BacktestResult {
 
 export interface TaskSubmitResponse {
   task_id: string
-  status: 'pending' | 'running'
+  status: TaskStatus
+  storage?: 'memory' | 'persistent'
+  reused?: boolean
 }
 
-export type TaskStatus = 'pending' | 'running' | 'done' | 'failed'
+export type TaskStatus = 'pending' | 'running' | 'cancelling' | 'done' | 'failed' | 'cancelled' | 'timed_out'
 
-export interface TaskState {
+export interface TaskExecutionInfo {
+  progress?: import('./task-progress').TaskProgress | null
+  checkpoint_scan_targets?: number
+  resumed_scan_targets?: number
+  checkpoint_signal_bars?: number
+  resumed_signal_bars?: number
+  checkpoint_order_signals?: number
+  resumed_order_signals?: number
+  checkpoint_pnl_trades?: number
+  resumed_pnl_trades?: number
+  checkpoint_equity_bars?: number
+  resumed_equity_bars?: number
+  checkpoint_grid_points?: number
+  resumed_grid_points?: number
+  storage?: 'memory' | 'persistent'
+  kind?: string | null
+  execution_compatible?: boolean | null
+  recovery_count?: number
+  last_recovery_at?: number | null
+  last_recovery_reason?: 'service_shutdown' | 'supervisor_lost' | null
+}
+
+export interface TaskState extends TaskExecutionInfo {
   task_id: string
   status: TaskStatus
   result:
+    | import('./factor-archive').FactorArchive
+    | import('./factor-research').FactorEvaluation
+    | {rows:Record<string,unknown>[];settings:Record<string,unknown>;computed:string[];errors:Record<string,string>;count:number;input_snapshots:Record<string,unknown>[]}
     | BacktestResult
     | PortfolioResult
     | OptimizeResult
@@ -609,7 +703,7 @@ export interface TaskState {
 
 // ── 任务摘要（Phase 5 对比页） ────────────────────────────────────────────────
 
-export interface TaskSummary {
+export interface TaskSummary extends TaskExecutionInfo {
   task_id: string
   status: TaskStatus
   description: string
@@ -620,6 +714,7 @@ export interface TaskSummary {
 export interface TaskListResponse {
   tasks: TaskSummary[]
   count: number
+  storage?: 'memory' | 'persistent'
 }
 
 // ── 组合回测（Phase 3） ───────────────────────────────────────────────────────
@@ -631,6 +726,8 @@ export interface PortfolioBacktestRequest {
   params?: Record<string, number | string | boolean>
   cash?: number
   commission?: number
+  min_commission?: number
+  stamp_tax?: number
   slippage?: number
   execution?: ExecutionMode
   stocks: string[]
@@ -641,7 +738,9 @@ export interface PortfolioBacktestRequest {
 }
 
 export interface PortfolioResult {
-  total_performance: {
+  performance_basis?: PerformanceBasis
+  data_provenance?: ResultDataProvenance | null
+  total_performance: Partial<Performance> & {
     total_return: number
     annual_return: number
     total_stocks: number
@@ -658,6 +757,8 @@ export interface OptimizeBacktestRequest {
   strategy: string
   cash?: number
   commission?: number
+  min_commission?: number
+  stamp_tax?: number
   slippage?: number
   execution?: ExecutionMode
   param_grid: Record<string, Array<number | string>>
@@ -671,6 +772,7 @@ export interface OptimizeBacktestRequest {
 }
 
 export interface GridPointResult {
+  metric_status?: import('./metric-state').MetricStates
   params: Record<string, number | string>
   total_return: number | null
   sharpe: number | null
@@ -689,6 +791,7 @@ export interface OptimizeHeatmap {
 }
 
 export interface OptimizeResult {
+  data_provenance?: ResultDataProvenance | null
   strategy: string
   param_names: string[]
   results: GridPointResult[]
@@ -701,6 +804,8 @@ export interface OptimizeResult {
 export interface OptimizeAllBacktestRequest {
   cash?: number
   commission?: number
+  min_commission?: number
+  stamp_tax?: number
   slippage?: number
   execution?: ExecutionMode
   workers?: number
@@ -714,6 +819,7 @@ export interface OptimizeAllBacktestRequest {
 }
 
 export interface OptimizeAllRankEntry {
+  metric_status?: import('./metric-state').MetricStates
   strategy: string
   strategy_label: string
   params: Record<string, number | string>
@@ -727,6 +833,7 @@ export interface OptimizeAllRankEntry {
 }
 
 export interface OptimizeAllResult {
+  data_provenance?: ResultDataProvenance | null
   ranking: OptimizeAllRankEntry[]
   best: OptimizeAllRankEntry | null
   per_strategy: Record<string, OptimizeAllRankEntry>
@@ -789,6 +896,7 @@ export interface AccountUser {
   username: string
   role: 'admin' | 'user'
   active: boolean
+  tracking_allowed?: boolean
   preferences: Record<string, unknown>
   created_at: string
   updated_at: string
@@ -824,6 +932,7 @@ export interface SignalScanRecentSignal {
 
 /** 扫描结果单行：一个"策略×标的"子任务的信号摘要。 */
 export interface SignalScanRow {
+  metadata?: import('./market-data-contract').MarketDataMetadata | null
   strategy_id: string
   strategy_name: string
   kind: 'single' | 'portfolio' | 'multi'
@@ -843,6 +952,7 @@ export interface SignalScanRow {
 
 /** 信号扫描结果：全部子任务行 + 汇总计数。 */
 export interface SignalScanResult {
+  evidence_task_id?: string
   rows: SignalScanRow[]
   total: number
   buy_count: number

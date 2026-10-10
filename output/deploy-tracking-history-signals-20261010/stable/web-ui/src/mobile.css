@@ -1,0 +1,164 @@
+/* Table wrappers constrain intrinsic widths without shrinking numbers or headings. */
+.responsive-table-scroll { width: 100%; max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+/* Mobile overrides stay scoped to the application, leaving desktop density intact. */
+@media (max-width: 760px), (max-width: 980px) and (max-height: 500px) {
+  :root .app-main .compare-view { display: flex; flex-direction: column; height: auto; min-height: 100%; }
+  :root .app-main :is(.best-summary,.perf-summary,.result-toolbar,.card-actions,.card-snapshot) { flex-wrap: wrap; gap: 10px; }
+  :root .app-main .best-params { overflow-wrap: anywhere; min-width: 0; }
+  :root .app-main .storage-section dl > div { grid-template-columns: 80px minmax(0,1fr); }
+  :root .app-main .storage-section dd { white-space: normal; overflow-wrap: anywhere; }
+  :root .app-main .strategies-view { height: auto; min-height: 100%; overflow: visible; padding: 12px; }
+  :root .app-main .card-grid { grid-template-columns: minmax(0,1fr); }
+  :root .app-main :is(.creator-head,.section-head,.report-header,.report-section > header) { flex-wrap: wrap; gap: 10px; }
+  :root .app-main :is(.report-section,.strategy-creator) { min-width: 0; padding: 12px; }
+  :root .app-main :is(.tabs,.sub-tabs) { max-width: 100%; overflow-x: auto; }
+  :root .app-main :is(.tabs,.sub-tabs) > button { flex: 0 0 auto; white-space: nowrap; }
+  :root .app-main :is(.compare-table,.summary-table,.opt-table,.holdings-table,.trade-table) { min-width: 580px; }
+  :root .app-main :is(.responsive-table-scroll,.trade-table-wrap,.radar-table-shell) { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+  :root .app-main .data-grid-wrap { max-height: 60dvh; height: auto; }
+  :root .app-main .data-grid td { padding-block: 13px; }
+  :root .app-main :is(.card-strategy,.card-meta .v,.error-banner,.status-banner) { overflow-wrap: anywhere; }
+  :root .app-main .date-row { grid-template-columns: minmax(0,1fr); }
+  :root .app-main input[type=date] { min-width: 0; width: 100%; }
+  :root .app-main .task-item .check { min-width: 0; min-height: 44px; }
+  :root .app-main .task-desc { white-space: normal; overflow-wrap: anywhere; }
+  :root .app-main .risk-metrics { grid-template-columns: minmax(0,1fr); }
+  :root .app-main .indicator-heading small { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+  :root .app-main .indicator-actions { flex-wrap: wrap; overflow: visible; }
+  :root .app-main .indicator-options { max-width: 100%; flex-wrap: wrap; }
+  /* Keep both indicator selection and parameter/apply controls reachable on phones. */
+  :root .indicator-backdrop { padding: max(8px,env(safe-area-inset-top)) 8px max(8px,env(safe-area-inset-bottom)); height: 100dvh; }
+  :root .indicator-backdrop .indicator-modal-card { width: 100%; height: 100%; min-height: 0; max-height: 100%; border-radius: 14px; }
+  :root .indicator-backdrop .modal-head { flex: 0 0 auto; padding: 12px; }
+  :root .indicator-backdrop .modal-head p { display: none; }
+  :root .indicator-backdrop .library-tools { flex: 0 0 auto; padding: 10px 12px; }
+  :root .indicator-backdrop .library-body { display: flex; flex-direction: column; overflow-y: auto; overscroll-behavior: contain; }
+  :root .indicator-backdrop .indicator-list { flex: 0 0 auto; max-height: 32dvh; min-height: 100px; }
+  :root .indicator-backdrop .indicator-detail { display: flex; flex: 0 0 auto; overflow: visible; border-left: 0; border-top: 1px solid var(--border); padding: 14px; }
+  :root .indicator-backdrop .apply-button { margin-top: 16px; }
+  :root .indicator-backdrop :is(button,input), :root .glossary-backdrop button, :root .modal button { min-height: 44px; }
+  :root .indicator-backdrop input, :root .glossary-backdrop input, :root .modal input { font-size: 16px !important; }
+  :root .indicator-backdrop .category-tabs button { flex: 0 0 auto; white-space: nowrap; }
+  :root .indicator-backdrop .modal-close { width: 44px; flex-shrink: 0; }
+  :root .glossary-backdrop { padding: 8px; }
+  :root .glossary-backdrop .glossary-tools { flex-direction: column; align-items: stretch; padding: 12px; }
+  :root .glossary-backdrop .glossary-search { min-width: 0; }
+  :root .glossary-backdrop .glossary-result-head { display: none; }
+  :root .glossary-backdrop .glossary-entry { grid-template-columns: minmax(0,1fr); gap: 8px; padding: 14px; }
+  :root .glossary-backdrop .term-en { overflow-wrap: anywhere; }
+  :root .app-main .markdown-reader { padding: 14px; max-height: none; overflow: visible; }
+  :root .app-main .f10-content { overflow: visible; }
+  :root .app-main .markdown-reader :is(p,li) { font-size: 13px; line-height: 1.85; overflow-wrap: anywhere; }
+  :root .app-main .markdown-reader :is(.f10-table-shell,pre) { max-width: 100%; overflow-x: auto; }
+  :root .app-main .markdown-reader .f10-profile-card dl { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  :root .app-main .radar-table .params-tooltip { max-width: 240px; }
+  .mobile-ma-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; padding: 4px 0 8px; }
+  .mobile-ma-controls button { min-width: 60px; min-height: 44px; padding: 5px 7px; font-size: 11px; color: var(--text-dim); background: transparent; border-color: transparent; box-shadow: none; }
+  .mobile-ma-controls button[aria-pressed=true] { color: var(--text); background: var(--accent-soft); border-color: var(--border-strong); }
+  .mobile-ma-controls i { width: 10px; height: 2px; opacity: .3; }
+  .mobile-ma-controls [aria-pressed=true] i { opacity: 1; }
+  .chart-frame:is(.fallback-expanded,:fullscreen) .chart-frame-content .chanlun-chart { flex: none; height: var(--chanlun-chart-height) !important; min-height: var(--chanlun-chart-height); }
+  :root .app-main button { min-height: 40px; font-size: 12px; }
+  :root .app-main .capability-list { grid-template-columns: minmax(0,1fr); }
+  :root .app-main .result-workspace { padding: 0 0 16px; gap: 10px; }
+  :root .app-main .summary-context { padding: 12px; }
+  :root .app-main .summary-metrics { padding: 8px; }
+  .chart-frame:is(.fallback-expanded,:fullscreen) .chart-frame-header { position: sticky; top: 0; z-index: 5; background: #0d0e12; flex-shrink: 0; }
+  :root .app-main :is(.query-strip,.control-card,.factor-controls,.status-header) { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px; }
+  :root .app-main :is(.query-strip,.control-card,.factor-controls) > * { min-width: 0; max-width: 100%; }
+  :root .app-main :is(.control-intro,.query-strip > .intro) { width: 100%; }
+  :root .app-main :is(.board-page,.data-center-page,.server-settings) { height: auto; min-height: 100%; padding: 12px; overflow: visible; }
+  :root .app-main .server-settings { flex-direction: column; }
+  :root .app-main .host-table-scroll { width: 100%; overflow-x: auto; }
+  :root .app-main :is(.split-workspace,.minute-workspace,.storage-layout,.risk-workspace) { grid-template-columns: minmax(0,1fr); }
+  :root .app-main .factor-output { flex-direction: column; }
+  :root .app-main .metric-rail { width: 100%; display: flex; overflow-x: auto; }
+  :root .app-main .metric-rail > div { flex: 0 0 130px; }
+  :root .app-main .admin-page .summary-strip { flex-wrap: wrap; gap: 12px; }
+  :root .app-main .admin-page .summary-strip > div { min-width: 60px; padding: 0 12px; }
+  :root .app-main .account-list article { grid-template-columns: 38px minmax(0,1fr); }
+  :root .app-main .account-list article .actions { grid-column: 1 / -1; }
+  :root .app-main .mode-tabs { display: flex; overflow-x: auto; }
+  :root .app-main .mode-tabs button { flex: 0 0 auto; min-height: 44px; }
+  :root .app-main .header-actions { flex: 1 1 100%; min-width: 0; }
+  :root .app-main .company-page .price-block { display: block; flex: 1 1 130px; }
+  :root .app-main :is(.modal,.glossary-modal) { max-height: calc(100dvh - 24px); overflow-y: auto; }
+  :root :is(.app-main,.login-page,.glossary-modal,.modal) input:not([type=checkbox]):not([type=radio]):not([type=range]), :root .app-main textarea { font-size: 16px !important; }
+  :root .app-main .number-stepper { grid-template-columns: minmax(0,1fr) 64px; }
+  :root .app-main .number-stepper .stepper-rail { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
+  :root .app-main .number-stepper .stepper-rail button { min-height: 42px; border-bottom: 0; }
+  :root .app-main .number-stepper .stepper-rail button + button { border-left: 1px solid var(--border); }
+  :root .app-main .ma-setting { grid-template-columns: minmax(0,1fr) 140px; }
+  :root .app-main .line-width-row { grid-template-columns: minmax(0,1fr) 140px 20px; }
+  html { -webkit-text-size-adjust: 100%; }
+  :root .app-main > *, :root .app-main main, :root .app-main section, :root .app-main article { min-width: 0; }
+  :root .app-main :is(.backtest-view,.optimize-view,.portfolio-view,.chanlun-view) { height: auto; min-height: 100%; display: flex; flex-direction: column; overflow: visible; }
+  :root .app-main :is(.config-panel,.analysis-inspector) { width: 100%; flex: 0 0 auto; max-height: none; overflow: visible; padding: 16px; border-right: 0; border-bottom: 1px solid var(--border); }
+  :root .app-main :is(.report-panel,.analysis-workspace) { flex: 0 0 auto; width: 100%; min-height: 300px; overflow: visible; padding: 12px; }
+  :root .app-main .mobile-inspector-toggle { display: flex; width: 100%; min-height: 48px; justify-content: space-between; padding: 10px 16px; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; font-size: 13px; }
+  :root .app-main .summary-strip { grid-template-columns: minmax(0,1fr); }
+  :root .app-main .summary-metrics { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px 0; }
+  :root .app-main .summary-item { min-width: 0; }
+  :root .app-main .structure-columns { grid-template-columns: minmax(0,1fr); }
+  :root .app-main :is(.chart-workspace,.detail-workspace) { padding: 10px; }
+  :root .app-main .replay-controls { flex-basis: 100%; gap: 6px; grid-template-columns: auto auto minmax(25px,1fr) auto; }
+  :root .app-main .replay-toolbar button { min-height: 40px; padding: 6px; }
+  :root .app-main .replay-position { width: 100%; justify-content: space-between; }
+  :root .app-main .industry-toolbar { gap: 8px; }
+  :root .app-main .industry-modes { width: 100%; }
+  :root .app-main .industry-modes button { flex: 1; min-height: 40px; }
+  :root .app-main .detail-tabs { overflow-x: auto; }
+  :root .app-main .detail-tabs button { flex-shrink: 0; min-height: 40px; }
+  :root .app-main .event-row { grid-template-columns: auto minmax(0,1fr); padding: 10px 0; }
+  :root .app-main .event-row > p { grid-column: 1 / -1; overflow-wrap: anywhere; }
+  :root .app-main :is(.research-page,.company-page,.quant-page,.radar-view,.admin-page,.account-page,.boards-page,.intraday-page,.extended-page) { height: auto; min-height: 100%; overflow: visible; padding: 12px; }
+  :root .app-main :is(.query-card,.hero-strip,.page-header,.quant-header,.control-bar,.identity-strip) { flex-wrap: wrap; gap: 12px; padding: 12px; }
+  :root .app-main :is(.query-title,.stock-identity) { min-width: 0; width: 100%; }
+  :root .app-main :is(.overview-grid,.admin-layout,.account-layout,.quant-layout) { grid-template-columns: minmax(0,1fr); }
+  :root .app-main :is(.query-card,.control-bar) > * { max-width: 100%; min-width: 0; }
+  :root .app-main .query-card .stock-query-field { flex: 1 1 180px; }
+  :root .app-main .f10-workspace { display: flex; flex-direction: column; min-height: 0; }
+  :root .app-main .f10-index { display: flex; flex: 0 0 auto; overflow-x: auto; gap: 4px; }
+  :root .app-main .f10-index button { width: auto; flex: 0 0 auto; gap: 10px; min-height: 44px; }
+  :root .app-main .f10-content { min-width: 0; min-height: 460px; }
+  :root .app-main :is(.data-grid-wrap,.table-wrap,.table-container,.results-table-wrap) { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+  :root .app-main :is(.table-panel,.content-card) { min-height: 280px; }
+  :root .app-main :is(.header-actions,.toolbar,.actions) { flex-wrap: wrap; }
+  :root .app-main :is(.tab-bar,.segmented) { max-width: 100%; overflow-x: auto; }
+  :root .app-main :is(.tab-bar,.segmented) > button { flex-shrink: 0; min-height: 40px; }
+  :root .app-main :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select), .login-page input { font-size: 16px; min-height: 44px; max-width: 100%; }
+  :root .app-main .mac-select-trigger, :root .app-main .action-button { min-height: 44px; }
+  :root .app-main .number-stepper { min-height: 44px; }
+  :root .app-main .number-stepper input { min-height: 42px; }
+  :root .app-main .ma-setting { grid-template-columns: minmax(0,1fr) 140px; min-height: 52px; }
+  :root .app-main .line-width-row { grid-template-columns: minmax(0,1fr) 140px 20px; min-height: 52px; }
+  :root .app-main .layer-row { min-height: 44px; }
+  .history-menu .history-delete { opacity: 1; color: var(--text-muted); min-height: 40px; width: 32px; }
+  .history-menu .history-select { padding-right: 44px; }
+  .mac-select-menu { max-width: calc(100vw - 20px); }
+  .mac-select-option { min-height: 44px; }
+  :root .glossary-backdrop .glossary-modal { min-height: 0; height: calc(100dvh - 20px); max-height: calc(100dvh - 20px); }
+  :root .modal { max-height: calc(100dvh - 24px); overflow-y: auto; }
+  :root .app-main .chart-frame-header { flex-wrap: wrap; gap: 8px; }
+  :root .app-main .chart-frame-actions { margin-left: auto; flex-wrap: wrap; }
+  .chart-frame .chart-expand-button { min-width: 44px; min-height: 44px; }
+  .chart-frame.fallback-expanded, .chart-frame:fullscreen { padding: max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
+  .chart-frame.fallback-expanded .chart-frame-content, .chart-frame:fullscreen .chart-frame-content { overflow: auto; }
+  :root .app-main .market-chart-shell { min-width: 0; width: 100%; }
+  :root body :is(.indicator-backdrop,.glossary-backdrop,.modal-overlay,.modal-backdrop,.modal-mask) {
+    top: var(--visible-top,0px); bottom: auto; height: var(--visible-height,100dvh); box-sizing: border-box;
+  }
+  :root :is(.app-main,body) .modal { min-width: 0; max-width: calc(100vw - 24px); max-height: calc(var(--visible-height,100dvh) - 24px); overflow-y: auto; }
+  :root .glossary-backdrop .glossary-modal { height: 100%; max-height: 100%; min-height: 0; }
+  :root .indicator-backdrop .category-tabs button { font-size: 11px; }
+  :root .indicator-backdrop .number-stepper { grid-template-columns: minmax(0,1fr) 64px; }
+  :root .indicator-backdrop .stepper-rail { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr; }
+  :root .indicator-backdrop .stepper-rail button { min-height: 42px; border-bottom: 0; }
+  :root .indicator-backdrop .stepper-rail button + button { border-left: 1px solid var(--border); }
+  :root .indicator-backdrop .param-editor label { grid-template-columns: minmax(0,1fr) 150px; }
+  :root .app-main details > summary { min-height: 44px; padding-block: 10px; }
+}
+@media (pointer: coarse) {
+  button, a, summary { touch-action: manipulation; }
+  .history-menu .history-delete { opacity: 1; color: var(--text-muted); }
+}

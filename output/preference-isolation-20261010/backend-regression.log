@@ -1,0 +1,27 @@
+.......................................................F.                [100%]
+=================================== FAILURES ===================================
+_____________ test_concurrent_independent_patches_do_not_lose_keys _____________
+tests/unit/test_preference_patch.py:91: in test_concurrent_independent_patches_do_not_lose_keys
+    list(executor.map(write, range(20)))
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/concurrent/futures/_base.py:621: in result_iterator
+    yield _result_or_cancel(fs.pop())
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/concurrent/futures/_base.py:319: in _result_or_cancel
+    return fut.result(timeout)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/concurrent/futures/_base.py:451: in result
+    return self.__get_result()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/concurrent/futures/_base.py:403: in __get_result
+    raise self._exception
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/concurrent/futures/thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+tests/unit/test_preference_patch.py:88: in write
+    other = AccountStore(store.path)
+E   AttributeError: 'AccountStore' object has no attribute 'path'
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_preference_patch.py::test_concurrent_independent_patches_do_not_lose_keys
+1 failed, 56 passed, 1 warning in 9.54s

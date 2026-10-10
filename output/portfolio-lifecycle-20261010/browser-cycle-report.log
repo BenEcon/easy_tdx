@@ -1,0 +1,88 @@
+### Result
+{
+  "requests": [
+    {
+      "url": "http://127.0.0.1:8768/api/v1/backtest/portfolio/run/async",
+      "method": "POST",
+      "origin": "user",
+      "owner": "790fc90c48d1",
+      "body": {
+        "strategy": "ma_cross",
+        "params": {
+          "fast": 7,
+          "slow": 31
+        },
+        "cash": 200000,
+        "execution": "next_close",
+        "commission": 0.0002,
+        "min_commission": 1.23,
+        "stamp_tax": 0.0005,
+        "slippage": 0.002,
+        "stocks": [
+          "SZ:300450",
+          "SH:600699"
+        ],
+        "category": "DAY",
+        "start_date": "2025-01-02",
+        "end_date": "2026-09-29",
+        "adjust": "QFQ"
+      }
+    },
+    {
+      "url": "http://127.0.0.1:8768/api/v1/backtest/tasks/641db329c4e34d948f846bdbf603ac31",
+      "method": "GET",
+      "origin": null,
+      "owner": "790fc90c48d1",
+      "body": null
+    }
+  ],
+  "errors": [],
+  "taskId": "641db329c4e34d948f846bdbf603ac31",
+  "recordId": "6540cf58d567",
+  "sourceId": "9ffa97631231",
+  "performance": {
+    "total_return": 0.9555579725072862,
+    "annual_return": 0.49256811299867886,
+    "max_drawdown": 0.2182100224655093,
+    "max_dd_duration": 11,
+    "sharpe": 1.3547472493272839,
+    "sortino": 2.227521263597827,
+    "calmar": 2.257312049342441,
+    "total_trades": 14,
+    "win_trades": 7,
+    "lose_trades": 7,
+    "breakeven_trades": 0,
+    "rejected_trades": 0,
+    "win_rate": 0.5,
+    "profit_factor": 4.490806888108637,
+    "avg_win": 0.36245106368879315,
+    "avg_loss": -0.051840413870793335,
+    "max_win": 1.5860452603298507,
+    "max_loss": -0.08392231862315425,
+    "avg_holding_days": 36.49673202614379,
+    "volatility": 0.3079892685011156,
+    "sharpe_ratio": 1.3547472493272839,
+    "start_cash": 200000,
+    "end_value": 391111.59450145724,
+    "total_stocks": 2,
+    "total_cash": 200000
+  },
+  "widths": [
+    {
+      "width": 1440,
+      "actual": 1440
+    },
+    {
+      "width": 390,
+      "actual": 390
+    },
+    {
+      "width": 320,
+      "actual": 320
+    }
+  ]
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__portfolioReport)');
+```

@@ -1,0 +1,6 @@
+gtja-compound-series.json readonly/no-fetch replay/preserved: PASS
+gtja-panel-compound.json readonly/no-fetch replay/preserved: PASS
+gtja-panel.json readonly/no-fetch replay/preserved: PASS
+gtja-rolling-series.json readonly/no-fetch replay/preserved: PASS
+gtja-series.json readonly/no-fetch replay/preserved: PASS
+gtja-smoothing-series.json readonly/no-fetch replay/preserved: PASS

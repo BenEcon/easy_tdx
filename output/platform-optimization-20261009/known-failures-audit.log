@@ -1,0 +1,17 @@
+F
+=================================== FAILURES ===================================
+_____________ TestFactorAnalyzerIC.test_compute_ic_returns_series ______________
+src/easy_tdx/factor/analysis.py:60: in compute_ic
+    import scipy  # noqa: F401  # pandas spearman lazy import
+E   ModuleNotFoundError: No module named 'scipy'
+
+The above exception was the direct cause of the following exception:
+tests/unit/test_factor_analysis.py:52: in test_compute_ic_returns_series
+    ic_series = analyzer.compute_ic()
+src/easy_tdx/factor/analysis.py:62: in compute_ic
+    raise ImportError(
+E   ImportError: Rank IC (spearman) 需要 scipy，请执行 `pip install easy-tdx[science]`
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_analysis.py::TestFactorAnalyzerIC::test_compute_ic_returns_series
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 71 deselected in 0.57s

@@ -1,0 +1,40 @@
+✔ optimization carries full execution and identity without live defaults (6.124292ms)
+✔ malformed, mixed, missing or conflicting optimization context never silently defaults (0.479709ms)
+✔ multi original replay preserves costs, slots and adjustment; extend changes only end dates (0.310333ms)
+✔ multi rejects corrupt and incompatible slots without dropping or repairing any (0.244208ms)
+✔ legacy missing settings are disclosed with deterministic defaults, explicit invalid values rejected (0.133917ms)
+✔ combining equal-account singles preserves per-slot cash and costs; conflicts rejected not rewritten (0.322375ms)
+✔ portfolio load -> actual store task lifecycle -> save uses identical context and all costs (99.220666ms)
+✔ pending portfolio cannot survive input (27.900667ms)
+✔ pending portfolio cannot survive owner (19.166292ms)
+✔ pending portfolio cannot survive unmount (16.08075ms)
+✔ store account epoch clears completed results in all four task families (15.752708ms)
+✔ runPortfolio old account error is ignored even after switching back (14.726167ms)
+✔ runMultiStrategy old account error is ignored even after switching back (17.471125ms)
+✔ runOptimize old account error is ignored even after switching back (19.946541ms)
+✔ runOptimizeAll old account error is ignored even after switching back (14.053458ms)
+✔ optimizer takes an input snapshot before awaiting bars and hands off the result strategy/adjustment (20.238625ms)
+✔ portfolio late save cannot close or annotate newly changed configuration (13.459916ms)
+✔ library name lookup cannot mix later input or account into a save (72.518125ms)
+✔ library saves a multi result with submitted adjustment, not the later global preference (16.355125ms)
+✔ late library list cannot replace a newly created record and owner change clears all personal rows (16.114666ms)
+✔ portfolio identity rejects mixed markets, repeats and invalid lengths (0.243542ms)
+✔ actual backtest view loads exact saved context without running, then saves the configuration used (5.502875ms)
+✔ late saved record cannot overwrite owner (5.725792ms)
+✔ late saved record cannot overwrite route (1.03875ms)
+✔ late saved record cannot overwrite input (0.858625ms)
+✔ late saved record cannot overwrite unmount (0.721ms)
+✔ invalid saved context blocks run, while legacy missing fields disclose fallback (2.47575ms)
+✔ every execution input invalidates the old result before it can be saved (9.213791ms)
+✔ editing a cost while bars are pending never runs the new form on the old request (0.696041ms)
+✔ save completion after owner cannot write into a different page or account (0.709875ms)
+✔ save completion after route cannot write into a different page or account (0.757541ms)
+✔ save completion after unmount cannot write into a different page or account (0.639208ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 757.7145

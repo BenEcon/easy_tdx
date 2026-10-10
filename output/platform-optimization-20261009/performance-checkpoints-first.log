@@ -1,0 +1,26 @@
+.......................................F....FF
+=================================== FAILURES ===================================
+____________ test_evidence_is_frozen_before_strategy_mutates_frame _____________
+tests/unit/test_research_provenance.py:86: in test_evidence_is_frozen_before_strategy_mutates_frame
+    result = backtest._run_backtest(frame, req)["data_provenance"]
+src/easy_tdx/web/routers/backtest.py:485: in _run_backtest
+    evidence["performance_basis"] = result.config.get("performance_basis")
+E   AttributeError: 'dict' object has no attribute 'config'
+_ test_every_combination_member_keeps_independent_evidence_before_execution[portfolio] _
+tests/unit/test_research_provenance.py:187: in test_every_combination_member_keeps_independent_evidence_before_execution
+    result = backtest._run_portfolio_backtest(
+src/easy_tdx/web/routers/backtest.py:594: in _run_portfolio_backtest
+    evidence["performance_basis"] = result.performance_basis
+E   AttributeError: 'dict' object has no attribute 'performance_basis'
+_ test_every_combination_member_keeps_independent_evidence_before_execution[multi] _
+tests/unit/test_research_provenance.py:198: in test_every_combination_member_keeps_independent_evidence_before_execution
+    result = backtest._run_multi_strategy_backtest(
+src/easy_tdx/web/routers/backtest.py:768: in _run_multi_strategy_backtest
+    evidence["performance_basis"] = result.performance_basis
+E   AttributeError: 'dict' object has no attribute 'performance_basis'
+=========================== short test summary info ============================
+FAILED tests/unit/test_research_provenance.py::test_evidence_is_frozen_before_strategy_mutates_frame
+FAILED tests/unit/test_research_provenance.py::test_every_combination_member_keeps_independent_evidence_before_execution[portfolio]
+FAILED tests/unit/test_research_provenance.py::test_every_combination_member_keeps_independent_evidence_before_execution[multi]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 3 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+3 failed, 43 passed, 4 deselected in 1.15s

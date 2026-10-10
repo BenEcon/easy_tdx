@@ -1,0 +1,172 @@
+### Page
+- Page URL: http://127.0.0.1:8766/account
+- Page Title: 股票分析 · Analysis Studio
+- Console: 3 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=f1e4]:
+  - complementary [ref=f1e5]:
+    - button "收起左侧栏" [ref=f1e11] [cursor=pointer]
+    - link "返回股票分析" [ref=f1e15]:
+      - /url: /
+      - generic [ref=f1e20]:
+        - strong [ref=f1e21]: 股票分析
+        - generic [ref=f1e22]: Analysis Studio
+    - navigation "主要导航" [ref=f1e23]:
+      - generic [ref=f1e24]:
+        - paragraph [ref=f1e25]: 分析
+        - link "个股分析" [ref=f1e26]:
+          - /url: /
+        - link "市场行情" [ref=f1e33]:
+          - /url: /market
+        - link "盘中研究" [ref=f1e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=f1e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=f1e51]:
+          - /url: /signals
+        - link "追踪标的" [ref=f1e58]:
+          - /url: /tracking
+      - generic [ref=f1e64]:
+        - paragraph [ref=f1e65]: 研究
+        - link "板块研究" [ref=f1e66]:
+          - /url: /boards
+        - link "公司资料" [ref=f1e75]:
+          - /url: /company
+        - link "扩展市场" [ref=f1e83]:
+          - /url: /extended
+        - link "量化研究" [ref=f1e90]:
+          - /url: /quant-research
+        - link "组合回测" [ref=f1e96]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=f1e105]:
+          - /url: /optimize
+        - link "结果对比" [ref=f1e110]:
+          - /url: /compare
+        - link "策略库" [ref=f1e115]:
+          - /url: /strategies
+      - generic [ref=f1e121]:
+        - paragraph [ref=f1e122]: 系统
+        - link "行情服务器" [ref=f1e123]:
+          - /url: /settings
+        - link "个人账户" [ref=f1e130]:
+          - /url: /account
+        - link "账户管理" [ref=f1e137]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=f1e146]:
+          - /url: /admin/data
+    - link "A archive-qa 管理员" [ref=f1e154]:
+      - /url: /account
+      - generic [ref=f1e155]: A
+      - generic [ref=f1e156]:
+        - strong [ref=f1e157]: archive-qa
+        - generic [ref=f1e158]: 管理员
+  - generic [ref=f1e159]:
+    - generic [ref=f1e160]:
+      - generic [ref=f1e161]:
+        - heading "个人账户" [level=1] [ref=f1e173]
+        - paragraph [ref=f1e163]: 查看账户信息并管理个人数据与安全设置
+      - generic [ref=f1e164]:
+        - link "个人账户" [ref=f1e165]:
+          - /url: /account
+          - generic [ref=f1e166]: A
+          - generic [ref=f1e167]: archive-qa
+          - generic [ref=f1e168]: ADMIN
+        - button "退出登录" [ref=f1e169] [cursor=pointer]
+    - main [ref=f1e172]:
+      - generic [ref=f1e174]:
+        - generic [ref=f1e175]:
+          - generic [ref=f1e176]: A
+          - generic [ref=f1e177]:
+            - paragraph [ref=f1e178]: PERSONAL DATA
+            - heading "archive-qa" [level=2] [ref=f1e179]
+            - paragraph [ref=f1e180]: 你的策略、扫描信号和偏好设置均与此账户关联。
+          - generic [ref=f1e181]: 管理员
+        - region "账户概况" [ref=f1e182]:
+          - article [ref=f1e183]:
+            - generic [ref=f1e184]: 已保存策略
+            - strong [ref=f1e185]: "0"
+            - generic [ref=f1e186]: 仅你可见
+          - article [ref=f1e187]:
+            - generic [ref=f1e188]: 账户状态
+            - strong [ref=f1e189]: 正常
+            - generic [ref=f1e190]: 数据持续保存
+          - article [ref=f1e191]:
+            - generic [ref=f1e192]: 上次登录
+            - strong [ref=f1e193]: 2026年10月9日 23:02
+            - generic [ref=f1e194]: 服务器时间记录
+        - group [ref=f1e195]:
+          - generic "› 账户云存档 手动保存 · 跨设备查看" [ref=f1e196] [cursor=pointer]:
+            - text: ›
+            - strong [ref=f1e197]: 账户云存档
+            - generic [ref=f1e198]: 手动保存 · 跨设备查看
+          - generic [ref=f1e228]:
+            - paragraph [ref=f1e229]: 仅本人账户可访问；保存原始行情、参数及分析结果，不自动重算。云端与本地副本独立，刷新目录不会覆盖当前研究。
+            - generic [ref=f1e230]:
+              - button "导入研究备份" [ref=f1e231] [cursor=pointer]
+              - button "刷新云目录" [ref=f1e232] [cursor=pointer]
+              - button "回收站" [ref=f1e233] [cursor=pointer]
+            - paragraph [ref=f1e234]: 3 / 100 份 · 2.36 / 128.00 MiB（含回收站）
+            - list [ref=f1e235]:
+              - listitem [ref=f1e236]:
+                - generic [ref=f1e237]:
+                  - strong [ref=f1e238]: QA 故障注入 · 线段特征字段损坏
+                  - generic [ref=f1e239]: 图表快照 · 2026-10-09 15:01:58 UTC · v1
+                  - paragraph [ref=f1e240]: 使用原始哈希核验的冻结案例；不代表当前实时行情。
+                - generic [ref=f1e241]:
+                  - button "查看原档" [ref=f1e242] [cursor=pointer]
+                  - button "导出" [ref=f1e243] [cursor=pointer]
+                  - button "编辑备注" [ref=f1e244] [cursor=pointer]
+                  - button "移入回收站" [ref=f1e245] [cursor=pointer]
+              - listitem [ref=f1e246]:
+                - generic [ref=f1e247]:
+                  - strong [ref=f1e248]: QA 故障注入 · 关联事件字段损坏
+                  - generic [ref=f1e249]: 图表快照 · 2026-10-09 15:01:58 UTC · v1
+                  - paragraph [ref=f1e250]: 使用原始哈希核验的冻结案例；不代表当前实时行情。
+                - generic [ref=f1e251]:
+                  - button "查看原档" [ref=f1e252] [cursor=pointer]
+                  - button "导出" [ref=f1e253] [cursor=pointer]
+                  - button "编辑备注" [ref=f1e254] [cursor=pointer]
+                  - button "移入回收站" [ref=f1e255] [cursor=pointer]
+              - listitem [ref=f1e256]:
+                - generic [ref=f1e257]:
+                  - strong [ref=f1e258]: QA 真实冻结行情 · 300750
+                  - generic [ref=f1e259]: 图表快照 · 2026-10-09 15:01:58 UTC · v1
+                  - paragraph [ref=f1e260]: 使用原始哈希核验的冻结案例；不代表当前实时行情。
+                - generic [ref=f1e261]:
+                  - button "查看原档" [ref=f1e262] [cursor=pointer]
+                  - button "导出" [ref=f1e263] [cursor=pointer]
+                  - button "编辑备注" [ref=f1e264] [cursor=pointer]
+                  - button "移入回收站" [ref=f1e265] [cursor=pointer]
+        - generic [ref=f1e199]:
+          - generic [ref=f1e200]:
+            - paragraph [ref=f1e201]: SECURITY
+            - heading "修改密码" [level=3] [ref=f1e202]
+            - paragraph [ref=f1e203]: 设置新密码后，除当前浏览器外的既有会话将失效。
+          - generic [ref=f1e204]:
+            - generic [ref=f1e205]:
+              - generic [ref=f1e206]: 当前密码
+              - textbox "当前密码" [ref=f1e207]
+            - generic [ref=f1e208]:
+              - generic [ref=f1e209]: 新密码
+              - textbox "新密码" [ref=f1e210]
+            - generic [ref=f1e211]:
+              - generic [ref=f1e212]: 确认新密码
+              - textbox "确认新密码" [ref=f1e213]
+            - button "保存新密码" [ref=f1e214] [cursor=pointer]
+        - region [ref=f1e215]:
+          - generic [ref=f1e216]:
+            - generic [ref=f1e217]:
+              - heading "后台计算" [level=3] [ref=f1e218]
+              - paragraph [ref=f1e219]: 仅显示你的最近 20 个任务；页面可见时每 5 秒更新。
+            - button "刷新" [ref=f1e220] [cursor=pointer]
+          - paragraph [ref=f1e221]: 当前使用临时内存记录，服务重启后不保留。
+          - paragraph [ref=f1e222]: 暂无后台任务
+        - region [ref=f1e223]:
+          - generic [ref=f1e224]:
+            - heading "登录会话" [level=3] [ref=f1e225]
+            - paragraph [ref=f1e226]: 退出所有浏览器与设备的登录，已保存的数据不会删除。
+          - button "退出全部设备" [ref=f1e227] [cursor=pointer]
+```
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T15-00-21-863Z.log#L1-L3

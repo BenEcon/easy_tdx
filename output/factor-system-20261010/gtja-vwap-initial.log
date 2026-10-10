@@ -1,0 +1,19 @@
+........................................................................ [ 50%]
+...........................................F
+=================================== FAILURES ===================================
+_____ test_vwap_metadata_parameters_adjustment_rejection_and_missing[131] ______
+tests/unit/test_gtja191_vwap.py:362: in test_vwap_metadata_parameters_adjustment_rejection_and_missing
+    assert factor.spec.warmup == WARMUP[n]
+E   AssertionError: assert 84 == 85
+E    +  where 84 = Spec(number=131, family='panel_131', title='均价变化排名的量价相关时序幂', inputs=('vwap', 'close', 'volume'), window=None, formula=...=18, label='时序排名窗口', minimum=1)), warmup_terms=((1, ('lag',)), (-2, ('volume_mean', 'corr', 'rank'))), recursive=False).warmup
+E    +    where Spec(number=131, family='panel_131', title='均价变化排名的量价相关时序幂', inputs=('vwap', 'close', 'volume'), window=None, formula=...=18, label='时序排名窗口', minimum=1)), warmup_terms=((1, ('lag',)), (-2, ('volume_mean', 'corr', 'rank'))), recursive=False) = <easy_tdx.factor.builtin.gtja191.GTJA191131 object at 0x10b4fb130>.spec
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_vwap.py::test_vwap_metadata_parameters_adjustment_rejection_and_missing[131]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 115 passed, 1 warning in 35.67s

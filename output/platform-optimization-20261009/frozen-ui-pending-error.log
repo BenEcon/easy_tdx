@@ -1,0 +1,12 @@
+### Result
+{"savedCount":2,"loadingAndFailedCaptureRejected":true}
+### Ran Playwright code
+```js
+await (async page=>{await page.getByRole("button",{name:"看图 行情与周期对比",exact:true}).click();await page.getByRole("button",{name:/主周期 · 日线/}).click();let release,requested;const arrived=new Promise(r=>requested=r);await page.route("**/indicator/compute",async route=>{requested();await new Promise(r=>release=r);await route.fulfill({status:503,json:{detail:"QA 指标服务暂不可用"}});});try{await page.getByRole("button",{name:"＋ 添加指标",exact:true}).filter({visible:true}).first().click();await arrived;await page.getByRole("button",{name:"研究 多周期观察与快照",exact:true}).click();const cloud=page.locator(".cloud-archives").first();await cloud.getByRole("button",{name:"保存当前结果到云端",exact:true}).click();await cloud.getByRole("alert").filter({hasText:"技术指标尚未完整计算"}).waitFor();release();await page.getByRole("button",{name:"保存当前结果到云端",exact:true}).click();await cloud.getByRole("alert").filter({hasText:"技术指标尚未完整计算"}).waitFor();const listing=await(await page.request.get("http://127.0.0.1:8766/api/v1/research/archives")).json();if(listing.items.length!==2)throw Error("incomplete capture saved");return {savedCount:listing.items.length,loadingAndFailedCaptureRejected:true};}finally{release?.();await page.unroute("**/indicator/compute");}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=stock&symbol=300750&market=SZ&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=DAY&adjust=QFQ
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T13-49-52-997Z.log#L1

@@ -1,0 +1,29 @@
+...........................F....FF................................       [100%]
+=================================== FAILURES ===================================
+____________ test_dst_repeated_wall_time_resolves_distinct_instants ____________
+tests/unit/test_backtest_intraday_identity.py:114: in test_dst_repeated_wall_time_resolves_distinct_instants
+    assert index.get(dates[3].tz_convert("UTC")) == 3
+E   AssertionError: assert None == 3
+E    +  where None = get(Timestamp('2026-11-01 06:00:00+0000', tz='UTC'))
+E    +    where get = <easy_tdx.backtest.bar_time.BarTimeIndex object at 0x10c0873a0>.get
+E    +    and   Timestamp('2026-11-01 06:00:00+0000', tz='UTC') = tz_convert('UTC')
+E    +      where tz_convert = Timestamp('2026-11-01 01:00:00-0500', tz='America/New_York').tz_convert
+__ test_combined_equity_keeps_minute_rows_and_individual_holdings[portfolio] ___
+tests/unit/test_backtest_intraday_identity.py:189: in test_combined_equity_keeps_minute_rows_and_individual_holdings
+    assert list(individual.positions["size"]) == [0, 0, 0, 0, 100, 100, 0, 0]
+E   assert [0.0, 0.0, 0...., 4100.0, ...] == [0, 0, 0, 0, 100, 100, ...]
+E     
+E     At index 4 diff: 4100.0 != 100
+E     Use -v to get more diff
+_ test_combined_equity_keeps_minute_rows_and_individual_holdings[multi_strategy] _
+tests/unit/test_backtest_intraday_identity.py:189: in test_combined_equity_keeps_minute_rows_and_individual_holdings
+    assert list(individual.positions["size"]) == [0, 0, 0, 0, 100, 100, 0, 0]
+E   assert [0.0, 0.0, 0.... 20800.0, ...] == [0, 0, 0, 0, 100, 100, ...]
+E     
+E     At index 4 diff: 20800.0 != 100
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/unit/test_backtest_intraday_identity.py::test_dst_repeated_wall_time_resolves_distinct_instants
+FAILED tests/unit/test_backtest_intraday_identity.py::test_combined_equity_keeps_minute_rows_and_individual_holdings[portfolio]
+FAILED tests/unit/test_backtest_intraday_identity.py::test_combined_equity_keeps_minute_rows_and_individual_holdings[multi_strategy]
+3 failed, 63 passed, 12 deselected in 0.98s

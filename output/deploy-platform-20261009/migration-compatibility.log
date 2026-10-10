@@ -1,0 +1,9 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PASS preserved all original records: accounts.db
+PASS preserved all original records: strategies.db
+PASS clone schema compatibility
+PASS preserved all original records: accounts.db
+PASS preserved all original records: strategies.db
+PASS legacy-read schema compatibility

@@ -1,0 +1,265 @@
+...........................................EEEEEEEE..EE.EEE.EE           [100%]
+==================================== ERRORS ====================================
+_______________ ERROR at setup of test_list_strategies_endpoint ________________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+____________ ERROR at setup of test_sync_backtest_with_inline_data _____________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+__________ ERROR at setup of test_sync_backtest_rejects_missing_ohlcv __________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+__________ ERROR at setup of test_sync_backtest_rejects_bad_strategy ___________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+___________ ERROR at setup of test_sync_backtest_rejects_bad_params ____________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+____________ ERROR at setup of test_async_backtest_with_inline_data ____________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+_________________ ERROR at setup of test_task_poll_unknown_id __________________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+____________ ERROR at setup of test_async_backtest_failure_recorded ____________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+______________ ERROR at setup of test_portfolio_backtest_endpoint ______________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+____________ ERROR at setup of test_portfolio_backtest_bad_strategy ____________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+___________________ ERROR at setup of test_optimize_endpoint ___________________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+___________ ERROR at setup of test_optimize_single_param_no_heatmap ____________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+_________________ ERROR at setup of test_optimize_all_endpoint _________________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+__________________ ERROR at setup of test_list_tasks_endpoint __________________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+___________________ ERROR at setup of test_list_tasks_limit ____________________
+tests/unit/test_web_backtest.py:649: in client
+    app = create_app()
+src/easy_tdx/web/__init__.py:42: in create_app
+    return _create_app(host=host, port=port, timeout=timeout, enable_ex=enable_ex)
+src/easy_tdx/web/app.py:154: in _create_app
+    host = get_best_host()
+src/easy_tdx/config.py:182: in get_best_host
+    _save(cfg)
+src/easy_tdx/config.py:153: in _save
+    tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False), "utf-8")
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1154: in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   PermissionError: [Errno 1] Operation not permitted: '/Users/bowen/.easy_tdx/config.tmp'
+=============================== warnings summary ===============================
+tests/unit/test_web_backtest.py::test_list_strategies_endpoint
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/unit/test_web_backtest.py::test_list_strategies_endpoint - Permis...
+ERROR tests/unit/test_web_backtest.py::test_sync_backtest_with_inline_data - ...
+ERROR tests/unit/test_web_backtest.py::test_sync_backtest_rejects_missing_ohlcv
+ERROR tests/unit/test_web_backtest.py::test_sync_backtest_rejects_bad_strategy
+ERROR tests/unit/test_web_backtest.py::test_sync_backtest_rejects_bad_params
+ERROR tests/unit/test_web_backtest.py::test_async_backtest_with_inline_data
+ERROR tests/unit/test_web_backtest.py::test_task_poll_unknown_id - Permission...
+ERROR tests/unit/test_web_backtest.py::test_async_backtest_failure_recorded
+ERROR tests/unit/test_web_backtest.py::test_portfolio_backtest_endpoint - Per...
+ERROR tests/unit/test_web_backtest.py::test_portfolio_backtest_bad_strategy
+ERROR tests/unit/test_web_backtest.py::test_optimize_endpoint - PermissionErr...
+ERROR tests/unit/test_web_backtest.py::test_optimize_single_param_no_heatmap
+ERROR tests/unit/test_web_backtest.py::test_optimize_all_endpoint - Permissio...
+ERROR tests/unit/test_web_backtest.py::test_list_tasks_endpoint - PermissionE...
+ERROR tests/unit/test_web_backtest.py::test_list_tasks_limit - PermissionErro...
+47 passed, 1 warning, 15 errors in 5.90s

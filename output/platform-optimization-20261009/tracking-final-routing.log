@@ -1,0 +1,12 @@
+### Result
+{"cookieOwnerChangeRejected":true,"fundRoute":["http://127.0.0.1:8766/api/v1/bars?market=SH&code=510300&category=DAY&count=800&start=0&adjust=NONE&bar_time=native"],"indexRoute":"http://127.0.0.1:8766/chanlun?from=tracking&targetKind=index&symbol=000001&market=SH&name=%E4%B8%8A%E8%AF%81%E6%8C%87%E6%95%B0&boardType=&category=DAY&adjust=NONE"}
+### Ran Playwright code
+```js
+await (async (page) => { const base="http://127.0.0.1:8766"; await page.reload(); await page.getByRole("heading",{name:"核心观察",exact:true}).waitFor(); await page.request.post(base+"/api/v1/qa/switch/second"); await page.getByLabel("新建分组").fill("不能写到新登录账户"); await page.getByRole("button",{name:"添加",exact:true}).click(); await page.getByRole("alert").filter({hasText:"登录账户已变化"}).waitFor(); const second=await (await page.request.get(base+"/api/v1/auth/me")).json(); if(second.user.preferences.tracking_groups) throw new Error("cross-account write"); await page.request.post(base+"/api/v1/qa/switch/first"); const requests=[]; page.on("request",r=>{if(r.url().includes("/api/v1/bars?"))requests.push(r.url())}); await page.goto(base+"/chanlun?from=tracking&targetKind=fund&symbol=510300&market=SH&name=沪深300ETF&boardType=&category=DAY&adjust=NONE"); await page.waitForResponse(r=>r.url().includes("/api/v1/bars?")&&r.url().includes("510300")); if(!requests.some(url=>url.includes("market=SH")&&url.includes("adjust=NONE"))) throw new Error("fund request incorrect"); await page.goto(base+"/chanlun?from=tracking&targetKind=index&symbol=000001&market=SH&name=上证指数&boardType=&category=DAY&adjust=NONE"); await page.getByText("指数 · 000001-上证指数",{exact:true}).first().waitFor({timeout:45000}); return {cookieOwnerChangeRejected:true,fundRoute:requests,indexRoute:page.url()}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=index&symbol=000001&market=SH&name=%E4%B8%8A%E8%AF%81%E6%8C%87%E6%95%B0&boardType=&category=DAY&adjust=NONE
+- Page Title: 股票分析 · Analysis Studio
+- Console: 2 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T12-30-56-700Z.log#L11-L13

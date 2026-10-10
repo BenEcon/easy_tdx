@@ -1,0 +1,12 @@
+### Result
+{
+  "legacyWarnings": 11,
+  "invalidLinkBlocked": true,
+  "lateInputPreserved": true,
+  "automaticComputations": 0,
+  "errors": []
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__savedBoundaryReport)');
+```

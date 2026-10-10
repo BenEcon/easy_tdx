@@ -9,7 +9,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from easy_tdx.web.account_store import UserRecord
 from easy_tdx.web.backtest_schemas import (
@@ -25,7 +25,15 @@ from easy_tdx.web.strategy_store import (
     get_store,
 )
 
-router = APIRouter(tags=["strategies"])
+
+def strategy_owner(request: Request, user: UserRecord = Depends(get_current_user)) -> UserRecord:
+    expected = request.headers.get("x-strategy-owner")
+    if expected is not None and expected != user.id:
+        raise HTTPException(409, "登录账户已变化，请重新打开策略库")
+    return user
+
+
+router = APIRouter(tags=["strategies"], dependencies=[Depends(strategy_owner)])
 
 
 def _app_version() -> str:

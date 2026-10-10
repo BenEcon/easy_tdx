@@ -1,0 +1,20 @@
+Factor-system foundation checkpoint, 2026-10-10, LOCAL ONLY
+
+Before: source-before.tar.gz
+SHA256: 5f90d26a343ba93c937b445d28a3fef1b58d055e3489e49a9f41aa36d92d0587
+After: source-after-foundation.tar.gz
+SHA256: fe823c9f0beb44a471e93d99862c9b6399da3d81b67f92f95e5f805f8493356c
+
+Archives preserve the current dirty source tree, not user databases or runtime secrets.
+Extract into a temporary directory; compare affected files before selective restore.
+Do not reset the worktree or overwrite later user edits.
+
+Active goal and remaining work: docs/factor-system-plan-20261010.md
+Not deployed. Alpha158/Alpha101/GTJA191 implementation remains pending.
+Backend: 167 passed; frontend: 571 + 28 passed; build passed.
+Mypy: 306 source files passed; touched Python Ruff passed.
+WebKit: 500 rows, definitions, precision, 8-stock cross-section, alias lookup,
+1440/390/320 layouts, system/user activity distinction verified on synthetic data.
+QA expected auxiliary quotes failures recorded in plan; not live-market acceptance.
+All dedicated browsers closed; radar QA PID 56281 and factor QA PID 61556
+terminated with exit 143 after their verified shutdowns.

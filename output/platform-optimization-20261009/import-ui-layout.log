@@ -1,0 +1,6 @@
+### Result
+{"widths":[1440,390,320],"pageErrors":[]}
+### Ran Playwright code
+```js
+await (async page=>{const cloud=page.locator(".cloud-archives");await cloud.locator(":scope > summary").click();const widths=[],errors=[];const handler=e=>errors.push(e.message);page.on("pageerror",handler);try{await cloud.locator(".archive-toolbar button:not([disabled])").filter({hasText:"导入研究备份"}).waitFor();await cloud.locator("input[type=file]").setInputFiles("../output/playwright/import-legacy-research.json");const preview=page.getByRole("region",{name:"待导入研究备份",exact:true});await preview.waitFor();for(const width of [1440,390,320]){await page.setViewportSize({width,height:1000});await preview.scrollIntoViewIfNeeded();const actual=await page.evaluate(()=>document.documentElement.scrollWidth);if(actual!==width)throw Error("overflow");widths.push(actual);}await page.screenshot({path:"../output/playwright/import-preview-final-320.png"});await preview.getByRole("button",{name:"取消导入",exact:true}).click();if(errors.length)throw Error(JSON.stringify(errors));return {widths,pageErrors:errors};}finally{page.off("pageerror",handler);}})(page);
+```

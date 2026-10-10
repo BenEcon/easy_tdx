@@ -1,0 +1,30 @@
+............................................................F........... [ 98%]
+.                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_six_http_submissions_execute_frozen_inputs_in_actual_worker[signal_scan] _
+tests/unit/test_durable_task_api.py:306: in test_six_http_submissions_execute_frozen_inputs_in_actual_worker
+    assert actual["result"] == expected
+E   AssertionError: assert {'rows': [{'s...ount': 0, ...} == {'rows': [{'s...ount': 0, ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Left contains 1 more item:
+E     {'evidence_task_id': 'd1b78c58992f4d34bcf769de8ba7d21a'}
+E     Use -v to get more diff
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:343: RuntimeWarning: invalid value encountered in divide
+    ADX = MA(ABS(MDI - PDI) / (PDI + MDI) * 100, M2)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[signal_scan]
+1 failed, 72 passed, 7 warnings in 20.78s

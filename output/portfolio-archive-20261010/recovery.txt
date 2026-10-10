@@ -1,0 +1,6 @@
+Source snapshot: source-after.tar.gz
+SHA-256: e31677d40ea4d6ee3aecbdf13d650e6973ea9fb5056a721c3a824829d827d02a
+Previous: ../backtest-archive-20261010/source-after.tar.gz
+Previous SHA-256: be95c29bff0fba936e762af3893361ce863cf10719701a07e92457f7ed3fbb83
+No production databases, task stores, node_modules, dist or runtime output included.
+Local implementation only; not deployed.

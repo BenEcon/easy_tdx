@@ -1,0 +1,119 @@
+................F....F...FF...F..FFF..FFF.                               [100%]
+=================================== FAILURES ===================================
+_ TestMarketStatEmptyFailover.test_empty_quotes_finds_working_host_and_returns_data _
+/private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py:383: in test_empty_quotes_finds_working_host_and_returns_data
+    df = client.get_market_stat()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/client.py:785: in get_market_stat
+    raise RuntimeError("无法获取市场统计数据")
+E   RuntimeError: 无法获取市场统计数据
+__ TestBarsEmptyFailover.test_empty_bars_finds_working_host_and_returns_data ___
+/private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py:512: in test_empty_bars_finds_working_host_and_returns_data
+    assert mock_exec.call_count == 4
+E   AssertionError: assert 3 == 4
+E    +  where 3 = <MagicMock name='_execute' id='4492461680'>.call_count
+_______ TestBarsEmptyFailover.test_security_bars_also_triggers_failover ________
+/private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py:581: in test_security_bars_also_triggers_failover
+    assert mock_exec.call_count == 4
+E   AssertionError: assert 3 == 4
+E    +  where 3 = <MagicMock name='_execute' id='4492646032'>.call_count
+_ TestFundFlowEmptyFailover.test_empty_fund_flow_finds_working_host_and_returns_data _
+/private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py:635: in test_empty_fund_flow_finds_working_host_and_returns_data
+    assert mock_fetch.call_count == 4
+E   AssertionError: assert 3 == 4
+E    +  where 3 = <MagicMock name='_fetch_fund_flow_records' id='4492048512'>.call_count
+_ TestAsyncFundFlowEmptyFailover.test_async_empty_fund_flow_finds_working_host _
+/private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py:747: in test_async_empty_fund_flow_finds_working_host
+    assert asyncio.run(main()) == 1
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/runners.py:44: in run
+    return loop.run_until_complete(main)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/base_events.py:649: in run_until_complete
+    return future.result()
+/private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py:742: in main
+    assert mock_fetch.call_count == 4
+E   AssertionError: assert 3 == 4
+E    +  where 3 = <AsyncMock name='_fetch_fund_flow_records' id='4492394352'>.call_count
+_____________ TestFactorAnalyzerIC.test_compute_ic_returns_series ______________
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:60: in compute_ic
+    import scipy  # noqa: F401  # pandas spearman lazy import
+E   ModuleNotFoundError: No module named 'scipy'
+
+The above exception was the direct cause of the following exception:
+/private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py:52: in test_compute_ic_returns_series
+    ic_series = analyzer.compute_ic()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:62: in compute_ic
+    raise ImportError(
+E   ImportError: Rank IC (spearman) 需要 scipy，请执行 `pip install easy-tdx[science]`
+________________ TestFactorAnalyzerIC.test_positive_ic_detected ________________
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:60: in compute_ic
+    import scipy  # noqa: F401  # pandas spearman lazy import
+E   ModuleNotFoundError: No module named 'scipy'
+
+The above exception was the direct cause of the following exception:
+/private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py:59: in test_positive_ic_detected
+    ic_series = analyzer.compute_ic()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:62: in compute_ic
+    raise ImportError(
+E   ImportError: Rank IC (spearman) 需要 scipy，请执行 `pip install easy-tdx[science]`
+__________________ TestFactorAnalyzerIC.test_zero_ic_detected __________________
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:60: in compute_ic
+    import scipy  # noqa: F401  # pandas spearman lazy import
+E   ModuleNotFoundError: No module named 'scipy'
+
+The above exception was the direct cause of the following exception:
+/private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py:65: in test_zero_ic_detected
+    ic_series = analyzer.compute_ic()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:62: in compute_ic
+    raise ImportError(
+E   ImportError: Rank IC (spearman) 需要 scipy，请执行 `pip install easy-tdx[science]`
+__________________ TestFactorAnalyzerReport.test_full_report ___________________
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:60: in compute_ic
+    import scipy  # noqa: F401  # pandas spearman lazy import
+E   ModuleNotFoundError: No module named 'scipy'
+
+The above exception was the direct cause of the following exception:
+/private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py:89: in test_full_report
+    report = analyzer.full_report()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:128: in full_report
+    ic_series = self.compute_ic()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:62: in compute_ic
+    raise ImportError(
+E   ImportError: Rank IC (spearman) 需要 scipy，请执行 `pip install easy-tdx[science]`
+____________ TestFactorAnalyzerReport.test_report_ic_positive_rate _____________
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:60: in compute_ic
+    import scipy  # noqa: F401  # pandas spearman lazy import
+E   ModuleNotFoundError: No module named 'scipy'
+
+The above exception was the direct cause of the following exception:
+/private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py:99: in test_report_ic_positive_rate
+    report = analyzer.full_report()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:128: in full_report
+    ic_series = self.compute_ic()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:62: in compute_ic
+    raise ImportError(
+E   ImportError: Rank IC (spearman) 需要 scipy，请执行 `pip install easy-tdx[science]`
+_____________ TestFactorAnalyzerDecay.test_decay_returns_dataframe _____________
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:60: in compute_ic
+    import scipy  # noqa: F401  # pandas spearman lazy import
+E   ModuleNotFoundError: No module named 'scipy'
+
+The above exception was the direct cause of the following exception:
+/private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py:107: in test_decay_returns_dataframe
+    decay = analyzer.compute_decay(max_lag=5)
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:116: in compute_decay
+    ic_series = self.compute_ic()
+/private/tmp/tdx-oct09-baseline/src/easy_tdx/factor/analysis.py:62: in compute_ic
+    raise ImportError(
+E   ImportError: Rank IC (spearman) 需要 scipy，请执行 `pip install easy-tdx[science]`
+=========================== short test summary info ============================
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py::TestMarketStatEmptyFailover::test_empty_quotes_finds_working_host_and_returns_data
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py::TestBarsEmptyFailover::test_empty_bars_finds_working_host_and_returns_data
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py::TestBarsEmptyFailover::test_security_bars_also_triggers_failover
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py::TestFundFlowEmptyFailover::test_empty_fund_flow_finds_working_host_and_returns_data
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_failover.py::TestAsyncFundFlowEmptyFailover::test_async_empty_fund_flow_finds_working_host
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py::TestFactorAnalyzerIC::test_compute_ic_returns_series
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py::TestFactorAnalyzerIC::test_positive_ic_detected
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py::TestFactorAnalyzerIC::test_zero_ic_detected
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py::TestFactorAnalyzerReport::test_full_report
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py::TestFactorAnalyzerReport::test_report_ic_positive_rate
+FAILED ../../../../../../private/tmp/tdx-oct09-baseline/tests/unit/test_factor_analysis.py::TestFactorAnalyzerDecay::test_decay_returns_dataframe
+11 failed, 31 passed in 0.77s

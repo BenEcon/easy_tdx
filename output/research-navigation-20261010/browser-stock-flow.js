@@ -1,0 +1,54 @@
+async page => {
+  const base='http://127.0.0.1:8768', requests=[], errors=[];
+  const check=(v,m)=>{if(!v)throw Error(m)};
+  const canonical=v=>JSON.stringify(v&&typeof v==='object'?(Array.isArray(v)?v.map(x=>JSON.parse(canonical(x))):Object.fromEntries(Object.keys(v).sort().map(k=>[k,JSON.parse(canonical(v[k]))]))):v);
+  const listen=r=>requests.push({path:new URL(r.url()).pathname,method:r.method(),origin:r.headers()['x-query-origin'],body:r.postData()});
+  const error=e=>errors.push(e.message);
+  page.on('request',listen);page.on('pageerror',error);
+  const rows=[{code:'300750',market:0,name:'宁德时代',price:350},{code:'000001',market:1,name:'上证指数',price:3800}];
+  await page.route('**/api/v1/mac/quote-list?**',r=>r.fulfill({json:{data:rows}}));
+  try {
+    await page.setViewportSize({width:1440,height:1000});await page.goto(base+'/market');
+    await page.getByRole('cell',{name:'宁德时代',exact:true}).click();
+    const bar=page.getByRole('region',{name:'继续研究选中标的'});
+    await bar.getByRole('combobox',{name:'继续研究周期'}).click();await page.getByRole('option',{name:'30 分钟',exact:true}).click();
+    await bar.getByRole('combobox',{name:'继续研究复权'}).click();await page.getByRole('option',{name:/前复权/}).click();
+    await bar.getByRole('link',{name:'个股分析',exact:true}).click();
+    await page.getByLabel('研究入口参数').waitFor();
+    await page.getByRole('button',{name:'开始回测',exact:true}).waitFor();
+    check(!requests.some(r=>r.path==='/api/v1/bars/range'||r.path==='/api/v1/backtest/run'),'entry automatically ran');
+    const dates=page.locator('input[type=date]');await dates.nth(0).fill('2026-01-01');await dates.nth(1).fill('2026-10-09');
+    const calculation=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/backtest/run');
+    await page.getByRole('button',{name:'开始回测',exact:true}).click();const resultResponse=await calculation;
+    check(resultResponse.ok(),await resultResponse.text());const result=await resultResponse.json();
+    await page.getByRole('button',{name:'导出回测原档',exact:true}).waitFor();
+    const cloud=page.locator('.report-content .cloud-archives');await cloud.locator(':scope > summary').click();
+    const writing=page.waitForResponse(r=>r.request().method()==='PUT'&&r.url().includes('/research/archives/'));
+    await cloud.getByRole('button',{name:'保存当前结果到云端',exact:true}).click();const response=await writing;
+    check(response.status()===201,await response.text());const item=await response.json();
+    const saved=await (await page.request.get(base+'/api/v1/research/archives/'+item.id)).json();
+    const p=saved.payload, fixture=await (await page.request.get(base+'/qa/fixture/300750/MIN_30')).json();
+    check(p.format==='backtest-research-v1','wrong archive format');
+    check(canonical(p.result)===canonical(result),'saved result changed');
+    check(p.request.ohlcv.length===fixture.data.length,'lost raw inputs');
+    for(let i=0;i<fixture.data.length;i++)for(const key of ['open','high','low','close','vol','amount'])check(p.request.ohlcv[i][key]===fixture.data[i][key],`changed ${i}.${key}`);
+    check(p.request.symbol==='SZ:300750'&&p.request.category==='MIN_30'&&p.request.adjust==='QFQ','lost stock context');
+    check(p.request.start_date==='2026-01-01'&&p.request.end_date==='2026-10-09','lost explicit dates');
+    const downloading=page.waitForEvent('download');await page.getByRole('button',{name:'导出回测原档',exact:true}).click();const download=await downloading;
+    await download.saveAs('/Users/bowen/Documents/Python/Google/TDX-work/output/research-navigation-20261010/stock-flow-export.json');
+    let text='';for await(const chunk of await download.createReadStream())text+=chunk;
+    check(canonical(JSON.parse(text))===canonical(p),'export differs from cloud');
+    const start=requests.length;await page.goto(base+'/account');
+    const directory=page.locator('.cloud-archives').first();await directory.locator(':scope > summary').click();
+    await directory.locator('li').filter({hasText:saved.name}).first().getByRole('button',{name:'查看原档',exact:true}).click();
+    const dialog=page.getByRole('dialog',{name:'云端研究原档'});await dialog.waitFor();
+    await dialog.getByText(/回测原档 · SZ:300750/).waitFor();
+    for(const width of [1440,390,320]) {
+      await page.setViewportSize({width,height:1000});await page.screenshot({path:`output/playwright/research-flow-backtest-${width}.png`,fullPage:true});
+      check(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'page overflow '+width);
+    }
+    const readonly=requests.slice(start).filter(r=>/\/bars|\/backtest\/run|\/chanlun\//.test(r.path));check(!readonly.length,'readonly caused research '+JSON.stringify(readonly));
+    check(!errors.length,'page errors '+errors.join(';'));
+    return {archive:item.id,inputBars:p.request.ohlcv.length,trades:p.result.trades.length,context:{symbol:p.request.symbol,category:p.request.category,adjust:p.request.adjust,start:p.request.start_date,end:p.request.end_date},manualRequests:requests.filter(r=>r.path==='/api/v1/bars/range'||r.path==='/api/v1/backtest/run').map(({path,origin})=>({path,origin})),readonlyResearch:readonly.length,pageErrors:errors};
+  } finally {page.off('request',listen);page.off('pageerror',error)}
+}

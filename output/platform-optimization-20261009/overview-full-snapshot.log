@@ -1,0 +1,681 @@
+### Page
+- Page URL: http://127.0.0.1:18094/chanlun?symbol=300750
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=e4]:
+  - complementary [ref=e5]:
+    - button "收起左侧栏" [ref=e11] [cursor=pointer]
+    - link "返回股票分析" [ref=e15]:
+      - /url: /
+      - generic [ref=e20]:
+        - strong [ref=e21]: 股票分析
+        - generic [ref=e22]: Analysis Studio
+    - navigation "主要导航" [ref=e23]:
+      - generic [ref=e24]:
+        - paragraph [ref=e25]: 分析
+        - link "个股分析" [ref=e26]:
+          - /url: /
+        - link "市场行情" [ref=e33]:
+          - /url: /market
+        - link "盘中研究" [ref=e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=e51]:
+          - /url: /signals
+      - generic [ref=e58]:
+        - paragraph [ref=e59]: 研究
+        - link "板块研究" [ref=e60]:
+          - /url: /boards
+        - link "公司资料" [ref=e69]:
+          - /url: /company
+        - link "扩展市场" [ref=e77]:
+          - /url: /extended
+        - link "量化研究" [ref=e84]:
+          - /url: /quant-research
+        - link "组合回测" [ref=e90]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=e99]:
+          - /url: /optimize
+        - link "结果对比" [ref=e104]:
+          - /url: /compare
+        - link "策略库" [ref=e109]:
+          - /url: /strategies
+      - generic [ref=e115]:
+        - paragraph [ref=e116]: 系统
+        - link "行情服务器" [ref=e117]:
+          - /url: /settings
+        - link "个人账户" [ref=e124]:
+          - /url: /account
+        - link "账户管理" [ref=e131]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=e140]:
+          - /url: /admin/data
+    - link "本 本机证据验收 管理员" [ref=e148]:
+      - /url: /account
+      - generic [ref=e149]: 本
+      - generic [ref=e150]:
+        - strong [ref=e151]: 本机证据验收
+        - generic [ref=e152]: 管理员
+  - generic [ref=e153]:
+    - generic [ref=e154]:
+      - generic [ref=e155]:
+        - heading "缠论结构" [level=1] [ref=e167]
+        - paragraph [ref=e157]: 识别笔、线段、中枢、买卖点与背驰
+      - generic [ref=e158]:
+        - link "个人账户" [ref=e159]:
+          - /url: /account
+          - generic [ref=e160]: 本
+          - generic [ref=e161]: 本机证据验收
+          - generic [ref=e162]: ADMIN
+        - button "退出登录" [ref=e163] [cursor=pointer]
+    - main [ref=e166]:
+      - generic [ref=e168]:
+        - complementary [ref=e169]:
+          - generic [ref=e170]:
+            - generic [ref=e171]: ⌘
+            - generic [ref=e172]:
+              - heading "结构分析" [level=2] [ref=e173]
+              - paragraph [ref=e174]: 从 K 线递进识别走势结构
+          - generic [ref=e175]:
+            - heading "标的与周期" [level=3] [ref=e176]
+            - generic [ref=e177]:
+              - generic [ref=e178]: 标的类型
+              - combobox "缠论标的类型" [ref=e180] [cursor=pointer]:
+                - generic [ref=e181]: 个股
+            - generic [ref=e184]:
+              - generic [ref=e185]:
+                - generic [ref=e186]: 证券代码
+                - button "股票历史" [ref=e188] [cursor=pointer]
+              - textbox "000001" [ref=e194]: "300750"
+              - generic [ref=e195]: 深市
+            - generic [ref=e196]:
+              - generic [ref=e197]: 分析周期
+              - combobox "缠论分析周期" [ref=e199] [cursor=pointer]:
+                - generic [ref=e200]: 日线
+            - generic [ref=e203]:
+              - generic [ref=e204]: 历史窗口
+              - combobox "缠论历史窗口" [ref=e206] [cursor=pointer]:
+                - generic [ref=e207]: 600 根 · 推荐
+            - generic [ref=e210]:
+              - generic [ref=e211]: 复权方式
+              - combobox "全局复权方式" [ref=e213] [cursor=pointer]:
+                - generic [ref=e214]: 前复权
+              - generic [ref=e217]: 自动应用到行情、分析与回测，并保存到当前账号
+          - group [ref=e218]:
+            - generic "均线系统 周期 · K 线数" [ref=e219] [cursor=pointer]:
+              - heading "均线系统" [level=3] [ref=e220]
+              - generic [ref=e221]: 周期 · K 线数
+          - generic [ref=e223]:
+            - heading "图层" [level=3] [ref=e224]
+            - generic [ref=e225] [cursor=pointer]:
+              - generic [ref=e226]: 三笔盘整
+              - checkbox "三笔盘整" [checked] [ref=e227]
+            - generic [ref=e228] [cursor=pointer]:
+              - generic [ref=e229]: 笔
+              - checkbox "笔" [checked] [ref=e230]
+            - generic [ref=e231] [cursor=pointer]:
+              - generic [ref=e232]: 中枢
+              - checkbox "中枢" [ref=e233]
+            - generic [ref=e234] [cursor=pointer]:
+              - generic [ref=e235]: 线段
+              - checkbox "线段" [ref=e236]
+            - generic [ref=e237] [cursor=pointer]:
+              - generic [ref=e238]: 买卖点
+              - checkbox "买卖点" [checked] [ref=e239]
+            - generic [ref=e240] [cursor=pointer]:
+              - generic [ref=e241]: 背离 / 背驰
+              - checkbox "背离 / 背驰" [checked] [ref=e242]
+            - generic [ref=e243] [cursor=pointer]:
+              - generic [ref=e244]: 待成笔方向
+              - checkbox "待成笔方向" [checked] [ref=e245]
+            - paragraph [ref=e246]: 虚线连接末笔端点与其后的反向极值，尚未成笔，端点可变；无反向区间或原笔继续延伸时不显示。不预测未来价格。
+            - generic [ref=e247]:
+              - generic [ref=e248] [cursor=pointer]:
+                - generic [ref=e249]: 悬停显示对象信息
+                - checkbox "悬停显示对象信息" [ref=e250]
+              - paragraph [ref=e251]: 右键打开，或按住 ⌘ Command 悬停预览；松开隐藏。 图下详情按钮仍可使用，设置按账户保存。
+          - region "结构线宽" [ref=e252]:
+            - generic [ref=e253]:
+              - heading "线条粗细" [level=3] [ref=e254]
+              - button "恢复默认" [disabled] [ref=e255]
+            - generic [ref=e256]:
+              - generic [ref=e257]: 笔
+              - generic [ref=e259]:
+                - textbox "笔线宽" [ref=e260]: "1.35"
+                - generic [ref=e261]:
+                  - button "笔线宽增加" [ref=e262] [cursor=pointer]
+                  - button "笔线宽减少" [ref=e265] [cursor=pointer]
+              - generic [ref=e268]: px
+            - generic [ref=e269]:
+              - generic [ref=e270]: 线段
+              - generic [ref=e272]:
+                - textbox "线段线宽" [ref=e273]: "1.8"
+                - generic [ref=e274]:
+                  - button "线段线宽增加" [ref=e275] [cursor=pointer]
+                  - button "线段线宽减少" [ref=e278] [cursor=pointer]
+              - generic [ref=e281]: px
+            - paragraph [ref=e282]: 0.5–6 px · 即时生效，个股与行业同步。
+          - region "蜡烛填充" [ref=e283]:
+            - generic [ref=e284]:
+              - heading "蜡烛填充" [level=3] [ref=e285]
+              - button "恢复默认" [disabled] [ref=e286]
+            - generic [ref=e287]:
+              - generic [ref=e288]: 透明度
+              - generic [ref=e289]:
+                - textbox "蜡烛填充透明度" [ref=e290]: "80"
+                - generic [ref=e291]:
+                  - button "蜡烛填充透明度增加" [ref=e292] [cursor=pointer]
+                  - button "蜡烛填充透明度减少" [ref=e295] [cursor=pointer]
+              - generic [ref=e298]: "%"
+            - slider "透明度" [ref=e299] [cursor=pointer]: "80"
+            - generic [aria-hidden] [ref=e300]:
+              - generic [ref=e301]: 实心
+              - generic [ref=e302]: 空心
+            - paragraph [ref=e303]: 80% 透明 · 20% 填充。仅调整实体，边框与影线不变；未收盘 K 线仍为空心虚线。
+          - generic [ref=e304]:
+            - strong [ref=e305]: 计算管道
+            - paragraph [ref=e306]: K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰
+          - button "开始分析" [ref=e307] [cursor=pointer]
+        - main [ref=e308]:
+          - generic [ref=e383]:
+            - generic [ref=e384]:
+              - generic [ref=e385]:
+                - generic [ref=e386]:
+                  - generic "个股 · 300750" [ref=e387]
+                  - generic [ref=e388]: DAY
+                - paragraph [ref=e391]: 当前 向下笔 · 进行中，尚未形成中枢
+              - generic [ref=e392]:
+                - generic [ref=e393]:
+                  - strong [ref=e394]: "240"
+                  - generic [ref=e395]: 原始 K 线
+                - generic [ref=e396]:
+                  - strong [ref=e397]: "183"
+                  - generic [ref=e398]: 合并 K 线
+                - generic [ref=e399]:
+                  - strong [ref=e400]: "93"
+                  - generic [ref=e401]: 分型
+                - generic [ref=e402]:
+                  - strong [ref=e403]: "18"
+                  - generic [ref=e404]: 笔
+                - generic [ref=e405]:
+                  - strong [ref=e406]: "0"
+                  - generic [ref=e407]: 基础中枢
+                - generic [ref=e408]:
+                  - strong [ref=e409]: "2"
+                  - generic [ref=e410]: 线段
+                - generic [ref=e411]:
+                  - strong [ref=e412]: "0"
+                  - generic [ref=e413]: 买卖点
+                - generic [ref=e414]:
+                  - strong [ref=e415]: "2"
+                  - generic [ref=e416]: 背离 / 背驰
+            - generic [ref=e417]:
+              - region "行情数据口径" [ref=e418]:
+                - group [ref=e419]:
+                  - generic "› 数据口径 MAC 行情 · 前复权 收盘截至 2026-10-09 15:00:00" [ref=e420] [cursor=pointer]:
+                    - text: ›
+                    - strong [ref=e421]: 数据口径
+                    - generic [ref=e422]: MAC 行情 · 前复权
+                    - time [ref=e423]: 收盘截至 2026-10-09 15:00:00
+              - paragraph [ref=e424]: 线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。
+              - generic [ref=e425]:
+                - generic [ref=e426]:
+                  - generic [ref=e427]:
+                    - strong [ref=e428]: 快照末尾
+                    - button "回放上一根 K 线" [ref=e429] [cursor=pointer]: 上一根
+                    - slider "K 线回放位置" [ref=e430] [cursor=pointer]: "240"
+                    - button "回放下一根 K 线" [disabled] [ref=e431]: 下一根
+                  - generic [ref=e432]:
+                    - status [ref=e433]: 2026-10-09 · 240/240
+                    - button "返回末尾" [disabled] [ref=e434]
+                - generic [ref=e435]: 按当前标的快照回放，不代表历史当天的数据版本；个股与行业对比时采用共同截止点。
+              - generic [ref=e436]:
+                - generic [ref=e437]: 所属行业
+                - generic [ref=e438]: 暂无行业归属数据
+              - region "多周期图表对比" [ref=e439]:
+                - generic [ref=e440]:
+                  - generic [ref=e441]:
+                    - strong [ref=e442]: 多周期图表
+                    - generic [ref=e443]: 主周期 日线
+                  - generic [ref=e444]:
+                    - generic [ref=e445]: 对照周期
+                    - combobox "对照周期" [ref=e447] [cursor=pointer]:
+                      - generic [ref=e448]: 30 分钟
+                    - button "生成对比" [ref=e451] [cursor=pointer]
+                - status [ref=e452]: 选择另一个周期，查看同一标的的独立分析，或与主周期上下对比。
+                - generic [ref=e454]:
+                  - generic [ref=e455]:
+                    - generic [ref=e456]:
+                      - heading "个股 · 300750 · 日线" [level=3] [ref=e457]
+                      - paragraph [ref=e458]: 均线与缠论结构叠加；可在下方选择技术指标。
+                    - generic [ref=e459]:
+                      - generic [ref=e460]:
+                        - generic [ref=e461]: 笔
+                        - generic [ref=e462]: 盘整进行中
+                        - generic [ref=e466]: 待成笔方向 · 观察
+                        - generic [ref=e467]: 中枢
+                        - generic [ref=e468]: 线段
+                        - generic [ref=e469]: 底背离／背驰
+                        - generic [ref=e470]: 顶背离／背驰
+                      - generic [ref=e471] [cursor=pointer]:
+                        - checkbox "显示失效历史" [checked] [ref=e472]
+                        - generic [ref=e473]: 显示失效历史
+                      - button "全屏查看个股 · 300750 · 日线" [ref=e474] [cursor=pointer]:
+                        - generic [ref=e477]: 全屏
+                  - generic [ref=e479]:
+                    - generic [ref=e483]:
+                      - generic [ref=e484]: 右键盘整矩形，查看区间详情
+                      - button "查看盘整详情" [ref=e485] [cursor=pointer]
+                    - generic [ref=e486]:
+                      - generic [ref=e487]: 右键背离／背驰标记，查看状态与依据
+                      - button "查看背离详情" [ref=e488] [cursor=pointer]
+                    - paragraph [ref=e489]: 琥珀虚线＝待成笔方向 · 仅连接可见已收盘行情的反向运动，端点可变；突破观察极值即撤销，不改变严格笔。
+                    - paragraph [ref=e490]: 圆形＝双线 · 菱形＝标准 · 三角形＝非标准 · 大菱形＝特殊 · 底紫顶绿 · 彩色空心＝候选 · 实心＝确认 · 灰色空心＝已失效／被替代
+                    - generic [ref=e491]:
+                      - generic [ref=e492]: 技术指标 · 可同时显示多个
+                      - button "＋ 添加指标" [ref=e493] [cursor=pointer]
+                    - generic [ref=e494]:
+                      - button "移除第 1 个指标" [ref=e495] [cursor=pointer]: 移除
+                      - generic [ref=e496]:
+                        - generic [ref=e499]:
+                          - strong [ref=e500]: 技术指标
+                          - generic [ref=e501]: 比较成交活跃程度，并显示 5、10 周期平均成交量。
+                        - generic [ref=e502]:
+                          - radiogroup "常用技术指标" [ref=e503]:
+                            - radio "无指标" [ref=e504] [cursor=pointer]
+                            - radio "成交量" [checked] [ref=e505] [cursor=pointer]
+                            - radio "MACD" [ref=e506] [cursor=pointer]
+                            - radio "KDJ" [ref=e507] [cursor=pointer]
+                            - radio "RSI" [ref=e508] [cursor=pointer]
+                            - radio "BOLL" [ref=e509] [cursor=pointer]
+                          - button "全部指标" [ref=e510] [cursor=pointer]
+                    - generic [ref=e514]:
+                      - button "移除第 2 个指标" [ref=e515] [cursor=pointer]: 移除
+                      - generic [ref=e516]:
+                        - generic [ref=e519]:
+                          - strong [ref=e520]: 技术指标
+                          - generic [ref=e521]: 用快慢均线差观察趋势方向与动能变化。
+                        - generic [ref=e522]:
+                          - radiogroup "常用技术指标" [ref=e523]:
+                            - radio "无指标" [ref=e524] [cursor=pointer]
+                            - radio "成交量" [ref=e525] [cursor=pointer]
+                            - radio "MACD" [checked] [ref=e526] [cursor=pointer]
+                            - radio "KDJ" [ref=e527] [cursor=pointer]
+                            - radio "RSI" [ref=e528] [cursor=pointer]
+                            - radio "BOLL" [ref=e529] [cursor=pointer]
+                          - button "全部指标" [ref=e530] [cursor=pointer]
+                - group [ref=e534]:
+                  - generic "周期明细审核 个股 · 300750 · 日线 · 240 根" [ref=e535] [cursor=pointer]:
+                    - strong [ref=e536]: 周期明细审核
+                    - generic [ref=e537]: 个股 · 300750 · 日线 · 240 根
+                - group [ref=e538]:
+                  - generic "研究偏好与快照 账户偏好 · 本地快照" [ref=e539] [cursor=pointer]:
+                    - strong [ref=e540]: 研究偏好与快照
+                    - generic [ref=e541]: 账户偏好 · 本地快照
+              - group [ref=e542]:
+                - generic "三笔盘整 4 组 笔级重叠 · 非中枢" [ref=e543] [cursor=pointer]:
+                  - strong [ref=e544]: 三笔盘整 4 组
+                  - generic [ref=e545]: 笔级重叠 · 非中枢
+              - group [ref=e546]:
+                - generic "多周期概览 · 300750 量价、动能、严格笔与背离" [ref=e547] [cursor=pointer]:
+                  - strong [ref=e548]: 多周期概览 · 300750
+                  - generic [ref=e549]: 量价、动能、严格笔与背离
+                - generic [ref=e550]:
+                  - generic [ref=e551]:
+                    - generic [ref=e552]:
+                      - generic [ref=e553]: 共同截止
+                      - time [ref=e554]: 2026-10-09 15:00:00
+                    - generic [ref=e555]:
+                      - checkbox "自动更新" [checked] [ref=e556]
+                      - text: 自动更新
+                    - button "更新概览" [ref=e704] [cursor=pointer]
+                    - button "保存研究快照" [ref=e558] [cursor=pointer]
+                  - region "多周期概览表" [ref=e559]:
+                    - paragraph [ref=e560]: 横向查看各项信息；点击周期查看完整依据。成交量均线沿用行情原始口径，同周期比较；数值显示两位小数，判定使用未舍入值。
+                    - region "多周期概览数据，可横向滚动" [ref=e561]:
+                      - table [ref=e562]:
+                        - caption [ref=e563]: 所选标的按周期汇总的量价、动能、严格笔与背离信息
+                        - rowgroup [ref=e564]:
+                          - row [ref=e565]:
+                            - columnheader "周期" [ref=e566]
+                            - columnheader "均线 / 价格" [ref=e567]
+                            - columnheader "成交量" [ref=e568]
+                            - columnheader "MACD" [ref=e569]
+                            - columnheader "严格笔与当前方向" [ref=e570]
+                            - columnheader "背离" [ref=e571]
+                            - columnheader "其他" [ref=e572]
+                        - rowgroup [ref=e573]:
+                          - row [ref=e705]:
+                            - rowheader [ref=e706]:
+                              - button "查看周线完整依据" [ref=e707] [cursor=pointer]:
+                                - text: 周线
+                                - generic [aria-hidden] [ref=e708]: ↗
+                              - generic [ref=e709]:
+                                - text: 已收盘截止
+                                - time [ref=e710]: 2026-10-09 15:00:00
+                            - cell [ref=e711]:
+                              - paragraph [ref=e712]: 收盘 297.75
+                              - paragraph [ref=e713]: MA5 302.96 / MA10 340.61
+                              - paragraph [ref=e714]: 短期空头展开，双线共同下降
+                              - paragraph [ref=e715]: 多头未排列 · 空头至 MA30
+                            - cell [ref=e716]:
+                              - paragraph [ref=e717]: MAVOL5 1463786.20
+                              - paragraph [ref=e718]: MAVOL10 1310723.40
+                              - paragraph [ref=e719]: 短期均量优势扩大
+                              - paragraph [ref=e720]: 本根 / 前 20 根均量：0.57 倍
+                            - cell [ref=e721]:
+                              - paragraph [ref=e722]: DIF -21.28 / DEA -9.97
+                              - paragraph [ref=e723]: 零轴下方 · 绿柱 · 缩短
+                              - paragraph [ref=e724]: DIF 位于 DEA 下方，间距收窄
+                            - cell [ref=e725]:
+                              - paragraph [ref=e726]: 向下严格笔 · 末端可延伸
+                              - paragraph [ref=e727]: 2026-05-08 00:00:00 → 2026-07-10 00:00:00；467.34 → 344.75
+                              - paragraph [ref=e728]: 当前观察：原反向观察已被新极值否定；原方向延伸，等待新分型
+                              - paragraph [ref=e729]: 观察可知：2026-07-24 15:00:00
+                            - cell [ref=e730]:
+                              - paragraph [ref=e731]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                            - cell [ref=e732]:
+                              - paragraph [ref=e733]: BOLL 带宽扩张（不表示突破方向）
+                              - paragraph [ref=e734]: 观察窗口：2026-05-29 00:00:00 — 2026-10-09 00:00:00（20 根）
+                          - row [ref=e735]:
+                            - rowheader [ref=e736]:
+                              - button "查看日线完整依据" [ref=e737] [cursor=pointer]:
+                                - text: 日线
+                                - generic [aria-hidden] [ref=e738]: ↗
+                              - generic [ref=e739]:
+                                - text: 已收盘截止
+                                - time [ref=e740]: 2026-10-09 15:00:00
+                            - cell [ref=e741]:
+                              - paragraph [ref=e742]: 收盘 297.75
+                              - paragraph [ref=e743]: MA5 290.88 / MA10 295.26
+                              - paragraph [ref=e744]: 短期均线由下方趋近，修复中
+                              - paragraph [ref=e745]: 多头未排列 · 空头至 MA120
+                            - cell [ref=e746]:
+                              - paragraph [ref=e747]: MAVOL5 36864942.80
+                              - paragraph [ref=e748]: MAVOL10 37201791.00
+                              - paragraph [ref=e749]: 短期均量相对差距收窄
+                              - paragraph [ref=e750]: 本根 / 前 20 根均量：1.49 倍
+                            - cell [ref=e751]:
+                              - paragraph [ref=e752]: DIF -19.47 / DEA -19.75
+                              - paragraph [ref=e753]: 零轴下方 · 红柱 · 换色
+                              - paragraph [ref=e754]: DIF 刚上穿 DEA
+                            - cell [ref=e755]:
+                              - paragraph [ref=e756]: 向下严格笔 · 末端可延伸
+                              - paragraph [ref=e757]: 2026-08-06 00:00:00 → 2026-09-29 00:00:00；408.59 → 285.74
+                              - paragraph [ref=e758]: 当前观察：原反向观察已被新极值否定；原方向延伸，等待新分型
+                              - paragraph [ref=e759]: 观察可知：2026-09-30 15:00:00
+                            - cell [ref=e760]:
+                              - paragraph [ref=e761]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                            - cell [ref=e762]:
+                              - paragraph [ref=e763]: 三组快慢线差值同时增加；仅表示联合修复，不等于买点
+                              - paragraph [ref=e764]: 观察窗口：2026-09-04 00:00:00 — 2026-10-09 00:00:00（20 根）
+                          - row [ref=e765]:
+                            - rowheader [ref=e766]:
+                              - button "查看30 分钟完整依据" [ref=e767] [cursor=pointer]:
+                                - text: 30 分钟
+                                - generic [aria-hidden] [ref=e768]: ↗
+                              - generic [ref=e769]:
+                                - text: 已收盘截止
+                                - time [ref=e770]: 2026-10-09 15:00:00
+                            - cell [ref=e771]:
+                              - paragraph [ref=e772]: 收盘 297.75
+                              - paragraph [ref=e773]: MA5 298.30 / MA10 294.86
+                              - paragraph [ref=e774]: 短期多头收敛
+                              - paragraph [ref=e775]: 多头至 MA30 · 空头未排列
+                            - cell [ref=e776]:
+                              - paragraph [ref=e777]: MAVOL5 4449380.00
+                              - paragraph [ref=e778]: MAVOL10 6273820.00
+                              - paragraph [ref=e779]: 短期均量相对差距扩大
+                              - paragraph [ref=e780]: 本根 / 前 20 根均量：0.96 倍
+                            - cell [ref=e781]:
+                              - paragraph [ref=e782]: DIF 1.93 / DEA 0.80
+                              - paragraph [ref=e783]: 零轴上方 · 红柱 · 缩短
+                              - paragraph [ref=e784]: DIF 位于 DEA 上方，间距收窄
+                            - cell [ref=e785]:
+                              - paragraph [ref=e786]: 向上严格笔 · 末端可延伸
+                              - paragraph [ref=e787]: 2026-10-08 15:00:00 → 2026-10-09 14:30:00；285.17 → 299.50
+                              - paragraph [ref=e788]: 当前观察：向下观察，尚未严格成笔
+                              - paragraph [ref=e789]: 观察可知：2026-10-09 15:00:00
+                            - cell [ref=e790]:
+                              - paragraph [ref=e791]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                            - cell [ref=e792]:
+                              - paragraph [ref=e793]: 三组快慢线差值同时减少；联合动能减弱
+                              - paragraph [ref=e794]: BOLL 带宽扩张（不表示突破方向）
+                              - paragraph [ref=e795]: 缩量回调：本根收盘下跌，量低于前 20 根均量
+                              - paragraph [ref=e796]: 观察窗口：2026-09-30 13:30:00 — 2026-10-09 15:00:00（20 根）
+                          - row [ref=e797]:
+                            - rowheader [ref=e798]:
+                              - button "查看15 分钟完整依据" [ref=e799] [cursor=pointer]:
+                                - text: 15 分钟
+                                - generic [aria-hidden] [ref=e800]: ↗
+                              - generic [ref=e801]:
+                                - text: 已收盘截止
+                                - time [ref=e802]: 2026-10-09 15:00:00
+                            - cell [ref=e803]:
+                              - paragraph [ref=e804]: 收盘 297.75
+                              - paragraph [ref=e805]: MA5 298.38 / MA10 298.36
+                              - paragraph [ref=e806]: MA5 刚上穿 MA10
+                              - paragraph [ref=e807]: 多头至 MA60 · 空头未排列
+                            - cell [ref=e808]:
+                              - paragraph [ref=e809]: MAVOL5 1877420.00
+                              - paragraph [ref=e810]: MAVOL10 2224690.00
+                              - paragraph [ref=e811]: 短期均量相对差距收窄
+                              - paragraph [ref=e812]: 本根 / 前 20 根均量：0.93 倍
+                            - cell [ref=e813]:
+                              - paragraph [ref=e814]: DIF 2.34 / DEA 2.18
+                              - paragraph [ref=e815]: 零轴上方 · 红柱 · 缩短
+                              - paragraph [ref=e816]: DIF 位于 DEA 上方，间距收窄
+                            - cell [ref=e817]:
+                              - paragraph [ref=e818]: 向上严格笔 · 末端可延伸
+                              - paragraph [ref=e819]: 2026-10-08 14:45:00 → 2026-10-09 11:00:00；285.17 → 301.42
+                              - paragraph [ref=e820]: 当前观察：已有反向局部分型；向下待成笔，严格价格或间距尚未满足
+                              - paragraph [ref=e821]: 观察可知：2026-10-09 13:15:00
+                            - cell [ref=e822]:
+                              - paragraph [ref=e823]: 本研究窗口未返回有效背离记录；不代表历史从未出现
+                            - cell [ref=e824]:
+                              - paragraph [ref=e825]: 缩量回调：本根收盘下跌，量低于前 20 根均量
+                              - paragraph [ref=e826]: 观察窗口：2026-10-08 14:15:00 — 2026-10-09 15:00:00（20 根）
+                          - row [ref=e827]:
+                            - rowheader [ref=e828]:
+                              - button "查看5 分钟完整依据" [ref=e829] [cursor=pointer]:
+                                - text: 5 分钟
+                                - generic [aria-hidden] [ref=e830]: ↗
+                              - generic [ref=e831]:
+                                - text: 已收盘截止
+                                - time [ref=e832]: 2026-10-09 15:00:00
+                            - cell [ref=e833]:
+                              - paragraph [ref=e834]: 收盘 297.75
+                              - paragraph [ref=e835]: MA5 298.02 / MA10 298.41
+                              - paragraph [ref=e836]: 短期均线由下方趋近，修复中
+                              - paragraph [ref=e837]: 多头未排列 · 空头至 MA10
+                            - cell [ref=e838]:
+                              - paragraph [ref=e839]: MAVOL5 841560.00
+                              - paragraph [ref=e840]: MAVOL10 695120.00
+                              - paragraph [ref=e841]: 短期均量优势扩大
+                              - paragraph [ref=e842]: 本根 / 前 20 根均量：1.69 倍
+                            - cell [ref=e843]:
+                              - paragraph [ref=e844]: DIF 0.50 / DEA 0.81
+                              - paragraph [ref=e845]: 零轴上方 · 绿柱 · 延长
+                              - paragraph [ref=e846]: DIF 位于 DEA 下方，间距扩大
+                            - cell [ref=e847]:
+                              - paragraph [ref=e848]: 向上严格笔 · 末端可延伸
+                              - paragraph [ref=e849]: 2026-10-09 13:10:00 → 2026-10-09 14:15:00；296.37 → 299.50
+                              - paragraph [ref=e850]: 当前观察：向下观察，尚未严格成笔
+                              - paragraph [ref=e851]: 观察可知：2026-10-09 14:20:00
+                            - cell [ref=e852]:
+                              - paragraph [ref=e853]: 双线顶背离 · 候选；极值 2026-10-09 14:15:00
+                            - cell [ref=e854]:
+                              - paragraph [ref=e855]: BOLL 带宽处于此前最多 120 根的低 20% 区间
+                              - paragraph [ref=e856]: BOLL 带宽扩张（不表示突破方向）
+                              - paragraph [ref=e857]: 观察窗口：2026-10-09 13:25:00 — 2026-10-09 15:00:00（20 根）
+                  - group [ref=e594]:
+                    - generic "周期与研究参数" [ref=e595] [cursor=pointer]
+                  - generic [ref=e858]:
+                    - generic [ref=e859]:
+                      - heading "周期观察" [level=4] [ref=e860]
+                      - generic [ref=e861]: 点击周期展开过程与依据
+                    - group [ref=e862]:
+                      - generic "› 周线 下行 · 跌破前低后回抽，收盘暂未收回该前低 原反向观察已被新极值否定；原方向延伸，等待新分型 297.75 零轴下方" [ref=e863] [cursor=pointer]:
+                        - generic [ref=e864]: › 周线
+                        - generic [ref=e865]:
+                          - strong [ref=e866]: 下行 · 跌破前低后回抽，收盘暂未收回该前低
+                          - generic [ref=e867]: 原反向观察已被新极值否定；原方向延伸，等待新分型
+                        - generic [ref=e868]:
+                          - text: "297.75"
+                          - generic [ref=e869]: 零轴下方
+                    - group [ref=e870]:
+                      - generic "› 日线 下行 · 末端反弹 原反向观察已被新极值否定；原方向延伸，等待新分型 297.75 零轴下方" [ref=e871] [cursor=pointer]:
+                        - generic [ref=e872]: › 日线
+                        - generic [ref=e873]:
+                          - strong [ref=e874]: 下行 · 末端反弹
+                          - generic [ref=e875]: 原反向观察已被新极值否定；原方向延伸，等待新分型
+                        - generic [ref=e876]:
+                          - text: "297.75"
+                          - generic [ref=e877]: 零轴下方
+                    - group [ref=e878]:
+                      - generic "› 30 分钟 上行 · 末端回落 向下观察，尚未严格成笔 297.75 零轴上方" [ref=e879] [cursor=pointer]:
+                        - generic [ref=e880]: › 30 分钟
+                        - generic [ref=e881]:
+                          - strong [ref=e882]: 上行 · 末端回落
+                          - generic [ref=e883]: 向下观察，尚未严格成笔
+                        - generic [ref=e884]:
+                          - text: "297.75"
+                          - generic [ref=e885]: 零轴上方
+                    - group [ref=e886]:
+                      - generic "› 15 分钟 上行 · 末端回落 已有反向局部分型；向下待成笔，严格价格或间距尚未满足 297.75 零轴上方" [ref=e887] [cursor=pointer]:
+                        - generic [ref=e888]: › 15 分钟
+                        - generic [ref=e889]:
+                          - strong [ref=e890]: 上行 · 末端回落
+                          - generic [ref=e891]: 已有反向局部分型；向下待成笔，严格价格或间距尚未满足
+                        - generic [ref=e892]:
+                          - text: "297.75"
+                          - generic [ref=e893]: 零轴上方
+                    - group [ref=e894]:
+                      - generic "› 5 分钟 横向波动 · 末端回落 向下观察，尚未严格成笔 297.75 零轴上方" [ref=e895] [cursor=pointer]:
+                        - generic [ref=e896]: › 5 分钟
+                        - generic [ref=e897]:
+                          - strong [ref=e898]: 横向波动 · 末端回落
+                          - generic [ref=e899]: 向下观察，尚未严格成笔
+                        - generic [ref=e900]:
+                          - text: "297.75"
+                          - generic [ref=e901]: 零轴上方
+                    - group [ref=e902]:
+                      - generic "跨周期过轴时间对照" [ref=e903] [cursor=pointer]
+                  - generic [ref=e904]:
+                    - heading "观察与分歧" [level=4] [ref=e905]
+                    - paragraph [ref=e906]: 仅使用共同截止点前完整 K 线；结构层级不等于图表周期；不按周期多数投票；过轴先后只记录事实，不作强制条件。当前调整后快照不等于历史当天的数据版本；缺失的旧分钟行情不作推断。
+            - generic [ref=e597]:
+              - paragraph [ref=e598]: 以下结构明细对应个股 · 300750
+              - navigation "缠论结果分类" [ref=e599]:
+                - button "结构 20" [ref=e600] [cursor=pointer]:
+                  - text: 结构
+                  - generic [ref=e601]: "20"
+                - button "买卖点 0" [ref=e602] [cursor=pointer]:
+                  - text: 买卖点
+                  - generic [ref=e603]: "0"
+                - button "背离 / 背驰 2" [ref=e604] [cursor=pointer]:
+                  - text: 背离 / 背驰
+                  - generic [ref=e605]: "2"
+              - generic [ref=e606]:
+                - generic [ref=e607]:
+                  - heading "最近的笔" [level=4] [ref=e608]
+                  - generic [ref=e609]:
+                    - generic [ref=e610]: ↘
+                    - generic [ref=e611]:
+                      - strong [ref=e612]: 2026-08-06 → 2026-09-29
+                      - generic [ref=e613]: 向下笔 · 进行中
+                    - generic [ref=e614]: 285.74–408.59
+                  - generic [ref=e615]:
+                    - generic [ref=e616]: ↗
+                    - generic [ref=e617]:
+                      - strong [ref=e618]: 2026-07-10 → 2026-08-06
+                      - generic [ref=e619]: 向上笔 · 已确认
+                      - generic [ref=e620]: 确认于 2026-08-18
+                    - generic [ref=e621]: 344.75–408.59
+                  - generic [ref=e622]:
+                    - generic [ref=e623]: ↘
+                    - generic [ref=e624]:
+                      - strong [ref=e625]: 2026-06-23 → 2026-07-10
+                      - generic [ref=e626]: 向下笔 · 已确认
+                      - generic [ref=e627]: 确认于 2026-07-22
+                    - generic [ref=e628]: 344.75–412.63
+                  - generic [ref=e629]:
+                    - generic [ref=e630]: ↗
+                    - generic [ref=e631]:
+                      - strong [ref=e632]: 2026-06-11 → 2026-06-23
+                      - generic [ref=e633]: 向上笔 · 已确认
+                      - generic [ref=e634]: 确认于 2026-07-14
+                    - generic [ref=e635]: 378.62–412.63
+                  - generic [ref=e636]:
+                    - generic [ref=e637]: ↘
+                    - generic [ref=e638]:
+                      - strong [ref=e639]: 2026-06-01 → 2026-06-11
+                      - generic [ref=e640]: 向下笔 · 已确认
+                      - generic [ref=e641]: 确认于 2026-06-24
+                    - generic [ref=e642]: 378.62–436.83
+                  - generic [ref=e643]:
+                    - generic [ref=e644]: ↗
+                    - generic [ref=e645]:
+                      - strong [ref=e646]: 2026-05-25 → 2026-06-01
+                      - generic [ref=e647]: 向上笔 · 已确认
+                      - generic [ref=e648]: 确认于 2026-06-12
+                    - generic [ref=e649]: 398.59–436.83
+                  - generic [ref=e650]:
+                    - generic [ref=e651]: ↘
+                    - generic [ref=e652]:
+                      - strong [ref=e653]: 2026-04-16 → 2026-05-25
+                      - generic [ref=e654]: 向下笔 · 已确认
+                      - generic [ref=e655]: 确认于 2026-06-03
+                    - generic [ref=e656]: 398.59–451.63
+                  - generic [ref=e657]:
+                    - generic [ref=e658]: ↗
+                    - generic [ref=e659]:
+                      - strong [ref=e660]: 2026-04-07 → 2026-04-16
+                      - generic [ref=e661]: 向上笔 · 已确认
+                      - generic [ref=e662]: 确认于 2026-04-29
+                    - generic [ref=e663]: 373.12–451.63
+                - generic [ref=e664]:
+                  - heading "最近的基础中枢" [level=4] [ref=e665]
+                  - paragraph [ref=e666]: 当前窗口尚未形成已确认线段构成的基础中枢。
+                - group [ref=e667]:
+                  - generic "最近的线段 2 条已确认 · 1 条候选 端点连接一致" [ref=e668] [cursor=pointer]:
+                    - strong [ref=e669]: 最近的线段
+                    - generic [ref=e670]:
+                      - generic [ref=e671]: 2 条已确认 · 1 条候选
+                      - generic [ref=e672]: 端点连接一致
+                - group [ref=e674]:
+                  - generic "走势分解审核 2 条线段 · 无重复、无遗漏" [ref=e675] [cursor=pointer]:
+                    - strong [ref=e676]: 走势分解审核
+                    - generic [ref=e677]: 2 条线段 · 无重复、无遗漏
+                  - text: ›
+                - group [ref=e678]:
+                  - generic "延伸升级核验 暂无可证明的升级" [ref=e679] [cursor=pointer]:
+                    - strong [ref=e680]: 延伸升级核验
+                    - generic [ref=e681]: 暂无可证明的升级
+                - group [ref=e682]:
+                  - generic "工程走势递归 旧解释 等待完整走势证据" [ref=e683] [cursor=pointer]:
+                    - strong [ref=e684]:
+                      - text: 工程走势递归
+                      - generic [ref=e685]: 旧解释
+                    - generic [ref=e686]: 等待完整走势证据
+                - group [ref=e687]:
+                  - generic "全域走势递归 外部 0 条 · 最高 M0 · 已确认口径" [ref=e688] [cursor=pointer]:
+                    - strong [ref=e689]: 全域走势递归
+                    - generic [ref=e690]: 外部 0 条 · 最高 M0 · 已确认口径
+                - group [ref=e691]:
+                  - generic "归属时间轴与分解研究 按需计算 · 不改变默认分析" [ref=e692] [cursor=pointer]:
+                    - strong [ref=e693]: 归属时间轴与分解研究
+                    - generic [ref=e694]: 按需计算 · 不改变默认分析
+                - group [ref=e695]:
+                  - generic "分层归属与内部递归 旧解释 0 个归属区 · 独立解释" [ref=e696] [cursor=pointer]:
+                    - strong [ref=e697]:
+                      - text: 分层归属与内部递归
+                      - generic [ref=e698]: 旧解释
+                    - generic [ref=e699]: 0 个归属区 · 独立解释
+                - group [ref=e700]:
+                  - generic "跨中枢候选核验 0 项候选 · 不用于高层级信号" [ref=e701] [cursor=pointer]:
+                    - strong [ref=e702]: 跨中枢候选核验
+                    - generic [ref=e703]: 0 项候选 · 不用于高层级信号
+```

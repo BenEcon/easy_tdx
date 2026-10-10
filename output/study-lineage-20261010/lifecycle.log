@@ -1,0 +1,16 @@
+✔ actual component captures every selected period and failure; automatic work stays system-origin (15.321958ms)
+✔ all collection failures are exportable reports, never empty success or recomputable invented bars (1.542916ms)
+✔ missing response rows are retained as explicit errors; unexpected rows or cutoff cannot enter a saved result (6.461625ms)
+✔ late study response cannot be saved after account (0.887875ms)
+✔ late study response cannot be saved after input (0.854625ms)
+✔ late study response cannot be saved after unmount (0.769167ms)
+✔ invalid collection coverage cannot silently omit a period during import (1.620584ms)
+✔ actual study freezes independent radar lineage, preserves it through import and recompute, and refuses foreign source (2.980667ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 486.579958

@@ -1,0 +1,833 @@
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:59:101: E501 Line too long (108 > 100)
+   |
+57 | def _dump(value: Any) -> str:
+58 |     try:
+59 |         return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+   |                                                                                                     ^^^^^^^^ E501
+60 |     except (TypeError, ValueError, RecursionError, OverflowError) as exc:
+61 |         raise ArchiveError(422, "存档必须是完整、有限数值的 JSON") from exc
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:100:101: E501 Line too long (107 > 100)
+    |
+ 98 |         if not isinstance(target, dict) or target.get("kind") not in {"stock", "index", "board"}:
+ 99 |             raise ArchiveError(422, "标的类型不正确")
+100 |         if not isinstance(payload.get("preferences"), dict) or not isinstance(payload.get("layers"), dict):
+    |                                                                                                     ^^^^^^^ E501
+101 |             raise ArchiveError(422, "图表设置不完整")
+102 |         charts = payload.get("charts")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:114:101: E501 Line too long (138 > 100)
+    |
+112 | …"))
+113 | …
+114 | …sinstance(result.get(key), list) for key in ("bis", "xds", "zss", "bcs", "mmds")):
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+115 | …
+116 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:120:101: E501 Line too long (146 > 100)
+    |
+118 | …
+119 | …"series")
+120 | …sult.get("rows"), list) or not isinstance(series, list) or not 1 <= len(series) <= 12:
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+121 | …
+122 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:148:101: E501 Line too long (119 > 100)
+    |
+146 |                 state TEXT NOT NULL CHECK(state IN ('active','deleted','purged')),
+147 |                 PRIMARY KEY(owner,id))""")
+148 |             db.execute("CREATE TABLE IF NOT EXISTS archive_owners (owner TEXT PRIMARY KEY, revision INTEGER NOT NULL)")
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^ E501
+149 |             db.execute("""CREATE TABLE IF NOT EXISTS archive_audit (
+150 |                 sequence INTEGER PRIMARY KEY AUTOINCREMENT, owner TEXT NOT NULL,
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:171:101: E501 Line too long (107 > 100)
+    |
+169 |     @staticmethod
+170 |     def _row(db: sqlite3.Connection, owner: str, key: str) -> sqlite3.Row:
+171 |         row = db.execute("SELECT * FROM research_archives WHERE owner=? AND id=?", (owner, key)).fetchone()
+    |                                                                                                     ^^^^^^^ E501
+172 |         if row is None:
+173 |             raise ArchiveError(404, "存档不存在或不属于当前账户")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:178:101: E501 Line too long (161 > 100)
+    |
+176 | …
+177 | …[str, Any]:
+178 | … "name", "note", "size_bytes", "revision", "created_at", "updated_at", "deleted_at", "state")}
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+179 | …
+180 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:190:101: E501 Line too long (131 > 100)
+    |
+188 | …
+189 | …3.Row, action: str) -> None:
+190 | …S (?,1) ON CONFLICT(owner) DO UPDATE SET revision=revision+1", (row["owner"],))
+    |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+191 | …archive_id,action,revision,occurred_at) VALUES (?,?,?,?,?)", (row["owner"], row["id"], action, row["revision"], row["updated_at"]))
+192 | …sequence <= (SELECT COALESCE(MAX(sequence),0)-5000 FROM archive_audit)")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:191:101: E501 Line too long (183 > 100)
+    |
+189 | …e:
+190 | … DO UPDATE SET revision=revision+1", (row["owner"],))
+191 | …,occurred_at) VALUES (?,?,?,?,?)", (row["owner"], row["id"], action, row["revision"], row["updated_at"]))
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+192 | …CE(MAX(sequence),0)-5000 FROM archive_audit)")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:192:101: E501 Line too long (124 > 100)
+    |
+190 | …LUES (?,1) ON CONFLICT(owner) DO UPDATE SET revision=revision+1", (row["owner"],))
+191 | …er,archive_id,action,revision,occurred_at) VALUES (?,?,?,?,?)", (row["owner"], row["id"], action, row["revision"], row["updated_at"]…
+192 | …RE sequence <= (SELECT COALESCE(MAX(sequence),0)-5000 FROM archive_audit)")
+    |                                                     ^^^^^^^^^^^^^^^^^^^^^^^^ E501
+193 | …
+194 | …r: str, delta: int, *, creating: bool = False) -> None:
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:194:101: E501 Line too long (104 > 100)
+    |
+192 |         db.execute("DELETE FROM archive_audit WHERE sequence <= (SELECT COALESCE(MAX(sequence),0)-5000 FROM archive_audit)")
+193 |
+194 |     def _quota(self, db: sqlite3.Connection, owner: str, delta: int, *, creating: bool = False) -> None:
+    |                                                                                                     ^^^^ E501
+195 |         own = db.execute("SELECT COALESCE(SUM(size_bytes),0),COUNT(*),COALESCE(SUM(state!='purged'),0) FROM research_archives WHERE o…
+196 |         all_rows = db.execute("SELECT COALESCE(SUM(size_bytes),0),COUNT(*) FROM research_archives").fetchone()
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:195:101: E501 Line too long (162 > 100)
+    |
+194 | … *, creating: bool = False) -> None:
+195 | …),COALESCE(SUM(state!='purged'),0) FROM research_archives WHERE owner=?", (owner,)).fetchone()
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+196 | …UNT(*) FROM research_archives").fetchone()
+197 | … delta > self.limits.instance_bytes:
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:196:101: E501 Line too long (110 > 100)
+    |
+194 |     def _quota(self, db: sqlite3.Connection, owner: str, delta: int, *, creating: bool = False) -> None:
+195 |         own = db.execute("SELECT COALESCE(SUM(size_bytes),0),COUNT(*),COALESCE(SUM(state!='purged'),0) FROM research_archives WHERE o…
+196 |         all_rows = db.execute("SELECT COALESCE(SUM(size_bytes),0),COUNT(*) FROM research_archives").fetchone()
+    |                                                                                                     ^^^^^^^^^^ E501
+197 |         if own[0] + delta > self.limits.owner_bytes or all_rows[0] + delta > self.limits.instance_bytes:
+198 |             raise ArchiveError(413, "云端存档容量不足；回收站仍占容量，可导出后永久删除")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:197:101: E501 Line too long (104 > 100)
+    |
+195 | …     own = db.execute("SELECT COALESCE(SUM(size_bytes),0),COUNT(*),COALESCE(SUM(state!='purged'),0) FROM research_archives WHERE own…
+196 | …     all_rows = db.execute("SELECT COALESCE(SUM(size_bytes),0),COUNT(*) FROM research_archives").fetchone()
+197 | …     if own[0] + delta > self.limits.owner_bytes or all_rows[0] + delta > self.limits.instance_bytes:
+    |                                                                                                   ^^^^ E501
+198 | …         raise ArchiveError(413, "云端存档容量不足；回收站仍占容量，可导出后永久删除")
+199 | …     if creating and (own[2] >= self.limits.owner_items or own[1] >= self.limits.owner_receipts or all_rows[1] >= self.limits.instan…
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:199:101: E501 Line too long (148 > 100)
+    |
+197 | …ws[0] + delta > self.limits.instance_bytes:
+198 | …除")
+199 | … own[1] >= self.limits.owner_receipts or all_rows[1] >= self.limits.instance_receipts):
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+200 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:202:101: E501 Line too long (126 > 100)
+    |
+200 |             raise ArchiveError(413, "云端存档数量或幂等记录已达上限")
+201 |
+202 |     def create(self, owner: str, key: str, kind: str, payload: Any, name: str, note: str = "") -> tuple[dict[str, Any], bool]:
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+203 |         self._owner(owner); _id(key)
+204 |         _text(name, 120, "名称"); _text(note, 4000, "备注", empty=True)
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:203:27: E702 Multiple statements on one line (semicolon)
+    |
+202 |     def create(self, owner: str, key: str, kind: str, payload: Any, name: str, note: str = "") -> tuple[dict[str, Any], bool]:
+203 |         self._owner(owner); _id(key)
+    |                           ^ E702
+204 |         _text(name, 120, "名称"); _text(note, 4000, "备注", empty=True)
+205 |         encoded, digest = encode_archive(kind, payload, self.limits.object_bytes)
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:204:31: E702 Multiple statements on one line (semicolon)
+    |
+202 |     def create(self, owner: str, key: str, kind: str, payload: Any, name: str, note: str = "") -> tuple[dict[str, Any], bool]:
+203 |         self._owner(owner); _id(key)
+204 |         _text(name, 120, "名称"); _text(note, 4000, "备注", empty=True)
+    |                                 ^ E702
+205 |         encoded, digest = encode_archive(kind, payload, self.limits.object_bytes)
+206 |         size = len((encoded + name + note).encode("utf-8"))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:209:101: E501 Line too long (111 > 100)
+    |
+207 |         with self._connect() as db:
+208 |             db.execute("BEGIN IMMEDIATE")
+209 |             old = db.execute("SELECT * FROM research_archives WHERE owner=? AND id=?", (owner, key)).fetchone()
+    |                                                                                                     ^^^^^^^^^^^ E501
+210 |             if old:
+211 |                 if old["state"] == "purged":
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:218:101: E501 Line too long (174 > 100)
+    |
+216 | …
+217 | …
+218 | …?,?,?,?,?,?,?)", (owner, key, kind, encoded, digest, name, note, size, 1, now, now, None, "active"))
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+219 | …
+220 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:224:27: E702 Multiple statements on one line (semicolon)
+    |
+223 |     def get(self, owner: str, key: str) -> dict[str, Any]:
+224 |         self._owner(owner); _id(key)
+    |                           ^ E702
+225 |         with self._connect() as db:
+226 |             return self._record(self._row(db, owner, key), payload=True)
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:232:101: E501 Line too long (250 > 100)
+    |
+230 | …
+231 | …
+232 | …ize_bytes,revision,created_at,updated_at,deleted_at,state FROM research_archives WHERE owner=? AND state!='purged' ORDER BY updated_at DESC,id", (owner,))]
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+233 | ….fetchone()
+234 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:233:101: E501 Line too long (106 > 100)
+    |
+231 | …     db.execute("BEGIN")
+232 | …     items = [self._record(row) for row in db.execute("SELECT id,kind,digest,name,note,size_bytes,revision,created_at,updated_at,del…
+233 | …     version = db.execute("SELECT revision FROM archive_owners WHERE owner=?", (owner,)).fetchone()
+    |                                                                                               ^^^^^^ E501
+234 | …     return {"items": items, "revision": version[0] if version else 0,
+235 | …             "quota": {"used_bytes": sum(item["size_bytes"] for item in items), "max_bytes": self.limits.owner_bytes, "used_items": …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:235:101: E501 Line too long (231 > 100)
+    |
+233 | ….fetchone()
+234 | …
+235 | …es": self.limits.owner_bytes, "used_items": len(items), "max_items": self.limits.owner_items, "object_bytes": self.limits.object_bytes}}
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+236 | …
+237 | …ne, note: str | None = None) -> dict[str, Any]:
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:237:101: E501 Line too long (142 > 100)
+    |
+235 | …_bytes"] for item in items), "max_bytes": self.limits.owner_bytes, "used_items": len(items), "max_items": self.limits.owner_items, "…
+236 | …
+237 | …action: str, *, name: str | None = None, note: str | None = None) -> dict[str, Any]:
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+238 | …
+239 | …tion not in {"edit", "delete", "restore", "purge"}:
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:238:27: E702 Multiple statements on one line (semicolon)
+    |
+237 |     def mutate(self, owner: str, key: str, revision: int, action: str, *, name: str | None = None, note: str | None = None) -> dict[s…
+238 |         self._owner(owner); _id(key)
+    |                           ^ E702
+239 |         if type(revision) is not int or revision < 1 or action not in {"edit", "delete", "restore", "purge"}:
+240 |             raise ArchiveError(422, "操作或版本不正确")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:239:101: E501 Line too long (109 > 100)
+    |
+237 |     def mutate(self, owner: str, key: str, revision: int, action: str, *, name: str | None = None, note: str | None = None) -> dict[s…
+238 |         self._owner(owner); _id(key)
+239 |         if type(revision) is not int or revision < 1 or action not in {"edit", "delete", "restore", "purge"}:
+    |                                                                                                     ^^^^^^^^^ E501
+240 |             raise ArchiveError(422, "操作或版本不正确")
+241 |         with self._connect() as db:
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:249:101: E501 Line too long (104 > 100)
+    |
+247 |                 raise ArchiveError(410, "存档已永久删除，不可恢复")
+248 |             now, state, deleted = _now(), old["state"], old["deleted_at"]
+249 |             new_name, new_note, data, size = old["name"], old["note"], old["payload"], old["size_bytes"]
+    |                                                                                                     ^^^^ E501
+250 |             if action == "edit":
+251 |                 new_name = _text(name, 120, "名称") if name is not None else new_name
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive.py:269:101: E501 Line too long (235 > 100)
+    |
+267 | …
+268 | …
+269 | …=?,deleted_at=?,revision=revision+1,updated_at=? WHERE owner=? AND id=?", (new_name, new_note, data, size, state, deleted, now, owner, key))
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+270 | …
+271 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive_router.py:32:101: E501 Line too long (114 > 100)
+   |
+32 | def build_router(store_provider: Callable[[], ResearchArchive], identity: Callable[..., UserRecord]) -> APIRouter:
+   |                                                                                                     ^^^^^^^^^^^^^^ E501
+33 |     router = APIRouter(prefix="/research/archives", tags=["research archives"])
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive_router.py:40:101: E501 Line too long (101 > 100)
+   |
+38 |             return operation()
+39 |         except ArchiveError as exc:
+40 |             raise HTTPException(exc.status, str(exc), headers={"Cache-Control": "no-store"}) from exc
+   |                                                                                                     ^ E501
+41 |         except (sqlite3.Error, OSError) as exc:
+42 |             raise HTTPException(503, "研究存档暂不可用，请稍后重试", headers={"Cache-Control": "no-store"}) from exc
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive_router.py:42:87: E501 Line too long (116 > 100)
+   |
+40 |             raise HTTPException(exc.status, str(exc), headers={"Cache-Control": "no-store"}) from exc
+41 |         except (sqlite3.Error, OSError) as exc:
+42 |             raise HTTPException(503, "研究存档暂不可用，请稍后重试", headers={"Cache-Control": "no-store"}) from exc
+   |                                                                                                     ^^^^^^^^^^^^^^^^ E501
+43 |
+44 |     @router.get("")
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive_router.py:55:101: E501 Line too long (111 > 100)
+   |
+54 |     @router.put("/{key}")
+55 |     def create(key: str, body: CreateArchive, response: Response, user: UserRecord = Depends(identity)) -> Any:
+   |                                                                                                     ^^^^^^^^^^^ E501
+56 |         record, created = call(lambda: store_provider().create(user.id, key, body.kind, body.payload, body.name, body.note), response)
+57 |         response.status_code = 201 if created else 200
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive_router.py:56:101: E501 Line too long (134 > 100)
+   |
+54 |     @router.put("/{key}")
+55 |     def create(key: str, body: CreateArchive, response: Response, user: UserRecord = Depends(identity)) -> Any:
+56 |         record, created = call(lambda: store_provider().create(user.id, key, body.kind, body.payload, body.name, body.note), response)
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+57 |         response.status_code = 201 if created else 200
+58 |         response.headers["ETag"] = f'"{record["revision"]}"'
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive_router.py:62:101: E501 Line too long (111 > 100)
+   |
+61 |     @router.post("/{key}/actions")
+62 |     def mutate(key: str, body: ChangeArchive, response: Response, user: UserRecord = Depends(identity)) -> Any:
+   |                                                                                                     ^^^^^^^^^^^ E501
+63 |         if body.action != "edit" and (body.name is not None or body.note is not None):
+64 |             raise HTTPException(422, "只有编辑操作可以提交名称或备注")
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/research_archive_router.py:65:101: E501 Line too long (138 > 100)
+   |
+63 | …None or body.note is not None):
+64 | …
+65 | …ser.id, key, body.revision, body.action, name=body.name, note=body.note), response)
+   |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+66 | …"]}"'
+67 | …
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:18:101: E501 Line too long (147 > 100)
+   |
+16 | …e": "300750"},
+17 | … {"bis": True},
+18 | …me": "2026-10-09 00:00:00", "open": 100.123456, "close": 101, "low": 99, "high": 102}],
+   |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+19 | … "source": "frozen-test"},
+20 | …s": [], "bcs": [], "mmds": [], "opaqueFutureField": {"version": 123}}}]}
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:20:101: E501 Line too long (132 > 100)
+   |
+18 | …{"datetime": "2026-10-09 00:00:00", "open": 100.123456, "close": 101, "low": 99, "high": 102}],
+19 | …: "QFQ", "source": "frozen-test"},
+20 | … [], "zss": [], "bcs": [], "mmds": [], "opaqueFutureField": {"version": 123}}}]}
+   |                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:54:24: E702 Multiple statements on one line (semicolon)
+   |
+52 |     row = store.mutate("alice", key, row["revision"], "delete")
+53 |     assert store.create("alice", key, "chart", payload(), "初始")[0] == row
+54 |     changed = payload(); changed["title"] = "另一份"
+   |                        ^ E702
+55 |     error(409, lambda: store.create("alice", key, "chart", changed, "覆盖"))
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:102:101: E501 Line too long (111 > 100)
+    |
+102 | @pytest.mark.parametrize("field,value", [("schema", True), ("charts", []), ("target", None), ("layers", None)])
+    |                                                                                                     ^^^^^^^^^^^ E501
+103 | def test_invalid_archive_shape_rejected_without_reservation(store, field, value):
+104 |     data = payload(); data[field] = value
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:104:21: E702 Multiple statements on one line (semicolon)
+    |
+102 | @pytest.mark.parametrize("field,value", [("schema", True), ("charts", []), ("target", None), ("layers", None)])
+103 | def test_invalid_archive_shape_rejected_without_reservation(store, field, value):
+104 |     data = payload(); data[field] = value
+    |                     ^ E702
+105 |     error(422, lambda: store.create("alice", str(uuid.uuid4()), "chart", data, "bad"))
+106 |     assert store.list("alice")["revision"] == 0
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:109:101: E501 Line too long (116 > 100)
+    |
+109 | @pytest.mark.parametrize("mutation", ["nan", "infinity", "bool", "ohlc", "duplicate", "timezone", "date", "period"])
+    |                                                                                                     ^^^^^^^^^^^^^^^^ E501
+110 | def test_malformed_bars_and_periods_rejected(store, mutation):
+111 |     data = payload(); chart = data["charts"][0]; bar = chart["bars"][0]
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:111:21: E702 Multiple statements on one line (semicolon)
+    |
+109 | @pytest.mark.parametrize("mutation", ["nan", "infinity", "bool", "ohlc", "duplicate", "timezone", "date", "period"])
+110 | def test_malformed_bars_and_periods_rejected(store, mutation):
+111 |     data = payload(); chart = data["charts"][0]; bar = chart["bars"][0]
+    |                     ^ E702
+112 |     if mutation == "nan": bar["open"] = float("nan")
+113 |     elif mutation == "infinity": bar["close"] = float("inf")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:111:48: E702 Multiple statements on one line (semicolon)
+    |
+109 | @pytest.mark.parametrize("mutation", ["nan", "infinity", "bool", "ohlc", "duplicate", "timezone", "date", "period"])
+110 | def test_malformed_bars_and_periods_rejected(store, mutation):
+111 |     data = payload(); chart = data["charts"][0]; bar = chart["bars"][0]
+    |                                                ^ E702
+112 |     if mutation == "nan": bar["open"] = float("nan")
+113 |     elif mutation == "infinity": bar["close"] = float("inf")
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:112:25: E701 Multiple statements on one line (colon)
+    |
+110 | def test_malformed_bars_and_periods_rejected(store, mutation):
+111 |     data = payload(); chart = data["charts"][0]; bar = chart["bars"][0]
+112 |     if mutation == "nan": bar["open"] = float("nan")
+    |                         ^ E701
+113 |     elif mutation == "infinity": bar["close"] = float("inf")
+114 |     elif mutation == "bool": bar["open"] = True
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:113:32: E701 Multiple statements on one line (colon)
+    |
+111 |     data = payload(); chart = data["charts"][0]; bar = chart["bars"][0]
+112 |     if mutation == "nan": bar["open"] = float("nan")
+113 |     elif mutation == "infinity": bar["close"] = float("inf")
+    |                                ^ E701
+114 |     elif mutation == "bool": bar["open"] = True
+115 |     elif mutation == "ohlc": bar["low"] = 103
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:114:28: E701 Multiple statements on one line (colon)
+    |
+112 |     if mutation == "nan": bar["open"] = float("nan")
+113 |     elif mutation == "infinity": bar["close"] = float("inf")
+114 |     elif mutation == "bool": bar["open"] = True
+    |                            ^ E701
+115 |     elif mutation == "ohlc": bar["low"] = 103
+116 |     elif mutation == "duplicate": chart["bars"].append(dict(bar))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:115:28: E701 Multiple statements on one line (colon)
+    |
+113 |     elif mutation == "infinity": bar["close"] = float("inf")
+114 |     elif mutation == "bool": bar["open"] = True
+115 |     elif mutation == "ohlc": bar["low"] = 103
+    |                            ^ E701
+116 |     elif mutation == "duplicate": chart["bars"].append(dict(bar))
+117 |     elif mutation == "timezone": chart["bars"].append({**bar, "datetime": "2026-10-10T00:00:00Z"})
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:116:33: E701 Multiple statements on one line (colon)
+    |
+114 |     elif mutation == "bool": bar["open"] = True
+115 |     elif mutation == "ohlc": bar["low"] = 103
+116 |     elif mutation == "duplicate": chart["bars"].append(dict(bar))
+    |                                 ^ E701
+117 |     elif mutation == "timezone": chart["bars"].append({**bar, "datetime": "2026-10-10T00:00:00Z"})
+118 |     elif mutation == "date": bar["datetime"] = "2026-02-30"
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:117:32: E701 Multiple statements on one line (colon)
+    |
+115 |     elif mutation == "ohlc": bar["low"] = 103
+116 |     elif mutation == "duplicate": chart["bars"].append(dict(bar))
+117 |     elif mutation == "timezone": chart["bars"].append({**bar, "datetime": "2026-10-10T00:00:00Z"})
+    |                                ^ E701
+118 |     elif mutation == "date": bar["datetime"] = "2026-02-30"
+119 |     else: data["charts"].append(copy.deepcopy(chart))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:118:28: E701 Multiple statements on one line (colon)
+    |
+116 |     elif mutation == "duplicate": chart["bars"].append(dict(bar))
+117 |     elif mutation == "timezone": chart["bars"].append({**bar, "datetime": "2026-10-10T00:00:00Z"})
+118 |     elif mutation == "date": bar["datetime"] = "2026-02-30"
+    |                            ^ E701
+119 |     else: data["charts"].append(copy.deepcopy(chart))
+120 |     error(422, lambda: store.create("alice", str(uuid.uuid4()), "chart", data, "bad"))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:119:9: E701 Multiple statements on one line (colon)
+    |
+117 |     elif mutation == "timezone": chart["bars"].append({**bar, "datetime": "2026-10-10T00:00:00Z"})
+118 |     elif mutation == "date": bar["datetime"] = "2026-02-30"
+119 |     else: data["charts"].append(copy.deepcopy(chart))
+    |         ^ E701
+120 |     error(422, lambda: store.create("alice", str(uuid.uuid4()), "chart", data, "bad"))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:140:28: E702 Multiple statements on one line (semicolon)
+    |
+138 |     error(413, lambda: store.create("alice", str(uuid.uuid4()), "chart", payload(), "x"))
+139 |     store = ResearchArchive(tmp_path / "count.db", replace(ArchiveLimits(), owner_receipts=1))
+140 |     key = str(uuid.uuid4()); store.create("alice", key, "chart", payload(), "x")
+    |                            ^ E702
+141 |     store.mutate("alice", key, 1, "delete"); store.mutate("alice", key, 2, "purge")
+142 |     error(413, lambda: store.create("alice", str(uuid.uuid4()), "chart", payload(), "x"))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:141:44: E702 Multiple statements on one line (semicolon)
+    |
+139 |     store = ResearchArchive(tmp_path / "count.db", replace(ArchiveLimits(), owner_receipts=1))
+140 |     key = str(uuid.uuid4()); store.create("alice", key, "chart", payload(), "x")
+141 |     store.mutate("alice", key, 1, "delete"); store.mutate("alice", key, 2, "purge")
+    |                                            ^ E702
+142 |     error(413, lambda: store.create("alice", str(uuid.uuid4()), "chart", payload(), "x"))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:146:28: E702 Multiple statements on one line (semicolon)
+    |
+145 | def test_content_corruption_fails_closed_and_audit_has_no_payload(store):
+146 |     key = str(uuid.uuid4()); store.create("alice", key, "chart", payload(), "private-name", "private-note")
+    |                            ^ E702
+147 |     with sqlite3.connect(store.path) as db:
+148 |         audit = db.execute("SELECT * FROM archive_audit").fetchall()
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:146:101: E501 Line too long (107 > 100)
+    |
+145 | def test_content_corruption_fails_closed_and_audit_has_no_payload(store):
+146 |     key = str(uuid.uuid4()); store.create("alice", key, "chart", payload(), "private-name", "private-note")
+    |                                                                                                     ^^^^^^^ E501
+147 |     with sqlite3.connect(store.path) as db:
+148 |         audit = db.execute("SELECT * FROM archive_audit").fetchall()
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:155:43: E701 Multiple statements on one line (colon)
+    |
+154 | def test_unknown_future_database_version_is_not_downgraded(store):
+155 |     with sqlite3.connect(store.path) as db: db.execute("PRAGMA user_version=99")
+    |                                           ^ E701
+156 |     error(503, lambda: ResearchArchive(store.path))
+157 |     with sqlite3.connect(store.path) as db: assert db.execute("PRAGMA user_version").fetchone()[0] == 99
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:157:43: E701 Multiple statements on one line (colon)
+    |
+155 |     with sqlite3.connect(store.path) as db: db.execute("PRAGMA user_version=99")
+156 |     error(503, lambda: ResearchArchive(store.path))
+157 |     with sqlite3.connect(store.path) as db: assert db.execute("PRAGMA user_version").fetchone()[0] == 99
+    |                                           ^ E701
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:157:101: E501 Line too long (104 > 100)
+    |
+155 |     with sqlite3.connect(store.path) as db: db.execute("PRAGMA user_version=99")
+156 |     error(503, lambda: ResearchArchive(store.path))
+157 |     with sqlite3.connect(store.path) as db: assert db.execute("PRAGMA user_version").fetchone()[0] == 99
+    |                                                                                                     ^^^^ E501
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:162:101: E501 Line too long (273 > 100)
+    |
+160 | …
+161 | …
+162 | …": [{"category": "DAY", "snapshot": {"bars": chart["bars"], "metadata": chart["metadata"]}}], "result": {"rows": [], "parameters": {"window_bars": 20}, "rule_version": "v-test"}}
+    |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+163 | …
+164 | …
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:163:28: E702 Multiple statements on one line (semicolon)
+    |
+161 |     chart = payload()["charts"][0]
+162 |     source = {"format": "chanlun-research-snapshot-v2", "as_of": "2026-10-09 15:00:00", "series": [{"category": "DAY", "snapshot": {"…
+163 |     key = str(uuid.uuid4()); store.create("alice", key, "study", source, "研究")
+    |                            ^ E702
+164 |     assert store.get("alice", key)["payload"] == source
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:171:29: E701 Multiple statements on one line (colon)
+    |
+169 |         store = ResearchArchive(Path(path), limits)
+170 |         ready.put(True)
+171 |         if not gate.wait(15): raise RuntimeError("barrier timed out")
+    |                             ^ E701
+172 |         if action == "edit":
+173 |             item = store.mutate("alice", key, 1, "edit", note=str(uuid.uuid4()))
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:184:101: E501 Line too long (131 > 100)
+    |
+182 |     ctx = multiprocessing.get_context("spawn")
+183 |     gate, ready, results = ctx.Event(), ctx.Queue(), ctx.Queue()
+184 |     children = [ctx.Process(target=_child, args=(str(path), limits, action, key, gate, ready, results)) for action, key in actions]
+    |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+185 |     try:
+186 |         for p in children: p.start()
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:186:26: E701 Multiple statements on one line (colon)
+    |
+184 |     children = [ctx.Process(target=_child, args=(str(path), limits, action, key, gate, ready, results)) for action, key in actions]
+185 |     try:
+186 |         for p in children: p.start()
+    |                          ^ E701
+187 |         for _ in children: assert ready.get(timeout=20)
+188 |         gate.set()
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:187:26: E701 Multiple statements on one line (colon)
+    |
+185 |     try:
+186 |         for p in children: p.start()
+187 |         for _ in children: assert ready.get(timeout=20)
+    |                          ^ E701
+188 |         gate.set()
+189 |         output = [results.get(timeout=20) for _ in children]
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:190:26: E701 Multiple statements on one line (colon)
+    |
+188 |         gate.set()
+189 |         output = [results.get(timeout=20) for _ in children]
+190 |         for p in children: p.join(10); assert p.exitcode == 0
+    |                          ^ E701
+191 |         return output
+192 |     finally:
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:190:38: E702 Multiple statements on one line (semicolon)
+    |
+188 |         gate.set()
+189 |         output = [results.get(timeout=20) for _ in children]
+190 |         for p in children: p.join(10); assert p.exitcode == 0
+    |                                      ^ E702
+191 |         return output
+192 |     finally:
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:194:28: E701 Multiple statements on one line (colon)
+    |
+192 |     finally:
+193 |         for p in children:
+194 |             if p.is_alive(): p.terminate(); p.join(5)
+    |                            ^ E701
+195 |         ready.close(); results.close(); ready.join_thread(); results.join_thread()
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:194:43: E702 Multiple statements on one line (semicolon)
+    |
+192 |     finally:
+193 |         for p in children:
+194 |             if p.is_alive(): p.terminate(); p.join(5)
+    |                                           ^ E702
+195 |         ready.close(); results.close(); ready.join_thread(); results.join_thread()
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:195:22: E702 Multiple statements on one line (semicolon)
+    |
+193 |         for p in children:
+194 |             if p.is_alive(): p.terminate(); p.join(5)
+195 |         ready.close(); results.close(); ready.join_thread(); results.join_thread()
+    |                      ^ E702
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:195:39: E702 Multiple statements on one line (semicolon)
+    |
+193 |         for p in children:
+194 |             if p.is_alive(): p.terminate(); p.join(5)
+195 |         ready.close(); results.close(); ready.join_thread(); results.join_thread()
+    |                                       ^ E702
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:195:60: E702 Multiple statements on one line (semicolon)
+    |
+193 |         for p in children:
+194 |             if p.is_alive(): p.terminate(); p.join(5)
+195 |         ready.close(); results.close(); ready.join_thread(); results.join_thread()
+    |                                                            ^ E702
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:207:28: E702 Multiple statements on one line (semicolon)
+    |
+206 | def test_cross_process_cas_has_exactly_one_winner(store):
+207 |     key = str(uuid.uuid4()); store.create("alice", key, "chart", payload(), "x")
+    |                            ^ E702
+208 |     output = race(store.path, store.limits, [("edit", key), ("edit", key)])
+209 |     assert sorted(code for code, _ in output) == [200, 409]
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive.py:215:101: E501 Line too long (101 > 100)
+    |
+213 | def test_cross_process_quota_has_exactly_one_winner(store):
+214 |     limits = replace(store.limits, owner_items=1)
+215 |     output = race(store.path, limits, [("create", str(uuid.uuid4())), ("create", str(uuid.uuid4()))])
+    |                                                                                                     ^ E501
+216 |     assert sorted(code for code, _ in output) == [200, 413]
+217 |     assert store.list("alice")["quota"]["used_items"] == 1
+    |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:39:101: E501 Line too long (128 > 100)
+   |
+37 | def create(client, key=None):
+38 |     key = key or str(uuid.uuid4())
+39 |     return key, client.put(f"/api/v1/research/archives/{key}", json={"kind": "chart", "payload": payload(), "name": "云端观察"})
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:42:101: E501 Line too long (150 > 100)
+   |
+42 | …one), ("get", "/record", None), ("put", "/record", {}), ("post", "/record/actions", {})])
+   |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+43 | …x, body):
+44 | …
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:45:101: E501 Line too long (101 > 100)
+   |
+43 | def test_all_routes_require_session(app_client, method, suffix, body):
+44 |     client, *_ = app_client
+45 |     assert client.request(method, "/api/v1/research/archives" + suffix, json=body).status_code == 401
+   |                                                                                                     ^ E501
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:50:28: E702 Multiple statements on one line (semicolon)
+   |
+48 | def test_cookie_owner_isolation_and_admin_has_no_override(app_client):
+49 |     client, _, sessions, _, _ = app_client
+50 |     login(client, sessions); key, response = create(client)
+   |                            ^ E702
+51 |     assert response.status_code == 201
+52 |     assert response.headers["cache-control"] == "no-store"
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:56:101: E501 Line too long (115 > 100)
+   |
+54 |         login(client, sessions, actor)
+55 |         assert client.get("/api/v1/research/archives").json()["items"] == []
+56 |         for method, suffix, data in [("get", "", None), ("post", "/actions", {"action": "delete", "revision": 1})]:
+   |                                                                                                     ^^^^^^^^^^^^^^^ E501
+57 |             res = client.request(method, f"/api/v1/research/archives/{key}{suffix}", json=data)
+58 |             assert res.status_code == 404
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:59:101: E501 Line too long (107 > 100)
+   |
+57 |             res = client.request(method, f"/api/v1/research/archives/{key}{suffix}", json=data)
+58 |             assert res.status_code == 404
+59 |             absent = client.request(method, f"/api/v1/research/archives/{uuid.uuid4()}{suffix}", json=data)
+   |                                                                                                     ^^^^^^^ E501
+60 |             assert absent.json() == res.json()
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:65:28: E702 Multiple statements on one line (semicolon)
+   |
+63 | def test_conflicting_devices_and_recycle_bin_over_http(app_client):
+64 |     client, _, sessions, _, _ = app_client
+65 |     login(client, sessions); key, created = create(client)
+   |                            ^ E702
+66 |     base = f"/api/v1/research/archives/{key}"
+67 |     assert create(client, key)[1].status_code == 200
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:68:98: E501 Line too long (108 > 100)
+   |
+66 |     base = f"/api/v1/research/archives/{key}"
+67 |     assert create(client, key)[1].status_code == 200
+68 |     changed = client.post(base + "/actions", json={"action": "edit", "revision": 1, "note": "另一设备编辑"})
+   |                                                                                                      ^^^^^^^ E501
+69 |     assert changed.status_code == 200 and changed.json()["revision"] == 2
+70 |     assert client.post(base + "/actions", json={"action": "delete", "revision": 1}).status_code == 409
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:70:101: E501 Line too long (102 > 100)
+   |
+68 |     changed = client.post(base + "/actions", json={"action": "edit", "revision": 1, "note": "另一设备编辑"})
+69 |     assert changed.status_code == 200 and changed.json()["revision"] == 2
+70 |     assert client.post(base + "/actions", json={"action": "delete", "revision": 1}).status_code == 409
+   |                                                                                                     ^^ E501
+71 |     deleted = client.post(base + "/actions", json={"action": "delete", "revision": 2})
+72 |     assert deleted.json()["state"] == "deleted"
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:81:28: E702 Multiple statements on one line (semicolon)
+   |
+79 | def test_revoked_session_cannot_read_or_mutate_archive(app_client):
+80 |     client, accounts, sessions, alice, _ = app_client
+81 |     login(client, sessions); key, _ = create(client)
+   |                            ^ E702
+82 |     accounts.invalidate_user_sessions(alice.id)
+83 |     assert client.get(f"/api/v1/research/archives/{key}").status_code == 401
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:84:101: E501 Line too long (127 > 100)
+   |
+82 |     accounts.invalidate_user_sessions(alice.id)
+83 |     assert client.get(f"/api/v1/research/archives/{key}").status_code == 401
+84 |     assert client.post(f"/api/v1/research/archives/{key}/actions", json={"action": "delete", "revision": 1}).status_code == 401
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:87:101: E501 Line too long (130 > 100)
+   |
+87 | @pytest.mark.parametrize("extra", [{"owner": "bob"}, {"name": "bad", "action": "restore"}, {"revision": True}, {"revision": "1"}])
+   |                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+88 | def test_owner_injection_and_invalid_mutations_rejected(app_client, extra):
+89 |     client, _, sessions, _, _ = app_client
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:90:28: E702 Multiple statements on one line (semicolon)
+   |
+88 | def test_owner_injection_and_invalid_mutations_rejected(app_client, extra):
+89 |     client, _, sessions, _, _ = app_client
+90 |     login(client, sessions); key, _ = create(client)
+   |                            ^ E702
+91 |     body = {"action": "edit", "revision": 1, **extra}
+92 |     assert client.post(f"/api/v1/research/archives/{key}/actions", json=body).status_code == 422
+   |
+
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:98:101: E501 Line too long (178 > 100)
+    |
+ 96 | …
+ 97 | …
+ 98 | …{"kind": "chart", "payload": payload(), "name": "x"}, headers={"Origin": "https://untrusted.example"})
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+ 99 | …
+100 | …
+    |
+
+Found 94 errors (6 fixed, 88 remaining).

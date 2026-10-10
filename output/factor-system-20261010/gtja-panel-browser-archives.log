@@ -1,0 +1,8 @@
+PASS gtja-series.json readonly no computation; explicit frozen replay no fetch; values unchanged; original immutable
+PASS gtja-panel.json readonly no computation; explicit frozen replay no fetch; values unchanged; original immutable
+PASS gtja-rolling-series.json readonly no computation; explicit frozen replay no fetch; values unchanged; original immutable
+PASS gtja-smoothing-series.json readonly no computation; explicit frozen replay no fetch; values unchanged; original immutable
+PASS gtja-compound-series.json readonly no computation; explicit frozen replay no fetch; values unchanged; original immutable
+PASS gtja-panel-compound.json readonly no computation; explicit frozen replay no fetch; values unchanged; original immutable
+configuration {'factors': ['gtja191_032', 'gtja191_107'], 'horizon': 5, 'groups': 5, 'preprocess': 'raw', 'factor_parameters': {'gtja191_032': {'corr': 4}}, 'validation': None, 'horizons': [5], 'composition': None, 'category': 'DAY', 'count': 300, 'adjust': 'QFQ', 'stocks': [{'market': 'SZ', 'code': '000001'}, {'market': 'SH', 'code': '600036'}, {'market': 'SH', 'code': '601166'}, {'market': 'SH', 'code': '601998'}, {'market': 'SH', 'code': '601818'}, {'market': 'SH', 'code': '600000'}, {'market': 'SH', 'code': '600016'}, {'market': 'SH', 'code': '600015'}]}
+versions [('gtja191_032', 'gtja191-complete-window-v5'), ('gtja191_107', 'gtja191-complete-window-v5')]

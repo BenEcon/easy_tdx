@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/chanlun/analyser.py", line 171, in to_dict
+    raise ValueError("ownership_history must be full or summary")
+ValueError: ownership_history must be full or summary

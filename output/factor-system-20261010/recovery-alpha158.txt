@@ -1,0 +1,22 @@
+Local factor-system batch: Alpha158 complete-window adaptation
+Date: 2026-10-10 (Asia/Shanghai)
+Archive: source-after-alpha158.tar.gz
+SHA256: b1c3679ba1f30fd7ce854796cce4379a222d18f393647fa67be563c6ff0a57ec
+
+Previous foundation checkpoint:
+source-after-foundation.tar.gz
+SHA256: fe823c9f0beb44a471e93d99862c9b6399da3d81b67f92f95e5f805f8493356c
+
+The archive includes the existing dirty source tree, including unrelated user
+changes. No account database, environment secrets, dependencies or dist bundle.
+Restore only by extracting into a temporary directory and comparing selected
+files; never overwrite the full current checkout or user databases.
+
+Tests: 608 backend; 572 + 28 frontend; Mypy 307 source files; touched Ruff pass.
+Build: passed (existing Vite large-chunk warning).
+Evidence: docs/factor-system-plan-20261010.md and alpha158-*.log.
+Browser: WebKit, temporary QA account, explicitly synthetic bars; 500-row series
+and 8-asset cross-sectional evaluation passed. Auxiliary quotes endpoint failed
+because the temporary dummy client has no quotes implementation; not claimed
+as production market-data validation. Browser closed; QA process 70357 exited 143.
+Production deployment: not performed. Full factor-system objective remains active.

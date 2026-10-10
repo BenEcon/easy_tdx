@@ -1,0 +1,62 @@
+async page => {
+  const created=await page.evaluate(async()=>{
+    const owner=(await (await fetch('/api/v1/auth/me')).json()).user.id
+    const post=async(url,body,method='POST')=>{const response=await fetch('/api/v1/'+url,{method,headers:{'Content-Type':'application/json','X-Research-Owner':owner},body:JSON.stringify(body)});if(!response.ok)throw Error(response.status+' '+await response.text());return response.json()}
+    const bars=Array.from({length:160},(_,i)=>{const p=20+Math.sin(i/7)*3+i/200;return{datetime:new Date(Date.UTC(2026,0,1+i)).toISOString().slice(0,10)+' 00:00:00',open:p,close:p+.2,high:p+.5,low:p-.5,vol:100+i,amount:2000+i,is_closed:true}})
+    const computed=await post('chanlun/archive-recompute',{request_id:crypto.randomUUID(),kind:'chart',chart:{code:'stock:SZ:300750',category:'DAY',bars,visible_count:bars.length}})
+    const result=structuredClone(computed.result),ds=result.wave_diagnostics
+    if(ds.length<4)throw Error('fixture needs four diagnostics')
+    ds[0].status=ds[0].status==='candidate'?'blocked':'candidate'
+    ds[1].checks[0].values.qa_precision=1.234567891
+    ds.splice(2,1)
+    ds.push(structuredClone(ds[2]))
+    const removed=structuredClone(ds[0]);removed.dates.c_start='2000-01-01 09:45';removed.dates.b_start='2000-01-01 09:45';ds.push(removed)
+    result.bcs.reverse();ds.reverse()
+    const payload={schema:1,id:'synthetic-events',name:'事件对照 QA',note:'合成行情与人为旧版差异，仅交互验收',title:'300750 QA',cutoff:'2026-09-30 15:00:00',savedAt:'2026-10-09T08:00:00Z',frontendVersion:'old-QA',ruleVersions:[],target:{kind:'stock',market:'SZ',code:'300750'},preferences:{},layers:{bis:true,xds:false,zss:false,bcs:true,mmds:true},charts:[{category:'DAY',bars,metadata:{actual_adjust:'QFQ',bar_time:'start',observed_at:'2026-09-30 15:00:00'},result}]}
+    payload.name+=' '+Date.now()
+    const old=await post('research/archives/'+crypto.randomUUID(),{kind:'chart',name:payload.name,note:payload.note,payload},'PUT')
+    return {id:old.id,digest:old.digest,name:payload.name,events:computed.result.bcs.length,diagnostics:computed.result.wave_diagnostics.length}
+  })
+  const requests=[],errors=[]
+  page.on('request',r=>{if(/\/api\/v1\/(chanlun|bars|indicator)/.test(r.url()))requests.push({url:r.url(),origin:r.headers()['x-query-origin']})})
+  page.on('pageerror',e=>errors.push(e.message))
+  await page.getByText('账户云存档',{exact:true}).click()
+  await page.getByRole('listitem').filter({has:page.getByText(created.name,{exact:true})}).getByRole('button',{name:'查看原档',exact:true}).click()
+  await page.locator('.archive-recompute > summary').click()
+  await page.getByRole('button',{name:'检查重算条件',exact:true}).click()
+  if(requests.length)throw Error('preview computed')
+  await page.getByRole('button',{name:'确认按当前版本重算',exact:true}).click()
+  await page.getByText('所选原档的可重算内容已计算完成；原档未覆盖。请核对差异后决定是否保存新副本。',{exact:true}).waitFor()
+  const panel=page.getByRole('region',{name:'按事件对照',exact:true})
+  const counts=await panel.locator('.event-counts').innerText()
+  if(!/新增记录\s+1/.test(counts)||!/本次未再出现\s+1/.test(counts)||!/内容变化\s+2/.test(counts)||!/无法可靠配对\s+1/.test(counts))throw Error('wrong counts '+counts)
+  await panel.getByRole('button',{name:'内容变化 2',exact:true}).click()
+  await panel.locator('.event-rows > details > summary').first().click()
+  if(!await panel.locator('.event-table').isVisible())throw Error('no evidence table')
+  const layouts=[]
+  for(const width of [1440,390,320]){
+    await page.setViewportSize({width,height:1000});await panel.scrollIntoViewIfNeeded()
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))))
+    const size=await page.evaluate(()=>({width:innerWidth,document:document.documentElement.scrollWidth}));if(size.document>width)throw Error('overflow');layouts.push(size)
+    const wrapped=await panel.locator('.filter-label').evaluateAll(nodes=>nodes.some(n=>n.getBoundingClientRect().height>25));if(wrapped)throw Error('wrapped filter labels')
+    const tiny=await panel.getByRole('combobox').evaluateAll(nodes=>nodes.some(n=>n.getBoundingClientRect().height<32));if(tiny)throw Error('small select target')
+    await panel.screenshot({path:'output/playwright/archive-events-'+width+'.png'})
+  }
+  await panel.getByRole('button',{name:'无法可靠配对 1',exact:true}).click()
+  await panel.locator('.event-rows > details > summary').first().click()
+  if(!await panel.getByText('同一日期依据存在多条记录，不按排列顺序强行配对',{exact:true}).isVisible())throw Error('no ambiguity explanation')
+  await panel.getByRole('combobox',{name:'事件对照显示'}).click()
+  const menu=page.getByRole('listbox',{name:'事件对照显示'})
+  const rect=await menu.boundingBox();if(rect.x<0||rect.x+rect.width>320)throw Error('menu outside viewport')
+  await page.getByRole('option',{name:'全部记录',exact:true}).click()
+  await panel.getByRole('button',{name:'下一页',exact:true}).click()
+  if(!await panel.getByRole('button',{name:'上一页',exact:true}).isEnabled())throw Error('pagination')
+  await page.evaluate(()=>{const original=URL.createObjectURL;URL.createObjectURL=function(blob){if(blob.type==='application/json')window.__qaExport=blob.text();return original.call(URL,blob)}})
+  await page.getByRole('button',{name:'导出完整对照记录',exact:true}).click()
+  const report=await page.evaluate(async()=>JSON.parse(await window.__qaExport))
+  if(report.runs[0].events.contract!=='archive-events-v1'||report.runs[0].events.counts.unresolved!==1)throw Error('export lost event report')
+  if(!report.runs[0].events.rows.some(r=>r.differences.some(d=>d.before===1.234567891)))throw Error('export lost precision')
+  const old=await(await page.request.get('http://127.0.0.1:8768/api/v1/research/archives/'+created.id)).json()
+  if(old.digest!==created.digest||requests.length!==1||requests[0].origin!=='user'||errors.length)throw Error(JSON.stringify({old,created,requests,errors}))
+  return {created,counts:report.runs[0].events.counts,rows:report.runs[0].events.rows.length,originalUnchanged:true,exportFullPrecision:true,requests,layouts,errors}
+}

@@ -2,11 +2,15 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from easy_tdx.factor.base import FACTORY_REGISTRY, Factor
 
 # 导入所有子模块以触发 @register_factor 装饰器
 from easy_tdx.factor.builtin import (  # noqa: F401
+    alpha158,
     chanlun,
+    gtja191,
     momentum,
     quality,
     technical,
@@ -16,17 +20,11 @@ from easy_tdx.factor.builtin import (  # noqa: F401
 )
 
 
-def list_factors() -> list[dict[str, str | tuple[str, ...]]]:
+def list_factors() -> list[dict[str, Any]]:
     """返回所有已注册因子的元数据。"""
-    return [
-        {
-            "name": cls.name,
-            "category": cls.category,
-            "description": cls.description,
-            "inputs": cls.inputs,
-        }
-        for cls in FACTORY_REGISTRY.values()
-    ]
+    from easy_tdx.factor.catalog import describe_factor
+
+    return [describe_factor(cls) for cls in FACTORY_REGISTRY.values()]
 
 
 def get_factor(name: str) -> type[Factor]:

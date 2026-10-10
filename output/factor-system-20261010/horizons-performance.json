@@ -1,0 +1,21 @@
+{
+  "elapsed_seconds": 48.33636449999176,
+  "assets": 20,
+  "dates": 800,
+  "horizons": [
+    1,
+    5,
+    10,
+    20
+  ],
+  "reports_per_horizon": 4,
+  "folds_per_horizon": [
+    23,
+    23,
+    23,
+    23
+  ],
+  "serialized_bytes_without_inputs": 11352458,
+  "errors": {},
+  "synthetic": true
+}

@@ -1,0 +1,2 @@
+src/easy_tdx/backtest/performance.py:304: error: Returning Any from function declared to return "datetime | None"  [no-any-return]
+Found 1 error in 1 file (checked 284 source files)

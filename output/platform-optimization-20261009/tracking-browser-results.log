@@ -1,0 +1,10 @@
+### Ran Playwright code
+```js
+await (async (page) => { await page.getByRole("button",{name:"分析本组",exact:true}).waitFor({timeout:45000}); const status=await page.locator(".batch-status").innerText(); if(!status.includes("5 / 5")) throw new Error(status); if(await page.locator(".result-scroll > table > tbody > tr").count()!==5) throw new Error("dedup count wrong"); await page.setViewportSize({width:1440,height:1000}); await page.screenshot({path:"../output/playwright/tracking-desktop.png",fullPage:true}); console.log(status); console.log(await page.locator(".result-scroll > table").innerText()); })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/tracking
+- Page Title: 股票分析 · Analysis Studio
+- Console: 3 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T12-30-56-700Z.log#L2-L3

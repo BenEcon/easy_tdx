@@ -1,0 +1,694 @@
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF [ 44%]
+FFFFFFFF................................................................ [ 88%]
+...................                                                      [100%]
+=================================== FAILURES ===================================
+_ test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-DAY] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n_ma': [20], 'n_atr': [20], 'k': [2.0]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-MIN_30] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n_ma': [20], 'n_atr': [20], 'k': [2.0]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-MONTH] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n_ma': [20], 'n_atr': [20], 'k': [2.0]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-WEEK] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n_ma': [20], 'n_atr': [20], 'k': [2.0]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+____ test_all_default_strategies_agree_across_five_real_workflows[bbi-DAY] _____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 4 [type=too_long, input_value={'m1': [3], 'm2': [6], 'm3': [12], 'm4': [20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+___ test_all_default_strategies_agree_across_five_real_workflows[bbi-MIN_30] ___
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 4 [type=too_long, input_value={'m1': [3], 'm2': [6], 'm3': [12], 'm4': [20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+___ test_all_default_strategies_agree_across_five_real_workflows[bbi-MONTH] ____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 4 [type=too_long, input_value={'m1': [3], 'm2': [6], 'm3': [12], 'm4': [20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+____ test_all_default_strategies_agree_across_five_real_workflows[bbi-WEEK] ____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 4 [type=too_long, input_value={'m1': [3], 'm2': [6], 'm3': [12], 'm4': [20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-DAY] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-MIN_30] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-MONTH] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-WEEK] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-DAY] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-MIN_30] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-MONTH] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-WEEK] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[cci-DAY] _____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [100]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+___ test_all_default_strategies_agree_across_five_real_workflows[cci-MIN_30] ___
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [100]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+___ test_all_default_strategies_agree_across_five_real_workflows[cci-MONTH] ____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [100]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+____ test_all_default_strategies_agree_across_five_real_workflows[cci-WEEK] ____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [100]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-DAY] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 5 [type=too_long, input_value={'bi_rule': ['新笔'], '...w_weak_second': [False]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-MIN_30] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 5 [type=too_long, input_value={'bi_rule': ['新笔'], '...w_weak_second': [False]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-MONTH] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 5 [type=too_long, input_value={'bi_rule': ['新笔'], '...w_weak_second': [False]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-WEEK] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 5 [type=too_long, input_value={'bi_rule': ['新笔'], '...w_weak_second': [False]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+____ test_all_default_strategies_agree_across_five_real_workflows[dmi-DAY] _____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[dmi-MIN_30] ___
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[dmi-MONTH] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[dmi-WEEK] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+__ test_all_default_strategies_agree_across_five_real_workflows[donchian-DAY] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[donchian-MIN_30] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[donchian-MONTH] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[donchian-WEEK] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[dpo-DAY] _____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[dpo-MIN_30] ___
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[dpo-MONTH] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[dpo-WEEK] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[ema_cross-DAY] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[ema_cross-MIN_30] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[ema_cross-MONTH] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[ema_cross-WEEK] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[emv-DAY] _____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[emv-MIN_30] ___
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[emv-MONTH] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[emv-WEEK] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[fsl-DAY] _____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[fsl-MIN_30] ___
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[fsl-MONTH] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[fsl-WEEK] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-DAY] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-MIN_30] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-MONTH] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-WEEK] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+__ test_all_default_strategies_agree_across_five_real_workflows[keltner-DAY] ___
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[keltner-MIN_30] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[keltner-MONTH] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+__ test_all_default_strategies_agree_across_five_real_workflows[keltner-WEEK] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+__ test_all_default_strategies_agree_across_five_real_workflows[ma_cross-DAY] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[ma_cross-MIN_30] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[ma_cross-MONTH] _
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[ma_cross-WEEK] __
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+____ test_all_default_strategies_agree_across_five_real_workflows[macd-DAY] ____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [12], 'long': [26], 'signal': [9]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+__ test_all_default_strategies_agree_across_five_real_workflows[macd-MIN_30] ___
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [12], 'long': [26], 'signal': [9]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+___ test_all_default_strategies_agree_across_five_real_workflows[macd-MONTH] ___
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [12], 'long': [26], 'signal': [9]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+___ test_all_default_strategies_agree_across_five_real_workflows[macd-WEEK] ____
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [12], 'long': [26], 'signal': [9]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-DAY] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [30], 'overbought': [70]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-MIN_30] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [30], 'overbought': [70]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-MONTH] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [30], 'overbought': [70]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-WEEK] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [30], 'overbought': [70]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[triple_ma-DAY] __
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [5], 'mid': [20], 'long': [60]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[triple_ma-MIN_30] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [5], 'mid': [20], 'long': [60]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[triple_ma-MONTH] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [5], 'mid': [20], 'long': [60]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[triple_ma-WEEK] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'short': [5], 'mid': [20], 'long': [60]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+____ test_all_default_strategies_agree_across_five_real_workflows[trix-DAY] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+__ test_all_default_strategies_agree_across_five_real_workflows[trix-MIN_30] ___
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[trix-MONTH] ___
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+___ test_all_default_strategies_agree_across_five_real_workflows[trix-WEEK] ____
+tests/unit/test_real_market_consumers.py:124: in test_all_default_strategies_agree_across_five_real_workflows
+    equivalent(grouped["total_performance"], expected)
+tests/unit/test_real_market_consumers.py:67: in equivalent
+    assert actual.keys() == expected.keys()
+E   AssertionError: assert dict_keys(['t...'total_cash']) == dict_keys(['t... 'end_value'])
+E     
+E     Use -v to get more diff
+_ test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-DAY] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [-20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-MIN_30] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [-20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-MONTH] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [-20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+_ test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-WEEK] _
+tests/unit/test_real_market_consumers.py:115: in test_all_default_strategies_agree_across_five_real_workflows
+    optimize = backtest._run_optimize(frame, OptimizeBacktestRequest(**common, param_grid=grid))
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for OptimizeBacktestRequest
+E   param_grid
+E     Dictionary should have at most 2 items after validation, not 3 [type=too_long, input_value={'n': [14], 'oversold': [...0], 'overbought': [-20]}, input_type=dict]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_long
+=========================== short test summary info ============================
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[atr_breakout-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bbi-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bbi-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bbi-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bbi-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[bias_reversal-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[boll_breakout-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[chanlun_mmd-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[donchian-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[donchian-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[donchian-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[donchian-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dpo-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dpo-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dpo-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dpo-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ema_cross-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ema_cross-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ema_cross-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ema_cross-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[fsl-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[fsl-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[fsl-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[fsl-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[kdj_cross-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[keltner-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[keltner-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[keltner-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[keltner-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ma_cross-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ma_cross-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ma_cross-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[ma_cross-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[macd-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[macd-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[macd-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[macd-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[rsi_reversal-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[triple_ma-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[triple_ma-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[triple_ma-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[triple_ma-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[trix-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[trix-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[trix-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[trix-WEEK]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-DAY]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-MIN_30]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-MONTH]
+FAILED tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[wr_reversal-WEEK]
+80 failed, 83 passed in 11.87s

@@ -6,73 +6,99 @@
 // 提交本身就要等一会儿），结果轮询拿 SignalScanResult。上次扫描结果缓存在
 // localStorage，进页面先展示，避免每次都要重扫。
 
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import MacSelect from '../components/MacSelect.vue'
 import AdjustPicker from '../components/AdjustPicker.vue'
-import { asSignalScanResult, formatError, runSignalScanWithPolling } from '../api'
-import type { SignalScanResult, SignalScanRow } from '../types'
+import { fetchTask, formatError, submitSignalScanTask } from '../api'
+import type { SignalScanRequest, SignalScanResult, SignalScanRow } from '../types'
+import { taskExecution } from '../task-execution'
 import { useMarketPreferences } from '../market-preferences'
+import { useAuth } from '../auth'
+import { radarCacheKey, radarReviewQuery, readRadarCache, type CachedScan } from '../radar-review'
+import DataProvenance from '../components/DataProvenance.vue'
 
 const router = useRouter()
 const { adjustMode } = useMarketPreferences()
+const { currentUser } = useAuth()
 
 const WINDOW_OPTIONS = [1, 3, 5, 10]
 const WINDOW_SELECT_OPTIONS = WINDOW_OPTIONS.map((value) => ({ value, label: `窗口 · ${value} 根` }))
-const STORAGE_KEY = 'easy-tdx.signal-radar.last'
 
 const windowBars = ref(5)
-const scanning = ref(false)
+const scanTask = taskExecution<SignalScanRequest,SignalScanResult>({
+  owner:()=>currentUser.value?.id,submit:submitSignalScanTask,poll:fetchTask,interval:500,timeout:300_000,
+})
+const scanning = scanTask.running
 const error = ref('')
 const result = ref<SignalScanResult | null>(null)
 const scannedAt = ref('') // 本地时间戳（上次扫描完成时刻）
 const elapsedSec = ref('') // 上次扫描总耗时（提交+计算）
+const resultWindow = ref(5)
+const resultAdjust = ref('')
+const cacheNotice = ref('')
+const detachedNotice = ref('')
+const adjustLabels:Record<string,string>={QFQ:'前复权',HFQ:'后复权',NONE:'不复权'}
+const resultAdjustLabel = computed(()=>adjustLabels[resultAdjust.value]||resultAdjust.value)
+const resultDiffers = computed(()=>!!result.value&&(resultWindow.value!==windowBars.value||resultAdjust.value!==adjustMode.value))
+let scanGeneration = 0
 
-interface CachedScan {
-  result: SignalScanResult
-  scannedAt: string
-  windowBars: number
-}
-
-onMounted(() => {
+watch(() => currentUser.value?.id, owner => {
+  scanGeneration++; scanTask.clear(); result.value = null; error.value = ''; scannedAt.value = ''; elapsedSec.value = ''; cacheNotice.value = ''; detachedNotice.value = ''; resultAdjust.value = ''
+  if (!owner) return
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(radarCacheKey(owner))
     if (!raw) return
-    const cached = JSON.parse(raw) as CachedScan
-    if (cached?.result?.rows) {
+    const cached = readRadarCache(raw, owner)
+    if (cached) {
       result.value = cached.result
       scannedAt.value = cached.scannedAt || ''
-      if (WINDOW_OPTIONS.includes(cached.windowBars)) windowBars.value = cached.windowBars
+      windowBars.value = cached.windowBars; resultWindow.value = cached.windowBars; resultAdjust.value = cached.adjust
+      cacheNotice.value = '当前为上次成功扫描的本地记录，并非本次重新扫描。'
     }
   } catch {
     // 缓存损坏则忽略，直接空态
   }
-})
+}, { immediate: true, flush:'sync' })
+watch([windowBars,adjustMode],()=>{
+  if(!scanning.value)return
+  scanGeneration++;scanTask.clear();error.value=''
+  detachedNotice.value='扫描设置已改变，已停止等待旧结果；后台任务未取消，可到个人账户查看。请按新设置重新扫描。'
+}, {flush:'sync'})
+onBeforeUnmount(() => { scanGeneration++;scanTask.clear() })
 
 async function onScan() {
   if (scanning.value) return
-  scanning.value = true
+  const owner = currentUser.value?.id
+  if (!owner) { error.value = '请先登录'; return }
+  const version = ++scanGeneration
+  const input = { window_bars: windowBars.value, adjust: adjustMode.value }
+  const current = () => version === scanGeneration && currentUser.value?.id === owner
   error.value = ''
+  cacheNotice.value = ''
+  detachedNotice.value = ''
+  // A failed new scan must not reveal the previous success as its result.
+  result.value = null;scannedAt.value = '';elapsedSec.value = '';resultAdjust.value = ''
   const t0 = Date.now()
   try {
-    const state = await runSignalScanWithPolling({
-      window_bars: windowBars.value,
-      adjust: adjustMode.value,
-    })
-    result.value = asSignalScanResult(state)
-    scannedAt.value = new Date().toLocaleString('zh-CN', { hour12: false })
-    elapsedSec.value = ((Date.now() - t0) / 1000).toFixed(1)
+    const accepted = await scanTask.run(input)
+    if (!current()) return
+    if(!accepted){error.value=scanTask.error.value;return}
     const cached: CachedScan = {
-      result: result.value,
-      scannedAt: scannedAt.value,
-      windowBars: windowBars.value,
+      schema: 'radar-cache-v2', owner,
+      result: scanTask.result.value!,
+      scannedAt: new Date().toLocaleString('zh-CN', { hour12: false }),
+      windowBars: input.window_bars, adjust: input.adjust,
     }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cached))
+    if(!readRadarCache(JSON.stringify(cached),owner))throw Error('扫描结果格式或汇总不完整，未使用或缓存该结果')
+    result.value=cached.result;scannedAt.value=cached.scannedAt
+    elapsedSec.value = ((Date.now() - t0) / 1000).toFixed(1)
+    resultWindow.value = input.window_bars; resultAdjust.value = input.adjust
+    try { localStorage.setItem(radarCacheKey(owner), JSON.stringify(cached)) }
+    catch { cacheNotice.value = '扫描已完成，但浏览器空间不足或禁止保存；当前结果仍可使用。' }
   } catch (e) {
-    error.value = formatError(e)
-  } finally {
-    scanning.value = false
+    if (current()) error.value = formatError(e)
   }
 }
 
@@ -130,26 +156,20 @@ function parameterSummary(params: SignalScanRow['params']): string {
 }
 
 function reviewStartDate(endDate: string): string {
-  const date = new Date(`${endDate}T00:00:00`)
+  const date = new Date(`${endDate}T00:00:00Z`)
   if (Number.isNaN(date.getTime())) return '2020-01-06'
-  date.setFullYear(date.getFullYear() - 2)
+  date.setUTCFullYear(date.getUTCFullYear() - 2)
   return date.toISOString().slice(0, 10)
 }
 
 /** 打开信号对应的研究页，并还原扫描时的标的、策略与参数供人工复核。 */
 function onReview(r: SignalScanRow, selectedSignal?: SignalScanRow['recent_signals'][number]) {
-  const codeOnly = r.symbol.includes(':') ? r.symbol.split(':').pop()! : r.symbol
-  const endDate = (r.last_bar_date || new Date().toISOString()).slice(0, 10)
-  const reviewQuery = {
-    review: 'signal',
-    autoRun: '1',
-    symbol: codeOnly || undefined,
-    category: r.category || undefined,
-    signal: selectedSignal?.direction || r.latest_signal || undefined,
-    signalDate: selectedSignal?.date || r.signal_date || undefined,
-    strategyName: r.strategy_name,
-    strategyLabel: r.strategy_label || r.strategy,
-  }
+  if(scanning.value||!result.value?.rows.includes(r))return
+  let reviewQuery: Record<string, string>
+  try { reviewQuery = radarReviewQuery(r, resultAdjust.value, selectedSignal,
+    result.value?.evidence_task_id?{taskId:result.value.evidence_task_id,rowIndex:result.value.rows.indexOf(r)}:undefined) }
+  catch (e) { error.value = formatError(e); return }
+  const endDate = reviewQuery.scanAsOf!.slice(0, 10)
 
   if (r.strategy === 'chanlun_mmd') {
     router.push({
@@ -173,6 +193,7 @@ function onReview(r: SignalScanRow, selectedSignal?: SignalScanRow['recent_signa
 
 /** 打开可编辑的策略配置；单标的策略保存时覆盖原记录，组合子策略保存为独立策略。 */
 function onModify(r: SignalScanRow) {
+  if(scanning.value||!result.value?.rows.includes(r))return
   const codeOnly = r.symbol.includes(':') ? r.symbol.split(':').pop()! : r.symbol
   const endDate = (r.last_bar_date || new Date().toISOString()).slice(0, 10)
   router.push({
@@ -182,6 +203,7 @@ function onModify(r: SignalScanRow) {
       params: JSON.stringify(r.params),
       symbol: codeOnly || undefined,
       category: r.category || undefined,
+      adjust: r.metadata?.actual_adjust || resultAdjust.value || undefined,
       startDate: reviewStartDate(endDate),
       endDate,
       editStrategyId: r.kind === 'single' ? r.strategy_id : undefined,
@@ -224,7 +246,8 @@ function onModify(r: SignalScanRow) {
       </div>
     </header>
 
-    <div v-if="error" class="error-banner">⚠ {{ error }}</div>
+    <div v-if="error" class="error-banner" role="alert">⚠ {{ error }}</div>
+    <p v-if="detachedNotice" class="hint" role="status">{{ detachedNotice }}</p>
 
     <!-- 扫描中：提交请求内要逐标的取行情，需要等待 -->
     <div v-if="scanning" class="scanning-box">
@@ -254,9 +277,10 @@ function onModify(r: SignalScanRow) {
       </div>
 
       <p class="hint">
-        窗口 = 最近 {{ windowBars }} 根 {{ result.rows[0]?.category === 'DAY' ? '交易日' : 'K 线' }}；
-        盘中最后一根 K 线未收盘，信号为盘中即时值，收盘后为准。
+        当前结果：{{ resultAdjustLabel }} · 最近 {{ resultWindow }} 根已收盘 K 线。未收盘柱不参与扫描。
       </p>
+      <p v-if="resultDiffers" class="hint" role="status">上方设置与当前结果不同；复核仍使用原扫描参数，应用新设置请重新扫描。</p>
+      <p v-if="cacheNotice" class="hint" role="status">{{ cacheNotice }}</p>
 
       <!-- 筛选 tab -->
       <nav class="tabs">
@@ -300,6 +324,7 @@ function onModify(r: SignalScanRow) {
             <td class="name" :title="r.strategy_name">
               <span class="strategy-marker" aria-hidden="true"></span>
               <span class="strategy-row-name">{{ r.strategy_name }}</span>
+              <DataProvenance v-if="r.metadata" :metadata="r.metadata" :count="r.metadata.input_count" />
             </td>
             <td><span class="kind-badge" :class="r.kind">{{ kindLabel(r.kind) }}</span></td>
             <td
@@ -626,6 +651,10 @@ function onModify(r: SignalScanRow) {
   max-width: 190px;
   white-space: nowrap;
 }
+.name :deep(.data-provenance){white-space:normal;padding:3px 0 0;border:0;font-size:10px}
+.name :deep(.data-provenance summary){gap:3px 6px;font-size:10px;min-height:24px}
+.name :deep(.data-provenance time){margin-left:0;font-size:9px}
+.name :deep(.provenance-content){padding-left:0}
 .strategy-marker {
   display: inline-block;
   width: 6px;

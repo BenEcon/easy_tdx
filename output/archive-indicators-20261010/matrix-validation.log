@@ -1,0 +1,15 @@
+file:///Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/archive-indicator-recompute.ts:21
+  const fail=()      =>{throw Error('重算指标缺少匹配的参数、输出列或完整序列，未保存部分指标')}
+                              ^
+
+Error: 重算指标缺少匹配的参数、输出列或完整序列，未保存部分指标
+    at fail (file:///Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/archive-indicator-recompute.ts:21:31)
+    at file:///Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/archive-indicator-recompute.ts:33:226
+    at Array.forEach (<anonymous>)
+    at projectRecomputedIndicators (file:///Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/archive-indicator-recompute.ts:30:20)
+    at file:///Users/bowen/Documents/Python/Google/TDX-work/output/archive-indicators-20261010/check_matrix.mjs:9:19
+    at ModuleJob.run (node:internal/modules/esm/module_job:413:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:654:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v25.2.1

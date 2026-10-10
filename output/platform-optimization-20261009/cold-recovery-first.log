@@ -1,0 +1,20 @@
+............F........................................................... [ 80%]
+.................                                                        [100%]
+=================================== FAILURES ===================================
+_ test_actual_supervisor_sigkill_cold_restart_completes_same_frozen_calculation _
+tests/unit/test_task_recovery.py:230: in test_actual_supervisor_sigkill_cold_restart_completes_same_frozen_calculation
+    expected = dispatch_task(value)
+src/easy_tdx/web/task_dispatch.py:123: in dispatch_task
+    return backtest._run_backtest(value.frames[0], request)
+src/easy_tdx/web/routers/backtest.py:441: in _run_backtest
+    frame_evidence(
+src/easy_tdx/web/research_provenance.py:29: in frame_evidence
+    measured = annotate_snapshot(
+src/easy_tdx/web/bar_snapshot.py:186: in annotate_snapshot
+    quality = quality_report(records, category, bar_time)
+src/easy_tdx/web/bar_snapshot.py:94: in quality_report
+    raise ValueError("行情时间必须为有效的交易所本地时间，不得混入时区或空时间")
+E   ValueError: 行情时间必须为有效的交易所本地时间，不得混入时区或空时间
+=========================== short test summary info ============================
+FAILED tests/unit/test_task_recovery.py::test_actual_supervisor_sigkill_cold_restart_completes_same_frozen_calculation
+1 failed, 88 passed in 29.92s

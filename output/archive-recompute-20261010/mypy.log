@@ -1,0 +1,2 @@
+src/easy_tdx/web/routers/chanlun_archive.py:22: error: Incompatible types in assignment (expression has type "Literal['DAY', 'WEEK', 'MONTH', 'MIN_1', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60', 'MIN_120']", base class "ReplayRequest" defined the type as "Literal['DAY', 'WEEK', 'MONTH', 'YEAR', 'MIN_1', 'MIN_5', 'MIN_15', 'MIN_30', 'MIN_60']")  [assignment]
+Found 1 error in 1 file (checked 298 source files)

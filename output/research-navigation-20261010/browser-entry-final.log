@@ -1,0 +1,93 @@
+### Result
+{"stockURL":"/chanlun?researchContext=v1&from=market&targetKind=stock&market=SZ&symbol=000001&name=%E5%B9%B3%E5%AE%89%E9%93%B6%E8%A1%8C+QA&boardType=&category=MIN_30&adjust=HFQ&count=600&range=latest","backtestURL":"/?researchContext=v1&from=market&targetKind=stock&market=SZ&symbol=000001&name=%E5%B9%B3%E5%AE%89%E9%93%B6%E8%A1%8C+QA&boardType=&category=MIN_30&adjust=HFQ&count=600&range=latest","indexURL":"/chanlun?researchContext=v1&from=market&targetKind=index&market=SH&symbol=000001&name=%E4%B8%8A%E8%AF%81%E6%8C%87%E6%95%B0+QA&boardType=&category=DAY&adjust=NONE&count=600&range=latest","boardURL":"/chanlun?researchContext=v1&from=boards&targetKind=board&market=1&symbol=880001&name=%E8%A1%8C%E4%B8%9A+QA&boardType=HY&category=DAY&adjust=NONE&count=600&range=latest","manualRequests":[{"url":"http://127.0.0.1:8768/api/v1/bars?market=SZ&code=000001&category=MIN_30&count=600&start=0&adjust=HFQ&bar_time=native","body":null,"origin":"user"},{"url":"http://127.0.0.1:8768/api/v1/bars/research?kind=index&code=000001&market=SH&board_type=HY&category=DAY&count=600","body":null,"origin":"user"},{"url":"http://127.0.0.1:8768/api/v1/bars/research?kind=board&code=880001&market=SH&board_type=HY&category=DAY&count=600","body":null,"origin":"user"}],"pageErrors":0,"viewports":[1440,390,320]}
+### Ran Playwright code
+```js
+await (async page => {
+  const origin='http://127.0.0.1:8768', requests=[], errors=[]
+  const go = async url => { await page.waitForLoadState('networkidle'); await page.goto(url); await page.waitForLoadState('networkidle') }
+  page.on('pageerror',e=>errors.push(e.message))
+  page.on('request',r=>{if(/\/api\/v1\/(bars|chanlun\/(replay|analyze)|backtest\/run)/.test(r.url()))requests.push({url:r.url(),body:r.postData(),origin:r.headers()['x-query-origin']})})
+  await page.route('**/api/v1/mac/quote-list?**',r=>r.fulfill({json:{data:[{code:'000001',name:'平安银行 QA',market:0,price:10},{code:'000001',name:'上证指数 QA',market:1,price:3000},{code:'510300',name:'ETF QA',market:1,price:4}]}}))
+  await page.route('**/api/v1/board-mac/list?**',r=>r.fulfill({json:{data:[{code:'880001',name:'行业 QA',market:1},{code:'880002',name:'行业 B QA',market:1}]}}))
+  await page.route('**/api/v1/board-mac/members?**',r=>r.fulfill({json:{data:[{code:'000001',name:'平安银行 QA',market:0,close:10}]}}))
+  await page.route('**/api/v1/board-mac/summary?**',r=>r.fulfill({json:{data:{member_count:1}}}))
+  await page.setViewportSize({width:1440,height:1000})
+  await go(origin+'/market')
+  await page.getByRole('cell',{name:'平安银行 QA',exact:true}).click()
+  const bar=page.getByRole('region',{name:'继续研究选中标的'})
+  await bar.getByRole('combobox',{name:'继续研究周期'}).click()
+  await page.getByRole('option',{name:'30 分钟',exact:true}).click()
+  await bar.getByRole('combobox',{name:'继续研究复权'}).click()
+  await page.getByRole('option',{name:/后复权/}).click()
+  const stockURL=await bar.getByRole('link',{name:'缠论结构',exact:true}).getAttribute('href')
+  const backtestURL=await bar.getByRole('link',{name:'个股分析',exact:true}).getAttribute('href')
+  for(const width of [1440,390,320]) {
+    await page.setViewportSize({width,height:1000})
+    await page.screenshot({path:`output/playwright/research-entry-market-${width}.png`,fullPage:true})
+    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('market overflow '+width)
+  }
+  await bar.getByRole('link',{name:'缠论结构',exact:true}).click()
+  await page.waitForLoadState('networkidle')
+  await page.getByLabel('研究入口参数').waitFor()
+  if(!/MIN_30/.test(page.url())||!await page.getByRole('combobox',{name:'缠论历史窗口'}).isVisible())throw Error('missing entry')
+  if(!/30 分钟.*后复权/s.test(await page.getByLabel('研究入口参数').innerText()))throw Error('lost period/adjust')
+  if(!/30 分钟/.test(await page.getByRole('combobox',{name:'缠论分析周期'}).innerText()))throw Error('actual chart period lost')
+  if(!/后复权/.test(await page.getByRole('combobox',{name:'全局复权方式'}).innerText()))throw Error('actual chart adjustment lost')
+  if(requests.length)throw Error('navigation automatically computed '+JSON.stringify(requests))
+  await go(origin+backtestURL)
+  await page.getByLabel('研究入口参数').waitFor()
+  if(!/30 分钟.*后复权/s.test(await page.getByLabel('研究入口参数').innerText()))throw Error('backtest input lost')
+  if(!/MIN_30/.test(await page.getByRole('combobox',{name:'行情周期'}).innerText()))throw Error('actual backtest period lost')
+  if(!/后复权/.test(await page.getByRole('combobox',{name:'全局复权方式'}).innerText()))throw Error('actual backtest adjustment lost')
+  if(requests.length)throw Error('backtest automatically computed')
+  await go(origin+'/market')
+  await page.getByRole('cell',{name:'上证指数 QA',exact:true}).click()
+  const indexURL=await bar.getByRole('link',{name:'缠论结构',exact:true}).getAttribute('href')
+  if(await bar.getByRole('link',{name:'个股分析',exact:true}).count())throw Error('index exposed ordinary backtest')
+  await bar.getByRole('link',{name:'缠论结构',exact:true}).click()
+  await page.getByLabel('研究入口参数').waitFor()
+  if(!/指数 · SH:000001/.test(await page.getByLabel('研究入口参数').innerText()))throw Error('index became SZ stock')
+  await go(origin+'/boards')
+  await page.getByRole('cell',{name:'行业 QA',exact:true}).waitFor()
+  const boardBar=page.locator('.board-pane').getByRole('region',{name:'继续研究选中标的'})
+  const boardURL=await boardBar.getByRole('link',{name:'缠论结构',exact:true}).getAttribute('href')
+  if(!/targetKind=board/.test(boardURL)||!/boardType=HY/.test(boardURL))throw Error('board context missing')
+  await page.getByRole('cell',{name:'平安银行 QA',exact:true}).click()
+  const memberBar=page.locator('.member-pane').getByRole('region',{name:'继续研究选中标的'})
+  if(!/market=SZ/.test(await memberBar.getByRole('link',{name:'缠论结构',exact:true}).getAttribute('href')))throw Error('member market inherited board')
+  for(const width of [1440,390,320]) {
+    await page.setViewportSize({width,height:1000})
+    await page.screenshot({path:`output/playwright/research-entry-boards-${width}.png`,fullPage:true})
+    if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1))throw Error('boards overflow '+width)
+  }
+  await go(origin+boardURL)
+  await page.getByLabel('研究入口参数').waitFor()
+  if(!/板块/.test(await page.getByLabel('研究入口参数').innerText()))throw Error('board not accepted')
+  if(requests.length)throw Error('source navigation triggered compute')
+  await go(origin+stockURL+'&autoRun=1')
+  await page.getByRole('alert').filter({hasText:'入口参数无效'}).waitFor()
+  await page.getByRole('button',{name:'开始分析',exact:true}).click()
+  if(requests.length)throw Error('bad context computed')
+  if(errors.length)throw Error('page errors '+errors.join(';'))
+  await page.route('**/api/v1/bars?**',r=>r.fulfill({status:503,json:{detail:'QA transport validation only'}}))
+  await page.route('**/api/v1/bars/research?**',r=>r.fulfill({status:503,json:{detail:'QA transport validation only'}}))
+  for(const [url,kind,market] of [[stockURL,'stock','SZ'],[indexURL,'index','SH'],[boardURL,'board','SH']]) {
+    await go(origin+url)
+    const sent=page.waitForRequest(r=>/\/api\/v1\/bars(?:\/research)?\?/.test(r.url()))
+    await page.getByRole('button',{name:'开始分析',exact:true}).click()
+    const r=await sent, q=new URL(r.url()).searchParams
+    if(q.get('market')!==market||(kind!=='stock'&&q.get('kind')!==kind))throw Error('wrong manual target '+r.url())
+    if(r.headers()['x-query-origin']!=='user')throw Error('manual request not recorded')
+    if(kind==='stock'&&(q.get('category')!=='MIN_30'||q.get('adjust')!=='HFQ'))throw Error('manual settings lost')
+    await page.getByText('QA transport validation only',{exact:true}).waitFor()
+  }
+  if(errors.length)throw Error('page errors '+errors.join(';'))
+  return {stockURL,backtestURL,indexURL,boardURL,manualRequests:requests,pageErrors:errors.length,viewports:[1440,390,320]}
+})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8768/chanlun?researchContext=v1&from=boards&targetKind=board&market=1&symbol=880001&name=%E8%A1%8C%E4%B8%9A+QA&boardType=HY&category=DAY&adjust=NONE&count=600&range=latest
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T17-55-41-356Z.log#L6-L8

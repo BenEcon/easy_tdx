@@ -1,0 +1,16 @@
+*** Begin Patch
+*** Update File: /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py
+@@
+-        from easy_tdx.web.archive_ingress import request_upload_context
+-        from easy_tdx.web.resource_admission import request_admission_context
+-
+-        # HTTP/1.1 pipelining may spawn this task inside the preceding response's
+-        # context, before its upload guard exits. Start with independent handles;
+-        # do not silently ignore expired leases inside actual work or free the
+-        # prior request's leases here.
+-        with request_admission_context(), request_upload_context():
+-            await self._handle_api_request(scope, receive, send)
+-
+-    async def _handle_api_request(self, scope: Scope, receive: Receive, send: Send) -> None:
+         headers = Headers(scope=scope)
+*** End Patch

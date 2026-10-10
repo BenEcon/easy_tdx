@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { queryAction } from '../query-origin'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useAuth } from '../auth'
+import { latestResearchRequest } from '../research-input'
+import ResearchNavigationBar from '../components/ResearchNavigationBar.vue'
+import { navigationTarget, type NavigationTarget } from '../research-navigation'
 import DataGrid from '../components/DataGrid.vue'
 import MacSelect from '../components/MacSelect.vue'
 import {
@@ -16,12 +21,32 @@ const sortType = ref('CHANGE_PCT')
 const market = ref('SH')
 const directoryMarket = ref('SH')
 const directoryQuery = ref('')
-const securityTotal = ref(0)
+const securityTotal = ref<number | null>(null)
 const strengthPreset = ref<'steady' | 'breakout' | 'balanced'>('steady')
 const strengthUniverse = ref<'all' | 'sh' | 'sz'>('all')
 const rows = ref<Row[]>([])
 const loading = ref(false)
 const error = ref('')
+const selection = ref<NavigationTarget | null>(null)
+const resultMarket = ref('')
+function selectRow(row: Row) {
+  if (!loading.value && tab.value !== 'stat') selection.value = navigationTarget(row, { market: resultMarket.value })
+}
+const requests = latestResearchRequest()
+const { currentUser } = useAuth()
+function clearMarket() {
+  requests.invalidate()
+  rows.value = []
+  securityTotal.value = null
+  loading.value = false
+  error.value = ''
+  selection.value = null
+  resultMarket.value = ''
+}
+watch(directoryQuery, () => { selection.value = null })
+watch([tab, category, sortType, market, directoryMarket, strengthPreset, strengthUniverse,
+  () => currentUser.value?.id], clearMarket, { flush: 'sync' })
+onBeforeUnmount(clearMarket)
 
 function withChangePct(row: Row): Row {
   if (Number.isFinite(Number(row.change_pct))) return row
@@ -66,32 +91,49 @@ const stats = computed(() => {
   }
 })
 
-async function load() {
+async function load(manual = false) {
+  clearMarket()
+  const request = requests.begin()
+  const input = { tab: tab.value, category: category.value, sortType: sortType.value,
+    market: market.value, directoryMarket: directoryMarket.value,
+    preset: strengthPreset.value, universe: strengthUniverse.value }
+  const query = queryAction(manual)
   loading.value = true
   error.value = ''
   try {
-    const response = tab.value === 'ranking'
-      ? await fetchMarketRanking({ category: category.value, sortType: sortType.value, count: 120 })
-      : tab.value === 'stat' ? await fetchMarketStat()
-        : tab.value === 'unusual' ? await fetchMarketUnusual(market.value, 100)
-          : tab.value === 'directory' ? await fetchSecurityDirectory(directoryMarket.value, 0)
-            : await fetchMarketStrength({ preset: strengthPreset.value, universe: strengthUniverse.value, topN: 80 })
+    const response = await query(() => input.tab === 'ranking'
+      ? fetchMarketRanking({ category: input.category, sortType: input.sortType, count: 120 })
+      : input.tab === 'stat' ? fetchMarketStat()
+        : input.tab === 'unusual' ? fetchMarketUnusual(input.market, 100)
+          : input.tab === 'directory' ? fetchSecurityDirectory(input.directoryMarket, 0)
+            : fetchMarketStrength({ preset: input.preset, universe: input.universe, topN: 80 }))
+    if (!request.current()) return
+    resultMarket.value = input.tab === 'directory' ? input.directoryMarket : input.tab === 'unusual' ? input.market
+      : input.tab === 'ranking' && ['SH','SZ','BJ'].includes(input.category) ? input.category : ''
     rows.value = response.data
-    if (tab.value === 'directory') securityTotal.value = (await fetchSecurityCount(directoryMarket.value)).count
+    if (input.tab === 'directory') {
+      try {
+        const total = await fetchSecurityCount(input.directoryMarket)
+        if (request.current()) securityTotal.value = total.count
+      } catch (e) {
+        if (request.current()) error.value = `证券目录已加载，市场总数暂不可用：${formatError(e)}`
+      }
+    }
   } catch (e) {
+    if (!request.current()) return
     error.value = formatError(e)
     rows.value = []
   } finally {
-    loading.value = false
+    if (request.current()) loading.value = false
   }
 }
 
 function switchTab(next: Tab) {
   tab.value = next
-  void load()
+  void load(true)
 }
 
-onMounted(load)
+onMounted(() => load())
 </script>
 
 <template>
@@ -100,7 +142,7 @@ onMounted(load)
       <div><span class="eyebrow">MARKET PULSE</span><h2>市场行情中心</h2><p>把排行、涨跌统计与盘中异动放在一张工作台里。</p></div>
       <div class="hero-metrics">
         <div><small>{{ tab === 'directory' ? '当前显示' : '当前记录' }}</small><strong>{{ tab === 'directory' ? displayRows.length : stats.count }}</strong></div>
-        <div><small>{{ tab === 'directory' ? '市场总数' : '上涨' }}</small><strong :class="{ up: tab !== 'directory' }">{{ tab === 'directory' ? securityTotal : stats.up }}</strong></div>
+        <div><small>{{ tab === 'directory' ? '市场总数' : '上涨' }}</small><strong :class="{ up: tab !== 'directory' }">{{ tab === 'directory' ? (securityTotal ?? '—') : stats.up }}</strong></div>
         <div><small>{{ tab === 'directory' ? '数据来源' : '下跌' }}</small><strong :class="{ down: tab !== 'directory' }">{{ tab === 'directory' ? 'TDX' : stats.down }}</strong></div>
       </div>
     </section>
@@ -128,15 +170,16 @@ onMounted(load)
         <MacSelect v-model="strengthPreset" :options="strengthOptions" aria-label="强势模式" />
         <MacSelect v-model="strengthUniverse" :options="universeOptions" aria-label="市场范围" />
       </div>
-      <button class="primary query-button action-button" :disabled="loading" @click="load">
+      <button class="primary query-button action-button" :disabled="loading" @click="load(true)">
         <svg class="button-icon" :class="{ spinning: loading }" viewBox="0 0 20 20"><path d="M10 3a7 7 0 1 1-5.2 2.3M3 3v4h4" /></svg>
         {{ loading ? '正在获取' : '刷新数据' }}
       </button>
     </section>
     <p v-if="error" class="error-banner status-banner">{{ error }}</p>
     <section class="table-panel">
-      <header><div><h3>{{ tab === 'ranking' ? '实时行情排行' : tab === 'stat' ? '全市场涨跌分布' : tab === 'unusual' ? '实时异动明细' : tab === 'directory' ? '证券基础目录' : '多周期强势排名' }}</h3><p>{{ tab === 'directory' ? `市场共 ${securityTotal.toLocaleString('zh-CN')} 只 · 当前显示 ${displayRows.length} 只` : '数值统一保留至多 2 位小数' }}</p></div><span class="live-dot">{{ tab === 'directory' ? 'LIST' : tab === 'strength' ? 'LOCAL' : 'LIVE' }}</span></header>
-      <DataGrid :rows="displayRows" :empty-text="loading ? '正在读取市场数据…' : '暂无符合条件的数据'" />
+      <header><div><h3>{{ tab === 'ranking' ? '实时行情排行' : tab === 'stat' ? '全市场涨跌分布' : tab === 'unusual' ? '实时异动明细' : tab === 'directory' ? '证券基础目录' : '多周期强势排名' }}</h3><p>{{ tab === 'directory' ? `${securityTotal === null ? '市场总数暂不可用' : `市场共 ${securityTotal.toLocaleString('zh-CN')} 只`} · 当前显示 ${displayRows.length} 只` : '数值统一保留至多 2 位小数' }}</p></div><span class="live-dot">{{ tab === 'directory' ? 'LIST' : tab === 'strength' ? 'LOCAL' : 'LIVE' }}</span></header>
+      <DataGrid :rows="displayRows" :selectable="tab !== 'stat' && !loading" @select="selectRow" :empty-text="loading ? '正在读取市场数据…' : '暂无符合条件的数据'" />
+      <ResearchNavigationBar v-if="tab !== 'stat'" :selection="selection" source="market" :busy="loading" />
     </section>
   </div>
 </template>

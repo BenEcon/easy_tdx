@@ -1,0 +1,21 @@
+........................................................................ [ 13%]
+......................................................F................. [ 27%]
+........................................................................ [ 41%]
+........................................................................ [ 54%]
+........................................................................ [ 68%]
+........................................................................ [ 82%]
+........................................................................ [ 96%]
+.....................                                                    [100%]
+=================================== FAILURES ===================================
+______________ test_server_frame_annotations_match_plain_backtest ______________
+tests/unit/test_backtest_metadata_input.py:65: in test_server_frame_annotations_match_plain_backtest
+    assert result == plain
+E   AssertionError: assert {'performance....}, ...], ...} == {'performance....}, ...], ...}
+E     
+E     Omitting 5 identical items, use -vv to show
+E     Differing items:
+E     {'equity_curve': [{'datetime': '2026-08-03T00:00:00', 'cash': 1000000.0, 'position_value': 0.0, 'total': 1000000.0, ......0, ...}, {'datetime': '2026-08-10T00:00:00', 'cash': 1000000.0, 'position_value': 0.0, 'total': 1000000.0, ...}, ...]} != {'equity_curve': [{'datetime': '2026-08-03T00:00:00', 'cash': 1000000.0, 'position_value': 0.0, 'total': 1000000.0, ......0, ...}, {'datetime': '2026-08-10T00:00:00', 'cash': 1000000.0, 'position_value': 0.0, 'total': 1000000.0, ...}, ...]}
+E     Use -v to get more diff
+=========================== short test summary info ============================
+FAILED tests/unit/test_backtest_metadata_input.py::test_server_frame_annotations_match_plain_backtest
+1 failed, 524 passed, 1 warning in 91.91s (0:01:31)

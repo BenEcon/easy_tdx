@@ -1,0 +1,12 @@
+### Result
+{"source":"极值日期\n2026\n09-30\n10:00\n特殊波段底背离\n已确认\n对照日期\n2026-09-29 15:00\n确认日期\n2026-09-30 14:30\n\nMACD 特殊波段底背离：红柱 B 内价格达到或低于前一绿柱 A 最低点，双线抬高且同在零轴下；B 新价格极值当根双线分别比较 A 段内各自极值；无 C 面积，等待从极值起的反向笔确认，非结构一类点。\n\n查看判定依据\n规则版本\n2026100414 · 自定义 MACD 背离；不改变缠论结构递归。\n局部反向笔确认\n沿用当时完整行情的包含处理、严格分型高低价与独","label":"图表定位：30 分钟 · 特殊波段底背离\n清除定位","request":{"category":"MIN_30","visible_count":223,"total":240},"context":"30 分钟 · 审核回放\n2026-09-30 14:30:00\n223 / 240 根\n返回审核快照末尾","cutoff":"共同截止\n2026-10-09 15:00:00"}
+### Ran Playwright code
+```js
+await (async (page) => { const panel=page.locator(".period-evidence"); const row=panel.locator("article.confirmed").first(); await row.locator("summary").click(); const before=await row.innerText(); await row.getByRole("button",{name:"查看局部确认用笔",exact:true}).click(); const label=await page.locator(".evidence-focus-note").innerText(); if(!label.includes("30 分钟")) throw Error(label); const reqPromise=page.waitForRequest(r=>r.url().includes("/chanlun/replay")&&r.method()==="POST"); await row.getByRole("button",{name:/回放到确认时刻$/}).click(); const req=(await reqPromise).postDataJSON(); if(req.category!=="MIN_30" || req.bars.length!==240) throw Error(JSON.stringify(req)); await page.waitForFunction(()=>document.querySelector(".period-evidence .evidence-context")?.textContent?.includes("审核回放")); const context=await panel.locator(".evidence-context").innerText(); return {source:before.slice(0,260),label,request:{category:req.category,visible_count:req.visible_count,total:req.bars.length},context,cutoff:await page.locator(".period-cutoff").innerText()}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:18094/chanlun?symbol=300750
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T11-42-16-297Z.log#L1-L4

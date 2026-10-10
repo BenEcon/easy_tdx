@@ -1,0 +1,9 @@
+### Result
+{"submitted":0,"choices":15}
+### Ran Playwright code
+```js
+await (async(page)=>{await page.unroute('**/api/v1/research/factors');let release,reached;const gate=new Promise(r=>release=r),started=new Promise(r=>reached=r),submitted=[];const observe=r=>{if(r.url().endsWith('/research/factors/compute/async'))submitted.push(r.url())};page.on('request',observe);try{await page.route('**/api/v1/research/factors',async route=>{const response=await route.fetch();reached();await gate;await route.fulfill({response});});await page.goto('http://127.0.0.1:8768/quant-research');await started;await page.getByRole('button',{name:'因子检验',exact:true}).click();release();await page.waitForFunction(()=>document.querySelectorAll('.factor-choice').length>0);return {submitted:submitted.length,choices:await page.locator('.factor-choice').count()};}finally{release();await page.unroute('**/api/v1/research/factors');page.off('request',observe);}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8768/quant-research
+- Page Title: 股票分析 · Analysis Studio

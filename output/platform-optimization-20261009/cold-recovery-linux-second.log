@@ -1,0 +1,26 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+........................................................................ [ 40%]
+........................................................................ [ 81%]
+.................................                                        [100%]
+=============================== warnings summary ===============================
+../usr/local/lib/python3.12/site-packages/pandas/core/arrays/timedeltas.py:285
+  /usr/local/lib/python3.12/site-packages/pandas/core/arrays/timedeltas.py:285: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    start = Timedelta(start).as_unit("ns")
+
+tests/unit/test_task_payload.py::test_index_values_names_frequency_timezone[index4]
+tests/unit/test_task_payload.py::test_index_values_names_frequency_timezone[index4]
+tests/unit/test_task_payload.py::test_index_values_names_frequency_timezone[index4]
+tests/unit/test_task_payload.py::test_datetime_columns_and_nested_metadata
+tests/unit/test_task_payload.py::test_datetime_columns_and_nested_metadata
+tests/unit/test_task_payload.py::test_datetime_columns_and_nested_metadata
+  /review/src/easy_tdx/web/task_payload.py:157: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    return date.fromisoformat(value["value"]) if tag == "date" else pd.Timedelta(value["value"])
+
+tests/unit/test_task_payload.py::test_datetime_columns_and_nested_metadata
+  /review/tests/unit/test_task_payload.py:131: DeprecationWarning: The 'generic' unit for NumPy timedelta is deprecated, and will raise an error in the future. This includes implicit conversion of bare integers (e.g. `+ 1`). Please use a specific unit instead.
+    "duration": pd.Timedelta("1ns"),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+177 passed, 8 warnings in 57.57s

@@ -1,0 +1,21 @@
+Factor unit qualification batch — local only, 2026-10-10
+
+Before baseline: source-after-alpha158.tar.gz
+SHA256 b1c3679ba1f30fd7ce854796cce4379a222d18f393647fa67be563c6ff0a57ec
+
+After source: source-after-factor-units.tar.gz
+SHA256 909e85d0c9dcf9a26631e44eedd802e661bc71f647245a33da9b9b0df3069da3
+Archive contains local source including pre-existing changes, not databases, secrets,
+node_modules, or built UI. The ledger's final test-count wording was updated after
+the archive; source code is unchanged since the archive.
+
+Never restore over the whole checkout or a user database. Extract into a fresh
+temporary directory, compare only this batch's paths, preserve later/user edits.
+Batch paths: factor/data.py, factor/builtin/alpha158.py, factor/research.py,
+web/routers/research.py, tests/unit/test_factor_data.py,
+tests/unit/test_alpha158.py, tests/fixtures/factor_units/, scripts/freeze_factor_units.py.
+
+Evidence: units-backend.log (613 passed), units-mypy.log (308 source files),
+output/playwright/factor-units-{search,result}.yml and factor-units-mobile.png.
+QA service PID 80993 terminated and session exited 143; browser factor-units closed.
+No deployment. No confirmed Chanlun rule or user database changed.

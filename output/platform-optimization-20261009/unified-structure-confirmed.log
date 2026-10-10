@@ -1,0 +1,6 @@
+### Result
+{"atConfirmation":"2026-02-10 · 647/800\n返回末尾","records":1}
+### Ran Playwright code
+```js
+await (async page => { await page.getByRole("button",{name:"回放下一根 K 线",exact:true}).click(); await page.waitForFunction(()=>document.querySelector(".replay-position")?.textContent.includes("2026-02-10") && document.querySelectorAll(".signal-record").length===1,{},{timeout:60000}); return {atConfirmation:await page.locator(".replay-position").innerText(),records:await page.locator(".signal-record").count()}; })(page);
+```

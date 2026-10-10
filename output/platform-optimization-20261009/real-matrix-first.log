@@ -1,0 +1,84 @@
+.FFF.F.FFFF.............................................                 [100%]
+=================================== FAILURES ===================================
+_ test_source_hash_quality_and_native_closing_times[002821-min15-qfq-20261004] _
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2026-07-22 09:45:00' == '2026-07-22T09:45:00'
+E     
+E     - 2026-07-22T09:45:00
+E     ?           ^
+E     + 2026-07-22 09:45:00
+E     ?           ^
+_ test_source_hash_quality_and_native_closing_times[002821-min30-qfq-20261004] _
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2026-05-12 10:00:00' == '2026-05-12T10:00:00'
+E     
+E     - 2026-05-12T10:00:00
+E     ?           ^
+E     + 2026-05-12 10:00:00
+E     ?           ^
+_ test_source_hash_quality_and_native_closing_times[002821-min60-qfq-20261004] _
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2025-12-05 10:30:00' == '2025-12-05T10:30:00'
+E     
+E     - 2025-12-05T10:30:00
+E     ?           ^
+E     + 2025-12-05 10:30:00
+E     ?           ^
+_ test_source_hash_quality_and_native_closing_times[399006-min5-qfq-20261003] __
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2026-09-07 10:55:00' == '2026-09-07T10:55:00'
+E     
+E     - 2026-09-07T10:55:00
+E     ?           ^
+E     + 2026-09-07 10:55:00
+E     ?           ^
+_ test_source_hash_quality_and_native_closing_times[601698-min30-qfq-20261002] _
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2026-05-12 10:00:00' == '2026-05-12T10:00:00'
+E     
+E     - 2026-05-12T10:00:00
+E     ?           ^
+E     + 2026-05-12 10:00:00
+E     ?           ^
+_ test_source_hash_quality_and_native_closing_times[603259-min30-qfq-20261003] _
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2026-05-12 10:00:00' == '2026-05-12T10:00:00'
+E     
+E     - 2026-05-12T10:00:00
+E     ?           ^
+E     + 2026-05-12 10:00:00
+E     ?           ^
+_ test_source_hash_quality_and_native_closing_times[603936-min15-qfq-20261004] _
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2026-07-22 09:45:00' == '2026-07-22T09:45:00'
+E     
+E     - 2026-07-22T09:45:00
+E     ?           ^
+E     + 2026-07-22 09:45:00
+E     ?           ^
+_ test_source_hash_quality_and_native_closing_times[603936-min60-qfq-20261003] _
+tests/unit/test_real_market_matrix.py:72: in test_source_hash_quality_and_native_closing_times
+    assert row["period_end"] == row["datetime"]
+E   AssertionError: assert '2025-12-05 10:30:00' == '2025-12-05T10:30:00'
+E     
+E     - 2025-12-05T10:30:00
+E     ?           ^
+E     + 2025-12-05 10:30:00
+E     ?           ^
+=========================== short test summary info ============================
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[002821-min15-qfq-20261004]
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[002821-min30-qfq-20261004]
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[002821-min60-qfq-20261004]
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[399006-min5-qfq-20261003]
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[601698-min30-qfq-20261002]
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[603259-min30-qfq-20261003]
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[603936-min15-qfq-20261004]
+FAILED tests/unit/test_real_market_matrix.py::test_source_hash_quality_and_native_closing_times[603936-min60-qfq-20261003]
+8 failed, 48 passed in 41.85s

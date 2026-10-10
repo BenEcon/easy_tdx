@@ -1,0 +1,6 @@
+### Ran Playwright code
+```js
+await (async(page)=>{const report=[];await page.reload();await page.getByRole('tab',{name:/组合/}).click();const card=page.locator('article').filter({has:page.getByRole('heading',{name:'QA 多策略完整执行',exact:true})});for(const width of [1440,390,320]){await page.setViewportSize({width,height:1000});await card.scrollIntoViewIfNeeded();const state=await card.locator('.actions button').evaluateAll(es=>es.map(e=>({label:e.textContent.trim(),whiteSpace:getComputedStyle(e).whiteSpace,height:e.getBoundingClientRect().height})));if(state.some(b=>b.whiteSpace!=='nowrap'||b.height<32))throw Error('按钮排版错误');await page.screenshot({path:'/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/multi-context-final-'+width+'.png'});report.push({width,buttons:state,scrollWidth:await page.evaluate(()=>document.documentElement.scrollWidth)});}const me=await(await page.request.get('http://127.0.0.1:8768/api/v1/auth/me')).json();if(me.user.preferences.adjust_mode!=='HFQ')throw Error('对照复权未生效');await page.evaluate(r=>window.__layoutReport=r,{layouts:report,globalAdjustment:me.user.preferences.adjust_mode});})(page);
+```
+### Events
+- New console entries: ../.playwright-cli/console-2026-10-09T19-03-37-053Z.log#L6-L10

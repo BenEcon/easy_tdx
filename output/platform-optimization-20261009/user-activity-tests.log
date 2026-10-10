@@ -1,0 +1,16 @@
+.....F.........................                                          [100%]
+=================================== FAILURES ===================================
+___________________ test_keyset_summary_counts_and_retention ___________________
+tests/unit/test_user_activity.py:181: in test_keyset_summary_counts_and_retention
+    assert len(next_page["items"]) == 1
+E   AssertionError: assert 2 == 1
+E    +  where 2 = len([{'id': 3, 'owner': 'alice', 'occurred': 1791559361.363594, 'kind': 'query', ...}, {'id': 2, 'owner': 'alice', 'occurred': 1791559361.3613482, 'kind': 'query', ...}])
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_user_activity.py::test_keyset_summary_counts_and_retention
+1 failed, 30 passed, 1 warning in 5.38s

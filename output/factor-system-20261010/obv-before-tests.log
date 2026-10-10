@@ -1,0 +1,448 @@
+.....FFFFF.FFFFFFFF.FFFFFFFF.FFFF......F.F.FFFFFFFFFFFFF                 [100%]
+=================================== FAILURES ===================================
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[2-close-nan] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    0.0\n2025-02-01    0.0\nFreq: D, dtype: float64.isna
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[2-close-inf] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    190.154251\n2025-02-01   -193.914742\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[2-close--inf] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -190.154251\n2025-02-01    193.914742\nFreq: D, dtype: float64.isna
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[2-close-0.0] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -190.154251\n2025-02-01    193.914742\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[2-close--1.0] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -190.154251\n2025-02-01    193.914742\nFreq: D, dtype: float64.isna
+______ test_invalid_inputs_mask_entire_window_and_then_recover[2-vol-inf] ______
+tests/unit/test_factor_obv_window.py:59: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert np.isfinite(actual.iloc[30 + window])
+E   AssertionError: assert np.False_
+E    +  where np.False_ = <ufunc 'isfinite'>(np.float64(nan))
+E    +    where <ufunc 'isfinite'> = np.isfinite
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[2-vol--inf] ______
+tests/unit/test_factor_obv_window.py:59: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert np.isfinite(actual.iloc[30 + window])
+E   AssertionError: assert np.False_
+E    +  where np.False_ = <ufunc 'isfinite'>(np.float64(nan))
+E    +    where <ufunc 'isfinite'> = np.isfinite
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[2-vol--1.0] ______
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31      1.000000\n2025-02-01   -193.914742\nFreq: D, dtype: float64.isna
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[5-close-nan] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    146.928373\n2025-02-01     92.483062\n2025-02-02     -2.116456\n2025-02-03    -98.847612\n2025-02-04   -158.976570\nFreq: D, dtype: float64.isna
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[5-close-inf] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    184.959224\n2025-02-01    110.746389\n2025-02-02     -3.244603\n2025-02-03   -118.991184\n2025-02-04   -197.759518\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[5-close--inf] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    108.897523\n2025-02-01     74.219735\n2025-02-02     -0.988309\n2025-02-03    -78.704039\n2025-02-04   -120.193621\nFreq: D, dtype: float64.isna
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[5-close-0.0] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    108.897523\n2025-02-01     74.219735\n2025-02-02     -0.988309\n2025-02-03    -78.704039\n2025-02-04   -120.193621\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[5-close--1.0] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    108.897523\n2025-02-01     74.219735\n2025-02-02     -0.988309\n2025-02-03    -78.704039\n2025-02-04   -120.193621\nFreq: D, dtype: float64.isna
+______ test_invalid_inputs_mask_entire_window_and_then_recover[5-vol-inf] ______
+tests/unit/test_factor_obv_window.py:59: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert np.isfinite(actual.iloc[30 + window])
+E   AssertionError: assert np.False_
+E    +  where np.False_ = <ufunc 'isfinite'>(np.float64(nan))
+E    +    where <ufunc 'isfinite'> = np.isfinite
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[5-vol--inf] ______
+tests/unit/test_factor_obv_window.py:59: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert np.isfinite(actual.iloc[30 + window])
+E   AssertionError: assert np.False_
+E    +  where np.False_ = <ufunc 'isfinite'>(np.float64(nan))
+E    +    where <ufunc 'isfinite'> = np.isfinite
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[5-vol--1.0] ______
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    147.128373\n2025-02-01     54.000113\n2025-02-02    -59.990879\n2025-02-03   -156.822034\n2025-02-04   -197.759518\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[20-close-nan] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -11.718858\n2025-02-01    -1.899570\n2025-02-02     3.250987\n2025-02-03     3.743901\n2025-02-04    -0.39811...2025-02-16   -17.422245\n2025-02-17   -14.127635\n2025-02-18   -12.086205\n2025-02-19   -10.662297\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[20-close-inf] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31    -9.002368\n2025-02-01     0.477252\n2025-02-02     5.293796\n2025-02-03     5.458352\n2025-02-04     0.99363...2025-02-16   -19.461852\n2025-02-17   -16.416431\n2025-02-18   -14.618536\n2025-02-19   -13.432508\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[20-close--inf] ____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -14.435347\n2025-02-01    -4.276392\n2025-02-02     1.208178\n2025-02-03     2.029450\n2025-02-04    -1.78985...2025-02-16   -15.382639\n2025-02-17   -11.838839\n2025-02-18    -9.553874\n2025-02-19    -7.892086\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[20-close-0.0] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -14.435347\n2025-02-01    -4.276392\n2025-02-02     1.208178\n2025-02-03     2.029450\n2025-02-04    -1.78985...2025-02-16   -15.382639\n2025-02-17   -11.838839\n2025-02-18    -9.553874\n2025-02-19    -7.892086\nFreq: D, dtype: float64.isna
+____ test_invalid_inputs_mask_entire_window_and_then_recover[20-close--1.0] ____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -14.435347\n2025-02-01    -4.276392\n2025-02-02     1.208178\n2025-02-03     2.029450\n2025-02-04    -1.78985...2025-02-16   -15.382639\n2025-02-17   -11.838839\n2025-02-18    -9.553874\n2025-02-19    -7.892086\nFreq: D, dtype: float64.isna
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[20-vol-inf] ______
+tests/unit/test_factor_obv_window.py:59: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert np.isfinite(actual.iloc[30 + window])
+E   AssertionError: assert np.False_
+E    +  where np.False_ = <ufunc 'isfinite'>(np.float64(nan))
+E    +    where <ufunc 'isfinite'> = np.isfinite
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[20-vol--inf] _____
+tests/unit/test_factor_obv_window.py:59: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert np.isfinite(actual.iloc[30 + window])
+E   AssertionError: assert np.False_
+E    +  where np.False_ = <ufunc 'isfinite'>(np.float64(nan))
+E    +    where <ufunc 'isfinite'> = np.isfinite
+_____ test_invalid_inputs_mask_entire_window_and_then_recover[20-vol--1.0] _____
+tests/unit/test_factor_obv_window.py:58: in test_invalid_inputs_mask_entire_window_and_then_recover
+    assert actual.iloc[30:30 + window].isna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool.all
+E    +      where 2025-01-31    False\n2025-02-01    False\n2025-02-02    False\n2025-02-03    False\n2025-02-04    False\n2025-02-05    Fals...025-02-15    False\n2025-02-16    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\nFreq: D, dtype: bool = isna()
+E    +        where isna = 2025-01-31   -11.704572\n2025-02-01    -4.642713\n2025-02-02    -1.959488\n2025-02-03    -3.643807\n2025-02-04    -9.67295...2025-02-16   -26.715135\n2025-02-17   -21.536396\n2025-02-18   -17.320740\n2025-02-19   -13.432508\nFreq: D, dtype: float64.isna
+___________ test_old_extreme_volume_does_not_destroy_local_precision ___________
+tests/unit/test_factor_obv_window.py:72: in test_old_extreme_volume_does_not_destroy_local_precision
+    pd.testing.assert_series_equal(actual.iloc[8:], factor.compute(clean).iloc[8:])
+pandas/_libs/testing.pyx:55: in pandas._libs.testing.assert_almost_equal
+    ???
+pandas/_libs/testing.pyx:173: in pandas._libs.testing.assert_almost_equal
+    ???
+E   AssertionError: Series are different
+E   
+E   Series values are different (100.0 %)
+E   [index]: [2025-01-09T00:00:00.000000000, 2025-01-10T00:00:00.000000000, 2025-01-11T00:00:00.000000000, 2025-01-12T00:00:00.000000000, 2025-01-13T00:00:00.000000000, 2025-01-14T00:00:00.000000000, 2025-01-15T00:00:00.000000000, 2025-01-16T00:00:00.000000000, 2025-01-17T00:00:00.000000000, 2025-01-18T00:00:00.000000000, 2025-01-19T00:00:00.000000000, 2025-01-20T00:00:00.000000000, 2025-01-21T00:00:00.000000000, 2025-01-22T00:00:00.000000000, 2025-01-23T00:00:00.000000000, 2025-01-24T00:00:00.000000000, 2025-01-25T00:00:00.000000000, 2025-01-26T00:00:00.000000000, 2025-01-27T00:00:00.000000000, 2025-01-28T00:00:00.000000000, 2025-01-29T00:00:00.000000000, 2025-01-30T00:00:00.000000000, 2025-01-31T00:00:00.000000000, 2025-02-01T00:00:00.000000000, 2025-02-02T00:00:00.000000000, 2025-02-03T00:00:00.000000000, 2025-02-04T00:00:00.000000000, 2025-02-05T00:00:00.000000000, 2025-02-06T00:00:00.000000000, 2025-02-07T00:00:00.000000000, 2025-02-08T00:00:00.000000000, 2025-02-09T00:00:00.000000000, 2025-02-10T00:00:00.000000000, 2025-02-11T00:00:00.000000000, 2025-02-12T00:00:00.000000000, 2025-02-13T00:00:00.000000000, 2025-02-14T00:00:00.000000000, 2025-02-15T00:00:00.000000000, 2025-02-16T00:00:00.000000000, 2025-02-17T00:00:00.000000000, 2025-02-18T00:00:00.000000000, 2025-02-19T00:00:00.000000000, 2025-02-20T00:00:00.000000000, 2025-02-21T00:00:00.000000000, 2025-02-22T00:00:00.000000000, 2025-02-23T00:00:00.000000000, 2025-02-24T00:00:00.000000000, 2025-02-25T00:00:00.000000000, 2025-02-26T00:00:00.000000000, 2025-02-27T00:00:00.000000000, 2025-02-28T00:00:00.000000000, 2025-03-01T00:00:00.000000000, 2025-03-02T00:00:00.000000000, 2025-03-03T00:00:00.000000000, 2025-03-04T00:00:00.000000000, 2025-03-05T00:00:00.000000000, 2025-03-06T00:00:00.000000000, 2025-03-07T00:00:00.000000000, 2025-03-08T00:00:00.000000000, 2025-03-09T00:00:00.000000000, 2025-03-10T00:00:00.000000000, 2025-03-11T00:00:00.000000000]
+E   [left]:  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+E   [right]: [-70.50005420615247, 2.055919203847412, 76.46441615460806, 127.94672459554754, 76.49860940655006, -3.301132140328664, -84.85185252609878, -140.83008840907218, -143.3030722518301, -85.66717589329724, 3.1887497669021174, 93.80481883075976, 156.02129014268158, 93.96064519769368, -2.015523514472446, -99.84750995758498, -167.01545179540412, -170.46565219319487, -102.48866407722771, 2.453451389925408, 109.21567241844305, 182.10334895601372, 108.89752292947496, -3.3461623386965926, -117.33715432034674, -195.05288465602624, -197.75951840058906, -118.58902900651735, 2.6605260324270374, 125.71330009693034, 209.7015113964866, 126.13722498440036, -2.2070003637742617, -132.3914288768981, -220.9770483217215, -224.06143767022004, -134.34910187872532, 3.0184804628993787, 142.16009133995857, 236.5294447810793, 141.70573924144668, -2.9522114366301935, -149.38959476081092, -248.90006954313964, -252.03965642018133, -151.45039878774622, 2.15911959243972, 157.61274572168898, 263.2448325413217, 158.0167687272289, -2.7334046916113266, -165.2808540225857, -275.2939207430527, -164.85840839326013, 3.197210880402918, 173.0122835703151, 288.0245722420701, 290.93553680582073, 174.6459298212672, -2.386916512537732, -181.2452941980201, -302.4754605515632]
+E   At positional index 0, first diff: 0.0 != -70.50005420615247
+_ test_constant_signed_volume_has_known_slope_without_cumulative_overflow[1e+300--1] _
+tests/unit/test_factor_obv_window.py:83: in test_constant_signed_volume_has_known_slope_without_cumulative_overflow
+    np.testing.assert_allclose(actual.iloc[599:], direction * volume, rtol=5e-15, atol=0)
+E   AssertionError: 
+E   Not equal to tolerance rtol=5e-15, atol=0
+E   
+E   Mismatched elements: 201 / 201 (100%)
+E   Max absolute difference among violations: 1.41266606e+286
+E   Max relative difference among violations: 1.41266606e-14
+E    ACTUAL: array([-1.e+300, -1.e+300, -1.e+300, -1.e+300, -1.e+300, -1.e+300,
+E          -1.e+300, -1.e+300, -1.e+300, -1.e+300, -1.e+300, -1.e+300,
+E          -1.e+300, -1.e+300, -1.e+300, -1.e+300, -1.e+300, -1.e+300,...
+E    DESIRED: array(-1.e+300)
+_ test_constant_signed_volume_has_known_slope_without_cumulative_overflow[1e+300-1] _
+tests/unit/test_factor_obv_window.py:83: in test_constant_signed_volume_has_known_slope_without_cumulative_overflow
+    np.testing.assert_allclose(actual.iloc[599:], direction * volume, rtol=5e-15, atol=0)
+E   AssertionError: 
+E   Not equal to tolerance rtol=5e-15, atol=0
+E   
+E   Mismatched elements: 201 / 201 (100%)
+E   Max absolute difference among violations: 1.41266606e+286
+E   Max relative difference among violations: 1.41266606e-14
+E    ACTUAL: array([1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300,
+E          1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300,
+E          1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300, 1.e+300,...
+E    DESIRED: array(1.e+300)
+___ test_real_frozen_units_adjustments_and_injected_gap[0-000001-DAILY-HFQ] ____
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([          nan, -7.277096e+07,  6.197167e+07, -6.004300e+07,
+E           4.310410e+07, -6.813402e+07, -5.550474e+07,  0.000000e+00,
+E          -1.063135e+08,  7.127302e+07,  6.122280e+07, -8.388735e+07,...
+E    DESIRED: array([          nan, -7.277096e+07,  6.197167e+07, -6.004300e+07,
+E           4.310410e+07, -6.813402e+07, -5.550474e+07,  0.000000e+00,
+E          -1.063135e+08,  7.127302e+07,  6.122280e+07, -8.388735e+07,...
+___ test_real_frozen_units_adjustments_and_injected_gap[0-000001-DAILY-NONE] ___
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([          nan, -7.277096e+07,  6.197167e+07, -6.004300e+07,
+E           4.310410e+07, -6.813402e+07, -5.550474e+07,  0.000000e+00,
+E          -1.063135e+08,  7.127302e+07,  6.122280e+07, -8.388735e+07,...
+E    DESIRED: array([          nan, -7.277096e+07,  6.197167e+07, -6.004300e+07,
+E           4.310410e+07, -6.813402e+07, -5.550474e+07,  0.000000e+00,
+E          -1.063135e+08,  7.127302e+07,  6.122280e+07, -8.388735e+07,...
+___ test_real_frozen_units_adjustments_and_injected_gap[0-000001-DAILY-QFQ] ____
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([          nan, -7.277096e+07,  6.197167e+07, -6.004300e+07,
+E           4.310410e+07, -6.813402e+07, -5.550474e+07,  0.000000e+00,
+E          -1.063135e+08,  7.127302e+07,  6.122280e+07, -8.388735e+07,...
+E    DESIRED: array([          nan, -7.277096e+07,  6.197167e+07, -6.004300e+07,
+E           4.310410e+07, -6.813402e+07, -5.550474e+07,  0.000000e+00,
+E          -1.063135e+08,  7.127302e+07,  6.122280e+07, -8.388735e+07,...
+___ test_real_frozen_units_adjustments_and_injected_gap[0-300750-DAILY-HFQ] ____
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([       nan,  39372616., -27448630., -18563500.,  19653460.,
+E           27754580., -22314532., -22695132.,  18716640., -43541380.,
+E          -25446620., -28351326.,  40007480., -25080440.,  31006068.,...
+E    DESIRED: array([       nan,  39372616., -27448630., -18563500.,  19653460.,
+E           27754580., -22314532., -22695132.,  18716640., -43541380.,
+E          -25446620., -28351326.,  40007480., -25080440.,  31006068.,...
+___ test_real_frozen_units_adjustments_and_injected_gap[0-300750-DAILY-NONE] ___
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([       nan,  39372616., -27448630., -18563500.,  19653460.,
+E           27754580., -22314532., -22695132.,  18716640., -43541380.,
+E          -25446620., -28351326.,  40007480., -25080440.,  31006068.,...
+E    DESIRED: array([       nan,  39372616., -27448630., -18563500.,  19653460.,
+E           27754580., -22314532., -22695132.,  18716640., -43541380.,
+E          -25446620., -28351326.,  40007480., -25080440.,  31006068.,...
+___ test_real_frozen_units_adjustments_and_injected_gap[0-300750-DAILY-QFQ] ____
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([       nan,  39372616., -27448630., -18563500.,  19653460.,
+E           27754580., -22314532., -22695132.,  18716640., -43541380.,
+E          -25446620., -28351326.,  40007480., -25080440.,  31006068.,...
+E    DESIRED: array([       nan,  39372616., -27448630., -18563500.,  19653460.,
+E           27754580., -22314532., -22695132.,  18716640., -43541380.,
+E          -25446620., -28351326.,  40007480., -25080440.,  31006068.,...
+___ test_real_frozen_units_adjustments_and_injected_gap[0-300750-MIN_30-HFQ] ___
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([       nan,   3962600.,  -2092200.,  -1355700.,   2411700.,
+E           -1495300.,  -1726800.,  -3518400.,  -7471600.,  -3132500.,
+E            3294300.,   1789100.,  -2490000.,  -1779200.,   1735900.,...
+E    DESIRED: array([       nan,   3962600.,  -2092200.,  -1355700.,   2411700.,
+E           -1495300.,  -1726800.,  -3518400.,  -7471600.,  -3132500.,
+E            3294300.,   1789100.,  -2490000.,  -1779200.,   1735900.,...
+__ test_real_frozen_units_adjustments_and_injected_gap[0-300750-MIN_30-NONE] ___
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([       nan,   3962600.,  -2092200.,  -1355700.,   2411700.,
+E           -1495300.,  -1726800.,  -3518400.,  -7471600.,  -3132500.,
+E            3294300.,   1789100.,  -2490000.,  -1779200.,   1735900.,...
+E    DESIRED: array([       nan,   3962600.,  -2092200.,  -1355700.,   2411700.,
+E           -1495300.,  -1726800.,  -3518400.,  -7471600.,  -3132500.,
+E            3294300.,   1789100.,  -2490000.,  -1779200.,   1735900.,...
+___ test_real_frozen_units_adjustments_and_injected_gap[0-300750-MIN_30-QFQ] ___
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([       nan,   3962600.,  -2092200.,  -1355700.,   2411700.,
+E           -1495300.,  -1726800.,  -3518400.,  -7471600.,  -3132500.,
+E            3294300.,   1789100.,  -2490000.,  -1779200.,   1735900.,...
+E    DESIRED: array([       nan,   3962600.,  -2092200.,  -1355700.,   2411700.,
+E           -1495300.,  -1726800.,  -3518400.,  -7471600.,  -3132500.,
+E            3294300.,   1789100.,  -2490000.,  -1779200.,   1735900.,...
+___ test_real_frozen_units_adjustments_and_injected_gap[1-600036-DAILY-HFQ] ____
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([          nan, -8.029798e+07, -6.589489e+07, -4.959646e+07,
+E           5.288170e+07, -7.775257e+07, -7.053703e+07,  7.546744e+07,
+E          -7.239715e+07, -5.933254e+07,  6.370347e+07, -6.854731e+07,...
+E    DESIRED: array([          nan, -8.029798e+07, -6.589489e+07, -4.959646e+07,
+E           5.288170e+07, -7.775257e+07, -7.053703e+07,  7.546744e+07,
+E          -7.239715e+07, -5.933254e+07,  6.370347e+07, -6.854731e+07,...
+___ test_real_frozen_units_adjustments_and_injected_gap[1-600036-DAILY-NONE] ___
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([          nan, -8.029798e+07, -6.589489e+07, -4.959646e+07,
+E           5.288170e+07, -7.775257e+07, -7.053703e+07,  7.546744e+07,
+E          -7.239715e+07, -5.933254e+07,  6.370347e+07, -6.854731e+07,...
+E    DESIRED: array([          nan, -8.029798e+07, -6.589489e+07, -4.959646e+07,
+E           5.288170e+07, -7.775257e+07, -7.053703e+07,  7.546744e+07,
+E          -7.239715e+07, -5.933254e+07,  6.370347e+07, -6.854731e+07,...
+___ test_real_frozen_units_adjustments_and_injected_gap[1-600036-DAILY-QFQ] ____
+tests/unit/test_factor_obv_window.py:113: in test_real_frozen_units_adjustments_and_injected_gap
+    np.testing.assert_allclose(factor.compute(missing), local_oracle(missing, window),
+E   AssertionError: 
+E   Not equal to tolerance rtol=2e-10, atol=2e-06
+E   
+E   nan location mismatch:
+E    ACTUAL: array([          nan, -8.029798e+07, -6.589489e+07, -4.959646e+07,
+E           5.288170e+07, -7.775257e+07, -7.053703e+07,  7.546744e+07,
+E          -7.239715e+07, -5.933254e+07,  6.370347e+07, -6.854731e+07,...
+E    DESIRED: array([          nan, -8.029798e+07, -6.589489e+07, -4.959646e+07,
+E           5.288170e+07, -7.775257e+07, -7.053703e+07,  7.546744e+07,
+E          -7.239715e+07, -5.933254e+07,  6.370347e+07, -6.854731e+07,...
+_____ test_changed_semantics_are_versioned_without_changing_other_factors ______
+tests/unit/test_factor_obv_window.py:119: in test_changed_semantics_are_versioned_without_changing_other_factors
+    assert meta["implementation_version"] == "obv-local-window-v3"
+E   AssertionError: assert 'builtin-parameters-v2' == 'obv-local-window-v3'
+E     
+E     - obv-local-window-v3
+E     + builtin-parameters-v2
+=============================== warnings summary ===============================
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-vol-inf]
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-vol--inf]
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-vol-inf]
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-vol--inf]
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-vol-inf]
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-vol--inf]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/factor/builtin/volume.py:34: RuntimeWarning: invalid value encountered in subtract
+    slope = np.sum((x - x_mean) * (y - y_mean)) / x_ss
+
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-vol-inf]
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-vol--inf]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/factor/builtin/volume.py:34: RuntimeWarning: invalid value encountered in multiply
+    slope = np.sum((x - x_mean) * (y - y_mean)) / x_ss
+
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-vol-inf]
+tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-vol--inf]
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/numpy/_core/fromnumeric.py:86: RuntimeWarning: invalid value encountered in reduce
+    return ufunc.reduce(obj, axis, dtype, out, **passkwargs)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-close-nan]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-close-inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-close--inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-close-0.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-close--1.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-vol-inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-vol--inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[2-vol--1.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-close-nan]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-close-inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-close--inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-close-0.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-close--1.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-vol-inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-vol--inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[5-vol--1.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-close-nan]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-close-inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-close--inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-close-0.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-close--1.0]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-vol-inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-vol--inf]
+FAILED tests/unit/test_factor_obv_window.py::test_invalid_inputs_mask_entire_window_and_then_recover[20-vol--1.0]
+FAILED tests/unit/test_factor_obv_window.py::test_old_extreme_volume_does_not_destroy_local_precision
+FAILED tests/unit/test_factor_obv_window.py::test_constant_signed_volume_has_known_slope_without_cumulative_overflow[1e+300--1]
+FAILED tests/unit/test_factor_obv_window.py::test_constant_signed_volume_has_known_slope_without_cumulative_overflow[1e+300-1]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-000001-DAILY-HFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-000001-DAILY-NONE]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-000001-DAILY-QFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-300750-DAILY-HFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-300750-DAILY-NONE]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-300750-DAILY-QFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-300750-MIN_30-HFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-300750-MIN_30-NONE]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[0-300750-MIN_30-QFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[1-600036-DAILY-HFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[1-600036-DAILY-NONE]
+FAILED tests/unit/test_factor_obv_window.py::test_real_frozen_units_adjustments_and_injected_gap[1-600036-DAILY-QFQ]
+FAILED tests/unit/test_factor_obv_window.py::test_changed_semantics_are_versioned_without_changing_other_factors
+40 failed, 16 passed, 10 warnings in 2.19s

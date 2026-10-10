@@ -1,0 +1,8 @@
+### Result
+{"status":"分析结束 · 存在未完成项目，请查看失败原因\n5 / 5 · 成功 3 · 失败 2\n共同截止（北京时间）：2026-10-09 20:34:29；成分取自当前查询，不代表历史成员。","breadth":"周期\t已覆盖 / 全部\t最近严格笔 ↑ / ↓\t双线轴上 / 轴下\t存在已确认背离\n日线\t4 / 5\t3 / 1\t1 / 3\t1\n周线\t3 / 5\t2 / 1\t0 / 3\t0","layouts":[{"width":1440,"document":1440,"table":898},{"width":390,"document":390,"table":344},{"width":320,"document":320,"table":274}]}
+### Ran Playwright code
+```js
+await (async (page) => { await page.reload(); await page.getByRole("button",{name:"移除510300-沪深300ETF",exact:true}).waitFor(); await page.getByRole("checkbox",{name:"周线",exact:true}).check(); await page.getByRole("button",{name:"分析本组",exact:true}).click(); await page.getByRole("button",{name:"分析本组",exact:true}).waitFor({timeout:45000}); const results = {status: await page.locator(".batch-status").innerText(), breadth: await page.locator(".breadth-scroll").innerText()}; if(!results.status.includes("成功 3 · 失败 2")) throw new Error(results.status); const layouts=[]; for(const width of [1440,390,320]) { await page.setViewportSize({width,height:1000}); await page.locator(".tracking-header").scrollIntoViewIfNeeded(); await page.screenshot({path:`../output/playwright/tracking-top-${width}.png`}); layouts.push(await page.evaluate(()=>({width:innerWidth,document:document.documentElement.scrollWidth,table:document.querySelector(".result-scroll").clientWidth}))); if(layouts.at(-1).document>width) throw new Error("page overflow"); await page.locator(".breadth-section").scrollIntoViewIfNeeded(); await page.screenshot({path:`../output/playwright/tracking-results-${width}.png`}); } return {...results,layouts}; })(page);
+```
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T12-30-56-700Z.log#L4-L6

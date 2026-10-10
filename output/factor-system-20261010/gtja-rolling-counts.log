@@ -1,0 +1,6 @@
+registry 243 unique 242 implemented 240
+libraries {'qlib_alpha158': 158, 'easy_tdx_builtin': 19, 'gtja191': 65}
+NONE {'available': 238, 'evaluation_available': 238}
+QFQ {'available': 237, 'evaluation_available': 237}
+HFQ {'available': 237, 'evaluation_available': 237}
+Readiness counts are conditional; real requests still validate data. Full goal acceptance not established; production deployments: 0.

@@ -1,0 +1,7 @@
+Source snapshot: source-after-flow.tar.gz
+SHA-256: 240cbfec0a7bbacaf6ec7ac8ed1a38282a9a5652a47947bb680ce59b2fb4ed7d
+Previous snapshot: ../portfolio-archive-20261010/source-after.tar.gz
+Previous SHA-256: e31677d40ea4d6ee3aecbdf13d650e6973ea9fb5056a721c3a824829d827d02a
+Excludes production databases, runtime output, node_modules, dist and bytecode.
+Local only; not deployed. QA WebKit research-flow closed; verified local PID 50550 stopped, exit 143.
+Original ten-stage optimization goal remains active; see docs/research-entry-flow-20261010.md.

@@ -1,7 +1,7 @@
-import { computeIndicators } from './api'
+import { computeIndicators } from './api.ts'
 import type { Bar } from './types'
-import { INDICATOR_LINE_COLORS, movingAverageColor } from './moving-averages'
-import { provisionalColumn } from './provisional-bars'
+import { INDICATOR_LINE_COLORS, movingAverageColor } from './moving-averages.ts'
+import { provisionalColumn } from './provisional-bars.ts'
 
 export type TechnicalIndicator = string
 export type IndicatorParams = Record<string, number>
@@ -138,8 +138,9 @@ export function buildIndicatorSeries(
 
   return definition.outputs.map((output, index) => {
     const data = rows.map((row) => {
-      const numeric = Number(row[output])
-      return Number.isFinite(numeric) ? numeric : null
+      const numeric = row[output]
+      if (definition.code === 'FK' && typeof numeric === 'boolean') return Number(numeric)
+      return typeof numeric === 'number' && Number.isFinite(numeric) ? numeric : null
     })
     const shared: Record<string, unknown> = {
       name: output.replace(`${definition.code}_`, ''),

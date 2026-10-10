@@ -1,0 +1,8 @@
+services:
+  easy-tdx:
+    image: easy-tdx:platform-20261009
+    environment:
+      EASY_TDX_ALLOWED_ORIGINS: "https://tdx.bowenv.com"
+      EASY_TDX_SECURE_COOKIES: "1"
+      EASY_TDX_TASK_BACKEND: "memory"
+      FORWARDED_ALLOW_IPS: "127.0.0.1,172.22.0.1"

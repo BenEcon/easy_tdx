@@ -1,0 +1,6 @@
+### Result
+{"width":{"viewport":390,"document":390},"dialog":{"x":8,"y":10,"width":374,"height":824},"text":"000001 · 日线 · 因子研究\n\n保存于 2026-10-10T06:16:11.976886+00:00 · 原档 6c7d9b22092f\n\n关闭云存档\n\n账户上传的原档，未经服务端重新核验。原行情与分析结果不重新查询或计算；带冻结指标的图表直接使用保存的逐根数值。\n\n按原始输入显式重算\n000001 · 日线 · 因子研究\n\n2026/10/10 14:16:11 · 日线 · 前复权 · 时间序列\n\n只读原档\nGTJA 132 · 实际成交额均值\n易读精度\n公式、数据要求与版本\n单因子原值\n原始因子序列\n\n仅绘制保存时的数值；缺失保持为空\n\n完整序列 · 160 根\n原始输入与完整配置 · 1 个标的\n完整原始存档"}
+### Ran Playwright code
+```js
+await (async page => {const dialog=page.getByRole("dialog"); const box=await dialog.boundingBox(); const width=await page.evaluate(()=>({viewport:innerWidth,document:document.documentElement.scrollWidth})); if(width.document>width.viewport || box.width>390) throw new Error("horizontal overflow"); return {width,dialog:box,text:(await dialog.innerText()).slice(0,1000)};})(page);
+```

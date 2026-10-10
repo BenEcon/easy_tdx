@@ -1,0 +1,15 @@
+...............................F.....                                    [100%]
+=================================== FAILURES ===================================
+______________ test_revoked_session_cannot_read_or_mutate_archive ______________
+output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py:82: in test_revoked_session_cannot_read_or_mutate_archive
+    accounts.revoke_user_sessions(alice.id)
+E   AttributeError: 'AccountStore' object has no attribute 'revoke_user_sessions'
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED output/platform-optimization-20261009/cloud-snapshot-stage/test_research_archive_api.py::test_revoked_session_cannot_read_or_mutate_archive
+1 failed, 36 passed, 1 warning in 4.62s

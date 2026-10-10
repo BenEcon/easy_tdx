@@ -1,0 +1,3 @@
+src/easy_tdx/chanlun/divergence_signals.py:823: error: Incompatible types in assignment (expression has type "object", target has type "float | None")  [assignment]
+src/easy_tdx/chanlun/divergence_signals.py:824: error: Incompatible types in assignment (expression has type "object", target has type "float | None")  [assignment]
+Found 2 errors in 1 file (checked 266 source files)

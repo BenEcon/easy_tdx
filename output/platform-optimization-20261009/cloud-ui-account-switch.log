@@ -1,0 +1,11 @@
+### Result
+{"accountSwitchRejected":"登录账户已变化，请刷新页面后重试","newAccountEmpty":true}
+### Ran Playwright code
+```js
+await (async(page)=>{const cloud=page.locator(".cloud-archives").first();await page.request.post("http://127.0.0.1:8766/api/v1/qa/switch/second");try{await cloud.getByRole("button",{name:"保存当前结果到云端",exact:true}).click();await cloud.getByRole("alert").waitFor();const message=await cloud.getByRole("alert").innerText();if(!message.includes("登录账户已变化"))throw Error(message);const records=await(await page.request.get("http://127.0.0.1:8766/api/v1/research/archives")).json();if(records.items.length)throw Error("cross-account write");await page.reload();await page.getByRole("navigation",{name:"缠论工作区"}).getByRole("button",{name:/研究/}).click();const newCloud=page.locator(".cloud-archives").first();await newCloud.locator(":scope > summary").click();await newCloud.getByText("尚无云存档。",{exact:true}).waitFor();return {accountSwitchRejected:message,newAccountEmpty:true};}finally{await page.request.post("http://127.0.0.1:8766/api/v1/qa/switch/first");await page.reload();}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=stock&symbol=300750&market=SZ&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=DAY&adjust=QFQ
+- Page Title: 股票分析 · Analysis Studio
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T13-24-10-380Z.log#L3

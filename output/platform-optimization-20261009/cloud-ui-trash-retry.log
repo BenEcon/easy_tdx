@@ -1,0 +1,11 @@
+### Result
+{"restored":true,"retrySameID":true,"before":2,"after":3}
+### Ran Playwright code
+```js
+await (async(page)=>{await page.getByRole("navigation",{name:"缠论工作区"}).getByRole("button",{name:/研究/}).click();const cloud=page.locator(".cloud-archives").first();await cloud.locator(":scope > summary").click();const row=cloud.locator("li").filter({hasText:"第二设备已保存"});await row.getByRole("button",{name:"移入回收站",exact:true}).click();await cloud.getByText("已移入回收站，可恢复。",{exact:true}).waitFor();await cloud.getByRole("button",{name:"回收站",exact:true}).click();await cloud.locator("li").filter({hasText:"第二设备已保存"}).getByRole("button",{name:"恢复",exact:true}).click();await cloud.getByText("已恢复存档。",{exact:true}).waitFor();await cloud.getByRole("button",{name:"返回存档",exact:true}).click();await cloud.locator("li").filter({hasText:"第二设备已保存"}).waitFor();const before=await cloud.locator("li").count();let firstUrl;await page.route("**/research/archives/*",async route=>{if(route.request().method()!=="PUT")return route.continue();firstUrl=route.request().url();await route.fetch();await route.abort("failed");});await cloud.getByRole("button",{name:"保存当前结果到云端",exact:true}).click();await cloud.getByRole("alert").waitFor();await page.unroute("**/research/archives/*");const retry=page.waitForRequest(req=>req.method()==="PUT"&&req.url().includes("/research/archives/"));await cloud.getByRole("button",{name:"重试原存档上传",exact:true}).click();const repeated=await retry;await cloud.getByText("已保存到当前账户，可在其他设备刷新云目录查看。",{exact:true}).waitFor();if(repeated.url()!==firstUrl)throw Error("retry ID changed");const after=await cloud.locator("li").count();if(after!==before+1)throw Error("duplicate created");return {restored:true,retrySameID:true,before,after};})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=stock&symbol=300750&market=SZ&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=DAY&adjust=QFQ
+- Page Title: 股票分析 · Analysis Studio
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T13-24-10-380Z.log#L2

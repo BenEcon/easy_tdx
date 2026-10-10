@@ -26,11 +26,12 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 import pandas as pd
 
+from easy_tdx.backtest.combined_performance import aggregate_performance, combine_equity
 from easy_tdx.backtest.engine import BacktestEngine
 from easy_tdx.backtest.strategy import Strategy
 from easy_tdx.backtest.types import BacktestResult
@@ -69,6 +70,7 @@ class MultiStrategyResult:
     individual_results: dict[str, BacktestResult]
     equity_allocation: dict[str, float]
     combined_equity: pd.DataFrame
+    performance_basis: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -76,6 +78,7 @@ class MultiStrategyResult:
             "individual_results": {k: v.to_dict() for k, v in self.individual_results.items()},
             "equity_allocation": self.equity_allocation,
             "combined_equity": self.combined_equity.to_dict(orient="records"),
+            "performance_basis": self.performance_basis,
         }
 
 
@@ -123,10 +126,13 @@ class MultiStrategyEngine:
 
     def run(self) -> MultiStrategyResult:
         """逐策略独立回测，再汇总成组合整体绩效与合并净值曲线。"""
+        keys = [self._key(slot) for slot in self._strategies]
+        if len(keys) != len(set(keys)):
+            raise ValueError("策略槽位名称与标的重复，未覆盖成员；请为同标的子策略使用不同名称")
         allocations = self._compute_allocations()
         individual_results: dict[str, BacktestResult] = {}
 
-        for slot in self._strategies:
+        for index, slot in enumerate(self._strategies):
             key = self._key(slot)
             cash = allocations.get(key, 0)
             engine = BacktestEngine(
@@ -138,18 +144,21 @@ class MultiStrategyEngine:
                 slippage=self._slippage,
                 execution=self._execution,
             )
-            individual_results[key] = engine.run(slot.df)
+            individual_results[key] = engine.run(
+                slot.df, checkpoint_key=f"multi-strategy/{index}/signals"
+            )
 
         total_alloc = sum(allocations.values())
         equity_pct = {k: v / total_alloc if total_alloc > 0 else 0 for k, v in allocations.items()}
         combined_equity = self._build_combined_equity(individual_results, allocations)
-        total_perf = self._aggregate_performance(individual_results, allocations, combined_equity)
+        total_perf, basis = aggregate_performance(individual_results, allocations, combined_equity)
 
         return MultiStrategyResult(
             total_performance=total_perf,
             individual_results=individual_results,
             equity_allocation=equity_pct,
             combined_equity=combined_equity,
+            performance_basis=basis,
         )
 
     def _aggregate_performance(
@@ -164,31 +173,7 @@ class MultiStrategyEngine:
         槽位的成交汇总，喂给 PerformanceAnalyzer，得到与单标的回测同口径的完整
         指标（夏普/回撤/胜率/盈亏比等），便于前端复用 MetricTable 展示。
         """
-        from easy_tdx.backtest.performance import PerformanceAnalyzer
-
-        total_cash = sum(allocations.values())
-        base: dict[str, float] = {
-            "total_stocks": float(len(results)),  # 字段名沿用 PortfolioResult
-            "total_cash": total_cash,
-        }
-        if not results or len(combined_equity) < 2:
-            base.update({"total_return": 0.0, "annual_return": 0.0})
-            return base
-
-        # 汇总所有槽位的成交（concat 成一张表，PerformanceAnalyzer 据此算
-        # 胜率/盈亏比/平均盈亏等交易类指标）。所有策略均无成交时给空表兜底。
-        trade_frames = [r.trades for r in results.values() if len(r.trades) > 0]
-        all_trades = (
-            pd.concat(trade_frames, ignore_index=True)
-            if trade_frames
-            else pd.DataFrame(columns=["direction", "pnl", "rejected"])
-        )
-
-        analyzer = PerformanceAnalyzer(equity_curve=combined_equity, trades=all_trades)
-        metrics = analyzer.compute()
-        metrics["total_stocks"] = float(len(results))
-        metrics["total_cash"] = total_cash
-        return metrics
+        return aggregate_performance(results, allocations, combined_equity)[0]
 
     def _build_combined_equity(
         self,
@@ -202,48 +187,4 @@ class MultiStrategyEngine:
         每个策略的 total 列 forward-fill 对齐到并集后求和得组合总净值，
         再算回撤。
         """
-        del allocations  # 资金分配不参与曲线形状（各策略独立 full cash 回测，
-        # 合并的是 normalized 的净值贡献；保持签名与 Portfolio 版一致便于对照）
-        empty = pd.DataFrame(columns=["datetime", "total", "drawdown", "drawdown_pct"])
-        if not results:
-            return empty
-
-        series_list: list[pd.Series] = []
-        for key, result in results.items():
-            ec = result.equity_curve
-            if len(ec) == 0:
-                continue
-            dt = ec["datetime"]
-            if dt.dtype.kind in "iu":  # int YYYYMMDD
-                dt = pd.to_datetime(dt.astype(str), format="%Y%m%d")
-            elif dt.dtype != "datetime64[ns]":
-                dt = pd.to_datetime(dt)
-            s = pd.Series(ec["total"].to_numpy(), index=dt, name=key)
-            series_list.append(s)
-
-        if not series_list:
-            return empty
-
-        aligned = pd.concat(series_list, axis=1).sort_index()
-        aligned = aligned.ffill().fillna(0)
-        total = aligned.sum(axis=1)
-
-        # 回撤：drawdown 为绝对回撤额（峰值-当前，正值），drawdown_pct 为相对当时
-        # 峰值的回撤比例（drawdown / peak，0~1）。分母必须用逐点 peak 而非固定初始值：
-        # 净值大涨后 peak 是初始值的好几倍，若除以 initial 会把回撤百分比严重放大
-        # （如峰值 6.45x 初始时，45% 的真实回撤会被算成 293%）。与单标的
-        # PortfolioTracker.equity_curve 的 drawdown/drawdown_pct 定义保持一致，
-        # PerformanceAnalyzer 直接读 drawdown_pct 列算 max_drawdown。
-        peak = total.cummax()
-        drawdown = peak - total
-        peak_safe = peak.where(peak != 0, 1.0)
-        drawdown_pct = drawdown / peak_safe
-
-        return pd.DataFrame(
-            {
-                "datetime": total.index,
-                "total": total.to_numpy(),
-                "drawdown": drawdown.to_numpy(),
-                "drawdown_pct": drawdown_pct.to_numpy(),
-            }
-        ).reset_index(drop=True)
+        return combine_equity(results, allocations)

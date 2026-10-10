@@ -1,0 +1,9 @@
+### Result
+{"ownerIsolation":true,"conflictGuard":true}
+### Ran Playwright code
+```js
+await (async (page) => { const base="http://127.0.0.1:8766"; await page.request.post(base+"/api/v1/qa/switch/second"); await page.reload(); await page.getByRole("heading",{name:"建立你的追踪清单",exact:true}).waitFor(); if(await page.getByRole("heading",{name:"核心观察",exact:true}).count()) throw new Error("owner leaked"); await page.request.post(base+"/api/v1/qa/switch/first"); await page.reload(); await page.getByRole("button",{name:"移除510300-沪深300ETF",exact:true}).waitFor(); const account=await (await page.request.get(base+"/api/v1/auth/me")).json(); account.user.preferences.tracking_groups.revision="remote-edit"; await page.request.put(base+"/api/v1/auth/me/preferences",{data:{preferences:account.user.preferences}}); await page.getByLabel("新建分组").fill("冲突操作不应保存"); await page.getByRole("button",{name:"添加",exact:true}).click(); await page.getByRole("alert").filter({hasText:"已在其他页面更新"}).waitFor(); const after=await (await page.request.get(base+"/api/v1/auth/me")).json(); if(after.user.preferences.tracking_groups.groups.length!==1) throw new Error("stale overwrite"); return {ownerIsolation:true,conflictGuard:true}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/tracking
+- Page Title: 股票分析 · Analysis Studio

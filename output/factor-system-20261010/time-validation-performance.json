@@ -1,0 +1,10 @@
+{
+  "elapsed_seconds": 20.64415337506216,
+  "assets": 20,
+  "dates": 800,
+  "reports": 4,
+  "folds": 77,
+  "test_dates": 770,
+  "errors": {},
+  "serialized_bytes_without_input_snapshots": 2625988
+}

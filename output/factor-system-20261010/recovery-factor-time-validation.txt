@@ -1,0 +1,32 @@
+Local checkpoint, 2026-10-10; no production deployment.
+Before: source-after-factor-numerics.tar.gz
+SHA256: 637c1b404673bf2fd4d7458a807b50c46c542a2b2d82bc0fc0f35e8fc764e155
+After: source-after-factor-time-validation.tar.gz
+SHA256: d7b0ddd9c1ec85fd755f1bcd62222db43af7e7b070efc976b7e61616d1fb986e
+
+Includes the existing dirty source tree, docs and tests; excludes user databases,
+output, Python caches, node_modules and frontend dist. Not a Git clean baseline.
+Restore by extracting into a fresh temporary directory, comparing files, and
+selectively applying only this batch's changes. Never overwrite account/research
+databases or unrelated user edits. Rebuild the frontend after source restore.
+
+Chronological holdout and rolling validation, boundary label purging, frozen
+configuration/replay, reports/UI, core argument guards and display-only charts.
+No change to confirmed Chanlun source or MyTT (baseline comparison passed).
+
+Evidence:
+- time-validation-backend-final.log: earlier broad pass, 1207 tests.
+- time-validation-core-final.log: latest selected factor/archive/activity pass,
+  884 tests, including the added core guards.
+- latest time/archive focused run: 69 pass (36 temporal + 33 archive).
+- time-validation-frontend-final.log: 592 + 28 pass.
+- time-validation-build-final.log: success, preexisting chunk-size warning.
+- time-validation-mypy-final.log: 315 source files, success.
+- time-validation-ruff-final.log: all checks passed.
+- output/playwright/time-validation-* includes readonly, export, mobile,
+  bounded correlation screenshot and manual-only activity evidence.
+
+Dedicated browser factor-time closed. Isolated server PID 31644 terminated;
+process recheck found no matching process. QA data is synthetic and local only.
+Goal remains incomplete. See docs/factor-system-plan-20261010.md and
+docs/factor-time-validation-20261010.md for remaining full-scope requirements.

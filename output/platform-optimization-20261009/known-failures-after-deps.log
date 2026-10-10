@@ -1,0 +1,262 @@
+FFFFFF.....FFFF                                                          [100%]
+=================================== FAILURES ===================================
+_____________ TestFactorAnalyzerIC.test_compute_ic_returns_series ______________
+tests/unit/test_factor_analysis.py:52: in test_compute_ic_returns_series
+    ic_series = analyzer.compute_ic()
+src/easy_tdx/factor/analysis.py:65: in compute_ic
+    corr = valid[self._factor_col].corr(valid[self._return_col], method="spearman")
+.venv/lib/python3.10/site-packages/pandas/core/series.py:2991: in corr
+    return nanops.nancorr(
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:85: in _f
+    return f(*args, **kwargs)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1614: in nancorr
+    f = get_corr_func(method)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1629: in get_corr_func
+    from scipy.stats import spearmanr
+.venv/lib/python3.10/site-packages/scipy/stats/__init__.py:624: in <module>
+    from ._stats_py import *
+.venv/lib/python3.10/site-packages/scipy/stats/_stats_py.py:38: in <module>
+    from scipy import sparse
+.venv/lib/python3.10/site-packages/scipy/__init__.py:134: in __getattr__
+    return _importlib.import_module(f'scipy.{name}')
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+.venv/lib/python3.10/site-packages/scipy/sparse/__init__.py:315: in <module>
+    from . import csgraph
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/__init__.py:187: in <module>
+    from ._laplacian import laplacian
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/_laplacian.py:7: in <module>
+    from scipy.sparse.linalg import LinearOperator
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/__init__.py:134: in <module>
+    from ._eigen import *
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/__init__.py:11: in <module>
+    from ._svds import svds
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/_svds.py:10: in <module>
+    from scipy.sparse.linalg._svdp import _svdp
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_svdp.py:23: in <module>
+    from ._propack import _spropack  # type: ignore[attr-defined]
+E   ImportError: dlopen(/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so, 0x0002): tried: '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero), '/System/Volumes/Preboot/Cryptexes/OS/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (no such file), '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero)
+________________ TestFactorAnalyzerIC.test_positive_ic_detected ________________
+tests/unit/test_factor_analysis.py:59: in test_positive_ic_detected
+    ic_series = analyzer.compute_ic()
+src/easy_tdx/factor/analysis.py:65: in compute_ic
+    corr = valid[self._factor_col].corr(valid[self._return_col], method="spearman")
+.venv/lib/python3.10/site-packages/pandas/core/series.py:2991: in corr
+    return nanops.nancorr(
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:85: in _f
+    return f(*args, **kwargs)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1614: in nancorr
+    f = get_corr_func(method)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1629: in get_corr_func
+    from scipy.stats import spearmanr
+.venv/lib/python3.10/site-packages/scipy/stats/__init__.py:624: in <module>
+    from ._stats_py import *
+.venv/lib/python3.10/site-packages/scipy/stats/_stats_py.py:38: in <module>
+    from scipy import sparse
+.venv/lib/python3.10/site-packages/scipy/__init__.py:134: in __getattr__
+    return _importlib.import_module(f'scipy.{name}')
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+.venv/lib/python3.10/site-packages/scipy/sparse/__init__.py:315: in <module>
+    from . import csgraph
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/__init__.py:187: in <module>
+    from ._laplacian import laplacian
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/_laplacian.py:7: in <module>
+    from scipy.sparse.linalg import LinearOperator
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/__init__.py:134: in <module>
+    from ._eigen import *
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/__init__.py:11: in <module>
+    from ._svds import svds
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/_svds.py:10: in <module>
+    from scipy.sparse.linalg._svdp import _svdp
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_svdp.py:23: in <module>
+    from ._propack import _spropack  # type: ignore[attr-defined]
+E   ImportError: dlopen(/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so, 0x0002): tried: '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero), '/System/Volumes/Preboot/Cryptexes/OS/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (no such file), '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero)
+__________________ TestFactorAnalyzerIC.test_zero_ic_detected __________________
+tests/unit/test_factor_analysis.py:65: in test_zero_ic_detected
+    ic_series = analyzer.compute_ic()
+src/easy_tdx/factor/analysis.py:65: in compute_ic
+    corr = valid[self._factor_col].corr(valid[self._return_col], method="spearman")
+.venv/lib/python3.10/site-packages/pandas/core/series.py:2991: in corr
+    return nanops.nancorr(
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:85: in _f
+    return f(*args, **kwargs)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1614: in nancorr
+    f = get_corr_func(method)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1629: in get_corr_func
+    from scipy.stats import spearmanr
+.venv/lib/python3.10/site-packages/scipy/stats/__init__.py:624: in <module>
+    from ._stats_py import *
+.venv/lib/python3.10/site-packages/scipy/stats/_stats_py.py:38: in <module>
+    from scipy import sparse
+.venv/lib/python3.10/site-packages/scipy/__init__.py:134: in __getattr__
+    return _importlib.import_module(f'scipy.{name}')
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+.venv/lib/python3.10/site-packages/scipy/sparse/__init__.py:315: in <module>
+    from . import csgraph
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/__init__.py:187: in <module>
+    from ._laplacian import laplacian
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/_laplacian.py:7: in <module>
+    from scipy.sparse.linalg import LinearOperator
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/__init__.py:134: in <module>
+    from ._eigen import *
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/__init__.py:11: in <module>
+    from ._svds import svds
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/_svds.py:10: in <module>
+    from scipy.sparse.linalg._svdp import _svdp
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_svdp.py:23: in <module>
+    from ._propack import _spropack  # type: ignore[attr-defined]
+E   ImportError: dlopen(/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so, 0x0002): tried: '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero), '/System/Volumes/Preboot/Cryptexes/OS/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (no such file), '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero)
+__________________ TestFactorAnalyzerReport.test_full_report ___________________
+tests/unit/test_factor_analysis.py:89: in test_full_report
+    report = analyzer.full_report()
+src/easy_tdx/factor/analysis.py:128: in full_report
+    ic_series = self.compute_ic()
+src/easy_tdx/factor/analysis.py:65: in compute_ic
+    corr = valid[self._factor_col].corr(valid[self._return_col], method="spearman")
+.venv/lib/python3.10/site-packages/pandas/core/series.py:2991: in corr
+    return nanops.nancorr(
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:85: in _f
+    return f(*args, **kwargs)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1614: in nancorr
+    f = get_corr_func(method)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1629: in get_corr_func
+    from scipy.stats import spearmanr
+.venv/lib/python3.10/site-packages/scipy/stats/__init__.py:624: in <module>
+    from ._stats_py import *
+.venv/lib/python3.10/site-packages/scipy/stats/_stats_py.py:38: in <module>
+    from scipy import sparse
+.venv/lib/python3.10/site-packages/scipy/__init__.py:134: in __getattr__
+    return _importlib.import_module(f'scipy.{name}')
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+.venv/lib/python3.10/site-packages/scipy/sparse/__init__.py:315: in <module>
+    from . import csgraph
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/__init__.py:187: in <module>
+    from ._laplacian import laplacian
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/_laplacian.py:7: in <module>
+    from scipy.sparse.linalg import LinearOperator
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/__init__.py:134: in <module>
+    from ._eigen import *
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/__init__.py:11: in <module>
+    from ._svds import svds
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/_svds.py:10: in <module>
+    from scipy.sparse.linalg._svdp import _svdp
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_svdp.py:23: in <module>
+    from ._propack import _spropack  # type: ignore[attr-defined]
+E   ImportError: dlopen(/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so, 0x0002): tried: '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero), '/System/Volumes/Preboot/Cryptexes/OS/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (no such file), '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero)
+____________ TestFactorAnalyzerReport.test_report_ic_positive_rate _____________
+tests/unit/test_factor_analysis.py:99: in test_report_ic_positive_rate
+    report = analyzer.full_report()
+src/easy_tdx/factor/analysis.py:128: in full_report
+    ic_series = self.compute_ic()
+src/easy_tdx/factor/analysis.py:65: in compute_ic
+    corr = valid[self._factor_col].corr(valid[self._return_col], method="spearman")
+.venv/lib/python3.10/site-packages/pandas/core/series.py:2991: in corr
+    return nanops.nancorr(
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:85: in _f
+    return f(*args, **kwargs)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1614: in nancorr
+    f = get_corr_func(method)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1629: in get_corr_func
+    from scipy.stats import spearmanr
+.venv/lib/python3.10/site-packages/scipy/stats/__init__.py:624: in <module>
+    from ._stats_py import *
+.venv/lib/python3.10/site-packages/scipy/stats/_stats_py.py:38: in <module>
+    from scipy import sparse
+.venv/lib/python3.10/site-packages/scipy/__init__.py:134: in __getattr__
+    return _importlib.import_module(f'scipy.{name}')
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+.venv/lib/python3.10/site-packages/scipy/sparse/__init__.py:315: in <module>
+    from . import csgraph
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/__init__.py:187: in <module>
+    from ._laplacian import laplacian
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/_laplacian.py:7: in <module>
+    from scipy.sparse.linalg import LinearOperator
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/__init__.py:134: in <module>
+    from ._eigen import *
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/__init__.py:11: in <module>
+    from ._svds import svds
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/_svds.py:10: in <module>
+    from scipy.sparse.linalg._svdp import _svdp
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_svdp.py:23: in <module>
+    from ._propack import _spropack  # type: ignore[attr-defined]
+E   ImportError: dlopen(/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so, 0x0002): tried: '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero), '/System/Volumes/Preboot/Cryptexes/OS/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (no such file), '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero)
+_____________ TestFactorAnalyzerDecay.test_decay_returns_dataframe _____________
+tests/unit/test_factor_analysis.py:107: in test_decay_returns_dataframe
+    decay = analyzer.compute_decay(max_lag=5)
+src/easy_tdx/factor/analysis.py:116: in compute_decay
+    ic_series = self.compute_ic()
+src/easy_tdx/factor/analysis.py:65: in compute_ic
+    corr = valid[self._factor_col].corr(valid[self._return_col], method="spearman")
+.venv/lib/python3.10/site-packages/pandas/core/series.py:2991: in corr
+    return nanops.nancorr(
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:85: in _f
+    return f(*args, **kwargs)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1614: in nancorr
+    f = get_corr_func(method)
+.venv/lib/python3.10/site-packages/pandas/core/nanops.py:1629: in get_corr_func
+    from scipy.stats import spearmanr
+.venv/lib/python3.10/site-packages/scipy/stats/__init__.py:624: in <module>
+    from ._stats_py import *
+.venv/lib/python3.10/site-packages/scipy/stats/_stats_py.py:38: in <module>
+    from scipy import sparse
+.venv/lib/python3.10/site-packages/scipy/__init__.py:134: in __getattr__
+    return _importlib.import_module(f'scipy.{name}')
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+.venv/lib/python3.10/site-packages/scipy/sparse/__init__.py:315: in <module>
+    from . import csgraph
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/__init__.py:187: in <module>
+    from ._laplacian import laplacian
+.venv/lib/python3.10/site-packages/scipy/sparse/csgraph/_laplacian.py:7: in <module>
+    from scipy.sparse.linalg import LinearOperator
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/__init__.py:134: in <module>
+    from ._eigen import *
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/__init__.py:11: in <module>
+    from ._svds import svds
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_eigen/_svds.py:10: in <module>
+    from scipy.sparse.linalg._svdp import _svdp
+.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_svdp.py:23: in <module>
+    from ._propack import _spropack  # type: ignore[attr-defined]
+E   ImportError: dlopen(/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so, 0x0002): tried: '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero), '/System/Volumes/Preboot/Cryptexes/OS/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (no such file), '/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/scipy/sparse/linalg/_propack/_spropack.cpython-310-darwin.so' (section '__DATA/__thread_bss' has a zero-fill section type, but offset field is not zero)
+___ test_all_prefixes_are_exact_top_bottom_mirrors[wave_fixture-wave_events] ___
+tests/unit/test_top_divergence.py:133: in test_all_prefixes_are_exact_top_bottom_mirrors
+    assert value == pytest.approx(-other)
+E   assert 1 == -1 ± 1.0e-06
+E     
+E     comparison failed
+E     Obtained: 1
+E     Expected: -1 ± 1.0e-06
+_____ test_prefix_checks_closed_status_and_strict_events_unchanged[False] ______
+tests/unit/test_wave_dea_tolerance.py:48: in test_prefix_checks_closed_status_and_strict_events_unchanged
+    assert comparison['mode']=='dea_tolerance' and comparison['passed']
+E   AssertionError: assert ('legacy_standard' == 'dea_tolerance'
+E     
+E     - dea_tolerance
+E     + legacy_standard)
+______ test_prefix_checks_closed_status_and_strict_events_unchanged[True] ______
+tests/unit/test_wave_dea_tolerance.py:48: in test_prefix_checks_closed_status_and_strict_events_unchanged
+    assert comparison['mode']=='dea_tolerance' and comparison['passed']
+E   AssertionError: assert ('legacy_standard' == 'dea_tolerance'
+E     
+E     - dea_tolerance
+E     + legacy_standard)
+______ test_later_dea_can_break_research_without_retroactive_confirmation ______
+tests/unit/test_wave_dea_tolerance.py:79: in test_later_dea_can_break_research_without_retroactive_confirmation
+    assert pending['passed'] and not pending['closed']
+E   assert (False)
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_analysis.py::TestFactorAnalyzerIC::test_compute_ic_returns_series
+FAILED tests/unit/test_factor_analysis.py::TestFactorAnalyzerIC::test_positive_ic_detected
+FAILED tests/unit/test_factor_analysis.py::TestFactorAnalyzerIC::test_zero_ic_detected
+FAILED tests/unit/test_factor_analysis.py::TestFactorAnalyzerReport::test_full_report
+FAILED tests/unit/test_factor_analysis.py::TestFactorAnalyzerReport::test_report_ic_positive_rate
+FAILED tests/unit/test_factor_analysis.py::TestFactorAnalyzerDecay::test_decay_returns_dataframe
+FAILED tests/unit/test_top_divergence.py::test_all_prefixes_are_exact_top_bottom_mirrors[wave_fixture-wave_events]
+FAILED tests/unit/test_wave_dea_tolerance.py::test_prefix_checks_closed_status_and_strict_events_unchanged[False]
+FAILED tests/unit/test_wave_dea_tolerance.py::test_prefix_checks_closed_status_and_strict_events_unchanged[True]
+FAILED tests/unit/test_wave_dea_tolerance.py::test_later_dea_can_break_research_without_retroactive_confirmation
+10 failed, 5 passed, 71 deselected in 5.28s

@@ -1,0 +1,32 @@
+✔ tracking archive preserves raw input, precision, rules and can import read-only (2.544833ms)
+✔ missing raw input (0.202917ms)
+✔ wrong adjustment (0.093583ms)
+✔ wrong period (0.098125ms)
+✔ duplicate target (0.0885ms)
+✔ false success (0.103333ms)
+✔ unknown state (0.067625ms)
+✔ cancelled empty expansion and partially completed batches retain actual states (0.092416ms)
+✔ failed upload retries same identity and frozen payload, independent new batch gets a new identity (13.839875ms)
+✔ late previous-owner save is discarded and never retried as the next account (0.408625ms)
+✔ non-finite result stays unsaved rather than converting to null (0.162375ms)
+✔ empty selections include every row, including incomplete results (0.531208ms)
+✔ same period/column selections are OR, other columns and periods are AND (0.181708ms)
+✔ total selection does not bypass other criteria; missing periods never count as neutral signals (0.074625ms)
+✔ toggle/removal preserves all other selections and never mutates input (0.467541ms)
+✔ status selection uses OR with empty meaning all; can combine with breadth (0.089542ms)
+✔ tracking identity separates asset types, exchanges and board catalogues (0.754084ms)
+✔ cloud book validates without silently dropping corrupt groups or duplicate entries (0.634208ms)
+✔ expansion preserves every member and all board/direct sources, not a 200-row display page (1.348125ms)
+✔ membership failure is explicit and malformed partial membership is never accepted (0.225084ms)
+✔ batch runs sequentially, keeps partial errors and continues after a failed target (6.920666ms)
+✔ cancellation marks in-flight and unstarted rows, ignoring a late success (0.171333ms)
+✔ group breadth counts only available periods, never treats failed targets as neutral evidence (0.219334ms)
+✔ every clickable breadth count equals matching target count; periods and point families stay independent (0.214333ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 24
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 187.777125

@@ -1,0 +1,6 @@
+### Result
+{"result":"PASS","route":"http://127.0.0.1:8769/account","calls":[],"title":"000001 · 日线 · 因子研究\n\n保存于 2026-10-10T06:16:11.976886+00:00 · 原档 6c7d9b22092f\n\n关闭云存档\n\n账户上传的原档，未经服务端重新核验"}
+### Ran Playwright code
+```js
+await (async page => { const calls=[]; const listener=r=>{if((r.method()==="POST" && /research\/factors|tasks/.test(r.url())) || /\/api\/bars/.test(r.url())) calls.push({method:r.method(),url:r.url()});}; page.on("request",listener); await page.getByRole("button",{name:"查看原档",exact:true}).first().click(); await page.getByRole("dialog").waitFor(); await page.waitForLoadState("networkidle"); page.off("request",listener); const txt=await page.getByRole("dialog").innerText(); if(calls.length || !txt.includes("GTJA 132") || !txt.includes("只读原档")) throw new Error(JSON.stringify({calls,txt})); return {result:"PASS",route:page.url(),calls,title:txt.slice(0,100)}; })(page);
+```

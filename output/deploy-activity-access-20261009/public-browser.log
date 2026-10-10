@@ -1,0 +1,6 @@
+### Result
+{"url":"https://tdx.bowenv.com/login?redirect=/tracking","width":390,"document":390}
+### Ran Playwright code
+```js
+await (async (page) => { await page.getByRole("heading",{name:"登录账户",exact:true}).waitFor(); const metrics=await page.evaluate(()=>({url:location.href,width:innerWidth,document:document.documentElement.scrollWidth})); if(!metrics.url.includes("/login")||metrics.width!==metrics.document) throw new Error(JSON.stringify(metrics)); await page.screenshot({path:"output/playwright/deploy-activity-access-390.png"}); return metrics; })(page);
+```

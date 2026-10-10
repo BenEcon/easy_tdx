@@ -1,0 +1,9 @@
+### Result
+{"ownerIsolation":true,"legacyRefused":true,"replayRequests":0}
+### Ran Playwright code
+```js
+await (async (page) => { await page.getByRole("link",{name:"返回信号雷达"}).click(); await page.getByRole("button",{name:"复核信号",exact:true}).first().waitFor(); await page.setViewportSize({width:1440,height:900}); await page.screenshot({path:"../output/playwright/radar-table-desktop.png"}); const saved=await page.evaluate(()=>localStorage.getItem("easy-tdx.signal-radar.v2.evidence-local-qa")); if(!saved)throw Error("missing owner cache"); await page.route("**/api/v1/auth/status",async route=>{const response=await route.fetch(); const body=await response.json(); body.user.id="other-qa-owner"; await route.fulfill({response,json:body})}); await page.reload(); await page.getByText("还没有扫描结果。",{exact:true}).waitFor(); await page.unroute("**/api/v1/auth/status"); await page.reload(); await page.getByRole("button",{name:"复核信号",exact:true}).first().waitFor(); const u=new URL("/chanlun",page.url()); Object.entries({review:"signal",autoRun:"1",symbol:"600699",category:"DAY",strategy:"chanlun_mmd"}).forEach(([k,v])=>u.searchParams.set(k,v)); let count=0; const observe=r=>{if(r.url().includes("/chanlun/replay"))count++}; page.on("request",observe); await page.goto(u.href); await page.getByRole("alert").filter({hasText:"缺少原扫描复权"}).waitFor(); if(count)throw Error("invalid legacy review auto ran"); return {ownerIsolation:true,legacyRefused:true,replayRequests:count}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:18094/chanlun?review=signal&autoRun=1&symbol=600699&category=DAY&strategy=chanlun_mmd
+- Page Title: 股票分析 · Analysis Studio

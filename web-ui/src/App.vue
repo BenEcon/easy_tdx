@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useMobileViewport } from './mobile-viewport'
 import { useVisibleViewport } from './visible-viewport'
 import { useRoute, useRouter } from 'vue-router'
 import { logout, updatePreferences, useAuth } from './auth'
+import { canUseTracking } from './feature-access'
+import { useActivity } from './use-activity'
+import {trackingSession} from './tracking-background'
 
 const route = useRoute()
 const router = useRouter()
 const { currentUser } = useAuth()
+const {loading:trackingLoading,phase:trackingPhase,completed:trackingCompleted,rows:trackingRows}=trackingSession
+useActivity()
+watch(()=>currentUser.value?.id,(id)=>{if(!id&&!route.meta.public)void router.replace('/login')})
 const SIDEBAR_STORAGE_KEY = 'stock-analysis.sidebar-collapsed'
 
 function loadSidebarState(): boolean {
@@ -35,16 +41,23 @@ watch(() => route.fullPath, closeMobileNav)
 watch(mobile, value => { if (!value) closeMobileNav() })
 let preferencesReady = false
 let preferenceTimer: ReturnType<typeof setTimeout> | undefined
+let hydratingSidebar = false
 
-watch(currentUser, (user) => {
+watch(currentUser, (user, previous) => {
+  const changedOwner = user?.id !== previous?.id
+  if (changedOwner) { clearTimeout(preferenceTimer); preferenceTimer = undefined }
   if (!user) {
     preferencesReady = false
     return
   }
   const saved = user.preferences.sidebar_collapsed
-  if (typeof saved === 'boolean') sidebarCollapsed.value = saved
+  hydratingSidebar = true
+  try {
+    if (changedOwner) sidebarCollapsed.value = typeof saved === 'boolean' ? saved : false
+    else if (!preferenceTimer && typeof saved === 'boolean') sidebarCollapsed.value = saved
+  } finally { hydratingSidebar = false }
   preferencesReady = true
-}, { immediate: true })
+}, { immediate: true, flush: 'sync' })
 
 watch(sidebarCollapsed, (value) => {
   try {
@@ -52,13 +65,19 @@ watch(sidebarCollapsed, (value) => {
   } catch {
     // localStorage 不可用时仅不保存，不影响当前折叠状态
   }
-  if (preferencesReady && currentUser.value) {
+  if (!hydratingSidebar && preferencesReady && currentUser.value) {
+    const owner = currentUser.value.id
     clearTimeout(preferenceTimer)
     preferenceTimer = setTimeout(() => {
-      void updatePreferences({ sidebar_collapsed: value })
+      preferenceTimer = undefined
+      if (currentUser.value?.id !== owner) return
+      // Local layout remains usable on network failure; do not emit an
+      // unhandled promise rejection when a document is being unloaded.
+      void updatePreferences({ sidebar_collapsed: value }).catch(() => undefined)
     }, 350)
   }
-})
+}, { flush: 'sync' })
+onBeforeUnmount(() => clearTimeout(preferenceTimer))
 
 const baseNavGroups = [
   {
@@ -69,6 +88,7 @@ const baseNavGroups = [
       { to: '/intraday', label: '盘中研究', paths: ['M3 10h2.5l1.7-4 2.6 8 2.1-5 1.7 3H18', 'M3 17h15'] },
       { to: '/chanlun', label: '缠论结构', paths: ['M3 16 8 9l4 5 6-9', 'M3 16h15'] },
       { to: '/signals', label: '信号雷达', paths: ['M10.5 3a7.5 7.5 0 1 1-5.3 2.2', 'M10.5 6a4.5 4.5 0 1 1-3.2 1.3', 'M10.5 10.5h.01'] },
+      { to: '/tracking', label: '追踪标的', paths: ['M3 5h15M3 10h15M3 15h10', 'M5 3v14'] },
     ],
   },
   {
@@ -94,7 +114,7 @@ const baseNavGroups = [
 ]
 
 const navGroups = computed(() => {
-  const groups = baseNavGroups.map((group) => ({ ...group, items: [...group.items] }))
+  const groups = baseNavGroups.map((group) => ({ ...group, items: group.items.filter(item=>item.to!=='/tracking'||canUseTracking(currentUser.value)) }))
   if (currentUser.value?.role === 'admin') {
     groups[groups.length - 1].items.push({
       to: '/admin/accounts',
@@ -213,6 +233,7 @@ async function handleLogout() {
             <p>{{ pageSubtitle }}</p>
           </div>
           <div class="toolbar-account">
+            <RouterLink v-if="trackingPhase && route.path!=='/tracking' && canUseTracking(currentUser)" class="tracking-status-link" to="/tracking" :title="trackingPhase">追踪分析 · {{ trackingLoading ? `${trackingCompleted}/${trackingRows.length || '…'}` : '查看结果' }}</RouterLink>
             <RouterLink to="/account" class="account-chip" aria-label="个人账户">
               <span class="chip-avatar">{{ currentUser?.username.slice(0, 1).toUpperCase() }}</span>
               <span>{{ currentUser?.username }}</span>
@@ -237,6 +258,9 @@ async function handleLogout() {
 </template>
 
 <style scoped>
+.tracking-status-link{font-size:11px;color:var(--accent);padding:7px 10px;border:1px solid var(--border);border-radius:7px;white-space:nowrap;font-variant-numeric:tabular-nums;text-decoration:none}
+.tracking-status-link:hover{background:rgba(68,150,235,.08)}.tracking-status-link:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:640px){.tracking-status-link{font-size:10px;padding:6px;max-width:126px;overflow:hidden;text-overflow:ellipsis}}
 .app-viewport {
   width: 100%;
   height: 100dvh;

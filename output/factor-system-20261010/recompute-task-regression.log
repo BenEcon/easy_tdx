@@ -1,0 +1,33 @@
+........................................................................ [  6%]
+........................................................................ [ 12%]
+........................................................................ [ 18%]
+........................................................................ [ 24%]
+........................................................................ [ 30%]
+........................................................................ [ 36%]
+........................................................................ [ 42%]
+........................................................................ [ 48%]
+........................................................................ [ 55%]
+........................................................................ [ 61%]
+........................................................................ [ 67%]
+........................................................................ [ 73%]
+........................................................................ [ 79%]
+..ss.................................................................... [ 85%]
+........................................................................ [ 91%]
+........................................................................ [ 97%]
+........................                                                 [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+tests/unit/test_durable_task_api.py::test_six_http_submissions_execute_frozen_inputs_in_actual_worker[optimize_all]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:343: RuntimeWarning: invalid value encountered in divide
+    ADX = MA(ABS(MDI - PDI) / (PDI + MDI) * 100, M2)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1174 passed, 2 skipped, 7 warnings in 161.47s (0:02:41)

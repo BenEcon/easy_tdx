@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import ResultDataProvenance from '../components/ResultDataProvenance.vue'
 // 参数寻优主页面：左配置（选标的 + 策略 + 寻优参数）/ 右报告（排名表 + 热力图）。
 // 取行情已整合进「开始寻优」。另有「一键寻优所有策略」：用各策略预设网格逐策略寻优再全局排名。
 
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 import ChartFrame from '../components/ChartFrame.vue'
@@ -12,18 +13,28 @@ import MacSelect from '../components/MacSelect.vue'
 import NumberStepper from '../components/NumberStepper.vue'
 import OptimizeHeatmap from '../components/OptimizeHeatmap.vue'
 import OptimizeResultTable from '../components/OptimizeResultTable.vue'
+import MetricStateNotes from '../components/MetricStateNotes.vue'
+import { metricText } from '../metric-state'
 import ParamGridPicker from '../components/ParamGridPicker.vue'
 import QuoteCarousel from '../components/QuoteCarousel.vue'
 import SymbolPicker from '../components/SymbolPicker.vue'
-import { gradeGridPoint } from '../grading'
+import { gradeOptimizationPoint } from '../grading'
 import { useSelectedStock } from '../stock-history'
 import type { GradeResult } from '../grading'
-import type { Category, ExecutionMode } from '../types'
+import type { Category, ExecutionMode, GridPointResult } from '../types'
 import { useBacktestStore } from '../stores/backtest'
+import { researchInputFields } from '../research-input'
+import { copyTaskInput } from '../task-execution'
+import { executionDefaults, optimizationQuery } from '../execution-context'
+import { useAuth } from '../auth'
+import { useMarketPreferences } from '../market-preferences'
 
 const store = useBacktestStore()
 const { mobile, settingsOpen } = useMobileSettings(() => Boolean(store.optimizeResult || store.optimizeAllResult))
 const router = useRouter()
+const {currentUser}=useAuth()
+const {adjustMode}=useMarketPreferences()
+let inputGeneration=0,alive=true
 
 // SymbolPicker 实例引用，用于触发取行情
 const symbolPicker = ref<InstanceType<typeof SymbolPicker> | null>(null)
@@ -43,6 +54,7 @@ const endDate = ref(isoDaysFromNow(0))
 const strategy = ref('ma_cross')
 const paramGrid = ref<Record<string, Array<number | string>>>({})
 const cash = ref(1000000)
+const commission=ref<number>(executionDefaults.commission),minCommission=ref<number>(executionDefaults.min_commission),stampTax=ref<number>(executionDefaults.stamp_tax),slippage=ref<number>(executionDefaults.slippage)
 const execution = ref<ExecutionMode>('next_open')
 // 一键寻优并发工作进程数：0=串行（同 workers=1）；2+=多进程并行（CPU-bound 必须）
 const cpuCount = (() => {
@@ -101,7 +113,7 @@ const strategyOptions = computed(() =>
 
 onMounted(() => {
   store.loadStrategies().catch((e) => {
-    store.error = `加载策略列表失败：${e instanceof Error ? e.message : e}`
+    if(alive)store.error = `加载策略列表失败：${e instanceof Error ? e.message : e}`
   })
 })
 
@@ -114,16 +126,14 @@ const gridPoints = computed(() => {
 // 取行情（点击「开始寻优」时触发）→ 寻优
 async function onRun() {
   store.error = ''
+  const version=inputGeneration
+  const request=copyTaskInput({strategy:strategy.value,param_grid:paramGrid.value,cash:cash.value,execution:execution.value,commission:commission.value,min_commission:minCommission.value,stamp_tax:stampTax.value,slippage:slippage.value})
   // 1. 先取行情
-  const ok = await symbolPicker.value?.loadBars()
-  if (!ok) return
+  const ok = await symbolPicker.value?.loadBars(true)
+  if (!ok || !alive || version!==inputGeneration) return
   // 取行情成功 → 冻结本次寻优真正使用的标的上下文，供「查看」拼 URL（存 store，跨路由保留）
-  store.setOptimizeContext({
-    code: code.value,
-    category: category.value,
-    startDate: startDate.value,
-    endDate: endDate.value,
-  })
+  if (!store.barsContext) return
+  store.setOptimizeContext({ ...store.barsContext })
   // 2. 校验寻优参数
   if (Object.keys(paramGrid.value).length === 0) {
     store.error = '请勾选至少 1 个参数并填入取值'
@@ -135,10 +145,8 @@ async function onRun() {
   }
   // 3. 寻优
   await store.runOptimize({
-    strategy: strategy.value,
-    param_grid: paramGrid.value,
-    cash: cash.value,
-    execution: execution.value,
+    ...researchInputFields(store.barsContext),
+    ...request,
     ohlcv: store.ohlcv,
   })
 }
@@ -146,72 +154,64 @@ async function onRun() {
 // 一键寻优所有策略：取行情 → 全策略预设网格寻优 → 全局排名
 async function onRunAll() {
   store.error = ''
+  const version=inputGeneration
+  const request={cash:cash.value,execution:execution.value,workers:workers.value,commission:commission.value,min_commission:minCommission.value,stamp_tax:stampTax.value,slippage:slippage.value}
   // 1. 先取行情
-  const ok = await symbolPicker.value?.loadBars()
-  if (!ok) return
+  const ok = await symbolPicker.value?.loadBars(true)
+  if (!ok || !alive || version!==inputGeneration) return
   // 取行情成功 → 冻结本次寻优真正使用的标的上下文，供「查看」拼 URL（存 store，跨路由保留）
-  store.setOptimizeContext({
-    code: code.value,
-    category: category.value,
-    startDate: startDate.value,
-    endDate: endDate.value,
-  })
+  if (!store.barsContext) return
+  store.setOptimizeContext({ ...store.barsContext })
   // 2. 一键寻优
   await store.runOptimizeAll({
-    cash: cash.value,
-    execution: execution.value,
-    workers: workers.value,
+    ...researchInputFields(store.barsContext),
+    ...request,
     ohlcv: store.ohlcv,
   })
 }
 
-/** 「查看」跳转时，把本次寻优实际使用的标的 + 周期 + 日期范围一并塞进 query，
- * 让回测页能完整复现寻优时的行情（而非只带策略参数）。
- * 注意：必须读 store.optimizeContext（取行情成功时冻结），不能读输入框实时值 ——
- * 否则寻优完成后改了输入框代码，「查看」URL 会被污染，指向一个根本没被回测过的标的；
- * 且不能读组件 ref，否则切走再回 /optimize 时排名还在但上下文已丢失。 */
-function buildBacktestQuery(strategyName: string, params: Record<string, number | string>) {
-  const ctx = store.optimizeContext
-  return {
-    strategy: strategyName,
-    params: JSON.stringify(params),
-    symbol: ctx?.code ?? '',
-    startDate: ctx?.startDate ?? '',
-    endDate: ctx?.endDate ?? '',
-    category: ctx?.category ?? category.value,
-  }
+/** Carry the completed request's configuration; new data is explicitly a recalculation, not replay. */
+function buildBacktestQuery(strategyName: string, params: Record<string, number | string>, all=false) {
+  const request=all?store.optimizeAllRequest:store.optimizeRequest
+  return optimizationQuery(request!,strategyName,params)
 }
 
 // 点击排名表「查看」→ 跳转单标的页用该参数回测
 function onViewParams(params: Record<string, number | string>) {
   // 通过 query 传递参数，单标的页接收后自动填充
-  router.push({ path: '/', query: buildBacktestQuery(strategy.value, params) })
+  if(!store.optimizeRequest)return
+  router.push({ path: '/', query: buildBacktestQuery(store.optimizeRequest.strategy, params) })
 }
 
 // 一键寻优结果点击「查看」→ 跳转单标的页用该策略 + 参数回测
 function onViewAll(strategyName: string, params: Record<string, number | string>) {
-  router.push({ path: '/', query: buildBacktestQuery(strategyName, params) })
+  if(!store.optimizeAllRequest)return
+  router.push({ path: '/', query: buildBacktestQuery(strategyName, params,true) })
 }
 
-function pct(v: number | null | undefined): string {
-  return v !== null && v !== undefined && Number.isFinite(v) ? `${(v * 100).toFixed(2)}%` : '-'
-}
-function num(v: number | null | undefined, d = 2): string {
-  return v !== null && v !== undefined && Number.isFinite(v) ? v.toFixed(d) : '-'
+watch([code,category,startDate,endDate,strategy,paramGrid,cash,commission,minCommission,stampTax,slippage,execution,workers,adjustMode],()=>{
+  inputGeneration++
+  if(store.optimizeRunning||store.optimizeAllRunning)store.detachOptimize()
+},{deep:true,flush:'sync'})
+watch(()=>currentUser.value?.id,()=>{inputGeneration++},{flush:'sync'})
+onBeforeUnmount(()=>{alive=false;inputGeneration++;store.detachOptimize()})
+
+function metric(point: GridPointResult, key: 'total_return' | 'sharpe' | 'max_drawdown' | 'win_rate', format: 'ratio' | 'percent' = 'percent') {
+  return metricText(point[key], point.metric_status?.[key], format)
 }
 
 // 寻优评级：4 维度降级版（夏普30%/回撤28%/胜率22%/利润因子20%）。
 // 各网格点交易数独立判断「样本不足」否决。
 const bestGrade = computed<GradeResult | null>(() =>
-  store.optimizeResult?.best ? gradeGridPoint(store.optimizeResult.best) : null,
+  store.optimizeResult?.best ? gradeOptimizationPoint(store.optimizeResult.best, store.optimizeResult.data_provenance?.performance_basis ?? undefined) : null,
 )
 // 一键寻优全局最佳评级
 const bestAllGrade = computed<GradeResult | null>(() =>
-  store.optimizeAllResult?.best ? gradeGridPoint(store.optimizeAllResult.best) : null,
+  store.optimizeAllResult?.best ? gradeOptimizationPoint(store.optimizeAllResult.best, store.optimizeAllResult.data_provenance?.performance_basis ?? undefined) : null,
 )
 // 一键寻优排名表每行的评级（按需计算，避免大表全量计算）
 const rankingGrades = computed<GradeResult[]>(() =>
-  (store.optimizeAllResult?.ranking ?? []).map((r) => gradeGridPoint(r)),
+  (store.optimizeAllResult?.ranking ?? []).map((r) => gradeOptimizationPoint(r, store.optimizeAllResult?.data_provenance?.performance_basis ?? undefined)),
 )
 </script>
 
@@ -245,7 +245,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
       </section>
 
       <section class="panel-section">
-        <h3>资金</h3>
+        <h3>资金与成本</h3>
         <div class="field">
           <label>初始资金</label>
           <NumberStepper v-model="cash" :min="1000" :step="10000" aria-label="初始资金" />
@@ -254,6 +254,10 @@ const rankingGrades = computed<GradeResult[]>(() =>
           <label>成交价</label>
           <MacSelect v-model="execution" :options="EXECUTIONS" aria-label="成交价格模式" />
         </div>
+        <div class="field"><label>佣金率</label><NumberStepper v-model="commission" :min="0" :max="0.01" :step="0.0001" aria-label="佣金率" /></div>
+        <div class="field"><label>最低佣金</label><NumberStepper v-model="minCommission" :min="0" :step="0.01" aria-label="最低佣金" /></div>
+        <div class="field"><label>印花税率</label><NumberStepper v-model="stampTax" :min="0" :max="0.01" :step="0.0001" aria-label="印花税率" /></div>
+        <div class="field"><label>滑点</label><NumberStepper v-model="slippage" :min="0" :max="0.05" :step="0.001" aria-label="滑点" /></div>
       </section>
 
       <section class="panel-section">
@@ -311,19 +315,22 @@ const rankingGrades = computed<GradeResult[]>(() =>
 
       <!-- 单策略寻优结果 -->
       <div v-if="store.optimizeResult" class="report-content">
+        <ResultDataProvenance :evidence="store.optimizeResult.data_provenance" />
         <section class="report-section">
           <h3>最优结果</h3>
           <div v-if="store.optimizeResult.best" class="best-summary">
             <GradeBadge v-if="bestGrade" :result="bestGrade" size="md" />
             <span class="best-params">{{ JSON.stringify(store.optimizeResult.best.params) }}</span>
             <span class="best-return pos">
-              {{ (store.optimizeResult.best.total_return! * 100).toFixed(2) }}%
+              {{ metric(store.optimizeResult.best, 'total_return') }}
             </span>
             <span class="best-meta">
-              夏普 {{ store.optimizeResult.best.sharpe?.toFixed(2) }} · 回撤
-              {{ (store.optimizeResult.best.max_drawdown! * 100).toFixed(2) }}%
+              夏普 {{ metric(store.optimizeResult.best, 'sharpe', 'ratio') }} · 回撤
+              {{ metric(store.optimizeResult.best, 'max_drawdown') }}
             </span>
           </div>
+          <p v-else>没有总收益可计算的网格点，不选择最优结果。</p>
+          <MetricStateNotes v-if="store.optimizeResult.best" :states="store.optimizeResult.best.metric_status" :legacy="!store.optimizeResult.best.metric_status" />
         </section>
 
         <section v-if="store.optimizeResult.heatmap" class="report-section">
@@ -339,7 +346,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
           <h3>网格点排名（{{ store.optimizeResult.results.length }} 个）</h3>
           <OptimizeResultTable
             :results="store.optimizeResult.results"
-            :best-index="0"
+            :best-index="store.optimizeResult.best ? 0 : -1"
             @select="onViewParams"
           />
         </section>
@@ -347,6 +354,7 @@ const rankingGrades = computed<GradeResult[]>(() =>
 
       <!-- 一键寻优所有策略结果 -->
       <div v-if="store.optimizeAllResult" class="report-content">
+        <ResultDataProvenance :evidence="store.optimizeAllResult.data_provenance" />
         <section class="report-section">
           <h3>全局最佳</h3>
           <div v-if="store.optimizeAllResult.best" class="best-summary">
@@ -356,12 +364,12 @@ const rankingGrades = computed<GradeResult[]>(() =>
               {{ JSON.stringify(store.optimizeAllResult.best.params) }}
             </span>
             <span class="best-return pos">
-              {{ (store.optimizeAllResult.best.total_return! * 100).toFixed(2) }}%
+              {{ metric(store.optimizeAllResult.best, 'total_return') }}
             </span>
             <span class="best-meta">
-              夏普 {{ store.optimizeAllResult.best.sharpe?.toFixed(2) }} · 回撤
-              {{ (store.optimizeAllResult.best.max_drawdown! * 100).toFixed(2) }}% · 胜率
-              {{ (store.optimizeAllResult.best.win_rate! * 100).toFixed(1) }}%
+              夏普 {{ metric(store.optimizeAllResult.best, 'sharpe', 'ratio') }} · 回撤
+              {{ metric(store.optimizeAllResult.best, 'max_drawdown') }} · 胜率
+              {{ metric(store.optimizeAllResult.best, 'win_rate') }}
             </span>
           </div>
           <p class="meta-line">
@@ -406,14 +414,15 @@ const rankingGrades = computed<GradeResult[]>(() =>
                 <td>{{ r.strategy_label }}</td>
                 <td class="params">{{ JSON.stringify(r.params) }}</td>
                 <td class="num" :class="r.total_return !== null && r.total_return > 0 ? 'pos' : 'neg'">
-                  {{ pct(r.total_return) }}
+                  {{ metric(r, 'total_return') }}
                 </td>
-                <td class="num">{{ num(r.sharpe) }}</td>
-                <td class="num neg">{{ pct(r.max_drawdown) }}</td>
+                <td class="num">{{ metric(r, 'sharpe', 'ratio') }}</td>
+                <td class="num neg">{{ metric(r, 'max_drawdown') }}</td>
                 <td class="num">{{ r.total_trades }}</td>
-                <td class="num">{{ pct(r.win_rate) }}</td>
+                <td class="num">{{ metric(r, 'win_rate') }}</td>
                 <td>
                   <button class="view-btn" @click="onViewAll(r.strategy, r.params)">查看</button>
+                  <MetricStateNotes :states="r.metric_status" :legacy="!r.metric_status" />
                 </td>
               </tr>
             </tbody>

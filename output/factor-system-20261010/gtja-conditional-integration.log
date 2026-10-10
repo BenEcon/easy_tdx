@@ -1,0 +1,28 @@
+........................................................................ [ 15%]
+........................................................................ [ 30%]
+........................................................................ [ 46%]
+........................................................................ [ 61%]
+...F.......F............................................................ [ 77%]
+........................................................................ [ 92%]
+...................................                                      [100%]
+=================================== FAILURES ===================================
+__ test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_005] __
+tests/unit/test_factor_research.py:257: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    assert values.iloc[65:].notna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-04-02    False\n2025-04-03    False\n2025-04-04    False\n2025-04-07    False\n2025-04-08    False\n2025-04-09    Fals...2025-05-15    False\n2025-05-16    False\n2025-05-19    False\n2025-05-20    False\nFreq: B, Name: gtja191_005, dtype: bool.all
+E    +      where 2025-04-02    False\n2025-04-03    False\n2025-04-04    False\n2025-04-07    False\n2025-04-08    False\n2025-04-09    Fals...2025-05-15    False\n2025-05-16    False\n2025-05-19    False\n2025-05-20    False\nFreq: B, Name: gtja191_005, dtype: bool = notna()
+E    +        where notna = 2025-04-02   NaN\n2025-04-03   NaN\n2025-04-04   NaN\n2025-04-07   NaN\n2025-04-08   NaN\n2025-04-09   NaN\n2025-04-10   NaN...14   NaN\n2025-05-15   NaN\n2025-05-16   NaN\n2025-05-19   NaN\n2025-05-20   NaN\nFreq: B, Name: gtja191_005, dtype: float64.notna
+__ test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_098] __
+tests/unit/test_factor_research.py:257: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    assert values.iloc[65:].notna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-04-02    False\n2025-04-03    False\n2025-04-04    False\n2025-04-07    False\n2025-04-08    False\n2025-04-09    Fals...2025-05-15    False\n2025-05-16    False\n2025-05-19    False\n2025-05-20    False\nFreq: B, Name: gtja191_098, dtype: bool.all
+E    +      where 2025-04-02    False\n2025-04-03    False\n2025-04-04    False\n2025-04-07    False\n2025-04-08    False\n2025-04-09    Fals...2025-05-15    False\n2025-05-16    False\n2025-05-19    False\n2025-05-20    False\nFreq: B, Name: gtja191_098, dtype: bool = notna()
+E    +        where notna = 2025-04-02   NaN\n2025-04-03   NaN\n2025-04-04   NaN\n2025-04-07   NaN\n2025-04-08   NaN\n2025-04-09   NaN\n2025-04-10   NaN...14   NaN\n2025-05-15   NaN\n2025-05-16   NaN\n2025-05-19   NaN\n2025-05-20   NaN\nFreq: B, Name: gtja191_098, dtype: float64.notna
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_005]
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_098]
+2 failed, 465 passed, 1 warning in 42.20s

@@ -1,0 +1,3 @@
+gtja191_081 warmup 7 diagnostics {'valid_count': 154, 'missing_count': 6, 'coverage': 0.9625, 'status': 'available', 'reason': ''}
+gtja191_173 warmup 37 diagnostics {'valid_count': 124, 'missing_count': 36, 'coverage': 0.775, 'status': 'available', 'reason': ''}
+PASS actual downloaded archive validation, read-only no compute, frozen recompute same values, original unchanged. Synthetic local QA only.

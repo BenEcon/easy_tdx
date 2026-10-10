@@ -1,0 +1,6 @@
+### Result
+{"widths":[1440,390,320],"fatalErrors":[],"rows":2}
+### Ran Playwright code
+```js
+await (async page=>{const errors=[];const handler=e=>errors.push(e.message);page.on("pageerror",handler);try{await page.reload();const cloud=page.locator(".cloud-archives");await cloud.locator(":scope > summary").click();await cloud.locator("li").first().waitFor();const widths=[];for(const width of [1440,390,320]){await page.setViewportSize({width,height:1000});await cloud.scrollIntoViewIfNeeded();const actual=await page.evaluate(()=>document.documentElement.scrollWidth);if(actual!==width)throw Error("overflow");widths.push(actual);}await page.screenshot({path:"../output/playwright/cloud-account-final-320.png"});if(errors.length)throw Error(JSON.stringify(errors));return {widths,fatalErrors:errors,rows:await cloud.locator("li").count()};}finally{page.off("pageerror",handler);}})(page);
+```

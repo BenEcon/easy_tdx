@@ -1,0 +1,37 @@
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/unit/test_durable_task_api.py _____________
+tests/unit/test_durable_task_api.py:16: in <module>
+    from easy_tdx.web.routers import auth, backtest
+src/easy_tdx/web/routers/backtest.py:239: in <module>
+    async def delete_task(task_id: str, user: UserRecord = Depends(get_current_user)) -> None:
+.venv/lib/python3.10/site-packages/fastapi/routing.py:994: in decorator
+    self.add_api_route(
+.venv/lib/python3.10/site-packages/fastapi/routing.py:933: in add_api_route
+    route = route_class(
+.venv/lib/python3.10/site-packages/fastapi/routing.py:507: in __init__
+    assert is_body_allowed_for_status_code(status_code), (
+E   AssertionError: Status code 204 must not have a response body
+______________ ERROR collecting tests/unit/test_task_ownership.py ______________
+tests/unit/test_task_ownership.py:9: in <module>
+    from easy_tdx.web.routers import backtest
+src/easy_tdx/web/routers/backtest.py:239: in <module>
+    async def delete_task(task_id: str, user: UserRecord = Depends(get_current_user)) -> None:
+.venv/lib/python3.10/site-packages/fastapi/routing.py:994: in decorator
+    self.add_api_route(
+.venv/lib/python3.10/site-packages/fastapi/routing.py:933: in add_api_route
+    route = route_class(
+.venv/lib/python3.10/site-packages/fastapi/routing.py:507: in __init__
+    assert is_body_allowed_for_status_code(status_code), (
+E   AssertionError: Status code 204 must not have a response body
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/unit/test_durable_task_api.py - AssertionError: Status code 204 m...
+ERROR tests/unit/test_task_ownership.py - AssertionError: Status code 204 mus...
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+1 warning, 2 errors in 0.95s

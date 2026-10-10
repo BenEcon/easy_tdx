@@ -1,0 +1,6 @@
+registered 276 unique 275 implemented 273
+libraries {'qlib_alpha158': 158, 'easy_tdx_builtin': 19, 'gtja191': 98}
+NONE {'available': 271, 'evaluation_available': 271}
+QFQ {'available': 270, 'evaluation_available': 270}
+HFQ {'available': 270, 'evaluation_available': 270}
+Counts are conditional on qualified requested inputs, not guaranteed feed readiness. Production deployed for factor goal: 0.

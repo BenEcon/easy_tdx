@@ -1,0 +1,848 @@
+INFO:     Started server process [3656]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8769 (Press CTRL+C to quit)
+INFO:     127.0.0.1:64765 - "GET /signals HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64764 - "GET /assets/index-DCCRJbJO.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64765 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64765 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64764 - "GET /assets/LoginView-BI7exKtc.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64765 - "GET /assets/LoginView-C6otUSAi.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64924 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64924 - "GET /assets/SignalRadarView-CHrmZKlK.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64925 - "GET /assets/MacSelect-DwKCsnnU.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64924 - "GET /assets/AdjustPicker-DCys-zXK.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64927 - "GET /assets/DataProvenance-BHUkjqoQ.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64926 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64929 - "GET /assets/market-preferences-CKU42Cwq.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64928 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64925 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64924 - "GET /assets/SignalRadarView-CB9jJarc.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65007 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65064 - "POST /api/v1/backtest/signal-scan/run/async HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:65064 - "GET /api/v1/backtest/tasks/1838300072b74dc4aaf4f46df0a8d245 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65064 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65142 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65205 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65276 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65340 - "GET /signals HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65340 - "GET /assets/index-DtdxDOe0.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65341 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65341 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65340 - "GET /assets/SignalRadarView-BJx41W-T.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65341 - "GET /assets/MacSelect-CfntU3Z5.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65342 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65340 - "GET /assets/AdjustPicker-Bb7m_ao_.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65341 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65344 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65345 - "GET /assets/market-preferences-DLzjQVlO.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65343 - "GET /assets/DataProvenance-ydhl9xmu.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65340 - "GET /assets/SignalRadarView-CB9jJarc.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /assets/BacktestView-BJ_whhZl.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /assets/backtest-C955qnTk.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65419 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65418 - "GET /assets/ChartFrame-CjYwtQ0R.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "GET /assets/NumberStepper-D9bympcR.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65422 - "GET /assets/bar-time-CQCKboTN.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /assets/research-navigation-CDVVUywM.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "GET /assets/MetricStateNotes-DRiAc0ml.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65419 - "GET /assets/tracking-DuCXbBYI.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65422 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "GET /assets/research-input-C5-rhLeS.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /assets/backtest-VGZlEwbn.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65419 - "GET /assets/ResearchEntryContext-DTTPeB3u.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "GET /assets/ResearchEntryContext-CMw5CfXA.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "GET /assets/mobile-settings-CNDwnjXh.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65422 - "GET /assets/execution-context-CkNDQyxx.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /assets/StrategyPicker-DFmfgxyg.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65419 - "GET /assets/chart-resize-COs1wg8I.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "GET /assets/format-BbMv5Yas.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65422 - "GET /assets/PerformanceContextNote-BKYDfI88.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /assets/StrategyPicker-DmQ5o3sz.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65418 - "GET /assets/KlineChart-CU38Rm2c.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65419 - "GET /assets/TechnicalIndicatorPicker-vxCthrfW.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65422 - "GET /assets/KlineChart-CB8YVHs-.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "GET /assets/MetricTable-BEFMNnw5.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /assets/MetricTable-C8YU7S37.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65418 - "GET /assets/StockHistoryMenu-DTrJrR9L.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "GET /assets/BacktestView-DHNGKAib.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65422 - "GET /assets/SymbolPicker-Dqe4MjM5.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65419 - "GET /assets/SymbolPicker-BXuZMVV6.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65418 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65420 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "GET /api/v1/backtest/tasks/1838300072b74dc4aaf4f46df0a8d245/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65422 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:65419 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65417 - "POST /api/v1/backtest/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65418 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:65420 - "POST /api/v1/indicator/compute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65421 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65419 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:65504 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65504 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49191 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49191 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49273 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49273 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49356 - "GET /?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=1838300072b74dc4aaf4f46df0a8d245&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49356 - "GET /assets/index-DtdxDOe0.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49357 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49356 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49357 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49356 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49356 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49357 - "GET /assets/ResearchEntryContext-CMw5CfXA.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49358 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49360 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49359 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49361 - "GET /assets/backtest-VGZlEwbn.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49356 - "GET /assets/StrategyPicker-DmQ5o3sz.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49361 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49358 - "GET /assets/KlineChart-CB8YVHs-.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49359 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49357 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49360 - "GET /assets/MetricTable-C8YU7S37.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49356 - "GET /assets/SymbolPicker-BXuZMVV6.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49361 - "GET /assets/BacktestView-DHNGKAib.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49358 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49359 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49357 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49356 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49361 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49359 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49360 - "GET /api/v1/backtest/tasks/1838300072b74dc4aaf4f46df0a8d245/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49357 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49361 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49360 - "POST /api/v1/backtest/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49361 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49360 - "POST /api/v1/indicator/compute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49362 - "GET /qa/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49422 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49422 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49487 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49487 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     127.0.0.1:49560 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49560 - "POST /api/v1/quotes HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/protocols/http/h11_impl.py", line 411, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/uvicorn/middleware/proxy_headers.py", line 63, in __call__
+    return await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 187, in __call__
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 93, in __call__
+    await self.simple_response(scope, receive, send, request_headers=headers)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/cors.py", line 144, in simple_response
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 37, in __call__
+    await self._handle_api_request(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 99, in _handle_api_request
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 143, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/middleware/exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 714, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 734, in app
+    await route.handle(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/routing.py", line 73, in app
+    response = await f(request)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+  File "/Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/fastapi/routing.py", line 212, in run_endpoint_function
+    return await dependant.call(**values)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/routers/market.py", line 66, in security_quotes
+    df = await client.get_security_quotes(stocks_parsed)
+AttributeError: 'object' object has no attribute 'get_security_quotes'
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [3656]

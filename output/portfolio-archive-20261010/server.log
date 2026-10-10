@@ -1,0 +1,95 @@
+INFO:     Started server process [40564]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8769 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52987 - "GET /portfolio HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52986 - "GET /assets/index-BjSAw7oQ.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52987 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52987 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52986 - "GET /assets/LoginView-ChBsywhX.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52987 - "GET /assets/LoginView-C6otUSAi.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/PortfolioView-C54SdXjd.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53120 - "GET /assets/ChartFrame-BwcQF8fX.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /assets/KlineChart-BsABDqPW.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /assets/CloudResearchArchives-y62KDCPe.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /assets/NumberStepper-jCRva3DB.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/bar-time-CQCKboTN.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /assets/KlineChart-B9kDaKzs.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/format-BbMv5Yas.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /assets/MacSelect-CoFNaVPe.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/MultiPeriodOverviewTable-DdAUyDjY.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /assets/MetricStateNotes-adyVLg6R.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /assets/chart-resize-Bidxrbwm.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53120 - "GET /assets/DataProvenance-CysDFCkq.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/ResultDataProvenance-Scq3j871.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /assets/ResultDataProvenance-C84gzG9S.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /assets/CloudResearchArchives-Bo207GnF.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /assets/backtest-CY6TVU-C.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/research-navigation-BX3g5MmB.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53120 - "GET /assets/tracking-CGx0L9Dg.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /assets/research-input-C5-rhLeS.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /assets/performance-context-CFSkXOt0.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/backtest-z6wr6NnL.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/mobile-settings-BUK4Fo6-.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /assets/StrategyPicker-D_uYHkTG.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53120 - "GET /assets/PerformanceContextNote-CjUwd4ve.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /assets/StrategyPicker-B8xuoqXR.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/market-preferences-Bz1PH5BM.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/AdjustPicker-CZ255F4X.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53120 - "GET /assets/StockHistoryMenu-BDFhGajn.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "GET /assets/PortfolioSummaryTable-DuOi_Kod.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53124 - "GET /assets/PortfolioSummaryTable-DUSqf7cK.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53120 - "GET /assets/PortfolioView-DiSHYMkO.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53122 - "GET /assets/StocksPicker-DtZSuV36.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53121 - "GET /assets/StocksPicker-BGWsbyNz.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53123 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53118 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53197 - "GET /portfolio?stocks=SZ:300450,SH:600699&category=DAY&strategy=ma_cross&params=%7B%22fast%22:7,%22slow%22:31%7D HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53198 - "GET /assets/index-BjSAw7oQ.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53197 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53198 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53198 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53197 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53198 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53199 - "GET /assets/KlineChart-B9kDaKzs.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53200 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53197 - "GET /assets/ResultDataProvenance-C84gzG9S.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53202 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53201 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53198 - "GET /assets/CloudResearchArchives-Bo207GnF.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53199 - "GET /assets/backtest-z6wr6NnL.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53200 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53202 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53198 - "GET /assets/PortfolioSummaryTable-DuOi_Kod.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53201 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53197 - "GET /assets/StrategyPicker-B8xuoqXR.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53200 - "GET /assets/PortfolioView-DiSHYMkO.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53199 - "GET /assets/StocksPicker-DtZSuV36.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53202 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53263 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53353 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53410 - "POST /api/v1/backtest/portfolio/run/async HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:53410 - "GET /api/v1/backtest/tasks/308cd12c458646fe8e339bce58339592 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53410 - "GET /api/v1/backtest/tasks/308cd12c458646fe8e339bce58339592 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53410 - "GET /api/v1/backtest/tasks/308cd12c458646fe8e339bce58339592/portfolio-evidence HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53410 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53410 - "PUT /api/v1/research/archives/051214cb-605c-4543-9aec-303d8d7f7eb1 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:53410 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53415 - "GET /api/v1/research/archives/051214cb-605c-4543-9aec-303d8d7f7eb1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53415 - "DELETE /api/v1/backtest/tasks/308cd12c458646fe8e339bce58339592 HTTP/1.1" 409 Conflict
+INFO:     127.0.0.1:53410 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53528 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [40564]

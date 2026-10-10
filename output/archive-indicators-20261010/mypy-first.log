@@ -1,0 +1,13 @@
+src/easy_tdx/web/archive_indicators.py:39: error: Unused "type: ignore" comment  [unused-ignore]
+src/easy_tdx/web/archive_indicators.py:39: error: No overload variant of "dict" matches argument type "object"  [call-overload]
+src/easy_tdx/web/archive_indicators.py:39: note: Error code "call-overload" not covered by "type: ignore[arg-type]" comment
+src/easy_tdx/web/archive_indicators.py:39: note: Possible overload variants:
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict() -> dict[_KT, _VT]
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict(**kwargs: _VT) -> dict[str, _VT]
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict(SupportsKeysAndGetItem[_KT, _VT], /) -> dict[_KT, _VT]
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict(SupportsKeysAndGetItem[str, _VT], /, **kwargs: _VT) -> dict[str, _VT]
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict(Iterable[tuple[_KT, _VT]], /) -> dict[_KT, _VT]
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict(Iterable[tuple[str, _VT]], /, **kwargs: _VT) -> dict[str, _VT]
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict(Iterable[list[str]], /) -> dict[str, str]
+src/easy_tdx/web/archive_indicators.py:39: note:     def [_KT, _VT] dict(Iterable[list[bytes]], /) -> dict[bytes, bytes]
+Found 2 errors in 1 file (checked 299 source files)

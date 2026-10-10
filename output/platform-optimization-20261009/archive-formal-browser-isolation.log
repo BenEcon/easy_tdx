@@ -1,0 +1,12 @@
+### Result
+{"separateCookieDevices":true,"staleEditRejected":true,"draftRetained":true,"otherAccountIsolated":true}
+### Ran Playwright code
+```js
+await (async (page) => {const origin="http://127.0.0.1:8766",base=origin+"/api/v1/research/archives";const ctx=await page.context().browser().newContext();try{const login=await ctx.request.post(origin+"/api/v1/auth/login",{data:{username:"archive-qa",password:"Local-archive-QA-only-2026!"}});if(login.status()!==200)throw Error("second device login failed");const listing=await(await ctx.request.get(base)).json(),row=listing.items[0];await page.getByRole("button",{name:"编辑备注",exact:true}).click();await page.getByRole("textbox",{name:"存档备注",exact:true}).fill("当前设备未提交的备注");const changed=await ctx.request.post(base+"/"+row.id+"/actions",{data:{action:"edit",revision:row.revision,note:"另一设备已更新"}});if(changed.status()!==200)throw Error("second device edit failed");await page.getByRole("button",{name:"保存备注",exact:true}).click();await page.getByRole("alert").filter({hasText:"你的编辑仍保留"}).waitFor();if(await page.getByRole("textbox",{name:"存档备注",exact:true}).inputValue()!=="当前设备未提交的备注")throw Error("lost edit");await page.getByRole("button",{name:"取消编辑",exact:true}).click();await page.getByRole("button",{name:"刷新云目录",exact:true}).click();await page.getByText("另一设备已更新",{exact:true}).waitFor();await ctx.request.post(origin+"/api/v1/auth/logout");const other=await ctx.request.post(origin+"/api/v1/auth/login",{data:{username:"archive-other",password:"Local-archive-QA-only-2026!"}});if(other.status()!==200||(await(await ctx.request.get(base)).json()).items.length!==0||(await ctx.request.get(base+"/"+row.id)).status()!==404)throw Error("ownership failure");return {separateCookieDevices:true,staleEditRejected:true,draftRetained:true,otherAccountIsolated:true};}finally{await ctx.close();}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/account
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T14-20-02-348Z.log#L1

@@ -1,0 +1,5 @@
+### Error
+TimeoutError: locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('region', { name: '信号证据检索', exact: true }).locator('.macd-prompt-row').first().getByRole('button', { name: '确认时刻', exact: true })[22m
+

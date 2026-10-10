@@ -1,0 +1,115 @@
+### Page
+- Page URL: http://127.0.0.1:8767/admin/accounts
+- Page Title: 股票分析 · Analysis Studio
+- Console: 1 errors, 0 warnings
+### Snapshot
+```yaml
+- generic [ref=f1e4]:
+  - complementary [ref=f1e114]:
+    - button "收起左侧栏" [ref=f1e120] [cursor=pointer]
+    - link "返回股票分析" [ref=f1e124]:
+      - /url: /
+      - generic [ref=f1e129]:
+        - strong [ref=f1e130]: 股票分析
+        - generic [ref=f1e131]: Analysis Studio
+    - navigation "主要导航" [ref=f1e132]:
+      - generic [ref=f1e133]:
+        - paragraph [ref=f1e134]: 分析
+        - link "个股分析" [ref=f1e135]:
+          - /url: /
+        - link "市场行情" [ref=f1e142]:
+          - /url: /market
+        - link "盘中研究" [ref=f1e148]:
+          - /url: /intraday
+        - link "缠论结构" [ref=f1e154]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=f1e160]:
+          - /url: /signals
+        - link "追踪标的" [ref=f1e167]:
+          - /url: /tracking
+      - generic [ref=f1e173]:
+        - paragraph [ref=f1e174]: 研究
+        - link "板块研究" [ref=f1e175]:
+          - /url: /boards
+        - link "公司资料" [ref=f1e184]:
+          - /url: /company
+        - link "扩展市场" [ref=f1e192]:
+          - /url: /extended
+        - link "量化研究" [ref=f1e199]:
+          - /url: /quant-research
+        - link "组合回测" [ref=f1e205]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=f1e214]:
+          - /url: /optimize
+        - link "结果对比" [ref=f1e219]:
+          - /url: /compare
+        - link "策略库" [ref=f1e224]:
+          - /url: /strategies
+      - generic [ref=f1e230]:
+        - paragraph [ref=f1e231]: 系统
+        - link "行情服务器" [ref=f1e232]:
+          - /url: /settings
+        - link "个人账户" [ref=f1e239]:
+          - /url: /account
+        - link "账户管理" [ref=f1e246]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=f1e255]:
+          - /url: /admin/data
+    - link "A archive-qa 管理员" [ref=f1e263]:
+      - /url: /account
+      - generic [ref=f1e264]: A
+      - generic [ref=f1e265]:
+        - strong [ref=f1e266]: archive-qa
+        - generic [ref=f1e267]: 管理员
+  - generic [ref=f1e5]:
+    - generic [ref=f1e6]:
+      - generic [ref=f1e8]:
+        - heading "账户管理" [level=1] [ref=f1e17]
+        - paragraph [ref=f1e268]: 创建账户、分配权限并查看用户数据状态
+      - generic [ref=f1e10]:
+        - link "个人账户" [ref=f1e11]:
+          - /url: /account
+          - generic [ref=f1e12]: A
+          - generic [ref=f1e269]: archive-qa
+          - generic [ref=f1e270]: ADMIN
+        - button "退出登录" [ref=f1e13] [cursor=pointer]
+    - main [ref=f1e16]:
+      - generic [ref=f1e18]:
+        - navigation "账户管理视图" [ref=f1e19]:
+          - button "账户管理" [ref=f1e20] [cursor=pointer]
+          - button "操作记录" [ref=f1e21] [cursor=pointer]
+          - button "用户活动" [pressed] [ref=f1e22] [cursor=pointer]
+        - region [ref=f1e271]:
+          - generic [ref=f1e272]:
+            - generic [ref=f1e273]:
+              - heading "用户活动" [level=2] [ref=f1e274]
+              - paragraph [ref=f1e275]: 活跃时长、登录来源与研究查询 · 北京时间
+            - button "刷新活动" [ref=f1e276] [cursor=pointer]
+          - generic [ref=f1e277]:
+            - combobox "活动时间范围" [ref=f1e279] [cursor=pointer]:
+              - generic [ref=f1e280]: 最近 7 天
+            - combobox "活动用户" [ref=f1e284] [cursor=pointer]:
+              - generic [ref=f1e285]: 全部用户
+            - combobox "活动记录类型" [ref=f1e289] [cursor=pointer]:
+              - generic [ref=f1e290]: 全部记录
+          - alert [ref=f1e293]: "unsupported operand type(s) for -: 'float' and 'NoneType'"
+          - generic "用户活跃汇总" [ref=f1e294]:
+            - table [ref=f1e295]:
+              - rowgroup [ref=f1e296]:
+                - row [ref=f1e297]:
+                  - columnheader "用户" [ref=f1e298]
+                  - columnheader "活跃时长（估算）" [ref=f1e299]
+                  - columnheader "登录次数" [ref=f1e300]
+                  - columnheader "查询请求" [ref=f1e301]
+                  - columnheader "最后活动" [ref=f1e302]
+              - rowgroup
+          - generic [ref=f1e303]:
+            - heading "活动明细" [level=3] [ref=f1e304]
+            - generic [ref=f1e305]: 0 条已载入
+          - status [ref=f1e306]: 此时间范围内暂无记录；功能启用前的活动不会补造。
+          - list
+          - group [ref=f1e307]:
+            - generic "统计口径与隐私范围" [ref=f1e308] [cursor=pointer]
+```
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T15-26-12-300Z.log#L1

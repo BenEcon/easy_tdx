@@ -1,5 +1,9 @@
 // 后端 API 封装。统一 fetch + 错误处理，返回类型化结果。
 // 开发期通过 vite proxy 走 /api（同源），生产期由 FastAPI 同源托管。
+import { assertMarketData, type MarketDataMetadata } from './market-data-contract.ts'
+import { isTaskTerminal, taskFailureMessage, validateTaskList } from './task-state.ts'
+import { queryIntentHeaders } from './query-origin.ts'
+import { frozenRadarSnapshot } from './radar-evidence.ts'
 
 import type {
   ApiError,
@@ -75,6 +79,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     credentials: 'same-origin',
     ...init,
     headers: {
+      ...queryIntentHeaders(),
       ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
       ...init?.headers,
     },
@@ -85,8 +90,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 /** 把未知错误格式化为用户可读的消息（网络错误给友好提示）。 */
 export function formatError(e: unknown): string {
-  if (e instanceof TypeError && e.message.includes('fetch')) {
-    return '网络错误：无法连接后端服务，请确认 easy-tdx serve 已启动'
+  if (e instanceof TypeError && /fetch|load failed|networkerror/i.test(e.message)) {
+    return '网络错误：暂时无法连接服务器，请稍后重试'
   }
   return e instanceof Error ? e.message : String(e)
 }
@@ -100,7 +105,7 @@ async function throwError(resp: Response): Promise<never> {
   } catch {
     // 非 JSON 错误体，用 statusText
   }
-  throw new Error(detail)
+  throw Object.assign(new Error(detail), {status:resp.status})
 }
 
 // ── 账户认证与管理员平台 ───────────────────────────────────────────────────
@@ -136,10 +141,13 @@ export async function fetchMyAccount(): Promise<AccountUser> {
 
 export async function saveAccountPreferences(
   preferences: Record<string, unknown>,
+  owner: string,
+  trackingRevision?: string,
 ): Promise<AccountUser> {
   const body = await request<{ user: AccountUser }>('/auth/me/preferences', {
-    method: 'PUT',
-    body: JSON.stringify({ preferences }),
+    method: 'PATCH',
+    headers: { 'X-Preferences-Owner': owner },
+    body: JSON.stringify({ preferences, ...(trackingRevision===undefined?{}:{tracking_revision:trackingRevision}) }),
   })
   return body.user
 }
@@ -153,6 +161,16 @@ export function changeAccountPassword(currentPassword: string, newPassword: stri
 
 export function fetchAccounts(): Promise<AccountListResponse> {
   return request<AccountListResponse>('/admin/users')
+}
+
+export function fetchAuditRecords(filters: {
+  before?: number; action?: string; outcome?: string; limit?: number
+} = {}): Promise<import('./security-audit').AuditPage> {
+  return request(queryPath('/admin/audit', filters))
+}
+
+export function logoutAllDevices(): Promise<{ ok: boolean }> {
+  return request('/auth/logout-all', { method: 'POST' })
 }
 
 export async function createAccount(
@@ -169,7 +187,7 @@ export async function createAccount(
 
 export async function updateAccount(
   id: string,
-  update: { role?: 'admin' | 'user'; active?: boolean },
+  update: { role?: 'admin' | 'user'; active?: boolean; tracking_allowed?: boolean },
 ): Promise<AccountUser> {
   const body = await request<{ user: AccountUser }>(`/admin/users/${id}`, {
     method: 'PATCH',
@@ -205,12 +223,10 @@ export async function fetchStrategies(): Promise<StrategiesResponse> {
 /**
  * 按标的取 K 线行情（OHLCV）。
  *
- * 后端 /bars 单次最多 800 根。当 startDate 到 endDate 跨度超过 800 根时，
- * 自动分页拉取（start=0, 800, 1600...）拼接，直到覆盖 startDate 或达上限。
+ * 后端统一分页、复核重叠及首段，并返回完整区间的数据口径。
+ * 到达上限但未覆盖请求范围时明确报错，不使用被截断的数据。
  * 可选 startDate/endDate 对结果做闭区间过滤（ISO 日期字符串，如 "2024-01-01"）。
  */
-const MAX_PAGES = 10 // 翻页上限：10 × 800 = 8000 根（约 32 年日线）
-
 export async function fetchBars(
   market: string,
   code: string,
@@ -218,48 +234,25 @@ export async function fetchBars(
   startDate?: string,
   endDate?: string,
   adjust: AdjustMode = 'QFQ',
+  onMetadata?: (metadata: MarketDataMetadata) => void,
+  signal?: AbortSignal,
 ): Promise<Bar[]> {
-  let allBars: Bar[] = []
-  for (let page = 0; page < MAX_PAGES; page++) {
-    const params = new URLSearchParams({
-      market,
-      code,
-      category,
-      count: '800',
-      start: String(page * 800),
-      adjust,
-    })
-    const resp = await fetch(`${BASE}/bars?${params}`)
-    if (!resp.ok) await throwError(resp)
-    const body = (await resp.json()) as { data: Record<string, unknown>[] }
-    const pageBars = body.data.map((row) => normalizeBar(row))
-    if (pageBars.length === 0) break // 无更多数据
-
-    allBars = allBars.concat(pageBars)
-
-    // 若已覆盖到 startDate（本页最早一根 ≤ startDate），停止翻页
-    if (startDate && pageBars.length > 0) {
-      const oldest = pageBars[pageBars.length - 1].datetime.slice(0, 10)
-      if (oldest <= startDate) break
-    }
-    // 不足 800 根说明已到数据起点
-    if (pageBars.length < 800) break
-  }
-
-    // 按日期范围过滤（闭区间）
-    let bars = allBars
-    if (startDate) bars = bars.filter((b) => b.datetime.slice(0, 10) >= startDate)
-    if (endDate) bars = bars.filter((b) => b.datetime.slice(0, 10) <= endDate)
-    // 翻页拼接后按时间正序排序：每页内部是正序，但页间是逆序
-    // （page1=最新段，page2=更旧段），concat 后需排序保证整体正序，
-    // 否则引擎/图表只正确处理第一页的数据。
-    bars.sort((a, b) => a.datetime.localeCompare(b.datetime))
-    return bars
+  const params = new URLSearchParams({ market, code, category, adjust })
+  if (startDate) params.set('start_date', startDate)
+  if (endDate) params.set('end_date', endDate)
+  const body = await request<{ data: Record<string, unknown>[]; metadata: MarketDataMetadata }>(`/bars/range?${params}`, { signal })
+  if (signal?.aborted) throw new DOMException('查询已取消', 'AbortError')
+  assertMarketData(body.metadata, adjust)
+  const bars = body.data.map(normalizeBar)
+  if (bars.some(bar => bar.is_closed !== true)) throw new Error('历史查询包含未确认收盘的数据，已停止分析')
+  onMetadata?.(body.metadata)
+  return bars
 }
 
 /** 批量读取股票简称，用于把历史记录展示为「代码-名称」。 */
 export async function fetchStockNames(
   stocks: Array<{ market: string; code: string }>,
+  signal?: AbortSignal,
 ): Promise<Record<string, string>> {
   if (stocks.length === 0) return {}
   const resp = await fetch(`${BASE}/quotes`, {
@@ -267,6 +260,7 @@ export async function fetchStockNames(
     credentials: 'same-origin',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ stocks }),
+    signal,
   })
   if (!resp.ok) await throwError(resp)
   const body = (await resp.json()) as { data: Array<Record<string, unknown>> }
@@ -279,7 +273,7 @@ export async function fetchStockNames(
   const missing = stocks.filter((stock) => !names[stock.code])
   if (missing.length) {
     const fallback = await Promise.allSettled(missing.map((stock) => (
-      request<DataRowsResponse>(queryPath('/mac/symbol-info', stock))
+      request<DataRowsResponse>(queryPath('/mac/symbol-info', stock), { signal })
     )))
     fallback.forEach((result, index) => {
       if (result.status !== 'fulfilled') return
@@ -319,19 +313,19 @@ export function fetchBoardList(params: {
   boardType: string
   sortColumn?: string
   count?: number
-}): Promise<DataRowsResponse> {
+}, signal?: AbortSignal): Promise<DataRowsResponse> {
   return request<DataRowsResponse>(queryPath('/board-mac/list', {
     board_type: params.boardType,
     sort_column: params.sortColumn ?? 'CHANGE_PCT',
     count: params.count ?? 200,
-  }))
+  }), { signal })
 }
 
-export function fetchBoardMembers(boardSymbol: string, count = 200): Promise<DataRowsResponse> {
+export function fetchBoardMembers(boardSymbol: string, count = 200, signal?: AbortSignal, trackingOwner?: string): Promise<DataRowsResponse> {
   return request<DataRowsResponse>(queryPath('/board-mac/members', {
     board_symbol: boardSymbol,
     count,
-  }))
+  }), { signal, headers: trackingOwner ? {'X-Tracking-Owner':trackingOwner} : {} })
 }
 
 export function fetchBoardBelong(market: string, code: string): Promise<DataRowsResponse> {
@@ -406,13 +400,17 @@ export function fetchTransactionData(
   }))
 }
 
-export function fetchIndexBars(
+export async function fetchIndexBars(
   market: string,
   code: string,
   category = 'DAY',
   count = 300,
-): Promise<DataRowsResponse> {
-  return request<DataRowsResponse>(queryPath('/bars/index', { market, code, category, start: 0, count }))
+): Promise<DataRowsResponse & { metadata: MarketDataMetadata }> {
+  const snapshot = await request<DataRowsResponse & { metadata: MarketDataMetadata }>(queryPath('/bars/index', {
+    market, code, category, start: 0, count, bar_time: 'native',
+  }))
+  assertMarketData(snapshot.metadata, 'NONE')
+  return snapshot
 }
 
 export function fetchServerSession(): Promise<DataRowsResponse> {
@@ -547,17 +545,34 @@ export function fetchResearchFactors(): Promise<Array<Record<string, unknown>>> 
   return request<Array<Record<string, unknown>>>('/research/factors')
 }
 
+export function submitFactorRecomputeTask(payload:{source_archive_id:string;expected_digest:string;expected_revision:number},context:{owner:string;signal:AbortSignal}):Promise<TaskSubmitResponse> {
+  return request('/research/factors/recompute/async',{method:'POST',body:JSON.stringify(payload),signal:context.signal,headers:{'X-Task-Owner':context.owner,'X-Research-Owner':context.owner}})
+}
+
+export function evaluateResearchFactors(payload:{stocks:Array<{market:string;code:string}>;factors:string[];factor_parameters?:import('./factor-parameters').FactorParameters;count:number;horizon:number;horizons?:number[]|null;groups:number;preprocess:string;adjust:string;validation?:import('./factor-validation').FactorValidationConfig|null;composition?:import('./factor-composition').CompositionConfig|null},signal?:AbortSignal) {
+  return request<{data:import('./factor-research').FactorEvaluation}>('/research/factors/evaluate',{method:'POST',body:JSON.stringify(payload),signal})
+}
+
+export function submitFactorEvaluationTask(payload:Parameters<typeof evaluateResearchFactors>[0],context:{owner:string;signal:AbortSignal}):Promise<TaskSubmitResponse> {
+  return request('/research/factors/evaluate/async',{method:'POST',body:JSON.stringify(payload),signal:context.signal,headers:{'X-Task-Owner':context.owner}})
+}
+
 export function computeResearchFactors(payload: {
   market: string
   code: string
   category: string
   count: number
   factors: string[]
+  factor_parameters?: import('./factor-parameters').FactorParameters
   adjust?: AdjustMode
-}): Promise<DictDataResponse> {
+}, signal?: AbortSignal): Promise<DictDataResponse> {
   return request<DictDataResponse>('/research/factors/compute', {
-    method: 'POST', body: JSON.stringify(payload),
+    method: 'POST', body: JSON.stringify(payload), signal,
   })
+}
+
+export function submitFactorSeriesTask(payload:Parameters<typeof computeResearchFactors>[0],context:{owner:string;signal:AbortSignal}):Promise<TaskSubmitResponse> {
+  return request('/research/factors/compute/async',{method:'POST',body:JSON.stringify(payload),signal:context.signal,headers:{'X-Task-Owner':context.owner}})
 }
 
 export function analyzePortfolioRisk(payload: {
@@ -602,19 +617,27 @@ export async function fetchRecentBars(
 
 export interface BarSnapshot {
   bars: Bar[]
-  metadata: { source: string; requested_adjust: string; actual_adjust: string; observed_at: string; category: string; completion_note: string; volume_policy: string; historical_data_vintage: boolean }
+  metadata: MarketDataMetadata
+  radarSource?: import('./radar-archive').RadarArchiveSource
 }
 
-export async function fetchResearchSnapshot(target: import('./chanlun-target').ResearchTarget, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ', signal?: AbortSignal): Promise<BarSnapshot> {
-  if (target.kind === 'stock') return fetchBarSnapshot(target.market, target.code, category, count, adjust, signal)
+export async function fetchRadarSnapshot(review: import('./radar-review').RadarReview, owner: string, signal?: AbortSignal): Promise<BarSnapshot> {
+  if(!owner||!review.evidence)throw Error('请使用原账户重新打开扫描记录')
+  const data=await request<unknown>(`/backtest/tasks/${encodeURIComponent(review.evidence.taskId)}/scan-evidence/${review.evidence.rowIndex}`,{signal,cache:'no-store',headers:{'X-Task-Owner':owner}})
+  return frozenRadarSnapshot(data,review)
+}
+
+export async function fetchResearchSnapshot(target: import('./chanlun-target').ResearchTarget, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ', signal?: AbortSignal, trackingOwner?: string): Promise<BarSnapshot> {
+  if (target.kind === 'stock') return fetchBarSnapshot(target.market, target.code, category, count, adjust, signal, trackingOwner)
   const body = await request<{data: Record<string, unknown>[]; metadata: BarSnapshot['metadata']}>(queryPath('/bars/research', {
     kind: target.kind, code: target.code, market: target.kind === 'index' ? target.market : 'SH',
     board_type: target.boardType ?? 'HY', category, count,
-  }), { signal })
+  }), { signal, headers:trackingOwner ? {'X-Tracking-Owner':trackingOwner} : {} })
+  assertMarketData(body.metadata, 'NONE')
   return { bars: body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime)), metadata: body.metadata }
 }
 
-export async function fetchBarSnapshot(market: string, code: string, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ', signal?: AbortSignal): Promise<BarSnapshot> {
+export async function fetchBarSnapshot(market: string, code: string, category: Category | 'MIN_120', count: number, adjust: AdjustMode = 'QFQ', signal?: AbortSignal, trackingOwner?: string): Promise<BarSnapshot> {
   const params = new URLSearchParams({
     market,
     code,
@@ -622,10 +645,12 @@ export async function fetchBarSnapshot(market: string, code: string, category: C
     count: String(count),
     start: '0',
     adjust,
+    bar_time: 'native',
   })
-  const resp = await fetch(`${BASE}/bars?${params}`, { signal })
+  const resp = await fetch(`${BASE}/bars?${params}`, { signal, headers: {...queryIntentHeaders(), ...(trackingOwner?{'X-Tracking-Owner':trackingOwner}:{})} })
   if (!resp.ok) await throwError(resp)
   const body = (await resp.json()) as { data: Record<string, unknown>[]; metadata: BarSnapshot['metadata'] }
+  assertMarketData(body.metadata, adjust)
   return { bars: body.data.map(normalizeBar).sort((a, b) => a.datetime.localeCompare(b.datetime)), metadata: body.metadata }
 }
 
@@ -663,7 +688,7 @@ export async function analyzeChanlun(req: {
 }): Promise<ChanlunResult> {
   const resp = await fetch(`${BASE}/chanlun/analyze?ownership_history=summary`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders() },
     body: JSON.stringify({ ...req, start: req.start ?? 0 }),
   })
   if (!resp.ok) await throwError(resp)
@@ -671,10 +696,10 @@ export async function analyzeChanlun(req: {
 }
 
 /** 同步回测（内联 OHLCV，快速）。 */
-export async function runBacktest(req: BacktestRequest): Promise<BacktestResult> {
+export async function runBacktest(req: BacktestRequest, owner?:string): Promise<BacktestResult> {
   const resp = await fetch(`${BASE}/backtest/run`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders(), ...(owner?{'X-Task-Owner':owner}:{}) },
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -685,7 +710,7 @@ export async function runBacktest(req: BacktestRequest): Promise<BacktestResult>
 export async function submitBacktestTask(req: BacktestRequest): Promise<TaskSubmitResponse> {
   const resp = await fetch(`${BASE}/backtest/run/async`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders() },
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -695,10 +720,12 @@ export async function submitBacktestTask(req: BacktestRequest): Promise<TaskSubm
 /** 提交组合回测后台任务，返回 task_id。 */
 export async function submitPortfolioTask(
   req: PortfolioBacktestRequest,
+  context?: { owner: string; signal: AbortSignal },
 ): Promise<TaskSubmitResponse> {
   const resp = await fetch(`${BASE}/backtest/portfolio/run/async`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders(), ...(context?{'X-Task-Owner':context.owner}:{}) },
+    signal: context?.signal,
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -708,10 +735,12 @@ export async function submitPortfolioTask(
 /** 提交多策略组合回测后台任务（资金分仓），返回 task_id。 */
 export async function submitMultiStrategyTask(
   req: MultiStrategyBacktestRequest,
+  context?: { owner: string; signal: AbortSignal },
 ): Promise<TaskSubmitResponse> {
   const resp = await fetch(`${BASE}/backtest/multi-strategy/run/async`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders(), ...(context?{'X-Task-Owner':context.owner}:{}) },
+    signal: context?.signal,
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -721,10 +750,12 @@ export async function submitMultiStrategyTask(
 /** 提交参数网格寻优后台任务，返回 task_id。 */
 export async function submitOptimizeTask(
   req: OptimizeBacktestRequest,
+  context?: { owner: string; signal: AbortSignal },
 ): Promise<TaskSubmitResponse> {
   const resp = await fetch(`${BASE}/backtest/optimize/run/async`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders(), ...(context?{'X-Task-Owner':context.owner}:{}) },
+    signal: context?.signal,
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -734,10 +765,12 @@ export async function submitOptimizeTask(
 /** 提交「一键寻优所有策略」后台任务，返回 task_id。 */
 export async function submitOptimizeAllTask(
   req: OptimizeAllBacktestRequest,
+  context?: { owner: string; signal: AbortSignal },
 ): Promise<TaskSubmitResponse> {
   const resp = await fetch(`${BASE}/backtest/optimize-all/run/async`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders(), ...(context?{'X-Task-Owner':context.owner}:{}) },
+    signal: context?.signal,
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -745,17 +778,28 @@ export async function submitOptimizeAllTask(
 }
 
 /** 查询后台任务状态（轮询用）。 */
-export async function fetchTask(taskId: string): Promise<TaskState> {
-  const resp = await fetch(`${BASE}/backtest/tasks/${taskId}`)
+export async function fetchTask(taskId: string, context?: { owner: string; signal: AbortSignal }): Promise<TaskState> {
+  const resp = await fetch(`${BASE}/backtest/tasks/${encodeURIComponent(taskId)}`, {headers:context?{'X-Task-Owner':context.owner}:{},signal:context?.signal})
   if (!resp.ok) await throwError(resp)
   return (await resp.json()) as TaskState
+}
+
+export function cancelTask(taskId: string,context?:{owner:string;signal:AbortSignal}): Promise<TaskState> {
+  return request(`/backtest/tasks/${encodeURIComponent(taskId)}/cancel`, { method: 'POST',signal:context?.signal,headers:context?{'X-Task-Owner':context.owner}:{} })
+}
+
+export async function deleteTask(taskId: string): Promise<void> {
+  const resp = await fetch(`${BASE}/backtest/tasks/${encodeURIComponent(taskId)}`, {
+    method: 'DELETE', credentials: 'same-origin',
+  })
+  if (!resp.ok) await throwError(resp)
 }
 
 /** 列出最近任务摘要（供对比页选择）。 */
 export async function fetchTaskList(limit = 20): Promise<TaskListResponse> {
   const resp = await fetch(`${BASE}/backtest/tasks?limit=${limit}`)
   if (!resp.ok) await throwError(resp)
-  return (await resp.json()) as TaskListResponse
+  return validateTaskList(await resp.json())
 }
 
 /**
@@ -777,9 +821,9 @@ export async function runBacktestWithPolling(
   while (true) {
     const state = await fetchTask(task_id)
     onPoll?.(state)
-    if (state.status === 'done' || state.status === 'failed') return state
+    if (isTaskTerminal(state.status)) return state
     if (Date.now() - start > timeoutMs) {
-      throw new Error(`回测任务超时（${timeoutMs / 1000}s）`)
+      throw new Error(`等待超过 ${timeoutMs / 1000} 秒；任务可能仍在计算，请到个人账户查看或取消`)
     }
     await new Promise((r) => setTimeout(r, intervalMs))
   }
@@ -790,10 +834,12 @@ export async function runBacktestWithPolling(
 /** 提交「信号雷达」一键扫描后台任务，返回 task_id。 */
 export async function submitSignalScanTask(
   req: SignalScanRequest = {},
+  context?: { owner: string; signal: AbortSignal },
 ): Promise<TaskSubmitResponse> {
   const resp = await fetch(`${BASE}/backtest/signal-scan/run/async`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...queryIntentHeaders(), ...(context?{'X-Task-Owner':context.owner}:{}) },
+    signal: context?.signal,
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -818,9 +864,9 @@ export async function runSignalScanWithPolling(
   while (true) {
     const state = await fetchTask(task_id)
     onPoll?.(state)
-    if (state.status === 'done' || state.status === 'failed') return state
+    if (isTaskTerminal(state.status)) return state
     if (Date.now() - start > timeoutMs) {
-      throw new Error(`信号扫描超时（${timeoutMs / 1000}s），可稍后重试或减小窗口`)
+      throw new Error(`等待超过 ${timeoutMs / 1000} 秒；扫描可能仍在计算，请到个人账户查看或取消`)
     }
     await new Promise((r) => setTimeout(r, intervalMs))
   }
@@ -828,7 +874,7 @@ export async function runSignalScanWithPolling(
 
 /** 断言任务结果为信号扫描结果（类型收窄用）。 */
 export function asSignalScanResult(state: TaskState): SignalScanResult {
-  if (state.status === 'failed') throw new Error(state.error || '信号扫描失败')
+  if (state.status !== 'done') throw new Error(taskFailureMessage(state))
   const result = state.result as SignalScanResult | null
   if (!result || !Array.isArray(result.rows)) {
     throw new Error('信号扫描结果格式异常（缺少 rows）')
@@ -837,24 +883,24 @@ export function asSignalScanResult(state: TaskState): SignalScanResult {
 }
 
 /** 列出全部已保存策略（按创建时间倒序）。 */
-export async function fetchSavedStrategies(): Promise<SavedStrategyListResponse> {
-  const resp = await fetch(`${BASE}/strategies`)
+export async function fetchSavedStrategies(owner?:string): Promise<SavedStrategyListResponse> {
+  const resp = await fetch(`${BASE}/strategies`, {headers:owner?{'X-Strategy-Owner':owner}:{}})
   if (!resp.ok) await throwError(resp)
   return (await resp.json()) as SavedStrategyListResponse
 }
 
 /** 查看单条已保存策略。 */
-export async function fetchSavedStrategy(id: string): Promise<SavedStrategy> {
-  const resp = await fetch(`${BASE}/strategies/${id}`)
+export async function fetchSavedStrategy(id: string, owner?: string): Promise<SavedStrategy> {
+  const resp = await fetch(`${BASE}/strategies/${encodeURIComponent(id)}`, {headers:owner?{'X-Strategy-Owner':owner}:{}})
   if (!resp.ok) await throwError(resp)
   return (await resp.json()) as SavedStrategy
 }
 
 /** 保存一条策略（含当时的标的上下文与成绩快照）。 */
-export async function saveStrategy(req: SavedStrategyCreate): Promise<SavedStrategy> {
+export async function saveStrategy(req: SavedStrategyCreate, owner?: string): Promise<SavedStrategy> {
   const resp = await fetch(`${BASE}/strategies`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(owner?{'X-Strategy-Owner':owner}:{}) },
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -862,10 +908,10 @@ export async function saveStrategy(req: SavedStrategyCreate): Promise<SavedStrat
 }
 
 /** 更新一条已有策略，保留其 id 与创建时间。 */
-export async function updateSavedStrategy(id: string, req: SavedStrategyCreate): Promise<SavedStrategy> {
-  const resp = await fetch(`${BASE}/strategies/${id}`, {
+export async function updateSavedStrategy(id: string, req: SavedStrategyCreate, owner?: string): Promise<SavedStrategy> {
+  const resp = await fetch(`${BASE}/strategies/${encodeURIComponent(id)}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(owner?{'X-Strategy-Owner':owner}:{}) },
     body: JSON.stringify(req),
   })
   if (!resp.ok) await throwError(resp)
@@ -873,8 +919,8 @@ export async function updateSavedStrategy(id: string, req: SavedStrategyCreate):
 }
 
 /** 删除一条已保存策略。 */
-export async function deleteSavedStrategy(id: string): Promise<void> {
-  const resp = await fetch(`${BASE}/strategies/${id}`, { method: 'DELETE' })
+export async function deleteSavedStrategy(id: string,owner?:string): Promise<void> {
+  const resp = await fetch(`${BASE}/strategies/${encodeURIComponent(id)}`, { method: 'DELETE',headers:owner?{'X-Strategy-Owner':owner}:{}})
   if (!resp.ok) await throwError(resp)
 }
 

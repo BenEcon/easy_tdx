@@ -1,0 +1,174 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 26%]
+........................................................................ [ 35%]
+........................................................................ [ 44%]
+........................................................................ [ 53%]
+........................................................................ [ 62%]
+................FFFFFFFFFFFFF........................................... [ 71%]
+........................................................................ [ 80%]
+........................................................................ [ 89%]
+........................................................................ [ 98%]
+................                                                         [100%]
+=================================== FAILURES ===================================
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[002821-min15-qfq-20261004] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[002821-min30-qfq-20261004] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[002821-min60-qfq-20261004] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[300450-qfq-20261002] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[600699-qfq-20260929] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[601698-min30-qfq-20261002] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[603259-min30-qfq-20261003] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[603936-min15-qfq-20261004] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[603936-min60-qfq-20261003] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-day-20261009] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-min_30-20261009] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-month-20261009] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+_ test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-week-20261009] _
+tests/unit/test_real_market_consumers.py:228: in test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance
+    assert data["errors"] == errors
+E   AssertionError: assert {'pe_ratio': ...数据，不能计算此估值因子'} == {}
+E     
+E     Left contains 2 more items:
+E     {'pb_ratio': '尚未接入历史财务数据，不能计算此估值因子', 'pe_ratio': '尚未接入历史财务数据，不能计算此估值因子'}
+E     Use -v to get more diff
+=============================== warnings summary ===============================
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[cci-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:323: RuntimeWarning: invalid value encountered in divide
+    return (TP - MA(TP, N)) / (0.015 * AVEDEV(TP, N))
+
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[dmi-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:341: RuntimeWarning: invalid value encountered in divide
+    PDI = DMP * 100 / TR
+
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[dmi-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:342: RuntimeWarning: invalid value encountered in divide
+    MDI = DMM * 100 / TR
+
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[emv-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:386: RuntimeWarning: invalid value encountered in divide
+    EMV = MA(MID * VOLUME * (HIGH - LOW) / MA(HIGH - LOW, N), N)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[002821-min15-qfq-20261004]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[002821-min30-qfq-20261004]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[002821-min60-qfq-20261004]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[300450-qfq-20261002]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[600699-qfq-20260929]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[601698-min30-qfq-20261002]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[603259-min30-qfq-20261003]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[603936-min15-qfq-20261004]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[603936-min60-qfq-20261003]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-day-20261009]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-min_30-20261009]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-month-20261009]
+FAILED tests/unit/test_real_market_consumers.py::test_real_factor_route_matches_direct_factor_engine_and_preserves_provenance[stock-300750-week-20261009]
+13 failed, 795 passed, 28 warnings in 187.33s (0:03:07)

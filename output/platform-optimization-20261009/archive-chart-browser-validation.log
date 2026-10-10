@@ -1,0 +1,29 @@
+### Error
+TimeoutError: locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('option', { name: '背离与买卖点', exact: true })[22m
+[2m    - locator resolved to <button type="button" role="option" data-v-0dfffd15="" aria-selected="true" data-highlighted="true" id="mac-select-v-4-option-0" class="mac-select-option selected highlighted">…</button>[22m
+[2m  - attempting click action[22m
+[2m    2 × waiting for element to be visible, enabled and stable[22m
+[2m      - element is not stable[22m
+[2m    - retrying click action[22m
+[2m    - waiting 20ms[22m
+[2m    - waiting for element to be visible, enabled and stable[22m
+[2m    - element is not stable[22m
+[2m  2 × retrying click action[22m
+[2m      - waiting 100ms[22m
+[2m      - waiting for element to be visible, enabled and stable[22m
+[2m      - element is visible, enabled and stable[22m
+[2m      - scrolling into view if needed[22m
+[2m      - done scrolling[22m
+[2m      - <div data-v-e3e35eb1="" class="research-controls">…</div> from <dialog open="" data-v-efabe5fe="" aria-label="云端研究原档" class="cloud-dialog">…</dialog> subtree intercepts pointer events[22m
+[2m  57 × retrying click action[22m
+[2m       - waiting 500ms[22m
+[2m       - waiting for element to be visible, enabled and stable[22m
+[2m       - element is visible, enabled and stable[22m
+[2m       - scrolling into view if needed[22m
+[2m       - done scrolling[22m
+[2m       - <div data-v-e3e35eb1="" class="research-controls">…</div> from <dialog open="" data-v-efabe5fe="" aria-label="云端研究原档" class="cloud-dialog">…</dialog> subtree intercepts pointer events[22m
+[2m  - retrying click action[22m
+[2m    - waiting 500ms[22m
+

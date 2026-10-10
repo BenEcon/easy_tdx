@@ -1,0 +1,29 @@
+✔ event lists and evidence-set reordering never imply new or changed signals; originals remain intact (10.276917ms)
+✔ state, lifecycle times and unrounded evidence are classified separately on the same identity (0.713167ms)
+✔ same date across families and sides remains independent; true event additions/removals are distinct (0.69625ms)
+✔ duplicate identities preserve all records and are never paired arbitrarily (0.417458ms)
+✔ missing identity does not cause false removals or additions in its collection (0.376791ms)
+✔ missing source/list is unknown, not empty or proof of no events (0.315041ms)
+✔ never-candidate diagnostics match without A or reference, including special B-only records (0.659458ms)
+✔ A trimming changes evidence not identity; original wave anchors and reference changes distinguish bases (0.564125ms)
+✔ date normalization preserves intraday, microsecond and timezone distinctions (1.353833ms)
+✔ source differences and unknown fields/ordered evidence are retained (0.762083ms)
+✔ different instruments, periods or study results are not matched (0.096791ms)
+✔ structure divergences are supported without inventing MACD wave anchors (0.270166ms)
+✔ chart plan freezes original data and uses original identity/window, not current selection (2.366333ms)
+✔ missing volume/time/parameters and unsupported length never silently become a smaller/default study (4.971541ms)
+✔ study plan preserves actual research settings and saved time labels (0.143917ms)
+✔ unrounded path diff distinguishes null, missing, structure, empty arrays, and ordering (0.225083ms)
+✔ response must match request, instrument, version, scope and period identities (0.457083ms)
+✔ new archive retains original bars/lineage but never relabels frozen old indicators as recomputed (0.355834ms)
+✔ study without saved input retains an explicit uncomputed row, never pretends all periods succeeded (0.190875ms)
+✔ complete indicator recompute preserves saved settings, checks response and saves only new values (1.644917ms)
+✔ missing or unknown saved indicator parameters cannot borrow current defaults (0.376916ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 113.704167

@@ -1,0 +1,6 @@
+### Result
+{"localFreeze":true,"charts":1}
+### Ran Playwright code
+```js
+await (async page=>{await page.setViewportSize({width:1440,height:1000});const third=page.getByRole("button",{name:"移除第 3 个指标",exact:true});if(await third.count())await third.click();await page.getByRole("button",{name:"研究 多周期观察与快照",exact:true}).click();const tools=page.locator(".workspace-tools");await tools.locator(":scope > summary").click();await tools.getByRole("button",{name:"保存当前研究快照",exact:true}).click();await tools.getByText("已保存到当前浏览器。建议导出备份，清除浏览器数据会丢失本地快照。",{exact:true}).waitFor();await tools.getByRole("button",{name:"查看",exact:true}).first().click();const dialog=page.getByRole("dialog",{name:"已保存研究快照",exact:true});await dialog.getByText("原档指标 · 数值及参数已冻结，不重算；图例可临时隐藏曲线。",{exact:true}).waitFor();if(await dialog.getByRole("button",{name:"＋ 添加指标",exact:true}).count())throw Error("mutable local archive");return {localFreeze:true,charts:await dialog.getByRole("region",{name:"蜡烛图绘图区",exact:true}).count()};})(page);
+```

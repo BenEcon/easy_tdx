@@ -1,0 +1,11 @@
+.F.................                                                      [100%]
+=================================== FAILURES ===================================
+_____ test_wal_commits_included_and_source_bytes_or_sessions_not_rewritten _____
+tests/unit/test_research_backup.py:81: in test_wal_commits_included_and_source_bytes_or_sessions_not_rewritten
+    assert (directory / "research_archives.db-wal").stat().st_size > 0
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1097: in stat
+    return self._accessor.stat(self, follow_symlinks=follow_symlinks)
+E   FileNotFoundError: [Errno 2] No such file or directory: '/private/var/folders/8v/q734rh3j3l3cmwlb7wtwvxzh0000gn/T/pytest-of-bowen/pytest-191/test_wal_commits_included_and_0/source/research_archives.db-wal'
+=========================== short test summary info ============================
+FAILED tests/unit/test_research_backup.py::test_wal_commits_included_and_source_bytes_or_sessions_not_rewritten
+1 failed, 18 passed in 6.85s

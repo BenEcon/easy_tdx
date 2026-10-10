@@ -1,0 +1,6 @@
+gtja-series.json read-only without compute: PASS; frozen recompute values unchanged: PASS; source unchanged: PASS
+old versions: ['gtja191-complete-window-v1']
+new versions: ['gtja191-complete-window-v2']
+gtja-panel.json read-only without compute: PASS; frozen recompute values unchanged: PASS; source unchanged: PASS
+old versions: ['gtja191-complete-window-v1']
+new versions: ['gtja191-complete-window-v2']

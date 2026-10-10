@@ -1,0 +1,14 @@
+Local source snapshot: source-after-vwap.tar.gz
+SHA256: 1c8aecf0ea2121eac7700907a78a335f9ea3834693196e5f23f05cbaa5a3726d
+Previous baseline: source-after-builtin-parameters.tar.gz
+Previous SHA256: 85c106e4cdc4a02e0565fef741ad8570c4b90b2898ad0af07fc63cf7255efaa8
+
+Extract only into a new temporary directory; compare relevant files and restore selectively.
+Source includes prior user modifications. No reset, commit or production deploy performed.
+Never overwrite real account/activity/research databases from a source recovery archive.
+Against the previous archive, src/easy_tdx/chanlun (excluding caches) and MyTT.py are unchanged.
+
+Evidence: vwap-backend.log (1017 passed), vwap-frontend.log (578 + 28),
+vwap-mypy.log (310 source files), vwap-build.log, output/playwright/vwap-*.
+WebKit factor-vwap closed; QA server PID 99334 exited 143.
+Whole objective remains active; see docs/factor-system-plan-20261010.md.

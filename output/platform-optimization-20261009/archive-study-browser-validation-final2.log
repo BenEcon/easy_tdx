@@ -1,0 +1,75 @@
+### Ran Playwright code
+```js
+await (async (page) => {
+  const errors=[],analysisRequests=[],dialogs=[];
+  const onError=error=>errors.push(String(error));
+  const onRequest=request=>{if(/\/api\/v1\/(chanlun|indicators|market|bars|stock)/.test(request.url()))analysisRequests.push(request.url())};
+  const onDialog=async dialog=>{dialogs.push(dialog.message());await dialog.dismiss()};
+  page.on('pageerror',onError);page.on('request',onRequest);page.on('dialog',onDialog);
+  const check=(condition,message)=>{if(!condition)throw Error(message)};
+  const base='http://127.0.0.1:8766/api/v1/research/archives';
+  const get=async url=>{const response=await page.request.get(url);check(response.ok(),`HTTP ${response.status()}`);return response.json()};
+  try {
+    await page.goto('http://127.0.0.1:8766/account');
+    await page.locator('summary').filter({hasText:'账户云存档'}).click();
+    await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='导入研究备份'&&!button.disabled));
+    const before=await get(base);
+    await page.getByLabel('选择研究备份文件').setInputFiles('/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/archive-study-validation.json');
+    const pending=page.getByRole('region',{name:'待导入研究备份'});
+    await pending.waitFor();
+    check((await pending.innerText()).includes('1 条研究记录的表格字段不完整'),'missing warning before import');
+    check((await get(base)).items.length===before.items.length,'wrote before confirmation');
+    const uploadDone=page.waitForResponse(response=>response.url().startsWith(base+'/')&&response.request().method()==='PUT');
+    await page.getByRole('button',{name:'确认导入到当前账户',exact:true}).click();
+    const uploadResponse=await uploadDone;
+    check(uploadResponse.ok(),`upload failed ${uploadResponse.status()}`);
+    await page.getByText('已保存到当前账户，可在其他设备刷新云目录查看。',{exact:true}).waitFor();
+    await page.waitForFunction(()=>[...document.querySelectorAll('button')].some(button=>button.textContent==='查看原档'&&!button.disabled));
+    const after=await get(base),saved=after.items.find(item=>!before.items.some(old=>old.id===item.id));
+    check(after.items.length===before.items.length+1&&saved,'did not create exactly one archive');
+    const record=await get(`${base}/${saved.id}`);
+    check(record.payload.result.rows[0].price==='旧档错误类型，不转换','malformed original was rewritten');
+    check(record.payload.result.rows[0].futureUnknown.exact===1.123456789,'precision lost');
+    check(record.payload.result.rows[2].price===10.123456789,'valid row precision lost');
+    const itemIndex=after.items.findIndex(item=>item.id===saved.id);
+    await page.getByRole('button',{name:'查看原档',exact:true}).nth(itemIndex).click();
+    const dialog=page.getByRole('dialog',{name:'云端研究原档'});
+    await dialog.waitFor();
+    check(await dialog.locator('tbody tr').count()===3,'a period disappeared');
+    check(await dialog.locator('td.overview-error').count()===2,'error rows missing');
+    const text=await dialog.innerText();
+    check(text.includes('原档无法完整展示（price）'),'missing bad field detail');
+    check(text.includes('原档周线取数失败，未形成结论'),'original error not preserved');
+    check(text.includes('收盘 10.12')&&text.includes('合成均线描述'),'valid result not displayed');
+    check(text.includes('原始记录保留；其他周期独立展示。'),'archive-specific context not displayed');
+    check(!text.includes('本周期未得出结论'),'archive was mislabeled as no conclusion');
+    await dialog.getByRole('button',{name:'查看30 分钟完整依据'}).click();
+    check(await dialog.locator('details[open]').count()===1,'period drilldown not opened');
+    await dialog.locator('summary').filter({hasText:'日线 · 原始研究记录'}).click();
+    check((await dialog.innerText()).includes('<img src=x onerror=alert(1)>原文完整保留'),'raw text lost');
+    check(await dialog.locator('img').count()===0,'raw HTML executed');
+    while(await dialog.locator('details[open]').count())await dialog.locator('details[open]').first().locator('summary').click();
+    const layouts=[];
+    for(const width of [1440,390,320]){
+      await page.setViewportSize({width,height:900});
+      await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+      const state=await page.evaluate(()=>{
+        const dialog=document.querySelector('dialog[open]'),region=dialog.querySelector('.overview-scroll');
+        dialog.querySelector('.cloud-scroll').scrollTop=0;
+        return {width:innerWidth,document:document.documentElement.scrollWidth,dialogWidth:dialog.getBoundingClientRect().width,dialogLeft:dialog.getBoundingClientRect().left,tableWidth:region.scrollWidth,tableViewport:region.clientWidth};
+      });
+      check(state.document===width&&state.dialogWidth<=width&&state.dialogLeft>=0,`overflow at ${width}`);
+      const region=dialog.getByRole('region',{name:'多周期概览数据，可横向滚动'});
+      await region.focus();await page.keyboard.press('ArrowRight');
+      check(await region.evaluate(node=>node.scrollLeft)>0,'keyboard horizontal scroll failed');
+      await region.evaluate(node=>node.scrollLeft=0);
+      await page.screenshot({path:`/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/archive-study-validation-${width}.png`});
+      layouts.push(state);
+    }
+    check(errors.length===0,`page errors ${errors}`);check(analysisRequests.length===0,`recomputation ${analysisRequests}`);check(dialogs.length===0,'raw script triggered dialog');
+    console.log(JSON.stringify({savedId:saved.id,rows:3,explicitErrors:2,precisionPreserved:true,rawHtmlEscaped:true,errors,analysisRequests,dialogs,layouts}));
+  } finally {
+    page.off('pageerror',onError);page.off('request',onRequest);page.off('dialog',onDialog);
+  }
+})(page);
+```

@@ -1,0 +1,5 @@
+src/easy_tdx/web/research_archive.py:137: error: Value of type "Any | None" is not indexable  [index]
+src/easy_tdx/web/research_archive.py:138: error: Value of type "Any | None" is not indexable  [index]
+src/easy_tdx/web/research_archive.py:141: error: Value of type "Any | None" is not indexable  [index]
+src/easy_tdx/web/research_archive.py:161: error: Returning Any from function declared to return "bool"  [no-any-return]
+Found 4 errors in 1 file (checked 302 source files)

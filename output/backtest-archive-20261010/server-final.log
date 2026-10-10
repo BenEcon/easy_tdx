@@ -1,0 +1,194 @@
+INFO:     Started server process [31915]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8769 (Press CTRL+C to quit)
+INFO:     127.0.0.1:64110 - "GET /account HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64110 - "GET /assets/index-Bf364Pup.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64111 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64111 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64110 - "GET /assets/LoginView-6OMQA78u.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64111 - "GET /assets/LoginView-C6otUSAi.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/AccountView-Cz9WObtH.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/CloudResearchArchives-BL26kWh7.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /assets/ChartFrame-JXefpg4s.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/KlineChart-CvpoTUsY.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/NumberStepper-B1VRV9vO.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/MacSelect-CQcLmUih.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/MultiPeriodOverviewTable-94rcOblI.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/KlineChart-B9kDaKzs.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/chart-resize-DNLrN-_t.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/EquityChart-DirYcv-V.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/EquityChart-BdRfHzlW.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/MetricStateNotes-kHNt5ghi.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/MetricTable-C8YU7S37.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/ResultDataProvenance-CcUe6yED.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/DataProvenance-Dvz2VpTP.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /assets/MetricTable-Bs7xDISO.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/ResultDataProvenance-C84gzG9S.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/CloudResearchArchives-CKSGB29n.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/AccountView-DFlKvEz4.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /signals HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/index-Bf364Pup.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64243 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64240 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/SignalRadarView-Bmi0GetB.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/market-preferences-rqoBwMzp.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/AdjustPicker-CfzvCw_z.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/SignalRadarView-CB9jJarc.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "POST /api/v1/backtest/signal-scan/run/async HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:64239 - "GET /api/v1/backtest/tasks/b02ce42115634fb7a20d7fac291497a1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/BacktestView-yC4rCVQL.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/ResearchEntryContext-DAusNC5F.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/tracking-CfM7JmS1.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/ResearchEntryContext-D-_RhXbO.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /assets/research-navigation-B_jKXjUk.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/performance-context-DyvPwj75.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/backtest-WF-5bcvN.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/execution-context-BR23YfD3.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /assets/StrategyPicker-DZKaEloW.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/mobile-settings-B1zDQ63C.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/backtest-z6wr6NnL.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/PerformanceContextNote-Cfh1mwPZ.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /assets/StrategyPicker-B8xuoqXR.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "GET /assets/StockHistoryMenu-D-uFakn3.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /assets/SymbolPicker-BRRK5lsO.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /assets/SymbolPicker-2t7StIqS.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /assets/BacktestView-C_gwZXLU.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /api/v1/backtest/tasks/b02ce42115634fb7a20d7fac291497a1/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "POST /api/v1/quotes HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "POST /api/v1/backtest/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64241 - "POST /api/v1/indicator/compute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "PUT /api/v1/research/archives/e4cc5c8b-2ed5-4e6a-941e-285b88ff23bd HTTP/1.1" 201 Created
+INFO:     127.0.0.1:64239 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64290 - "GET /api/v1/research/archives/e4cc5c8b-2ed5-4e6a-941e-285b88ff23bd HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64290 - "POST /qa/evict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64290 - "GET /api/v1/backtest/tasks/b02ce42115634fb7a20d7fac291497a1/scan-evidence/0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64241 - "GET /account HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64240 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64239 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64238 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64243 - "GET /api/v1/research/archives/e4cc5c8b-2ed5-4e6a-941e-285b88ff23bd HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64242 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64322 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64322 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64322 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64367 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64388 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64388 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64388 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64454 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64470 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64470 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64470 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64517 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64542 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64542 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64542 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64599 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64617 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64646 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64674 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64724 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64745 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64761 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64780 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64801 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64780 - "GET /signals HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64780 - "GET /assets/index-Bf364Pup.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64802 - "GET /assets/index-DIJBR0Y9.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64780 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64780 - "GET /assets/DataProvenance-rwYj3IKj.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64802 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64803 - "GET /assets/AdjustPicker-D00KpYkY.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64804 - "GET /assets/SignalRadarView-CB9jJarc.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64780 - "POST /api/v1/backtest/signal-scan/run/async HTTP/1.1" 202 Accepted
+INFO:     127.0.0.1:64802 - "GET /api/v1/backtest/tasks/5321d1ec2c864de881fe589a409971fb HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64803 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64804 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64780 - "GET /assets/KlineChart-B9kDaKzs.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64802 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64803 - "GET /assets/EquityChart-DirYcv-V.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64812 - "GET /assets/MetricStateNotes-Ds5ln-hd.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64804 - "GET /assets/MetricTable-C8YU7S37.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64802 - "GET /assets/CloudResearchArchives-CKSGB29n.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64780 - "GET /assets/ResultDataProvenance-C84gzG9S.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64804 - "GET /assets/StrategyPicker-B8xuoqXR.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64812 - "GET /assets/PerformanceContextNote-B1O3ZqFf.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64813 - "GET /assets/ResearchEntryContext-D-_RhXbO.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64802 - "GET /assets/StockHistoryMenu-BZAt5rDk.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64803 - "GET /assets/backtest-z6wr6NnL.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64780 - "GET /assets/SymbolPicker-BRRK5lsO.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64804 - "GET /assets/BacktestView-C_gwZXLU.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64812 - "GET /api/v1/backtest/strategies HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64813 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64803 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64802 - "GET /api/v1/backtest/tasks/5321d1ec2c864de881fe589a409971fb/scan-evidence/0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64780 - "POST /api/v1/quotes HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64804 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64813 - "PATCH /api/v1/auth/me/preferences HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64812 - "POST /api/v1/backtest/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64803 - "POST /api/v1/indicator/compute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64802 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64780 - "PUT /api/v1/research/archives/e57a9f19-ff29-40d7-8d87-7a932994c18e HTTP/1.1" 201 Created
+INFO:     127.0.0.1:64804 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64801 - "GET /api/v1/research/archives/e57a9f19-ff29-40d7-8d87-7a932994c18e HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64801 - "POST /qa/evict HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64801 - "GET /api/v1/backtest/tasks/5321d1ec2c864de881fe589a409971fb/scan-evidence/0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64803 - "GET /account HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64802 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64780 - "GET /assets/AccountView-DFlKvEz4.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64813 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64804 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64812 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64803 - "GET /api/v1/research/archives/e57a9f19-ff29-40d7-8d87-7a932994c18e HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64802 - "PUT /api/v1/research/archives/a503882a-b4b0-4f6f-8e92-6e679a5be596 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:64780 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64801 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64801 - "GET /api/v1/research/archives/a503882a-b4b0-4f6f-8e92-6e679a5be596 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64801 - "GET /api/v1/research/archives/e57a9f19-ff29-40d7-8d87-7a932994c18e HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64812 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64889 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64936 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64957 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64957 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64957 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65004 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65028 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65028 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65028 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65066 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65086 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65086 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65086 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65122 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65152 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65194 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65216 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65237 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65260 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [31915]

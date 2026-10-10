@@ -8,6 +8,9 @@ import { periodLabel } from '../period-comparison'
 import ChanlunChart from './ChanlunChart.vue'
 import ChartFrame from './ChartFrame.vue'
 import PeriodStructureInspector from './PeriodStructureInspector.vue'
+import CloudResearchArchives from './CloudResearchArchives.vue'
+import type { ArchiveDraft } from '../cloud-archives'
+import ArchivedRadarSource from './ArchivedRadarSource.vue'
 
 const props = defineProps<{ capture: () => Omit<ResearchSnapshot, 'schema' | 'id' | 'owner' | 'name' | 'note' | 'savedAt'>; busy: boolean }>()
 const { currentUser } = useAuth()
@@ -17,6 +20,11 @@ const list = shallowRef<SnapshotSummary[]>([]), viewing = shallowRef<ResearchSna
 const name = ref(''), note = ref(''), message = ref(''), saving = ref(false), deleting = ref(''), resetPending = ref(false)
 const dialog = ref<HTMLDialogElement>(), returnFocus = ref<HTMLElement | null>(null)
 const importInput = ref<HTMLInputElement>()
+function captureCloud(): ArchiveDraft {
+  const data=props.capture()
+  const title=(name.value.trim() || `${data.title} · ${data.cutoff}`).slice(0,120)
+  return {kind:'chart',name:title,note:note.value,payload:{...data,schema:1,name:title,note:note.value,savedAt:new Date().toISOString()}}
+}
 const snapshotCharts = new Map<string, InstanceType<typeof ChanlunChart>>()
 const snapshotInspectors = new Map<string, InstanceType<typeof PeriodStructureInspector>>()
 let generation = 0
@@ -47,7 +55,7 @@ async function open(summary: SnapshotSummary) {
   try {
     const snapshot = await readResearchSnapshot(summary.id, owner)
     if (owner !== currentUser.value?.id) return
-    viewing.value = snapshot; await nextTick(); dialog.value?.showModal()
+    viewing.value = validateResearchSnapshot(snapshot); await nextTick(); dialog.value?.showModal()
   } catch (error) { message.value = String(error) }
 }
 function close() { dialog.value?.close(); viewing.value = null; snapshotCharts.clear(); snapshotInspectors.clear(); returnFocus.value?.focus({ preventScroll: true }) }
@@ -104,11 +112,13 @@ onBeforeUnmount(() => { generation++; dialog.value?.close() })
       <p v-if="!list.length">尚无本地研究快照。</p>
     </div>
   </details>
+  <CloudResearchArchives :capture="captureCloud" :busy="busy || saving" />
   <Teleport to="body"><dialog ref="dialog" class="snapshot-dialog" aria-label="已保存研究快照" @cancel.prevent="close">
     <template v-if="viewing"><header><div><strong>{{ viewing.name }}</strong><p>保存的分析结果 · 不重新计算 · 不修改当前研究</p></div><button @click="close">关闭快照</button></header>
       <div class="snapshot-scroll"><p>{{ viewing.note }}</p><p>共同截止 {{ viewing.cutoff }} · 界面版本 {{ viewing.frontendVersion }} · 规则版本 {{ viewing.ruleVersions.join('、') || '接口未返回统一版本，详见原始结果' }}</p><p>这是保存时的数据版本，不代表历史时点实际可知的数据版本。确认与失效时间保留原记录。</p>
+        <ArchivedRadarSource :source="viewing.radarSource" :legacy-reference="viewing.charts.some(chart=>!!chart.metadata.original_task)" />
         <section v-for="chart in viewing.charts" :key="chart.category"><ChartFrame :title="`${viewing.title} · ${periodLabel(chart.category)}`" :description="`采集 ${chart.metadata.observed_at} · 实际复权 ${chart.metadata.actual_adjust} · ${chart.bars.length} 根`">
-          <ChanlunChart :ref="el => el && snapshotCharts.set(chart.category, el as InstanceType<typeof ChanlunChart>)" :bars="chart.bars" :result="chart.result" :layers="viewing.layers" :show-divergence-history="viewing.history" :ma-periods="viewing.preferences.ma.filter(item => item.enabled).map(item => item.period)" :ma-available-periods="viewing.preferences.ma.map(item => item.period)" :line-widths="viewing.preferences.widths" :candle-transparency="viewing.preferences.transparency" :indicator-config="viewing.preferences.indicators" @inspect="snapshotInspectors.get(chart.category)?.inspect($event)" />
+          <ChanlunChart :ref="el => el && snapshotCharts.set(chart.category, el as InstanceType<typeof ChanlunChart>)" :bars="chart.bars" :result="chart.result" :layers="viewing.layers" :show-divergence-history="viewing.history" :frozen-indicators="chart.frozenIndicators" readonly-archive :ma-periods="viewing.preferences.ma.filter(item => item.enabled).map(item => item.period)" :ma-available-periods="viewing.preferences.ma.map(item => item.period)" :line-widths="viewing.preferences.widths" :candle-transparency="viewing.preferences.transparency" :indicator-config="viewing.preferences.indicators" @inspect="snapshotInspectors.get(chart.category)?.inspect($event)" />
         </ChartFrame><PeriodStructureInspector :ref="el => el && snapshotInspectors.set(chart.category, el as InstanceType<typeof PeriodStructureInspector>)" :result="chart.result" :bars="chart.bars" :title="periodLabel(chart.category)" @locate="snapshotCharts.get(chart.category)?.locate($event)" /></section>
       </div>
     </template>

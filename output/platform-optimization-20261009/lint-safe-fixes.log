@@ -1,0 +1,207 @@
+src/easy_tdx/chanlun/divergence_signals.py:150:72: E501 Line too long (131 > 100)
+    |
+148 | …     direction=direction,
+149 | …     msg=(
+150 | …         "MACD 双线底背离：价格严格低于最近局部低点，该低点对应的 DIF、DEA 均抬高，且均在零轴下方；非缠论一买。"
+    |                                                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+151 | …         if direction == "down"
+152 | …         else "MACD 双线顶背离：价格严格高于最近局部高点，该高点对应的 DIF、DEA 均回落，且均在零轴上方；非缠论一卖。"
+    |
+
+src/easy_tdx/chanlun/divergence_signals.py:152:75: E501 Line too long (136 > 100)
+    |
+150 | …         "MACD 双线底背离：价格严格低于最近局部低点，该低点对应的 DIF、DEA 均抬高，且均在零轴下方；非缠论一买。"
+151 | …         if direction == "down"
+152 | …         else "MACD 双线顶背离：价格严格高于最近局部高点，该高点对应的 DIF、DEA 均回落，且均在零轴上方；非缠论一卖。"
+    |                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+153 | …     ),
+154 | …     evidence={
+    |
+
+src/easy_tdx/chanlun/divergence_signals.py:576:67: E501 Line too long (120 > 100)
+    |
+574 | …                 else "绿柱 B 内价格达到或高于前一红柱 A 最高点，双线降低且同在零轴上；"
+575 | …             )
+576 | …             + "B 新价格极值当根双线分别比较 A 段内各自极值；无 C 面积，等待从极值起的反向笔确认，非结构一类点。"
+    |                                                                                                ^^^^^^^^^^^^^^^^^^^ E501
+577 | …         ),
+578 | …     )
+    |
+
+src/easy_tdx/chanlun/divergence_signals.py:1118:94: E501 Line too long (119 > 100)
+     |
+1116 |                         else:
+1117 |                             reasons.append(
+1118 |                                 f"C 段 {line.upper()} {'最低值未高于' if direction == 'down' else '最高值未低于'} A 段"
+     |                                                                                                      ^^^^^^^^^^^^^^^^^^ E501
+1119 |                             )
+1120 |                     if f"{line}_centre_pullback" in failed:
+     |
+
+src/easy_tdx/chanlun/divergence_signals.py:1183:93: E501 Line too long (119 > 100)
+     |
+1181 |                 active.preliminary_index = now
+1182 |             active.msg = (
+1183 |                 f"MACD {'标准' if family == 'standard' else '非标准'}波段{'底' if direction == 'down' else '顶'}背离："
+     |                                                                                                     ^^^^^^^^^^^^^^^^^^^ E501
+1184 |                 f"C/A {'绿' if direction == 'down' else '红'}柱面积={evidence['area_ratio']:.2f}，"
+1185 |                 + (
+     |
+
+src/easy_tdx/chanlun/research_context.py:316:90: E501 Line too long (113 > 100)
+    |
+314 |         anchor_price=anchor.val,
+315 |         known_date=stamp(frame, known),
+316 |         invalidation=f"观察{'高' if top else '低'}点 {anchor.val:g} 被{'突破' if top else '跌破'}即撤销本轮观察",
+    |                                                                                                      ^^^^^^^^^^^^ E501
+317 |     )
+318 |     if not tail.empty and (tail.high.max() > anchor.val if top else tail.low.min() < anchor.val):
+    |
+
+src/easy_tdx/chanlun/research_context.py:451:64: E501 Line too long (103 > 100)
+    |
+449 |         "last_close": last,
+450 |         "summary": f"近期整体{overall}，{tail}；{evidence}",
+451 |         "method": "净收盘变化超过窗口高低范围的 20% 记为上行/下行，否则记为横向波动；不是缠论趋势认定",
+    |                                                                                                      ^^ E501
+452 |     }
+    |
+
+src/easy_tdx/chanlun/research_context.py:503:35: E741 Ambiguous variable name: `l`
+    |
+501 |     summary = (
+502 |         "价格、均量与 MACD 在本窗口内先后改善，目前仍保持向上配合"
+503 |         if all(l["supported"] for l in links)
+    |                                   ^ E741
+504 |         else "；".join(l["description"] for l in links)
+505 |     )
+    |
+
+src/easy_tdx/chanlun/research_context.py:504:44: E741 Ambiguous variable name: `l`
+    |
+502 |         "价格、均量与 MACD 在本窗口内先后改善，目前仍保持向上配合"
+503 |         if all(l["supported"] for l in links)
+504 |         else "；".join(l["description"] for l in links)
+    |                                             ^ E741
+505 |     )
+506 |     streak = 0
+    |
+
+src/easy_tdx/chanlun/structure_signals.py:256:16: UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+    |
+254 |             key: value
+255 |             for key, value in event.evidence.items()
+256 |             if isinstance(value, (int, float)) and not isinstance(value, bool)
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ UP038
+257 |         }
+258 |         members = event.evidence["b_segments"]
+    |
+    = help: Convert to `X | Y`
+
+src/easy_tdx/indicator.py:20:17: UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+   |
+18 |     periods = (SHORT, LONG, M)
+19 |     if (
+20 |         any(not isinstance(v, (int, float)) or not float(v).is_integer() or v < 1 for v in periods)
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^ UP038
+21 |         or SHORT >= LONG
+22 |     ):
+   |
+   = help: Convert to `X | Y`
+
+src/easy_tdx/web/routers/chanlun_observations.py:141:90: E501 Line too long (146 > 100)
+    |
+139 | …
+140 | …
+141 | …large['category'])} 仍位于 MA10 上方且 DIF 高于 DEA；不能直接等同于大周期反转"
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+142 | …
+143 | …
+    |
+
+src/easy_tdx/web/routers/chanlun_observations.py:155:90: E501 Line too long (146 > 100)
+    |
+153 | …
+154 | …
+155 | …large['category'])} 仍位于 MA10 下方且 DIF 低于 DEA；不能直接等同于大周期反转"
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E501
+156 | …
+157 | …er a strict-pen gate.
+    |
+
+src/easy_tdx/web/routers/chanlun_observations.py:232:62: E501 Line too long (124 > 100)
+    |
+230 | …
+231 | …
+232 | …周期多数投票；过轴先后只记录事实，不作强制条件",
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^ E501
+233 | …
+    |
+
+tests/unit/test_chanlun_owned_tree_transfer.py:19:16: UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+   |
+18 |     def visit(item):
+19 |         if not isinstance(item, (dict, list, tuple)) or id(item) in found:
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ UP038
+20 |             return
+21 |         if isinstance(item, (dict, list)):
+   |
+   = help: Convert to `X | Y`
+
+tests/unit/test_chanlun_owned_tree_transfer.py:21:12: UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+   |
+19 |         if not isinstance(item, (dict, list, tuple)) or id(item) in found:
+20 |             return
+21 |         if isinstance(item, (dict, list)):
+   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ UP038
+22 |             found.add(id(item))
+23 |         for child in item.values() if isinstance(item, dict) else item:
+   |
+   = help: Convert to `X | Y`
+
+tests/unit/test_chanlun_selected_rules.py:124:9: E731 Do not assign a `lambda` expression, use a `def`
+    |
+122 |         lines = pens(prices)
+123 |         final = find_xds(lines)
+124 |         sig = lambda items: [(s.start.val, s.end.val, s.confirmed_index) for s in items]
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E731
+125 |         for n in range(3, len(lines) + 1):
+126 |             assert sig(find_xds(lines[:n])) == sig(
+    |
+    = help: Rewrite `sig` as a `def`
+
+tests/unit/test_chanlun_snapshot_isolation.py:61:10: UP038 Use `X | Y` in `isinstance` call instead of `(X, Y)`
+   |
+59 |     if isinstance(value, dict):
+60 |         children, own = value.values(), {id(value)}
+61 |     elif isinstance(value, (list, set)):
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ UP038
+62 |         children, own = value, {id(value)}
+63 |     elif isinstance(value, tuple):
+   |
+   = help: Convert to `X | Y`
+
+tests/unit/test_wave_axis_redefinition.py:121:5: E731 Do not assign a `lambda` expression, use a `def`
+    |
+119 |         ]
+120 |         macd = {k: [-v for v in values] for k, values in macd.items()}
+121 |     date = lambda i: bars[i].date.strftime("%Y-%m-%d") if i is not None else None
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E731
+122 |     direction = "up" if top else "down"
+123 |     # Local-pivot detector deliberately remains independent and fails these dates.
+    |
+    = help: Rewrite `date` as a `def`
+
+tests/unit/test_wave_rule_comparison.py:151:5: E731 Do not assign a `lambda` expression, use a `def`
+    |
+149 |         ]
+150 |         macd = {k: [-v for v in values] for k, values in macd.items()}
+151 |     date = lambda i: bars[i].date.strftime("%Y-%m-%d %H:%M")
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ E731
+152 |     reports = []
+153 |     events = wave_events(bars, macd, diagnostics=reports)
+    |
+    = help: Rewrite `date` as a `def`
+
+Found 40 errors (20 fixed, 20 remaining).
+No fixes available (8 hidden fixes can be enabled with the `--unsafe-fixes` option).

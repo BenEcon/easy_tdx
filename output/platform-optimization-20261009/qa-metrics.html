@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>指标状态 · 本地验收</title>
+<style>body{margin:0;background:#15171b;color:#e1e4ea;font-family:-apple-system,sans-serif}main{max-width:1040px;margin:32px auto;padding:20px;min-width:0}h1{font-size:20px}p{font-size:12px;color:#aaa}nav{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}button{border:1px solid #42454c;background:#252830;color:#eee;border-radius:7px;padding:8px 12px;cursor:pointer}.responsive-table-scroll{max-width:100%;overflow:auto}section{min-width:0}:root{--text:#e1e4ea;--text-muted:#a3a8b2;--text-dim:#9098a3;--border:#34373d;--font-mono:ui-monospace,monospace;--up:#ef6c75;--down:#5ccf9d;--accent:#80bfff;--bg-panel:#1c1e23}@media(max-width:600px){main{margin:12px auto;padding:16px}}</style></head>
+<body><main id="app"></main><script type="module">
+import {createApp,ref} from 'vue'
+import MetricTable from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/MetricTable.vue'
+import CompareTable from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/CompareTable.vue'
+import OptimizeResultTable from '/@fs/Users/bowen/Documents/Python/Google/TDX-work/web-ui/src/components/OptimizeResultTable.vue'
+const perf={total_return:0,annual_return:0,max_drawdown:0,max_dd_duration:0,sharpe:null,sortino:null,calmar:null,total_trades:12,win_trades:10,lose_trades:0,breakeven_trades:2,rejected_trades:3,win_rate:10/12,profit_factor:null,avg_win:.03,avg_loss:null,max_win:.07,max_loss:null,avg_holding_days:1.5,volatility:0}
+const states=Object.fromEntries(Object.entries(perf).map(([key,value])=>[key,{state:value===null?'unavailable':'finite',reason:value===null?'样本条件不足，不能以零替代':''}]))
+states.profit_factor={state:'positive_infinity',reason:'已实现总盈利为正且总亏损为零；不使用 999 哨兵值'}
+states.sharpe.reason='收益标准差为零，夏普比率不可估计'
+const basis={metric_contract:'performance-metrics-v1',metric_status:states}
+const items=[{label:'新版结果',result:{performance:perf,config:{performance_basis:basis}}},{label:'历史结果',result:{performance:{...perf,profit_factor:999},config:{}}}]
+createApp({components:{MetricTable,CompareTable,OptimizeResultTable},setup:()=>({mode:ref('单股'),perf,states,items,points:[{params:{fast:5,slow:10},...perf,metric_status:states}]}),template:`<h1>绩效指标</h1><p>本机合成数据 · 验证零值、不可计算、无穷值与历史口径；不是投资结论。</p><nav><button v-for="label in ['单股','对比','寻优']" @click="mode=label">{{label}}</button></nav><MetricTable v-if="mode==='单股'" :perf="perf" :states="states"/><CompareTable v-if="mode==='对比'" :items="items"/><OptimizeResultTable v-if="mode==='寻优'" :results="points" :best-index="0"/>`}).mount('#app')
+</script></body></html>

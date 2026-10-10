@@ -5,10 +5,16 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
+
 import numpy as np
 import pandas as pd
 
+from easy_tdx.backtest.bar_time import BarTimeIndex
+from easy_tdx.backtest.phase_checkpoint import PhaseCheckpoint, restore_equity_state
 from easy_tdx.backtest.types import Trade
+from easy_tdx.checkpoints import calculation_journal
+from easy_tdx.computation import computation_checkpoint
 
 
 class PortfolioTracker:
@@ -35,10 +41,12 @@ class PortfolioTracker:
         self._close = df["close"].to_numpy(dtype=float)
         self._datetime = df["datetime"].to_numpy()
         self._n = len(df)
-        self._cash = np.full(self._n, initial_cash)
+        # Integer initial capital must not truncate fractional trade proceeds or costs.
+        self._cash = np.full(self._n, initial_cash, dtype=float)
         self._position = np.zeros(self._n)
         self._avg_price = np.zeros(self._n)
         self._initial_cash = initial_cash
+        self._checkpoint_frame = df
         # 预构建 datetime → 位置索引 映射，供 apply_trades 按"位置"匹配交易。
         # 关键：trade.datetime 与 df["datetime"] 的具体类型（Timestamp / int /
         # datetime64）必须一致才能作 dict key 命中；过去直接用原始值匹配，
@@ -48,12 +56,11 @@ class PortfolioTracker:
         self._datetime_to_pos = self._build_datetime_index(df["datetime"])
 
     @staticmethod
-    def _build_datetime_index(dt_col: pd.Series) -> dict[object, int]:
+    def _build_datetime_index(dt_col: pd.Series) -> BarTimeIndex:
         """构建 datetime 值 → 位置索引 的映射。
 
-        对 datetime 列做归一化（datetime64 → int YYYYMMDD，与 OrderSimulator
-        的 _find_bar_index 同款逻辑），保证无论上游 datetime 是哪种类型，
-        查询键都能命中同一张表。
+        保留分钟时间，与 OrderSimulator 使用同一位置契约；
+        日期别名只有在当天唯一时才可用。
 
         Args:
             dt_col: DataFrame 的 datetime 列
@@ -61,15 +68,7 @@ class PortfolioTracker:
         Returns:
             {归一化后的 datetime 值: 位置索引}，重复值取首次出现位置。
         """
-        if pd.api.types.is_datetime64_any_dtype(dt_col):
-            keys = dt_col.dt.strftime("%Y%m%d").astype("int64").to_numpy()
-        else:
-            keys = dt_col.to_numpy()
-        mapping: dict[object, int] = {}
-        for i, k in enumerate(keys):
-            if k not in mapping:
-                mapping[k] = i
-        return mapping
+        return BarTimeIndex(dt_col)
 
     def _find_pos(self, trade_dt: object) -> int | None:
         """把 trade.datetime 归一化后查 df 中的位置索引。
@@ -82,17 +81,9 @@ class PortfolioTracker:
         Returns:
             df 中的位置索引，未命中返回 None
         """
-        # datetime-like（Timestamp / datetime64）→ int YYYYMMDD 再查
-        if hasattr(trade_dt, "strftime"):
-            try:
-                key: object = int(trade_dt.strftime("%Y%m%d"))
-            except (ValueError, AttributeError):
-                return None
-        else:
-            key = trade_dt
-        return self._datetime_to_pos.get(key)
+        return self._datetime_to_pos.get(trade_dt)
 
-    def apply_trades(self, trades: list[Trade]) -> None:
+    def apply_trades(self, trades: list[Trade], *, checkpoint_key: str | None = None) -> None:
         """应用交易记录，更新内部状态数组。
 
         Args:
@@ -103,6 +94,7 @@ class PortfolioTracker:
         # 无关，杜绝 int vs datetime64 类型不一致导致的静默漏单（issue #30）。
         trade_map: dict[int, list[Trade]] = {}
         for trade in trades:
+            computation_checkpoint()
             if trade.rejected:
                 continue
             pos = self._find_pos(trade.datetime)
@@ -110,8 +102,31 @@ class PortfolioTracker:
                 continue
             trade_map.setdefault(pos, []).append(trade)
 
+        start = 0
+        checkpoint = None
+        arrays = {"cash": self._cash, "position": self._position, "avg_price": self._avg_price}
+        journal = calculation_journal() if checkpoint_key is not None else None
+        if journal is not None and checkpoint_key is not None and type(self) is PortfolioTracker:
+            checkpoint = PhaseCheckpoint(
+                journal,
+                checkpoint_key,
+                "backtest-equity-bars-v1",
+                self._checkpoint_frame,
+                [asdict(trade) for trade in trades],
+                {
+                    "initial_cash": self._initial_cash,
+                    "array_dtypes": {name: str(array.dtype) for name, array in arrays.items()},
+                },
+                self._n,
+            )
+            start, saved = checkpoint.restore()
+            if saved is not None:
+                restore_equity_state(saved, start, arrays)
+                checkpoint.used(start)
+
         # 遍历每个 bar
-        for i in range(self._n):
+        for i in range(start, self._n):
+            computation_checkpoint()
             # 继承前一个 bar 的状态（除了第一个 bar）
             if i > 0:
                 self._cash[i] = self._cash[i - 1]
@@ -144,6 +159,10 @@ class PortfolioTracker:
                     if self._position[i] <= 0:
                         self._position[i] = 0.0
                         self._avg_price[i] = 0.0
+            if checkpoint is not None and ((i + 1) % 64 == 0 or i + 1 == self._n):
+                checkpoint.save(
+                    i + 1, {name: list(array[: i + 1]) for name, array in arrays.items()}
+                )
 
     @property
     def equity_curve(self) -> pd.DataFrame:

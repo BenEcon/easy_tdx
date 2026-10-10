@@ -1,0 +1,21 @@
+async page => {
+  const created=await page.evaluate(async()=>{
+    const user=(await (await fetch('/api/v1/auth/me')).json()).user;
+    const bars=Array.from({length:40},(_,i)=>{const price=20+Math.sin(i/4)*3;return{datetime:new Date(Date.UTC(2026,7,3+i)).toISOString().slice(0,10)+' 00:00:00',open:price,close:price+.2,high:price+.5,low:price-.5,vol:100+i,amount:(100+i)*price,is_closed:true}});
+    const post=async(path,body,method='POST')=>{const r=await fetch('/api/v1/'+path,{method,headers:{'Content-Type':'application/json','X-Research-Owner':user.id},body:JSON.stringify(body)});if(!r.ok)throw Error(r.status+' '+await r.text());return r.json()};
+    const computed=await post('chanlun/archive-recompute',{request_id:crypto.randomUUID(),kind:'chart',chart:{code:'stock:SZ:300750',category:'DAY',bars,visible_count:40}});
+    computed.result.macd.dif[20]+=0.000000001;
+    const chart={schema:1,id:'qa-chart-source',name:'重算测试图表',note:'明确合成行情与测试差异',title:'300750 QA',cutoff:'2026-09-30 15:00:00',savedAt:'2026-10-09T08:00:00Z',frontendVersion:'qa-old',ruleVersions:[20261004],history:true,target:{kind:'stock',market:'SZ',code:'300750'},preferences:{},layers:{bis:true,xds:false,zss:false,bcs:true,mmds:true},charts:[{category:'DAY',bars,metadata:{actual_adjust:'QFQ',bar_time:'start',observed_at:'2026-09-30T15:00:00'},result:computed.result}]};
+    const first=await post('research/archives/'+crypto.randomUUID(),{kind:'chart',name:chart.name,note:chart.note,payload:chart},'PUT');
+    const studyReq={as_of:'2026-09-30 15:00:00',series:[{category:'DAY',code:'stock:SZ:300750',bars,bar_time:'start'}],volume_multiple:3,squeeze_quantile:.3,ma_periods:[5,13],window_bars:30,window_start:null,window_end:null};
+    const studyResult=await post('chanlun/archive-recompute',{request_id:crypto.randomUUID(),kind:'study',study:studyReq});
+    const study={format:'chanlun-research-snapshot-v2',code:'300750',instrument:chart.target,as_of:'2026-09-30 15:00:00',series:[{category:'DAY',snapshot:{bars,metadata:chart.charts[0].metadata}}],result:studyResult.result};
+    const second=await post('research/archives/'+crypto.randomUUID(),{kind:'study',name:'重算测试研究',note:'明确合成行情',payload:study},'PUT');
+    return {chart:first.id,study:second.id,chartDigest:first.digest};
+  });
+  const listing=page.waitForResponse(r=>r.url().endsWith('/api/v1/research/archives')&&r.request().method()==='GET');
+  await page.getByText('账户云存档',{exact:true}).click();
+  const listed=await listing;
+  if(listed.ok())await page.getByText('重算测试图表',{exact:true}).waitFor();
+  return {...created,listingStatus:listed.status()};
+}

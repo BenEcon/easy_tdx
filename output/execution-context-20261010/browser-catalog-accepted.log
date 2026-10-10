@@ -1,0 +1,59 @@
+### Ran Playwright code
+```js
+await (async(page)=>{
+  const root='http://127.0.0.1:8768',report={cases:[],errors:[]},check=(ok,msg)=>{if(!ok)throw Error(msg)};
+  page.on('pageerror',e=>report.errors.push(String(e)));
+  const catalog=await(await page.request.get(root+'/api/v1/backtest/strategies')).json();
+  const trade={cash:200000,commission:.0002,min_commission:1.23,stamp_tax:.0005,slippage:.002,execution:'next_close'};
+  const records={};
+  for(const kind of ['single','portfolio']){
+    const res=await page.request.post(root+'/api/v1/strategies',{data:{name:'QA 目录延迟 '+kind,kind,strategy:'ma_cross',params:{fast:7,slow:31},context:{...(kind==='single'?{symbol:'SZ:300450'}:{stocks:['SZ:300450','SH:600699']}),category:'DAY',adjust:'QFQ',start_date:'2025-01-02',end_date:'2026-09-29'},trade_config:trade}});
+    check(res.ok(),await res.text());records[kind]=await res.json();
+  }
+  const requests=[];
+  page.on('request',r=>{if(/\/backtest\/(run|portfolio\/run)/.test(r.url()))requests.push(r.url())});
+  for(const kind of ['single','portfolio']){
+    const path=kind==='single'?'/':'/portfolio',run=kind==='single'?'开始回测':'开始组合回测',cashLabel=kind==='single'?'初始资金':'组合总资金';
+    let release,entered,finished,intercepted=false;const gate=new Promise(r=>release=r),started=new Promise(r=>entered=r),settled=new Promise(r=>finished=r);
+    await page.route('**/api/v1/backtest/strategies',async route=>{intercepted=true;entered();try{await gate;await route.fulfill({json:catalog})}finally{finished()}},{times:1});
+    try{
+      await page.setViewportSize({width:1440,height:1000});
+      await page.goto(root+path+'?savedStrategyId='+records[kind].id);await started;
+      await page.getByRole('textbox',{name:cashLabel,exact:true}).fill('123456');
+      await page.getByRole('textbox',{name:cashLabel,exact:true}).press('Tab');
+      check(await page.getByRole('button',{name:run,exact:true}).isDisabled(),'目录等待时允许运行');
+      release();await page.getByText(/载入期间参数已修改/).waitFor();
+      check(await page.getByRole('textbox',{name:cashLabel,exact:true}).inputValue()==='123456','迟到目录覆盖输入');
+      await page.screenshot({path:'/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/catalog-'+kind+'-stopped.png'});
+      await page.getByRole('button',{name:'重新载入',exact:true}).click();
+      await page.getByRole('heading',{name:'已载入：QA 目录延迟 '+kind,exact:true}).waitFor();
+      for(const [name,value] of Object.entries({[cashLabel]:'200000','快线周期':'7','慢线周期':'31','最低佣金':'1.23'}))check(await page.getByRole('textbox',{name,exact:true}).inputValue()===value,name+' 重试后未正确恢复');
+      check(await page.getByRole('button',{name:run,exact:true}).isEnabled(),'重试后不能运行');
+      report.cases.push({kind,stoppedWithoutOverwrite:true,retryRestored:true});
+    }finally{release();if(intercepted)await settled;await page.unroute('**/api/v1/backtest/strategies')}
+  }
+  for(const kind of ['single','portfolio']){
+    let calls=0;
+    await page.route('**/api/v1/backtest/strategies',route=>++calls===1?route.fulfill({json:{strategies:[]}}):route.fulfill({json:catalog}));
+    try{
+      await page.goto(root+(kind==='single'?'/':'/portfolio')+'?savedStrategyId='+records[kind].id);
+      await page.getByText(/策略目录为空或格式错误/).waitFor();
+      await page.getByRole('button',{name:'重新载入',exact:true}).click();
+      await page.getByRole('heading',{name:'已载入：QA 目录延迟 '+kind,exact:true}).waitFor();
+      check(calls===2,'空目录被缓存，不能重新获取');
+      report.cases.push({kind,emptyCatalogRetry:true});
+    }finally{await page.unroute('**/api/v1/backtest/strategies')}
+  }
+  report.widths=[];
+  for(const width of [1440,390,320]){
+    await page.setViewportSize({width,height:1000});
+    const actual=await page.evaluate(()=>document.documentElement.scrollWidth);check(actual<=width,'页面横向溢出');report.widths.push({width,actual});
+    await page.screenshot({path:'/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/catalog-ready-'+width+'.png'});
+  }
+  check(requests.length===0,'载入或重试自动执行了回测');check(!report.errors.length,'浏览器未处理异常');
+  report.taskRequests=requests;await page.evaluate(r=>window.__catalogReport=r,report);
+})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8768/portfolio?savedStrategyId=8edb8098fa23
+- Page Title: 股票分析 · Analysis Studio

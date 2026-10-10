@@ -1,0 +1,6 @@
+### Result
+{"selection":"所选 K 线 · 2026-09-30 14:15:00\n查看所选日期证据","scope":"图表日期 · 2026-09-30 14:15\n\n匹配极值、对照、提示、确认、失效日期，以及覆盖该时刻的 A/B/C 或拦截区间；不代表当时已确认。\n\n返回图表","counts":"买卖点 0 / 0 条\n·\nM1 0 / 1 条\n·\n背离 0 / 29 条\n·\n核验 9 / 278 组"}
+### Ran Playwright code
+```js
+await (async page => { const review=page.getByRole("button",{name:"查看所选日期证据",exact:true}); if(!await review.isDisabled()) throw Error("old selection leaked"); const chart=page.getByRole("region",{name:"蜡烛图绘图区",exact:true}); const box=await chart.boundingBox(); await chart.click({position:{x:box.width*.7,y:180}}); const selection=await review.locator("..").innerText(); await review.click(); const evidence=page.getByRole("region",{name:"信号证据检索",exact:true}); const scope=await evidence.locator(".evidence-date-focus").innerText(); if(!/2026-\d{2}-\d{2} \d{2}:\d{2}/.test(scope)) throw Error("minute lost: "+scope); return {selection,scope,counts:await evidence.locator(".evidence-count").innerText()}; })(page);
+```

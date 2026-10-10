@@ -1,0 +1,105 @@
+........................................................................ [  3%]
+........................................................................ [  6%]
+........................................................................ [  9%]
+........................................................................ [ 12%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 24%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 33%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 43%]
+........................................................................ [ 46%]
+........................................................................ [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 61%]
+........................................................................ [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 71%]
+........................................................................ [ 74%]
+........................................................................ [ 77%]
+........................................................................ [ 80%]
+........................................................................ [ 83%]
+........................................................................ [ 86%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 95%]
+..........................FFF..FF.FFF.FF................................ [ 98%]
+..........................                                               [100%]
+=================================== FAILURES ===================================
+_____________________ test_async_backtest_with_inline_data _____________________
+tests/unit/test_web_backtest.py:735: in test_async_backtest_with_inline_data
+    ???
+E   AssertionError: {"detail":"请先登录"}
+E   assert 401 == 202
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+__________________________ test_task_poll_unknown_id ___________________________
+tests/unit/test_web_backtest.py:757: in test_task_poll_unknown_id
+    break
+E   assert 401 == 400
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+_____________________ test_async_backtest_failure_recorded _____________________
+tests/unit/test_web_backtest.py:798: in test_async_backtest_failure_recorded
+    "open": 10.2,
+E   assert 401 == 202
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+_______________________ test_portfolio_backtest_endpoint _______________________
+tests/unit/test_web_backtest.py:884: in test_portfolio_backtest_endpoint
+    ???
+E   AssertionError: {"detail":"请先登录"}
+E   assert 401 == 202
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+_____________________ test_portfolio_backtest_bad_strategy _____________________
+tests/unit/test_web_backtest.py:934: in test_portfolio_backtest_bad_strategy
+    "vol": np.full(n, 1000.0),
+E   assert 401 == 202
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+____________________________ test_optimize_endpoint ____________________________
+tests/unit/test_web_backtest.py:992: in test_optimize_endpoint
+    ???
+E   AssertionError: {"detail":"请先登录"}
+E   assert 401 == 202
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+____________________ test_optimize_single_param_no_heatmap _____________________
+tests/unit/test_web_backtest.py:1023: in test_optimize_single_param_no_heatmap
+    ???
+E   assert 401 == 202
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+__________________________ test_optimize_all_endpoint __________________________
+tests/unit/test_web_backtest.py:1044: in test_optimize_all_endpoint
+    assert final["result"]["heatmap"] is None
+E   AssertionError: {"detail":"请先登录"}
+E   assert 401 == 202
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+___________________________ test_list_tasks_endpoint ___________________________
+tests/unit/test_web_backtest.py:1101: in test_list_tasks_endpoint
+    def test_list_tasks_endpoint(client, sample_ohlcv):
+E   assert 401 == 200
+E    +  where 401 = <Response [401 Unauthorized]>.status_code
+____________________________ test_list_tasks_limit _____________________________
+tests/unit/test_web_backtest.py:1123: in test_list_tasks_limit
+    def test_list_tasks_limit(client, sample_ohlcv):
+E   KeyError: 'count'
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_web_backtest.py::test_async_backtest_with_inline_data
+FAILED tests/unit/test_web_backtest.py::test_task_poll_unknown_id - assert 40...
+FAILED tests/unit/test_web_backtest.py::test_async_backtest_failure_recorded
+FAILED tests/unit/test_web_backtest.py::test_portfolio_backtest_endpoint - As...
+FAILED tests/unit/test_web_backtest.py::test_portfolio_backtest_bad_strategy
+FAILED tests/unit/test_web_backtest.py::test_optimize_endpoint - AssertionErr...
+FAILED tests/unit/test_web_backtest.py::test_optimize_single_param_no_heatmap
+FAILED tests/unit/test_web_backtest.py::test_optimize_all_endpoint - Assertio...
+FAILED tests/unit/test_web_backtest.py::test_list_tasks_endpoint - assert 401...
+FAILED tests/unit/test_web_backtest.py::test_list_tasks_limit - KeyError: 'co...
+10 failed, 2320 passed, 1 warning in 503.14s (0:08:23)

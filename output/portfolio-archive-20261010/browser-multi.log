@@ -1,0 +1,49 @@
+### Ran Playwright code
+```js
+await (async (page) => {
+  const root='http://127.0.0.1:8769',requests=[],errors=[];
+  const onRequest=r=>requests.push({path:new URL(r.url()).pathname,method:r.method(),origin:r.headers()['x-query-origin']??null});
+  const onError=e=>errors.push(String(e));page.on('request',onRequest);page.on('pageerror',onError);
+  const check=(v,m)=>{if(!v)throw Error(m)};
+  const canonical=v=>JSON.stringify(v&&typeof v==='object'?(Array.isArray(v)?v.map(x=>JSON.parse(canonical(x))):Object.fromEntries(Object.keys(v).sort().map(k=>[k,JSON.parse(canonical(v[k]))]))):v);
+  try {
+    for(const [i,category] of ['DAY','MIN_30'].entries()){
+      const name=i?'分钟观察':'日线观察';
+      const response=await page.request.post(root+'/api/v1/strategies',{data:{name,kind:'single',strategy:'ma_cross',strategy_label:name,params:{fast:i?3:7,slow:i?15:31},context:{symbol:'SZ:300750',category,adjust:'QFQ',start_date:'2023-01-01',end_date:'2026-09-30'},trade_config:{cash:100000.125,commission:.0003,min_commission:5.25,stamp_tax:.001,slippage:.0002,execution:'next_open'}}});check(response.ok(),await response.text());
+    }
+    await page.setViewportSize({width:1440,height:1000});await page.goto(root+'/strategies');
+    for(const name of ['日线观察','分钟观察'])await page.locator('article').filter({has:page.getByRole('heading',{name,exact:true})}).getByRole('checkbox').check();
+    const completed=page.waitForResponse(async r=>new URL(r.url()).pathname.startsWith('/api/v1/backtest/tasks/')&&r.ok()&&(await r.json()).status==='done');
+    page.once('dialog',d=>d.accept());await page.getByRole('button',{name:'组合回测（2）',exact:true}).click();const done=await (await completed).json();
+    await page.getByRole('button',{name:'读取完整原档',exact:true}).waitFor();
+    const reading=page.waitForResponse(r=>r.url().endsWith('/portfolio-evidence'));await page.getByRole('button',{name:'读取完整原档',exact:true}).click();const response=await reading;check(response.ok(),await response.text());const receipt=await response.json();
+    await page.getByRole('button',{name:'导出完整 JSON',exact:true}).waitFor();check(receipt.kind==='multi_strategy','wrong task kind');check(canonical(receipt.result)===canonical(done.result),'result mismatch');
+    const cloud=page.locator('.portfolio-archive-tools .cloud-archives');await cloud.locator(':scope > summary').click();
+    const writing=page.waitForResponse(r=>r.request().method()==='PUT'&&r.url().includes('/research/archives/'));await cloud.getByRole('button',{name:'保存当前结果到云端',exact:true}).click();const stored=await writing;check(stored.status()===201,await stored.text());const id=(await stored.json()).id;
+    const saved=await (await page.request.get(root+'/api/v1/research/archives/'+id)).json();check(canonical(saved.payload.receipt)===canonical(receipt),'saved changed');
+    const downloading=page.waitForEvent('download');await page.getByRole('button',{name:'导出完整 JSON',exact:true}).click();const download=await downloading;const file='/Users/bowen/Documents/Python/Google/TDX-work/output/portfolio-archive-20261010/multi-export.json';await download.saveAs(file);
+    let text='';for await(const chunk of await download.createReadStream())text+=chunk;check(canonical(JSON.parse(text))===canonical(saved.payload),'export changed');
+    await cloud.locator('input[type=file]').setInputFiles(file);
+    const importing=page.waitForResponse(r=>r.request().method()==='PUT'&&r.url().includes('/research/archives/'));await cloud.getByRole('button',{name:'确认导入到当前账户',exact:true}).click();const importedResponse=await importing;check(importedResponse.status()===201,await importedResponse.text());const imported=(await importedResponse.json()).id;
+    const copied=await (await page.request.get(root+'/api/v1/research/archives/'+imported)).json();check(id!==imported&&canonical(copied.payload)===canonical(saved.payload),'import changed or overwrote original');
+    const evicted=await page.request.post(root+'/qa/evict');check(evicted.ok(),await evicted.text());check((await page.request.get(root+'/api/v1/backtest/tasks/'+done.task_id+'/portfolio-evidence')).status()===404,'task retained');
+    const start=requests.length;await page.goto(root+'/account');const directory=page.locator('.cloud-archives').first();await directory.locator(':scope > summary').click();await directory.getByRole('button',{name:'查看原档',exact:true}).first().click();
+    const dialog=page.getByRole('dialog',{name:'云端研究原档'});await dialog.getByText(/多策略原档 · 2 个成员/).waitFor();
+    await dialog.getByRole('combobox',{name:'原档成员',exact:true}).click();await page.getByRole('option',{name:/分钟观察/}).click();await dialog.getByText(/SZ:300750 · MIN_30 · 资金占比/).waitFor();
+    const sizes=[];for(const width of [1440,390,320]){
+      await page.setViewportSize({width,height:1000});await page.waitForFunction(()=>[...document.querySelectorAll('dialog[open] canvas')].every(c=>c.getBoundingClientRect().width<=document.querySelector('dialog[open]').clientWidth));
+      await page.screenshot({path:`output/playwright/multi-archive-${width}.png`});const geometry=await dialog.evaluate(el=>({page:document.documentElement.scrollWidth,client:el.clientWidth,scroll:el.scrollWidth}));sizes.push({width,...geometry});check(geometry.page<=width&&geometry.scroll<=geometry.client+1,'overflow');
+    }
+    check(!requests.slice(start).some(r=>/\/bars|\/indicator|\/backtest\/.*run|portfolio-evidence|recompute/.test(r.path)),'readonly research');check(errors.length===0,errors.join(';'));
+    return{id,imported,members:receipt.members.map(m=>({key:m.key,period:m.category,bars:m.bars.length,trades:receipt.result.individual_results[m.key].trades.length})),sizes,errors};
+  }finally{page.off('request',onRequest);page.off('pageerror',onError)}
+})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8769/strategies
+### Modal state
+- ["confirm" dialog with message "按各策略保存区间组合回测？
+2 个槽位，组合资金 200000.25，每槽位等额分仓。
+区间：2023-01-01 至 2026-09-30。
+复权 QFQ；次根开盘价；佣金率 0.0003；最低佣金 5.25；印花税率 0.001；滑点 0.0002。
+使用当前可取得的行情重新计算，不是原版本成绩回放。回测信号不等同于实际持仓或交易建议。"]: can be handled by dialog-accept or dialog-dismiss

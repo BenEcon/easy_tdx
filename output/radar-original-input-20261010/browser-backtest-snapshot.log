@@ -1,0 +1,496 @@
+### Page
+- Page URL: http://127.0.0.1:8769/?review=signal&autoRun=1&symbol=300450&market=SZ&category=DAY&adjust=QFQ&scanAsOf=2026-09-30+15:00:00&scanFingerprint=4e72deede2b1e7792cbb44c35dced620d8bd1730e5bd2fccc514bf1955a4eb23&signal=BUY&signalDate=2026-09-30+00:00&strategy=ma_cross&strategyName=%E5%8E%9F%E6%89%AB%E6%8F%8F%E5%9D%87%E7%BA%BF%E6%A0%B8%E9%AA%8C&strategyLabel=%E5%8F%8C%E5%9D%87%E7%BA%BF&params={%22fast%22:7,%22slow%22:31}&count=800&scanTaskId=ce05c1529d344a5b95919460a87f9e14&scanRowIndex=0&startDate=2024-09-30&endDate=2026-09-30
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=f3e4]:
+  - complementary [ref=f3e5]:
+    - button "收起左侧栏" [ref=f3e11] [cursor=pointer]
+    - link "返回股票分析" [ref=f3e15]:
+      - /url: /
+      - generic [ref=f3e20]:
+        - strong [ref=f3e21]: 股票分析
+        - generic [ref=f3e22]: Analysis Studio
+    - navigation "主要导航" [ref=f3e23]:
+      - generic [ref=f3e24]:
+        - paragraph [ref=f3e25]: 分析
+        - link "个股分析" [ref=f3e26]:
+          - /url: /
+        - link "市场行情" [ref=f3e33]:
+          - /url: /market
+        - link "盘中研究" [ref=f3e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=f3e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=f3e51]:
+          - /url: /signals
+        - link "追踪标的" [ref=f3e58]:
+          - /url: /tracking
+      - generic [ref=f3e64]:
+        - paragraph [ref=f3e65]: 研究
+        - link "板块研究" [ref=f3e66]:
+          - /url: /boards
+        - link "公司资料" [ref=f3e75]:
+          - /url: /company
+        - link "扩展市场" [ref=f3e83]:
+          - /url: /extended
+        - link "量化研究" [ref=f3e90]:
+          - /url: /quant-research
+        - link "组合回测" [ref=f3e96]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=f3e105]:
+          - /url: /optimize
+        - link "结果对比" [ref=f3e110]:
+          - /url: /compare
+        - link "策略库" [ref=f3e115]:
+          - /url: /strategies
+      - generic [ref=f3e121]:
+        - paragraph [ref=f3e122]: 系统
+        - link "行情服务器" [ref=f3e123]:
+          - /url: /settings
+        - link "个人账户" [ref=f3e130]:
+          - /url: /account
+        - link "账户管理" [ref=f3e137]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=f3e146]:
+          - /url: /admin/data
+    - link "R radar-qa 管理员" [ref=f3e154]:
+      - /url: /account
+      - generic [ref=f3e155]: R
+      - generic [ref=f3e156]:
+        - strong [ref=f3e157]: radar-qa
+        - generic [ref=f3e158]: 管理员
+  - generic [ref=f3e159]:
+    - generic [ref=f3e160]:
+      - generic [ref=f3e161]:
+        - heading "个股分析" [level=1] [ref=f3e162]
+        - paragraph [ref=f3e163]: 观察行情结构，验证策略收益与风险
+      - generic [ref=f3e164]:
+        - link "个人账户" [ref=f3e165]:
+          - /url: /account
+          - generic [ref=f3e166]: R
+          - generic [ref=f3e167]: radar-qa
+          - generic [ref=f3e168]: ADMIN
+        - button "退出登录" [ref=f3e169] [cursor=pointer]
+    - main [ref=f3e172]:
+      - generic [ref=f3e173]:
+        - complementary [ref=f3e174]:
+          - generic [ref=f3e175]:
+            - heading "行情数据" [level=3] [ref=f3e176]
+            - generic [ref=f3e177]:
+              - generic [ref=f3e178]:
+                - generic [ref=f3e179]:
+                  - generic [ref=f3e180]: 代码
+                  - button "股票历史 1" [ref=f3e182] [cursor=pointer]:
+                    - generic [ref=f3e185]: 股票历史
+                    - generic [ref=f3e186]: "1"
+                - textbox "6位代码（市场自动识别）" [ref=f3e189]: "300450"
+                - generic [ref=f3e190]: 深市
+              - generic [ref=f3e191]:
+                - generic [ref=f3e192]: 周期
+                - combobox "行情周期" [ref=f3e194] [cursor=pointer]:
+                  - generic [ref=f3e195]: DAY
+              - generic [ref=f3e198]:
+                - generic [ref=f3e199]: 复权方式
+                - combobox "全局复权方式" [ref=f3e201] [cursor=pointer]:
+                  - generic [ref=f3e202]: 前复权
+                - generic [ref=f3e205]: 自动应用到行情、分析与回测，并保存到当前账号
+              - paragraph [ref=f3e206]: 原扫描复核使用保存的全部行情与预热区间，不按本页日期裁剪。
+              - paragraph [ref=f3e207]: 已加载：SZ:300450 DAY · 前复权 · 2023-06-15T00:00:00 ~ 2026-09-30T00:00:00 · 原扫描行情（800 根）
+              - region "行情数据口径" [ref=f3e208]:
+                - group [ref=f3e209]:
+                  - generic "› 数据口径 MAC 行情 · 前复权 收盘截至 2026-09-30 15:00:00" [ref=f3e210] [cursor=pointer]:
+                    - text: ›
+                    - strong [ref=f3e211]: 数据口径
+                    - generic [ref=f3e212]: MAC 行情 · 前复权
+                    - time [ref=f3e213]: 收盘截至 2026-09-30 15:00:00
+          - generic [ref=f3e214]:
+            - heading "策略" [level=3] [ref=f3e215]
+            - generic [ref=f3e216]:
+              - generic [ref=f3e217]:
+                - generic [ref=f3e218]: 策略
+                - combobox "回测策略" [ref=f3e220] [cursor=pointer]:
+                  - generic [ref=f3e221]: 双均线交叉（ma_cross）
+              - paragraph [ref=f3e224]: 快线上穿慢线买入，快线下穿慢线卖出。最经典的趋势跟随策略。
+              - generic [ref=f3e225]:
+                - generic [ref=f3e226]:
+                  - generic [ref=f3e227]: 快线周期
+                  - generic [ref=f3e228]:
+                    - textbox "快线周期" [ref=f3e229]: "7"
+                    - generic [ref=f3e230]:
+                      - button "快线周期增加" [ref=f3e231] [cursor=pointer]
+                      - button "快线周期减少" [ref=f3e234] [cursor=pointer]
+                - generic [ref=f3e237]:
+                  - generic [ref=f3e238]: 慢线周期
+                  - generic [ref=f3e239]:
+                    - textbox "慢线周期" [ref=f3e240]: "31"
+                    - generic [ref=f3e241]:
+                      - button "慢线周期增加" [ref=f3e242] [cursor=pointer]
+                      - button "慢线周期减少" [ref=f3e245] [cursor=pointer]
+          - generic [ref=f3e248]:
+            - heading "资金与成本" [level=3] [ref=f3e249]
+            - generic [ref=f3e250]:
+              - generic [ref=f3e251]: 初始资金
+              - generic [ref=f3e252]:
+                - textbox "初始资金" [ref=f3e253]: "1000000"
+                - generic [ref=f3e254]:
+                  - button "初始资金增加" [ref=f3e255] [cursor=pointer]
+                  - button "初始资金减少" [ref=f3e258] [cursor=pointer]
+            - generic [ref=f3e261]:
+              - generic [ref=f3e262]:
+                - generic [ref=f3e263]: 佣金率
+                - generic [ref=f3e264]:
+                  - textbox "佣金率" [ref=f3e265]: "0.0003"
+                  - generic [ref=f3e266]:
+                    - button "佣金率增加" [ref=f3e267] [cursor=pointer]
+                    - button "佣金率减少" [ref=f3e270] [cursor=pointer]
+              - generic [ref=f3e273]:
+                - generic [ref=f3e274]: 滑点
+                - generic [ref=f3e275]:
+                  - textbox "滑点" [ref=f3e276]: "0"
+                  - generic [ref=f3e277]:
+                    - button "滑点增加" [ref=f3e278] [cursor=pointer]
+                    - button "滑点减少" [ref=f3e281] [cursor=pointer]
+            - generic [ref=f3e284]:
+              - generic [ref=f3e285]:
+                - generic [ref=f3e286]: 最低佣金
+                - generic [ref=f3e287]:
+                  - textbox "最低佣金" [ref=f3e288]: "5"
+                  - generic [ref=f3e289]:
+                    - button "最低佣金增加" [ref=f3e290] [cursor=pointer]
+                    - button "最低佣金减少" [ref=f3e293] [cursor=pointer]
+              - generic [ref=f3e296]:
+                - generic [ref=f3e297]: 印花税率
+                - generic [ref=f3e298]:
+                  - textbox "印花税率" [ref=f3e299]: "0.001"
+                  - generic [ref=f3e300]:
+                    - button "印花税率增加" [ref=f3e301] [cursor=pointer]
+                    - button "印花税率减少" [ref=f3e304] [cursor=pointer]
+            - generic [ref=f3e307]:
+              - generic [ref=f3e308]: 成交价
+              - combobox "成交价格模式" [ref=f3e310] [cursor=pointer]:
+                - generic [ref=f3e311]: 开盘价
+          - button "开始回测" [ref=f3e314] [cursor=pointer]
+        - main [ref=f3e318]:
+          - region "信号人工复核上下文" [ref=f3e319]:
+            - generic [ref=f3e320]:
+              - generic [ref=f3e321]:
+                - generic [ref=f3e322]: 信号雷达 · 原扫描记录
+                - strong [ref=f3e323]: 原扫描均线核验 · 300450
+              - link "返回信号雷达" [ref=f3e324]:
+                - /url: /signals
+            - generic [ref=f3e325]:
+              - generic [ref=f3e326]:
+                - term [ref=f3e327]: 扫描条件
+                - definition [ref=f3e328]: 日线 · 前复权
+              - generic [ref=f3e329]:
+                - term [ref=f3e330]: 信号发生
+                - definition [ref=f3e331]: 买入 · 2026-09-30
+              - generic [ref=f3e332]:
+                - term [ref=f3e333]: 扫描截止
+                - definition [ref=f3e334]: 2026-09-30 15:00
+            - status [ref=f3e335]: 已生成当前策略回测；资金、成本和执行方式采用本页设置，回测成交不等于原雷达信号。
+            - paragraph [ref=f3e336]: 仅读取原任务保存的完整行情与预热区间；原任务不可用时停止，不改取最新行情。后续分析使用当前算法及本页设置，不等于原雷达信号或原成绩重放。
+            - paragraph [ref=f3e337]: 使用原任务保存的 800 根完整行情（含原预热区间），没有重新取行情。当前执行版本与原扫描一致。原行情是扫描时取得的版本，并不保证属于历史交易当日的数据版本。 临时内存记录：服务重启或缓存淘汰后不可用。
+            - group [ref=f3e338]:
+              - generic "原任务与执行版本" [ref=f3e339] [cursor=pointer]
+            - paragraph [ref=f3e340]: 信号时间是策略发出时间，不等于缠论极值日期。
+            - group [ref=f3e341]:
+              - generic "原策略参数与行情指纹" [ref=f3e342] [cursor=pointer]
+          - generic [ref=f3e343]:
+            - group [ref=f3e344]:
+              - generic "› 本次计算数据 1 组输入 · 参数随结果固定" [ref=f3e345] [cursor=pointer]:
+                - text: ›
+                - strong [ref=f3e346]: 本次计算数据
+                - generic [ref=f3e347]: 1 组输入 · 参数随结果固定
+              - text: ›
+            - button "保存策略" [ref=f3e349] [cursor=pointer]
+            - generic [ref=f3e355]:
+              - generic [ref=f3e356]:
+                - generic [ref=f3e357]:
+                  - heading "K线、买卖点与技术指标" [level=3] [ref=f3e358]
+                  - paragraph [ref=f3e359]: 主副图同步缩放；支持完整指标库、参数设置与主图叠加。
+                - button "全屏查看K线、买卖点与技术指标" [ref=f3e361] [cursor=pointer]:
+                  - generic [ref=f3e364]: 全屏
+              - generic [ref=f3e370]:
+                - generic [ref=f3e373]:
+                  - strong [ref=f3e374]: 技术指标
+                  - generic [ref=f3e375]: 用快慢均线差观察趋势方向与动能变化。
+                - generic [ref=f3e376]:
+                  - radiogroup "常用技术指标" [ref=f3e377]:
+                    - radio "无指标" [ref=f3e378] [cursor=pointer]
+                    - radio "成交量" [ref=f3e379] [cursor=pointer]
+                    - radio "MACD" [checked] [ref=f3e380] [cursor=pointer]
+                    - radio "KDJ" [ref=f3e381] [cursor=pointer]
+                    - radio "RSI" [ref=f3e382] [cursor=pointer]
+                    - radio "BOLL" [ref=f3e383] [cursor=pointer]
+                  - button "全部指标" [ref=f3e384] [cursor=pointer]
+            - generic [ref=f3e390]:
+              - generic [ref=f3e391]:
+                - heading "净值曲线与回撤" [level=3] [ref=f3e392]
+                - paragraph [ref=f3e393]: 观察收益累积路径与风险区间
+              - button "全屏查看净值曲线与回撤" [ref=f3e395] [cursor=pointer]:
+                - generic [ref=f3e398]: 全屏
+            - generic [ref=f3e403]:
+              - heading "评级" [level=3] [ref=f3e404]
+              - generic [ref=f3e405]:
+                - generic [ref=f3e406]:
+                  - img "评级 C：风险偏高，长期套牢风险大" [ref=f3e408]:
+                    - generic [ref=f3e409]: C
+                    - generic [ref=f3e410]: "48"
+                  - generic [ref=f3e411]: 风险偏高，长期套牢风险大
+                - group [ref=f3e412]:
+                  - generic "› 新版口径 日收益采样 · 799 个收益样本" [ref=f3e413] [cursor=pointer]:
+                    - text: ›
+                    - generic [ref=f3e414]: 新版口径
+                    - generic [ref=f3e415]: 日收益采样 · 799 个收益样本
+                - generic [ref=f3e416]:
+                  - generic [ref=f3e418]:
+                    - generic [ref=f3e419]: 卡玛比率
+                    - generic [ref=f3e420]: 权重 18%
+                    - generic [ref=f3e421]: "48.4"
+                  - generic [ref=f3e425]:
+                    - generic [ref=f3e426]: 利润因子
+                    - generic [ref=f3e427]: 权重 18%
+                    - generic [ref=f3e428]: "100.0"
+                  - generic [ref=f3e432]:
+                    - generic [ref=f3e433]: 最大回撤
+                    - generic [ref=f3e434]: 权重 17%
+                    - generic [ref=f3e435]: "34.9"
+                  - generic [ref=f3e439]:
+                    - generic [ref=f3e440]: 胜率
+                    - generic [ref=f3e441]: 权重 17%
+                    - generic [ref=f3e442]: "22.0"
+                  - generic [ref=f3e446]:
+                    - generic [ref=f3e447]: 夏普比率
+                    - generic [ref=f3e448]: 权重 15%
+                    - generic [ref=f3e449]: "53.1"
+                  - generic [ref=f3e453]:
+                    - generic [ref=f3e454]: 波动率
+                    - generic [ref=f3e455]: 权重 15%
+                    - generic [ref=f3e456]: "24.5"
+            - generic [ref=f3e459]:
+              - heading "绩效指标" [level=3] [ref=f3e460]
+              - generic [ref=f3e461]:
+                - generic [ref=f3e462]:
+                  - heading "收益" [level=4] [ref=f3e463]
+                  - generic [ref=f3e464]:
+                    - generic [ref=f3e465]:
+                      - generic [ref=f3e466]: 总收益率
+                      - generic [ref=f3e467]: 121.93%
+                    - generic [ref=f3e468]:
+                      - generic [ref=f3e469]: 年化收益
+                      - generic [ref=f3e470]: 28.59%
+                    - generic [ref=f3e471]:
+                      - generic [ref=f3e472]: 夏普比率
+                      - generic [ref=f3e473]: "0.76"
+                    - generic [ref=f3e474]:
+                      - generic [ref=f3e475]: 索提诺比率
+                      - generic [ref=f3e476]: "1.32"
+                    - generic [ref=f3e477]:
+                      - generic [ref=f3e478]: 卡玛比率
+                      - generic [ref=f3e479]: "0.77"
+                - generic [ref=f3e480]:
+                  - heading "风险" [level=4] [ref=f3e481]
+                  - generic [ref=f3e482]:
+                    - generic [ref=f3e483]:
+                      - generic [ref=f3e484]: 最大回撤
+                      - generic [ref=f3e485]: 37.26%
+                    - generic [ref=f3e486]:
+                      - generic [ref=f3e487]: 峰值至谷底
+                      - generic [ref=f3e488]: 138 根
+                    - generic [ref=f3e489]:
+                      - generic [ref=f3e490]: 波动率
+                      - generic [ref=f3e491]: 38.46%
+                - generic [ref=f3e492]:
+                  - heading "交易" [level=4] [ref=f3e493]
+                  - generic [ref=f3e494]:
+                    - generic [ref=f3e495]:
+                      - generic [ref=f3e496]: 总交易数
+                      - generic [ref=f3e497]: "10"
+                    - generic [ref=f3e498]:
+                      - generic [ref=f3e499]: 盈利次数
+                      - generic [ref=f3e500]: "3"
+                    - generic [ref=f3e501]:
+                      - generic [ref=f3e502]: 亏损次数
+                      - generic [ref=f3e503]: "7"
+                    - generic [ref=f3e504]:
+                      - generic [ref=f3e505]: 持平次数
+                      - generic [ref=f3e506]: "0"
+                    - generic [ref=f3e507]:
+                      - generic [ref=f3e508]: 胜率
+                      - generic [ref=f3e509]: 30.00%
+                    - generic [ref=f3e510]:
+                      - generic [ref=f3e511]: 盈亏比
+                      - generic [ref=f3e512]: "3.68"
+                    - generic [ref=f3e513]:
+                      - generic [ref=f3e514]: 平均盈利
+                      - generic [ref=f3e515]: 56.49%
+                    - generic [ref=f3e516]:
+                      - generic [ref=f3e517]: 平均亏损
+                      - generic [ref=f3e518]: "-3.88%"
+                    - generic [ref=f3e519]:
+                      - generic [ref=f3e520]: 最大盈利
+                      - generic [ref=f3e521]: 154.91%
+                    - generic [ref=f3e522]:
+                      - generic [ref=f3e523]: 最大亏损
+                      - generic [ref=f3e524]: "-7.68%"
+                    - generic [ref=f3e525]:
+                      - generic [ref=f3e526]: 平均持仓天数
+                      - generic [ref=f3e527]: "41.64"
+                    - generic [ref=f3e528]:
+                      - generic [ref=f3e529]: 拒单数
+                      - generic [ref=f3e530]: "0"
+            - generic [ref=f3e531]:
+              - heading "成交记录（20 笔）" [level=3] [ref=f3e532]
+              - table [ref=f3e534]:
+                - rowgroup [ref=f3e535]:
+                  - row [ref=f3e536]:
+                    - columnheader "成交时间" [ref=f3e537]
+                    - columnheader "方向" [ref=f3e538]
+                    - columnheader "数量" [ref=f3e539]
+                    - columnheader "价格" [ref=f3e540]
+                    - columnheader "手续费" [ref=f3e541]
+                    - columnheader "盈亏" [ref=f3e542]
+                - rowgroup [ref=f3e543]:
+                  - row [ref=f3e544]:
+                    - cell "2023-11-03" [ref=f3e545]
+                    - cell "BUY" [ref=f3e546]
+                    - cell "37500" [ref=f3e547]
+                    - cell "26.600" [ref=f3e548]
+                    - cell "299.25" [ref=f3e549]
+                    - cell "-" [ref=f3e550]
+                  - row [ref=f3e551]:
+                    - cell "2023-12-01" [ref=f3e552]
+                    - cell "SELL" [ref=f3e553]
+                    - cell "37500" [ref=f3e554]
+                    - cell "25.700" [ref=f3e555]
+                    - cell "1252.88" [ref=f3e556]
+                    - cell "-35302.11" [ref=f3e557]
+                  - row [ref=f3e558]:
+                    - cell "2024-03-01" [ref=f3e559]
+                    - cell "BUY" [ref=f3e560]
+                    - cell "43400" [ref=f3e561]
+                    - cell "22.210" [ref=f3e562]
+                    - cell "289.17" [ref=f3e563]
+                    - cell "-" [ref=f3e564]
+                  - row [ref=f3e565]:
+                    - cell "2024-04-18" [ref=f3e566]
+                    - cell "SELL" [ref=f3e567]
+                    - cell "43400" [ref=f3e568]
+                    - cell "22.160" [ref=f3e569]
+                    - cell "1250.27" [ref=f3e570]
+                    - cell "-3709.41" [ref=f3e571]
+                  - row [ref=f3e572]:
+                    - cell "2024-08-06" [ref=f3e573]
+                    - cell "BUY" [ref=f3e574]
+                    - cell "60100" [ref=f3e575]
+                    - cell "15.960" [ref=f3e576]
+                    - cell "287.76" [ref=f3e577]
+                    - cell "-" [ref=f3e578]
+                  - row [ref=f3e579]:
+                    - cell "2024-08-14" [ref=f3e580]
+                    - cell "SELL" [ref=f3e581]
+                    - cell "60100" [ref=f3e582]
+                    - cell "15.440" [ref=f3e583]
+                    - cell "1206.33" [ref=f3e584]
+                    - cell "-32746.11" [ref=f3e585]
+                  - row [ref=f3e586]:
+                    - cell "2024-10-08" [ref=f3e587]
+                    - cell "BUY" [ref=f3e588]
+                    - cell "40500" [ref=f3e589]
+                    - cell "22.880" [ref=f3e590]
+                    - cell "277.99" [ref=f3e591]
+                    - cell "-" [ref=f3e592]
+                  - row [ref=f3e593]:
+                    - cell "2024-12-13" [ref=f3e594]
+                    - cell "SELL" [ref=f3e595]
+                    - cell "40500" [ref=f3e596]
+                    - cell "21.900" [ref=f3e597]
+                    - cell "1153.03" [ref=f3e598]
+                    - cell "-41121.01" [ref=f3e599]
+                  - row [ref=f3e600]:
+                    - cell "2025-02-11" [ref=f3e601]
+                    - cell "BUY" [ref=f3e602]
+                    - cell "44000" [ref=f3e603]
+                    - cell "20.130" [ref=f3e604]
+                    - cell "265.72" [ref=f3e605]
+                    - cell "-" [ref=f3e606]
+                  - row [ref=f3e607]:
+                    - cell "2025-03-26" [ref=f3e608]
+                    - cell "SELL" [ref=f3e609]
+                    - cell "44000" [ref=f3e610]
+                    - cell "21.190" [ref=f3e611]
+                    - cell "1212.07" [ref=f3e612]
+                    - cell "45162.28" [ref=f3e613]
+                  - row [ref=f3e614]:
+                    - cell "2025-05-12" [ref=f3e615]
+                    - cell "BUY" [ref=f3e616]
+                    - cell "46300" [ref=f3e617]
+                    - cell "20.110" [ref=f3e618]
+                    - cell "279.33" [ref=f3e619]
+                    - cell "-" [ref=f3e620]
+                  - row [ref=f3e621]:
+                    - cell "2025-06-06" [ref=f3e622]
+                    - cell "SELL" [ref=f3e623]
+                    - cell "46300" [ref=f3e624]
+                    - cell "19.660" [ref=f3e625]
+                    - cell "1183.34" [ref=f3e626]
+                    - cell "-22297.70" [ref=f3e627]
+                  - row [ref=f3e628]:
+                    - cell "2025-06-10" [ref=f3e629]
+                    - cell "BUY" [ref=f3e630]
+                    - cell "42600" [ref=f3e631]
+                    - cell "21.350" [ref=f3e632]
+                    - cell "272.85" [ref=f3e633]
+                    - cell "-" [ref=f3e634]
+                  - row [ref=f3e635]:
+                    - cell "2025-10-21" [ref=f3e636]
+                    - cell "SELL" [ref=f3e637]
+                    - cell "42600" [ref=f3e638]
+                    - cell "54.510" [ref=f3e639]
+                    - cell "3018.76" [ref=f3e640]
+                    - cell "1409324.30" [ref=f3e641]
+                  - row [ref=f3e642]:
+                    - cell "2025-12-30" [ref=f3e643]
+                    - cell "BUY" [ref=f3e644]
+                    - cell "46500" [ref=f3e645]
+                    - cell "49.860" [ref=f3e646]
+                    - cell "695.55" [ref=f3e647]
+                    - cell "-" [ref=f3e648]
+                  - row [ref=f3e649]:
+                    - cell "2026-02-13" [ref=f3e650]
+                    - cell "SELL" [ref=f3e651]
+                    - cell "46500" [ref=f3e652]
+                    - cell "54.660" [ref=f3e653]
+                    - cell "3304.20" [ref=f3e654]
+                    - cell "219200.22" [ref=f3e655]
+                  - row [ref=f3e656]:
+                    - cell "2026-04-15" [ref=f3e657]
+                    - cell "BUY" [ref=f3e658]
+                    - cell "46700" [ref=f3e659]
+                    - cell "54.310" [ref=f3e660]
+                    - cell "760.88" [ref=f3e661]
+                    - cell "-" [ref=f3e662]
+                  - row [ref=f3e663]:
+                    - cell "2026-05-20" [ref=f3e664]
+                    - cell "SELL" [ref=f3e665]
+                    - cell "46700" [ref=f3e666]
+                    - cell "50.220" [ref=f3e667]
+                    - cell "3048.86" [ref=f3e668]
+                    - cell "-194812.75" [ref=f3e669]
+                  - row [ref=f3e670]:
+                    - cell "2026-08-13" [ref=f3e671]
+                    - cell "BUY" [ref=f3e672]
+                    - cell "66000" [ref=f3e673]
+                    - cell "35.450" [ref=f3e674]
+                    - cell "701.91" [ref=f3e675]
+                    - cell "-" [ref=f3e676]
+                  - row [ref=f3e677]:
+                    - cell "2026-08-28" [ref=f3e678]
+                    - cell "SELL" [ref=f3e679]
+                    - cell "66000" [ref=f3e680]
+                    - cell "33.620" [ref=f3e681]
+                    - cell "2884.60" [ref=f3e682]
+                    - cell "-124366.63" [ref=f3e683]
+```

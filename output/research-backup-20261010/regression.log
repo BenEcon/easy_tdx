@@ -1,0 +1,18 @@
+.F...................................................................... [ 67%]
+...................................                                      [100%]
+=================================== FAILURES ===================================
+_____ test_wal_commits_included_and_source_bytes_or_sessions_not_rewritten _____
+tests/unit/test_research_backup.py:93: in test_wal_commits_included_and_source_bytes_or_sessions_not_rewritten
+    backup.verify_backup(tmp_path / "wal-backup")
+src/easy_tdx/web/research_backup.py:307: in verify_backup
+    raise BackupError("备份文件校验不匹配，未恢复")
+E   easy_tdx.web.research_backup.BackupError: 备份文件校验不匹配，未恢复
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_research_backup.py::test_wal_commits_included_and_source_bytes_or_sessions_not_rewritten
+1 failed, 106 passed, 1 warning in 15.70s

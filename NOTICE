@@ -22,3 +22,17 @@ This project was inspired by and incorporates ideas from:
 
 Both upstream projects are licensed under the MIT License.
 Their original copyright notices are preserved in the LICENSE file.
+
+- Microsoft Qlib v0.9.7 (MIT)
+  Alpha158 formula definitions and operator semantics are adapted into the
+  existing factor engine with an explicitly different complete-window policy.
+  Full copyright/license and pinned source: docs/licenses/qlib-MIT.txt.
+  No code from the proprietary BenEcon/quant-platform project is incorporated.
+
+- DolphinDBModules, commit 43ace2cc4b81d048864ec2e40c25728d5d464e05 (Apache-2.0)
+  Reference author: DolphinDB; gtja191Alpha module last modified 2023-01-17.
+  Selected GTJA191 mathematical calculations rewritten in NumPy/pandas with
+  complete windows, explicit missing values, parameters and panel contracts.
+  This is not a bit-identical port. Full license: docs/licenses/dolphindb-Apache-2.0.txt.
+  The original GTJA report is consulted for verification, not redistributed or
+  relicensed. No source from BenEcon/quant-platform is copied.

@@ -1,0 +1,19 @@
+{
+  "fingerprint": "918d7f427265cbcbdc07bad561835b1691812fcece92bafe4e7e03c20afeb2b1",
+  "request_id": "ba50b31929654ef19ed295217e314c32",
+  "status": "published",
+  "result": {
+    "name": "chan17",
+    "url": "https://md.bowenv.com/webpages/chan17.html",
+    "md_url": "https://md.bowenv.com/webpages/chan17.md",
+    "markdown_sha256": "58c984c69b703284ea448937af27d48fab812ec64ed384c92216f4ecc6f481f8",
+    "html_sha256": "035cec8ee17ed3432d64c89c1e3b390edae7eedf1cb54e5f855473374e0144d8",
+    "public_html_sha256": "c1be0e7a7f37d854cc999de117ab298499023f3acb58911e87a86b8412aa91ef",
+    "images": [],
+    "status": "published",
+    "request_id": "ba50b31929654ef19ed295217e314c32",
+    "backup": null,
+    "verified": true,
+    "clipboard_copied": true
+  }
+}

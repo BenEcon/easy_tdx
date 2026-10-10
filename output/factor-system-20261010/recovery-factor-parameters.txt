@@ -1,0 +1,22 @@
+Factor parameter batch — local only, 2026-10-10
+
+Baseline: source-after-factor-units.tar.gz
+SHA256 909e85d0c9dcf9a26631e44eedd802e661bc71f647245a33da9b9b0df3069da3
+After: source-after-factor-parameters.tar.gz
+SHA256 f5d1e120ef3f8dca28df60306e7e1d13d4208c37e875104cdd6d5cd329b04354
+
+These contain local source and pre-existing dirty changes, not user databases,
+credentials, installed dependencies or built UI. Restore only by extracting into
+a fresh temporary directory, comparing intended files and preserving later edits.
+Never overwrite the checkout or a user database wholesale.
+
+Batch: factor/configuration.py, factor/builtin/alpha158.py, factor/catalog.py,
+factor/research.py, web/routers/research.py, tests/unit/test_factor_parameters.py,
+tests/unit/test_alpha158.py, web-ui/src/factor-parameters.ts,
+web-ui/src/components/FactorParameterEditor.vue, FactorDefinitionDetails.vue,
+FactorEvaluationPanel.vue, web-ui/src/views/QuantResearchView.vue,
+web-ui/src/api.ts, web-ui/scripts/factor-parameters.test.mjs, plan ledger.
+
+Backend 775 passed; frontend 574 + 28 passed; build/Ruff/typecheck 309 files passed.
+Browser factor-params closed; local service PID 85367 terminated, exit 143.
+No production deployment, no confirmed Chanlun rule changes, no user DB changes.

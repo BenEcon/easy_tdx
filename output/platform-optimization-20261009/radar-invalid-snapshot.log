@@ -1,0 +1,208 @@
+### Page
+- Page URL: http://127.0.0.1:18094/chanlun?review=signal&autoRun=1&symbol=600699&category=DAY&strategy=chanlun_mmd
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=f5e4]:
+  - complementary [ref=f5e5]:
+    - button "收起左侧栏" [ref=f5e11] [cursor=pointer]
+    - link "返回股票分析" [ref=f5e15]:
+      - /url: /
+      - generic [ref=f5e20]:
+        - strong [ref=f5e21]: 股票分析
+        - generic [ref=f5e22]: Analysis Studio
+    - navigation "主要导航" [ref=f5e23]:
+      - generic [ref=f5e24]:
+        - paragraph [ref=f5e25]: 分析
+        - link "个股分析" [ref=f5e26]:
+          - /url: /
+        - link "市场行情" [ref=f5e33]:
+          - /url: /market
+        - link "盘中研究" [ref=f5e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=f5e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=f5e51]:
+          - /url: /signals
+      - generic [ref=f5e58]:
+        - paragraph [ref=f5e59]: 研究
+        - link "板块研究" [ref=f5e60]:
+          - /url: /boards
+        - link "公司资料" [ref=f5e69]:
+          - /url: /company
+        - link "扩展市场" [ref=f5e77]:
+          - /url: /extended
+        - link "量化研究" [ref=f5e84]:
+          - /url: /quant-research
+        - link "组合回测" [ref=f5e90]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=f5e99]:
+          - /url: /optimize
+        - link "结果对比" [ref=f5e104]:
+          - /url: /compare
+        - link "策略库" [ref=f5e109]:
+          - /url: /strategies
+      - generic [ref=f5e115]:
+        - paragraph [ref=f5e116]: 系统
+        - link "行情服务器" [ref=f5e117]:
+          - /url: /settings
+        - link "个人账户" [ref=f5e124]:
+          - /url: /account
+        - link "账户管理" [ref=f5e131]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=f5e140]:
+          - /url: /admin/data
+    - link "本 本机证据验收 管理员" [ref=f5e148]:
+      - /url: /account
+      - generic [ref=f5e149]: 本
+      - generic [ref=f5e150]:
+        - strong [ref=f5e151]: 本机证据验收
+        - generic [ref=f5e152]: 管理员
+  - generic [ref=f5e153]:
+    - generic [ref=f5e154]:
+      - generic [ref=f5e155]:
+        - heading "缠论结构" [level=1] [ref=f5e156]
+        - paragraph [ref=f5e157]: 识别笔、线段、中枢、买卖点与背驰
+      - generic [ref=f5e158]:
+        - link "个人账户" [ref=f5e159]:
+          - /url: /account
+          - generic [ref=f5e160]: 本
+          - generic [ref=f5e161]: 本机证据验收
+          - generic [ref=f5e162]: ADMIN
+        - button "退出登录" [ref=f5e163] [cursor=pointer]
+    - main [ref=f5e166]:
+      - generic [ref=f5e167]:
+        - complementary [ref=f5e168]:
+          - generic [ref=f5e169]:
+            - generic [ref=f5e170]: ⌘
+            - generic [ref=f5e171]:
+              - heading "结构分析" [level=2] [ref=f5e172]
+              - paragraph [ref=f5e173]: 从 K 线递进识别走势结构
+          - generic [ref=f5e174]:
+            - heading "标的与周期" [level=3] [ref=f5e175]
+            - generic [ref=f5e176]:
+              - generic [ref=f5e177]: 标的类型
+              - combobox "缠论标的类型" [ref=f5e179] [cursor=pointer]:
+                - generic [ref=f5e180]: 个股
+            - generic [ref=f5e183]:
+              - generic [ref=f5e184]:
+                - generic [ref=f5e185]: 证券代码
+                - button "股票历史 1" [ref=f5e187] [cursor=pointer]:
+                  - generic [ref=f5e190]: 股票历史
+                  - generic [ref=f5e191]: "1"
+              - textbox "000001" [ref=f5e194]: "600699"
+              - generic [ref=f5e195]: 沪市
+            - generic [ref=f5e196]:
+              - generic [ref=f5e197]: 分析周期
+              - combobox "缠论分析周期" [ref=f5e199] [cursor=pointer]:
+                - generic [ref=f5e200]: 日线
+            - generic [ref=f5e203]:
+              - generic [ref=f5e204]: 历史窗口
+              - combobox "缠论历史窗口" [ref=f5e206] [cursor=pointer]:
+                - generic [ref=f5e207]: 600 根 · 推荐
+            - generic [ref=f5e210]:
+              - generic [ref=f5e211]: 复权方式
+              - combobox "全局复权方式" [ref=f5e213] [cursor=pointer]:
+                - generic [ref=f5e214]: 前复权
+              - generic [ref=f5e217]: 自动应用到行情、分析与回测，并保存到当前账号
+          - group [ref=f5e218]:
+            - generic "均线系统 周期 · K 线数" [ref=f5e219] [cursor=pointer]:
+              - heading "均线系统" [level=3] [ref=f5e220]
+              - generic [ref=f5e221]: 周期 · K 线数
+          - generic [ref=f5e223]:
+            - heading "图层" [level=3] [ref=f5e224]
+            - generic [ref=f5e225] [cursor=pointer]:
+              - generic [ref=f5e226]: 三笔盘整
+              - checkbox "三笔盘整" [checked] [ref=f5e227]
+            - generic [ref=f5e228] [cursor=pointer]:
+              - generic [ref=f5e229]: 笔
+              - checkbox "笔" [checked] [ref=f5e230]
+            - generic [ref=f5e231] [cursor=pointer]:
+              - generic [ref=f5e232]: 中枢
+              - checkbox "中枢" [ref=f5e233]
+            - generic [ref=f5e234] [cursor=pointer]:
+              - generic [ref=f5e235]: 线段
+              - checkbox "线段" [ref=f5e236]
+            - generic [ref=f5e237] [cursor=pointer]:
+              - generic [ref=f5e238]: 买卖点
+              - checkbox "买卖点" [checked] [ref=f5e239]
+            - generic [ref=f5e240] [cursor=pointer]:
+              - generic [ref=f5e241]: 背离 / 背驰
+              - checkbox "背离 / 背驰" [checked] [ref=f5e242]
+            - generic [ref=f5e243] [cursor=pointer]:
+              - generic [ref=f5e244]: 待成笔方向
+              - checkbox "待成笔方向" [checked] [ref=f5e245]
+            - paragraph [ref=f5e246]: 虚线连接末笔端点与其后的反向极值，尚未成笔，端点可变；无反向区间或原笔继续延伸时不显示。不预测未来价格。
+            - generic [ref=f5e247]:
+              - generic [ref=f5e248] [cursor=pointer]:
+                - generic [ref=f5e249]: 悬停显示对象信息
+                - checkbox "悬停显示对象信息" [ref=f5e250]
+              - paragraph [ref=f5e251]: 右键打开，或按住 ⌘ Command 悬停预览；松开隐藏。 图下详情按钮仍可使用，设置按账户保存。
+          - region "结构线宽" [ref=f5e252]:
+            - generic [ref=f5e253]:
+              - heading "线条粗细" [level=3] [ref=f5e254]
+              - button "恢复默认" [disabled] [ref=f5e255]
+            - generic [ref=f5e256]:
+              - generic [ref=f5e257]: 笔
+              - generic [ref=f5e259]:
+                - textbox "笔线宽" [ref=f5e260]: "1.35"
+                - generic [ref=f5e261]:
+                  - button "笔线宽增加" [ref=f5e262] [cursor=pointer]
+                  - button "笔线宽减少" [ref=f5e265] [cursor=pointer]
+              - generic [ref=f5e268]: px
+            - generic [ref=f5e269]:
+              - generic [ref=f5e270]: 线段
+              - generic [ref=f5e272]:
+                - textbox "线段线宽" [ref=f5e273]: "1.8"
+                - generic [ref=f5e274]:
+                  - button "线段线宽增加" [ref=f5e275] [cursor=pointer]
+                  - button "线段线宽减少" [ref=f5e278] [cursor=pointer]
+              - generic [ref=f5e281]: px
+            - paragraph [ref=f5e282]: 0.5–6 px · 即时生效，个股与行业同步。
+          - region "蜡烛填充" [ref=f5e283]:
+            - generic [ref=f5e284]:
+              - heading "蜡烛填充" [level=3] [ref=f5e285]
+              - button "恢复默认" [disabled] [ref=f5e286]
+            - generic [ref=f5e287]:
+              - generic [ref=f5e288]: 透明度
+              - generic [ref=f5e289]:
+                - textbox "蜡烛填充透明度" [ref=f5e290]: "80"
+                - generic [ref=f5e291]:
+                  - button "蜡烛填充透明度增加" [ref=f5e292] [cursor=pointer]
+                  - button "蜡烛填充透明度减少" [ref=f5e295] [cursor=pointer]
+              - generic [ref=f5e298]: "%"
+            - slider "透明度" [ref=f5e299] [cursor=pointer]: "80"
+            - generic [aria-hidden] [ref=f5e300]:
+              - generic [ref=f5e301]: 实心
+              - generic [ref=f5e302]: 空心
+            - paragraph [ref=f5e303]: 80% 透明 · 20% 填充。仅调整实体，边框与影线不变；未收盘 K 线仍为空心虚线。
+          - generic [ref=f5e304]:
+            - strong [ref=f5e305]: 计算管道
+            - paragraph [ref=f5e306]: K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰
+          - button "开始分析" [ref=f5e307] [cursor=pointer]
+        - main [ref=f5e308]:
+          - region "信号人工复核上下文" [ref=f5e309]:
+            - generic [ref=f5e310]:
+              - generic [ref=f5e311]:
+                - generic [ref=f5e312]: 信号雷达 · 原扫描记录
+                - strong [ref=f5e313]: 无法还原复核条件
+              - link "返回信号雷达" [ref=f5e314]:
+                - /url: /signals
+            - alert [ref=f5e315]: 缺少原扫描复权信息，请返回雷达重新扫描；未自动运行。
+          - generic [ref=f5e316]: 缺少原扫描复权信息，请返回雷达重新扫描
+          - generic [ref=f5e317]:
+            - generic [aria-hidden] [ref=f5e318]:
+              - generic:
+                - generic: 结构演化
+                - generic: 已确认
+              - img [ref=f5e319]:
+                - generic [ref=f5e364]: 中枢
+              - generic [ref=f5e379]:
+                - generic [ref=f5e380]: K 线
+                - generic [ref=f5e382]: 笔
+                - generic [ref=f5e384]: 线段
+                - generic [ref=f5e386]: 中枢
+            - heading "观察价格如何形成结构" [level=2] [ref=f5e388]
+            - paragraph [ref=f5e389]: 选择标的和周期，系统会把走势拆成笔、线段和中枢，并标出买卖点与背驰。
+            - button "分析 600699" [ref=f5e390] [cursor=pointer]
+```

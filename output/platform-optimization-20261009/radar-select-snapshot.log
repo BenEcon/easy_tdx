@@ -1,0 +1,186 @@
+### Page
+- Page URL: http://127.0.0.1:18094/signals
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=f6e4]:
+  - complementary [ref=f6e5]:
+    - button "收起左侧栏" [ref=f6e11] [cursor=pointer]
+    - link "返回股票分析" [ref=f6e15]:
+      - /url: /
+      - generic [ref=f6e20]:
+        - strong [ref=f6e21]: 股票分析
+        - generic [ref=f6e22]: Analysis Studio
+    - navigation "主要导航" [ref=f6e23]:
+      - generic [ref=f6e24]:
+        - paragraph [ref=f6e25]: 分析
+        - link "个股分析" [ref=f6e26]:
+          - /url: /
+        - link "市场行情" [ref=f6e33]:
+          - /url: /market
+        - link "盘中研究" [ref=f6e39]:
+          - /url: /intraday
+        - link "缠论结构" [ref=f6e45]:
+          - /url: /chanlun
+        - link "信号雷达" [ref=f6e51]:
+          - /url: /signals
+      - generic [ref=f6e58]:
+        - paragraph [ref=f6e59]: 研究
+        - link "板块研究" [ref=f6e60]:
+          - /url: /boards
+        - link "公司资料" [ref=f6e69]:
+          - /url: /company
+        - link "扩展市场" [ref=f6e77]:
+          - /url: /extended
+        - link "量化研究" [ref=f6e84]:
+          - /url: /quant-research
+        - link "组合回测" [ref=f6e90]:
+          - /url: /portfolio
+        - link "参数寻优" [ref=f6e99]:
+          - /url: /optimize
+        - link "结果对比" [ref=f6e104]:
+          - /url: /compare
+        - link "策略库" [ref=f6e109]:
+          - /url: /strategies
+      - generic [ref=f6e115]:
+        - paragraph [ref=f6e116]: 系统
+        - link "行情服务器" [ref=f6e117]:
+          - /url: /settings
+        - link "个人账户" [ref=f6e124]:
+          - /url: /account
+        - link "账户管理" [ref=f6e131]:
+          - /url: /admin/accounts
+        - link "数据中心" [ref=f6e140]:
+          - /url: /admin/data
+    - link "本 本机证据验收 管理员" [ref=f6e148]:
+      - /url: /account
+      - generic [ref=f6e149]: 本
+      - generic [ref=f6e150]:
+        - strong [ref=f6e151]: 本机证据验收
+        - generic [ref=f6e152]: 管理员
+  - generic [ref=f6e153]:
+    - generic [ref=f6e154]:
+      - generic [ref=f6e155]:
+        - heading "信号雷达" [level=1] [ref=f6e156]
+        - paragraph [ref=f6e157]: 扫描近期出现的策略信号
+      - generic [ref=f6e158]:
+        - link "个人账户" [ref=f6e159]:
+          - /url: /account
+          - generic [ref=f6e160]: 本
+          - generic [ref=f6e161]: 本机证据验收
+          - generic [ref=f6e162]: ADMIN
+        - button "退出登录" [ref=f6e163] [cursor=pointer]
+    - main [ref=f6e166]:
+      - generic [ref=f6e167]:
+        - generic [ref=f6e168]:
+          - generic [ref=f6e169]:
+            - heading "信号雷达" [level=2] [ref=f6e170]
+            - paragraph [ref=f6e171]: 一键扫描策略库全部已保存策略，列出最近 K 线内出现买入/卖出信号的策略。 上次扫描 2026/10/9 20:15:42（2.0s）。
+          - generic [ref=f6e172]:
+            - combobox "全局复权方式" [active] [ref=f6e175] [cursor=pointer]:
+              - generic [ref=f6e176]: 不复权
+            - combobox "信号扫描窗口" [ref=f6e181] [cursor=pointer]:
+              - generic [ref=f6e182]: 窗口 · 5 根
+            - button "一键扫描" [ref=f6e185] [cursor=pointer]
+        - generic [ref=f6e189]:
+          - generic [ref=f6e190]:
+            - generic [ref=f6e191]: 子任务
+            - generic [ref=f6e192]: "2"
+          - generic [ref=f6e193]:
+            - generic [ref=f6e194]: 买入信号
+            - generic [ref=f6e195]: "2"
+          - generic [ref=f6e196]:
+            - generic [ref=f6e197]: 卖出信号
+            - generic [ref=f6e198]: "0"
+          - generic [ref=f6e199]:
+            - generic [ref=f6e200]: 失败
+            - generic [ref=f6e201]: "0"
+        - paragraph [ref=f6e202]: 本次结果窗口 = 最近 5 根已收盘 K 线；未收盘柱不参与扫描。更改上方设置不会改变已有结果，需重新扫描。
+        - navigation [ref=f6e203]:
+          - button "有信号 2" [ref=f6e204] [cursor=pointer]:
+            - text: 有信号
+            - generic [ref=f6e205]: "2"
+          - button "买入 2" [ref=f6e206] [cursor=pointer]:
+            - text: 买入
+            - generic [ref=f6e207]: "2"
+          - button "卖出 0" [ref=f6e208] [cursor=pointer]:
+            - text: 卖出
+            - generic [ref=f6e209]: "0"
+          - button "失败 0" [ref=f6e210] [cursor=pointer]:
+            - text: 失败
+            - generic [ref=f6e211]: "0"
+          - button "全部 2" [ref=f6e212] [cursor=pointer]:
+            - text: 全部
+            - generic [ref=f6e213]: "2"
+        - table [ref=f6e215]:
+          - rowgroup [ref=f6e216]:
+            - row [ref=f6e217]:
+              - columnheader "策略" [ref=f6e218]
+              - columnheader "类型" [ref=f6e219]
+              - columnheader "子策略" [ref=f6e220]
+              - columnheader "标的" [ref=f6e221]
+              - columnheader "最新信号" [ref=f6e222]
+              - columnheader "窗口内信号" [ref=f6e223]
+              - columnheader "最新收盘" [ref=f6e224]
+              - columnheader "仓位" [ref=f6e225]
+              - columnheader "策略操作" [ref=f6e226]
+          - rowgroup [ref=f6e227]:
+            - row [ref=f6e228]:
+              - cell "本机真实 chanlun_mmd 行情数据口径" [ref=f6e229]:
+                - generic [ref=f6e231]: 本机真实 chanlun_mmd
+                - region "行情数据口径" [ref=f6e232]:
+                  - group [ref=f6e233]:
+                    - generic "› 数据口径 MAC 行情 · 前复权 收盘截至 2026-02-10 15:00:00" [ref=f6e234] [cursor=pointer]:
+                      - text: ›
+                      - strong [ref=f6e235]: 数据口径
+                      - generic [ref=f6e236]: MAC 行情 · 前复权
+                      - time [ref=f6e237]: 收盘截至 2026-02-10 15:00:00
+              - cell "单标的" [ref=f6e238]
+              - cell "缠论买卖点；参数：无额外参数" [ref=f6e240]:
+                - generic [ref=f6e241]: 缠论买卖点
+                - tooltip "策略参数 无额外参数":
+                  - generic: 策略参数
+                  - text: 无额外参数
+              - cell "SH:600699" [ref=f6e242]
+              - cell "买入" [ref=f6e244]
+              - cell [ref=f6e246]:
+                - button [ref=f6e248] [cursor=pointer]:
+                  - generic [ref=f6e249]: 买入
+                  - time [ref=f6e251]: 02-10
+              - cell [ref=f6e252]:
+                - strong [ref=f6e253]: "27.39"
+              - cell "持仓" [ref=f6e254]
+              - cell [ref=f6e256]:
+                - generic [ref=f6e257]:
+                  - button "修改策略" [ref=f6e258] [cursor=pointer]
+                  - button "复核信号" [ref=f6e262] [cursor=pointer]
+            - row [ref=f6e267]:
+              - cell "本机真实 ma_cross 行情数据口径" [ref=f6e268]:
+                - generic [ref=f6e270]: 本机真实 ma_cross
+                - region "行情数据口径" [ref=f6e271]:
+                  - group [ref=f6e272]:
+                    - generic "› 数据口径 MAC 行情 · 前复权 收盘截至 2026-09-30 14:30:00" [ref=f6e273] [cursor=pointer]:
+                      - text: ›
+                      - strong [ref=f6e274]: 数据口径
+                      - generic [ref=f6e275]: MAC 行情 · 前复权
+                      - time [ref=f6e276]: 收盘截至 2026-09-30 14:30:00
+              - cell "单标的" [ref=f6e277]
+              - cell "均线交叉；参数：无额外参数" [ref=f6e279]:
+                - generic [ref=f6e280]: 均线交叉
+                - tooltip "策略参数 无额外参数":
+                  - generic: 策略参数
+                  - text: 无额外参数
+              - cell "SZ:300750" [ref=f6e281]
+              - cell "买入" [ref=f6e283]
+              - cell [ref=f6e285]:
+                - button [ref=f6e287] [cursor=pointer]:
+                  - generic [ref=f6e288]: 买入
+                  - time [ref=f6e290]: 09-30
+              - cell [ref=f6e291]:
+                - strong [ref=f6e292]: "290.71"
+              - cell "持仓" [ref=f6e293]
+              - cell [ref=f6e295]:
+                - generic [ref=f6e296]:
+                  - button "修改策略" [ref=f6e297] [cursor=pointer]
+                  - button "复核信号" [ref=f6e301] [cursor=pointer]
+```

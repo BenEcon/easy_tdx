@@ -1,0 +1,55 @@
+........................................................................ [  8%]
+........................................................................ [ 17%]
+........................................................................ [ 26%]
+........................................................................ [ 35%]
+........................................................................ [ 44%]
+........................................................................ [ 53%]
+........................................................................ [ 62%]
+........................................................................ [ 71%]
+........................................................................ [ 80%]
+........................................................................ [ 89%]
+........................................................................ [ 98%]
+................                                                         [100%]
+=============================== warnings summary ===============================
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[cci-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[cci-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:323: RuntimeWarning: invalid value encountered in divide
+    return (TP - MA(TP, N)) / (0.015 * AVEDEV(TP, N))
+
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[dmi-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:341: RuntimeWarning: invalid value encountered in divide
+    PDI = DMP * 100 / TR
+
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[dmi-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[dmi-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:342: RuntimeWarning: invalid value encountered in divide
+    MDI = DMM * 100 / TR
+
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_all_default_strategies_agree_across_five_real_workflows[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_radar_default_strategy_signals_match_actual_engine_on_real_bars[emv-002821-min15-qfq-20261004]
+tests/unit/test_real_market_consumers.py::test_real_strategy_signals_do_not_change_with_future_prices[emv-002821-min15-qfq-20261004]
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/MyTT.py:386: RuntimeWarning: invalid value encountered in divide
+    EMV = MA(MID * VOLUME * (HIGH - LOW) / MA(HIGH - LOW, N), N)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+808 passed, 28 warnings in 189.45s (0:03:09)

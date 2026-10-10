@@ -1,0 +1,21 @@
+........................................................................ [ 12%]
+........................................................................ [ 25%]
+........................................................................ [ 38%]
+........................................................................ [ 50%]
+........................................................................ [ 63%]
+.....................................................................F.. [ 76%]
+.................................F...................................... [ 88%]
+...............................................................          [100%]
+=================================== FAILURES ===================================
+___________________ TestPortfolioBacktest.test_empty_stocks ____________________
+tests/unit/test_portfolio_engine.py:100: in test_empty_stocks
+    assert result.total_performance["total_return"] == 0.0
+E   assert nan == 0.0
+______ TestMultiStrategyEngine.test_empty_strategies_returns_empty_result ______
+tests/unit/test_multi_strategy.py:214: in test_empty_strategies_returns_empty_result
+    assert result.total_performance["total_return"] == 0.0
+E   assert nan == 0.0
+=========================== short test summary info ============================
+FAILED tests/unit/test_portfolio_engine.py::TestPortfolioBacktest::test_empty_stocks
+FAILED tests/unit/test_multi_strategy.py::TestMultiStrategyEngine::test_empty_strategies_returns_empty_result
+2 failed, 565 passed, 1 warning in 90.84s (0:01:30)

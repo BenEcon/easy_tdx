@@ -1,0 +1,23 @@
+### Result
+{
+  "cases": [
+    {
+      "mode": "input",
+      "taskId": "97206c1c1f1b4eff879a8a2e6a1a0dc6",
+      "server": "done",
+      "staleResult": false
+    },
+    {
+      "mode": "unmount",
+      "taskId": "9e3e405a86d14cbd9e610cb0e367c5f4",
+      "server": "done",
+      "staleResult": false
+    }
+  ],
+  "errors": [],
+  "cancels": []
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__portfolioRaces)');
+```

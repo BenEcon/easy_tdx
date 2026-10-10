@@ -1,0 +1,12 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PASS tracking owner binding, access grant and revoke
+PASS legacy migration, secure authentication, grant/revoke/preserve, admin-only activity
+PASS actual HTTP replay/observations DAY 240
+PASS actual HTTP replay/observations MIN_15 240
+PASS actual HTTP replay/observations MIN_30 240
+PASS actual HTTP replay/observations MIN_5 240
+PASS actual HTTP replay/observations WEEK 150
+PASS tracking raw evidence, signal dates, permission, idempotence, owner isolation, restart persistence
+PASS query metadata, 11 MiB archive, owner isolation, restart persistence, logout

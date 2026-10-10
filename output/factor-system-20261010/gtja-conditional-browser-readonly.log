@@ -1,0 +1,4 @@
+### Ran Playwright code
+```js
+await (async page => { const writes=[]; const listener=r=>{if(r.method()==="POST" && /research\/factors|tasks/.test(r.url())) writes.push(r.url());}; page.on("request",listener); await page.getByRole("button",{name:"查看原档",exact:true}).first().click(); await page.getByRole("dialog").waitFor(); await page.waitForLoadState("networkidle"); page.off("request",listener); console.log(JSON.stringify({computePosts:writes,dialog:(await page.getByRole("dialog").innerText()).slice(0,1600)})); if(writes.length) throw new Error("readonly compute"); })(page);
+```

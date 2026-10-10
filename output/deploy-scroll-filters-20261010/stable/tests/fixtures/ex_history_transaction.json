@@ -1,0 +1,22 @@
+{
+  "_comment": "港股 00700 (HK_MAIN_BOARD, market=31) 2026-07-03 历史 0x2406 响应 body。issue #14 fixture。价格字段为整数（单位 0.001 HKD）：431800 = 431.8 港元。时间 15:59=收盘竞价、16:08=收盘集合竞价大单。",
+  "market": 31,
+  "code": "00700",
+  "num_records": 10,
+  "first": {
+    "hour": 15,
+    "minute": 59,
+    "second": 0,
+    "price_int": 431800,
+    "price_hkd": 431.8,
+    "vol": 300
+  },
+  "last": {
+    "hour": 16,
+    "minute": 8,
+    "second": 0,
+    "price_int": 431200,
+    "price_hkd": 431.2,
+    "vol": 934700
+  }
+}

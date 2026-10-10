@@ -1,0 +1,1 @@
+PASS: YAML, same-commit reusable CI, both publishing dependency chains, frontend tests, pinned mypy, least-privilege gates

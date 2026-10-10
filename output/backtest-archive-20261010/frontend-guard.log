@@ -1,0 +1,24 @@
+✔ full backtest file and cloud envelope retain all fields; no implicit Chanlun recompute (2.71175ms)
+✔ invalid cash cannot become a readable archive (0.08925ms)
+✔ invalid params cannot become a readable archive (0.076125ms)
+✔ invalid adjust cannot become a readable archive (0.0875ms)
+✔ invalid null lineage cannot become a readable archive (0.120542ms)
+✔ invalid net value cannot become a readable archive (0.091791ms)
+✔ invalid future trade cannot become a readable archive (0.102542ms)
+✔ invalid duplicate date cannot become a readable archive (0.084708ms)
+✔ invalid missing metrics cannot become a readable archive (0.083417ms)
+✔ invalid nested infinity cannot become a readable archive (0.140792ms)
+✔ invalid coerced rejected cannot become a readable archive (0.09ms)
+✔ actual store freezes submitted input and result separately from later source mutation (48.713917ms)
+✔ actual store rejects stale or failed owner run and clears prior archive (11.201417ms)
+✔ actual store rejects stale or failed input run and clears prior archive (9.884792ms)
+✔ actual store rejects stale or failed clear run and clears prior archive (6.410791ms)
+✔ actual store rejects stale or failed failure run and clears prior archive (6.667334ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 457.194542

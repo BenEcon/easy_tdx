@@ -1,0 +1,33 @@
+........................................................................ [  6%]
+........................................................................ [ 13%]
+........................................................................ [ 20%]
+........................................................................ [ 27%]
+........................................................................ [ 33%]
+........................................................................ [ 40%]
+........................................................................ [ 47%]
+........................................................................ [ 54%]
+........................................................................ [ 61%]
+........................................................................ [ 67%]
+........................................................................ [ 74%]
+........................................................................ [ 81%]
+.........................................F.............................. [ 88%]
+........................................................................ [ 95%]
+...................................................                      [100%]
+=================================== FAILURES ===================================
+__ test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_128] __
+tests/unit/test_factor_research.py:222: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    assert values.iloc[65:].notna().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = 2025-04-02     True\n2025-04-03     True\n2025-04-04     True\n2025-04-07     True\n2025-04-08    False\n2025-04-09    Fals...2025-05-15     True\n2025-05-16     True\n2025-05-19     True\n2025-05-20     True\nFreq: B, Name: gtja191_128, dtype: bool.all
+E    +      where 2025-04-02     True\n2025-04-03     True\n2025-04-04     True\n2025-04-07     True\n2025-04-08    False\n2025-04-09    Fals...2025-05-15     True\n2025-05-16     True\n2025-05-19     True\n2025-05-20     True\nFreq: B, Name: gtja191_128, dtype: bool = notna()
+E    +        where notna = 2025-04-02    75.541137\n2025-04-03    81.974841\n2025-04-04    88.190464\n2025-04-07    94.195086\n2025-04-08          Na...5238\n2025-05-16    81.209824\n2025-05-19    87.651622\n2025-05-20    93.912784\nFreq: B, Name: gtja191_128, dtype: float64.notna
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[gtja191_128]
+1 failed, 1058 passed, 1 warning in 134.54s (0:02:14)

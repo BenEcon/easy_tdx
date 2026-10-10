@@ -1,0 +1,6 @@
+### Result
+{"keyboard":"passed","results":[{"width":390,"scroll":390},{"width":320,"scroll":320}]}
+### Ran Playwright code
+```js
+await (async page => { await page.reload(); await page.getByRole("button",{name:"开始分析",exact:true}).click(); await page.getByRole("button",{name:/^背离 \/ 背驰/}).click(); await page.getByRole("combobox",{name:"证据当前状态"}).focus(); await page.keyboard.press("ArrowDown"); await page.keyboard.press("Home"); await page.keyboard.press("ArrowDown"); await page.keyboard.press("Enter"); if(!(await page.getByRole("combobox",{name:"证据当前状态"}).innerText()).includes("已确认")) throw new Error("keyboard select"); const results=[]; for(const width of [390,320]) { await page.setViewportSize({width,height:844}); await page.getByRole("heading",{name:"信号证据",exact:true}).evaluate(el=>el.scrollIntoView({block:"start"})); await page.screenshot({path:`../output/playwright/evidence-browser-final-${width}.png`}); results.push(await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}))); } if(results.some(x=>x.scroll>x.width)) throw new Error(JSON.stringify(results)); return {keyboard:"passed",results}; })(page);
+```

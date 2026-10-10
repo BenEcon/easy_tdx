@@ -13,6 +13,7 @@ const props = defineProps<{
   strategies: StrategySchema[]
   strategy: string
   params: Record<string, number | string | boolean>
+  suspendDefaults?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -32,14 +33,21 @@ const strategyOptions = computed(() =>
   })),
 )
 
-// 切换策略时重置参数为默认值
+// Only an actual strategy change resets parameters. Catalog refresh/first
+// arrival fills missing defaults without overwriting restored or edited values.
 watch(
-  selectedSchema,
-  (schema) => {
+  [() => props.strategy, selectedSchema, () => props.suspendDefaults],
+  ([name, schema, suspended], previous) => {
     if (!schema) return
+    const changed = previous?.[0] !== undefined && previous[0] !== name
+    if (suspended && !changed) return
     const defaults: Record<string, number | string | boolean> = {}
     for (const p of schema.params) defaults[p.name] = p.default
-    emit('update:params', defaults)
+    const next = changed ? defaults : { ...defaults, ...props.params }
+    if (Object.keys(next).length !== Object.keys(props.params).length ||
+      Object.entries(next).some(([key, value]) => props.params[key] !== value)) {
+      emit('update:params', next)
+    }
   },
   { immediate: true },
 )

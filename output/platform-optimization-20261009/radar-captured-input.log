@@ -1,0 +1,9 @@
+### Result
+{"capturedAdjust":"QFQ","selected":"不复权"}
+### Ran Playwright code
+```js
+await (async (page) => { await page.getByRole("link",{name:"返回信号雷达"}).click(); await page.getByRole("button",{name:"一键扫描"}).waitFor(); await page.getByRole("button",{name:"一键扫描"}).click(); const adjust=page.getByRole("combobox",{name:"全局复权方式"}); await adjust.click(); await page.getByRole("option",{name:"不复权 查看原始交易价格"}).click(); await page.getByRole("button",{name:"一键扫描",exact:true}).waitFor(); const cache=await page.evaluate(()=>JSON.parse(localStorage.getItem("easy-tdx.signal-radar.v2.evidence-local-qa"))); if(cache.adjust!=="QFQ")throw Error("stored modified adjustment"); return {capturedAdjust:cache.adjust,selected:await adjust.innerText()}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:18094/signals
+- Page Title: 股票分析 · Analysis Studio

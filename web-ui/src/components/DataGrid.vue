@@ -83,9 +83,12 @@ function formatValue(key: string, value: unknown): string {
       <tbody>
         <tr
           v-for="(row, index) in rows"
-          :key="String(row.code ?? row.symbol ?? row.board_symbol ?? index)"
+          :key="`${row.market??''}:${row.code??row.symbol??row.board_symbol??''}:${index}`"
           :class="{ selectable }"
+          :tabindex="selectable ? 0 : undefined"
           @click="selectable && emit('select', row)"
+          @keydown.enter="selectable && emit('select', row)"
+          @keydown.space="selectable && ($event.preventDefault(), emit('select', row))"
         >
           <td v-for="column in visibleColumns" :key="column.key" :class="valueClass(column.key, row[column.key])">
             {{ formatValue(column.key, row[column.key]) }}
@@ -111,6 +114,7 @@ tbody tr{transition:background 130ms ease}
 tbody tr:hover{background:rgba(255,255,255,.035)}
 tbody tr.selectable{cursor:pointer}
 tbody tr.selectable:hover{background:rgba(10,132,255,.09)}
+tbody tr.selectable:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;background:rgba(10,132,255,.07)}
 td.up{color:var(--up)}td.down{color:var(--down)}
 .empty-state{display:grid;min-height:220px;place-content:center;justify-items:center;gap:10px;color:var(--text-dim);font-size:12px}
 .empty-orb{width:28px;height:28px;border:1px solid rgba(255,255,255,.13);border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.14),transparent 45%),rgba(255,255,255,.025);box-shadow:0 8px 24px rgba(0,0,0,.2)}

@@ -1,0 +1,4 @@
+src/easy_tdx/backtest/bar_time.py:31: error: Returning Any from function declared to return "int"  [no-any-return]
+src/easy_tdx/backtest/bar_time.py:34: error: Variable "easy_tdx.backtest.bar_time.SignalTime" is not valid as a type  [valid-type]
+src/easy_tdx/backtest/bar_time.py:34: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+Found 2 errors in 1 file (checked 282 source files)

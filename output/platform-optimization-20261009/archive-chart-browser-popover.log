@@ -1,0 +1,76 @@
+### Result
+{"checks":[{"section":"背离与买卖点","count":"12 条","visibleRecords":12},{"section":"笔","count":"18 条","visibleRecords":18},{"section":"线段","count":"3 条","visibleRecords":3},{"section":"三笔盘整","count":"4 条","visibleRecords":4},{"section":"中枢","count":"0 条","visibleRecords":0},{"section":"拦截原因","count":"306 条","visibleRecords":30},{"name":"QA 故障注入 · 关联事件字段损坏","status":"存档结构字段不兼容：charts.DAY.result.bcs[0].related_events[0].signal_date；原始记录未修改，未重新计算。 未修改原档，可展开或导出查看。","rawPreserved":true},{"name":"QA 故障注入 · 线段特征字段损坏","status":"存档结构字段不兼容：charts.DAY.result.unfinished_xd.evidence.features[0].low；原始记录未修改，未重新计算。 未修改原档，可展开或导出查看。","rawPreserved":true}],"layouts":[{"width":1440,"document":1440,"dialog":1160,"left":140},{"width":390,"document":390,"dialog":374,"left":8},{"width":320,"document":320,"dialog":304,"left":8}],"errors":[],"analysisRequests":[]}
+### Ran Playwright code
+```js
+await (async (page) => {
+  const errors = [], requests = [], checks = [], layouts = [];
+  const onError = error => errors.push(String(error));
+  const onRequest = request => { if (/\/api\/v1\/(chanlun|indicators?|market|bars|stock)/.test(request.url())) requests.push(request.url()); };
+  page.on('pageerror', onError); page.on('request', onRequest);
+  const require = (condition, message) => { if (!condition) throw Error(message); };
+  const dialog = page.getByRole('dialog', { name: '云端研究原档' });
+  const close = async () => { await dialog.getByRole('button', { name: '关闭云存档' }).click(); await dialog.waitFor({state:'hidden'}); };
+  const open = async name => {
+    await page.getByRole('listitem').filter({has:page.getByText(name,{exact:true})}).getByRole('button',{name:'查看原档',exact:true}).click();
+    await dialog.waitFor({state:'visible'});
+  };
+  if (await dialog.isVisible()) await close();
+  const archiveSummary=page.locator('.cloud-archives > summary');
+  if (!(await archiveSummary.evaluate(el=>el.parentElement.open))) await archiveSummary.click();
+  await page.setViewportSize({width:1440,height:1000});
+  await open('QA 真实冻结行情 · 300750');
+  await dialog.getByRole('region',{name:'蜡烛图绘图区'}).waitFor();
+  await dialog.locator('.period-inspector > summary').click();
+  for (const label of ['背离与买卖点','笔','线段','三笔盘整','中枢','拦截原因']) {
+    await dialog.getByRole('combobox',{name:'审核结构类型'}).click();
+    await page.getByRole('option',{name:label,exact:true}).click();
+    const count = await dialog.locator('.research-count').innerText();
+    const rows = dialog.locator('.research-record');
+    if (await rows.count()) {
+      const first = rows.first();
+      await first.getByText('依据与原始记录',{exact:true}).click();
+      require(!/NaN|\[object Object\]/.test(await first.innerText()),`bad evidence ${label}`);
+      await first.getByText('原始记录',{exact:true}).click();
+      JSON.parse(await first.locator('pre').innerText());
+    }
+    checks.push({section:label,count,visibleRecords:await rows.count()});
+  }
+  await close();
+  for (const [name,path,value] of [
+    ['QA 故障注入 · 关联事件字段损坏','charts.DAY.result.bcs[0].related_events[0].signal_date',42],
+    ['QA 故障注入 · 线段特征字段损坏','charts.DAY.result.unfinished_xd.evidence.features[0].low','wrong']
+  ]) {
+    await open(name);
+    const status = await dialog.getByRole('status').innerText();
+    require(status.includes(path),`missing exact path: ${status}`);
+    require(await dialog.getByRole('region',{name:'蜡烛图绘图区'}).count() === 0,'bad chart rendered');
+    await dialog.getByText('完整原始存档',{exact:true}).click();
+    const raw = JSON.parse(await dialog.locator('pre').innerText());
+    const result = raw.charts[0].result;
+    const actual = value === 42 ? result.bcs[0].related_events[0].signal_date : result.unfinished_xd.evidence.features[0].low;
+    require(actual === value,'original data was rewritten');
+    checks.push({name,status,rawPreserved:true});
+    await close();
+  }
+  await open('QA 真实冻结行情 · 300750');
+  await dialog.getByRole('region',{name:'蜡烛图绘图区'}).waitFor();
+  require(await dialog.getByRole('alert').count() === 0,'error state retained');
+  for (const width of [1440,390,320]) {
+    await page.setViewportSize({width,height:1000});
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await page.waitForFunction(() => {
+      const el=document.querySelector('[aria-label="蜡烛图绘图区"]');
+      const canvas=el?.querySelector('canvas');
+      return !!canvas && Math.abs(canvas.getBoundingClientRect().width-el.getBoundingClientRect().width)<3;
+    });
+    const geometry = await dialog.evaluate(el=>({document:document.documentElement.scrollWidth,dialog:el.getBoundingClientRect().width,left:el.getBoundingClientRect().left}));
+    require(geometry.document<=width && geometry.left>=0 && geometry.dialog<=width,`overflow ${width}: ${JSON.stringify(geometry)}`);
+    await page.screenshot({path:`output/playwright/archive-chart-validation-${width}.png`});
+    layouts.push({width,...geometry});
+  }
+  await close();
+  page.off('pageerror',onError); page.off('request',onRequest);
+  require(!errors.length,`page errors ${errors}`); require(!requests.length,`readonly analysis requests ${requests}`);
+  return {checks,layouts,errors,analysisRequests:requests};
+})(page);
+```

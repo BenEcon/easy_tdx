@@ -1,0 +1,22 @@
+.........FF............................................                  [100%]
+=================================== FAILURES ===================================
+____ test_all_business_routes_have_admission_and_sync_research_is_offloaded ____
+tests/unit/test_resource_admission.py:185: in test_all_business_routes_have_admission_and_sync_research_is_offloaded
+    assert admission.admit_research in [dep.call for dep in route.dependant.dependencies], (
+E   AssertionError: /api/v1/admin/audit
+E   assert <function admit_research at 0x10f0a75b0> in [<function require_admin at 0x10f066cb0>]
+E    +  where <function admit_research at 0x10f0a75b0> = admission.admit_research
+______ test_wrapped_sync_route_preserves_schema_and_original_direct_call _______
+tests/unit/test_resource_admission.py:214: in test_wrapped_sync_route_preserves_schema_and_original_direct_call
+    client.post(
+E   NameError: name 'client' is not defined
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_resource_admission.py::test_all_business_routes_have_admission_and_sync_research_is_offloaded
+FAILED tests/unit/test_resource_admission.py::test_wrapped_sync_route_preserves_schema_and_original_direct_call
+2 failed, 53 passed, 1 warning in 4.12s

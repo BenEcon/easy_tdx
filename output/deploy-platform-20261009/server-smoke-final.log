@@ -1,0 +1,9 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+PASS actual HTTP replay/observations: DAY 240
+PASS actual HTTP replay/observations: MIN_15 240
+PASS actual HTTP replay/observations: MIN_30 240
+PASS actual HTTP replay/observations: MIN_5 240
+PASS actual HTTP replay/observations: WEEK 150
+PASS isolated authentication, secure cookies, origin checks, protected API, logout

@@ -12,13 +12,16 @@ from easy_tdx.chanlun.ownership_history import OwnershipHistoryMode
 from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
 from easy_tdx.web.bar_snapshot import mark_indicator_closed_bars
 from easy_tdx.web.deps import get_client, get_mac_client_optional
-from easy_tdx.web.routers.chanlun_replay import router as replay_router
+from easy_tdx.web.resource_admission import run_compute
+from easy_tdx.web.routers.chanlun_archive import router as archive_router
 from easy_tdx.web.routers.chanlun_observations import router as observations_router
+from easy_tdx.web.routers.chanlun_replay import router as replay_router
 from easy_tdx.web.schemas import ChanlunRequest
 
 router = APIRouter(tags=["chanlun"])
 router.include_router(replay_router)
 router.include_router(observations_router)
+router.include_router(archive_router)
 
 
 async def stock_industries(client: Any, market: str, code: str) -> list[dict[str, Any]]:
@@ -59,11 +62,12 @@ class IndustryRequest(BaseModel):
 async def industry_analyze(
     req: IndustryRequest,
     mac_client: Any | None = Depends(get_mac_client_optional),
-    ownership_history: OwnershipHistoryMode = 'full',
+    ownership_history: OwnershipHistoryMode = "full",
 ) -> dict[str, Any]:
     from easy_tdx.chanlun import ChanlunAnalyser
     from easy_tdx.mac.enums import Adjust
     from easy_tdx.web.convert import category_from_str, period_times_from_category
+    from easy_tdx.web.market_data import checked_snapshot
     from easy_tdx.web.schemas import DataFrameResponse
 
     if mac_client is None:
@@ -72,18 +76,50 @@ async def industry_analyze(
     board = next((r for r in rows if str(r["board_code"]) == req.board_code), None)
     if board is None:
         raise HTTPException(404, "未找到该股票对应的行业")
-    period, times = period_times_from_category(category_from_str(req.category))
+    category = req.category.upper()
+    period, times = period_times_from_category(
+        category_from_str("MIN_60" if category == "MIN_120" else category)
+    )
+    if category == "MIN_120":
+        from easy_tdx.mac.enums import Period
+
+        period, times = Period.MINS, 24
     df = await mac_client.get_stock_kline(
-        int(board["market"]), req.board_code, period, 0, req.count, times, adjust=Adjust.NONE)
+        int(board["market"]),
+        req.board_code,
+        period,
+        0,
+        req.count,
+        times,
+        adjust=Adjust.NONE,
+        bar_time="start",
+    )
     if df.empty:
         raise HTTPException(404, "该行业在所选周期暂无行情")
     try:
-        result = ChanlunAnalyser(code=req.board_code, frequency=req.category).process_klines(
-            mark_indicator_closed_bars(df, req.category))
+        snapshot = checked_snapshot(
+            DataFrameResponse.from_dataframe(df).data,
+            category,
+            source="MAC_BOARD",
+            requested_adjust="NONE",
+            actual_adjust="NONE",
+            bar_time="end",
+        )
+    except HTTPException as exc:
+        raise HTTPException(exc.status_code, f"行业行情数据异常：{exc.detail}") from exc
+    try:
+
+        def compute() -> dict[str, Any]:
+            return (
+                ChanlunAnalyser(code=req.board_code, frequency=req.category)
+                .process_klines(mark_indicator_closed_bars(df, req.category, bar_time="end"))
+                .to_dict(ownership_history=ownership_history)
+            )
+
+        result = await run_compute(compute)
     except ChanlunInputError as exc:
-        raise HTTPException(502, f'行业行情数据异常：{exc}') from exc
-    return {"bars": DataFrameResponse.from_dataframe(df).data,
-            "result": result.to_dict(ownership_history=ownership_history)}
+        raise HTTPException(502, f"行业行情数据异常：{exc}") from exc
+    return {"bars": snapshot["data"], "metadata": snapshot["metadata"], "result": result}
 
 
 @router.post("/chanlun/analyze")
@@ -91,7 +127,7 @@ async def chanlun_analyze(
     req: ChanlunRequest,
     client: Any = Depends(get_client),
     mac_client: Any | None = Depends(get_mac_client_optional),
-    ownership_history: OwnershipHistoryMode = 'full',
+    ownership_history: OwnershipHistoryMode = "full",
 ) -> dict[str, Any]:
     """执行缠论分析。
 
@@ -128,8 +164,15 @@ async def chanlun_analyze(
     freq = frequency_map.get(req.category.upper(), req.category)
     analyser = ChanlunAnalyser(code=symbol, frequency=freq)
     try:
-        result = analyser.process_klines(mark_indicator_closed_bars(df, req.category))
-    except ChanlunInputError as exc:
-        raise HTTPException(502, f'股票行情数据异常：{exc}') from exc
 
-    return result.to_dict(ownership_history=ownership_history)
+        def compute() -> dict[str, Any]:
+            return analyser.process_klines(mark_indicator_closed_bars(df, req.category)).to_dict(
+                ownership_history=ownership_history
+            )
+
+        output = await run_compute(compute)
+    except ChanlunInputError as exc:
+        raise HTTPException(502, f"股票行情数据异常：{exc}") from exc
+
+    output["metadata"] = df.attrs.get("snapshot_metadata")
+    return output

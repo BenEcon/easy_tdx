@@ -1,0 +1,81 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_______ test_archive_get_does_not_retain_another_requests_upload[False] ________
+tests/unit/test_request_resource_context.py:46: in test_archive_get_does_not_retain_another_requests_upload
+    assert inherited not in retained
+E   assert <easy_tdx.web.resource_admission.Admission object at 0x10e309840> not in [<easy_tdx.web.resource_admission.Admission object at 0x10eb4a650>, <easy_tdx.web.resource_admission.Admission object at 0x10e309840>]
+________ test_archive_get_does_not_retain_another_requests_upload[True] ________
+tests/unit/test_request_resource_context.py:44: in test_archive_get_does_not_retain_another_requests_upload
+    assert response.status_code == 200, response.text
+E   AssertionError: {"detail":"研究资源租约已失效，请重新提交"}
+E   assert 503 == 200
+E    +  where 503 = <Response [503 Service Unavailable]>.status_code
+__ test_request_boundary_clears_only_our_handles_and_restores_parent[success] __
+tests/unit/test_request_resource_context.py:108: in test_request_boundary_clears_only_our_handles_and_restores_parent
+    await task
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/tasks.py:304: in __wakeup
+    future.result()
+tests/unit/test_request_resource_context.py:91: in request
+    await app({"type": "http", "path": "/api/v1/auth/me", "method": "GET", "headers": []}, receive, send)
+src/easy_tdx/web/request_security.py:88: in __call__
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+src/easy_tdx/web/request_security.py:132: in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+tests/unit/test_request_resource_context.py:71: in endpoint
+    assert resource_admission.retain_current_admission() is None
+E   assert <easy_tdx.web.resource_admission.Admission object at 0x10e81a740> is None
+E    +  where <easy_tdx.web.resource_admission.Admission object at 0x10e81a740> = <function retain_current_admission at 0x10e2f4700>()
+E    +    where <function retain_current_admission at 0x10e2f4700> = resource_admission.retain_current_admission
+___ test_request_boundary_clears_only_our_handles_and_restores_parent[error] ___
+tests/unit/test_request_resource_context.py:106: in test_request_boundary_clears_only_our_handles_and_restores_parent
+    await task
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/tasks.py:304: in __wakeup
+    future.result()
+tests/unit/test_request_resource_context.py:91: in request
+    await app({"type": "http", "path": "/api/v1/auth/me", "method": "GET", "headers": []}, receive, send)
+src/easy_tdx/web/request_security.py:88: in __call__
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+src/easy_tdx/web/request_security.py:132: in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+tests/unit/test_request_resource_context.py:71: in endpoint
+    assert resource_admission.retain_current_admission() is None
+E   assert <easy_tdx.web.resource_admission.Admission object at 0x10e949b70> is None
+E    +  where <easy_tdx.web.resource_admission.Admission object at 0x10e949b70> = <function retain_current_admission at 0x10e2f4700>()
+E    +    where <function retain_current_admission at 0x10e2f4700> = resource_admission.retain_current_admission
+__ test_request_boundary_clears_only_our_handles_and_restores_parent[cancel] ___
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/locks.py:214: in wait
+    await fut
+E   asyncio.exceptions.CancelledError
+
+During handling of the above exception, another exception occurred:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/tasks.py:456: in wait_for
+    return fut.result()
+E   asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+tests/unit/test_request_resource_context.py:100: in test_request_boundary_clears_only_our_handles_and_restores_parent
+    await asyncio.wait_for(entered.wait(), 1)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/asyncio/tasks.py:458: in wait_for
+    raise exceptions.TimeoutError() from exc
+E   asyncio.exceptions.TimeoutError
+=========================== short test summary info ============================
+FAILED tests/unit/test_request_resource_context.py::test_archive_get_does_not_retain_another_requests_upload[False]
+FAILED tests/unit/test_request_resource_context.py::test_archive_get_does_not_retain_another_requests_upload[True]
+FAILED tests/unit/test_request_resource_context.py::test_request_boundary_clears_only_our_handles_and_restores_parent[success]
+FAILED tests/unit/test_request_resource_context.py::test_request_boundary_clears_only_our_handles_and_restores_parent[error]
+FAILED tests/unit/test_request_resource_context.py::test_request_boundary_clears_only_our_handles_and_restores_parent[cancel]
+5 failed in 2.14s
+Task exception was never retrieved
+future: <Task finished name='Task-14' coro=<test_request_boundary_clears_only_our_handles_and_restores_parent.<locals>.request() done, defined at /Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_request_resource_context.py:89> exception=AssertionError('assert <easy_tdx.web.resource_admission.Admission object at 0x10e835ae0> is None\n +  where <easy_tdx.web.resource_admission.Admission object at 0x10e835ae0> = <function retain_current_admission at 0x10e2f4700>()\n +    where <function retain_current_admission at 0x10e2f4700> = resource_admission.retain_current_admission')>
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_request_resource_context.py", line 91, in request
+    await app({"type": "http", "path": "/api/v1/auth/me", "method": "GET", "headers": []}, receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 88, in __call__
+    await self._buffer_and_dispatch(scope, receive, send, limit)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/request_security.py", line 132, in _buffer_and_dispatch
+    await self.app(scope, bounded_receive, send)
+  File "/Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_request_resource_context.py", line 71, in endpoint
+    assert resource_admission.retain_current_admission() is None
+AssertionError: assert <easy_tdx.web.resource_admission.Admission object at 0x10e835ae0> is None
+ +  where <easy_tdx.web.resource_admission.Admission object at 0x10e835ae0> = <function retain_current_admission at 0x10e2f4700>()
+ +    where <function retain_current_admission at 0x10e2f4700> = resource_admission.retain_current_admission

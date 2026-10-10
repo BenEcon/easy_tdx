@@ -1,0 +1,6 @@
+### Result
+{"date":"图表日期 · 2026-06-30","fullscreenClosed":true,"returnedPrimary":true}
+### Ran Playwright code
+```js
+await (async (page) => { const nav=page.getByRole("navigation",{name:"缠论工作区"}); await page.getByRole("button",{name:"返回图表",exact:true}).click(); await page.getByRole("button",{name:"全屏查看个股 · 300750 · 日线",exact:true}).click(); await page.locator(".chart-frame.expanded").waitFor(); const full=page.locator(".chart-frame.expanded"); await full.getByRole("region",{name:"蜡烛图绘图区"}).click({position:{x:170,y:180}}); await full.getByRole("button",{name:"查看所选日期证据",exact:true}).click(); await page.getByRole("region",{name:"信号证据检索",exact:true}).waitFor(); await page.waitForFunction(()=>!document.fullscreenElement&&!document.body.classList.contains("chart-overlay-open")&&!document.querySelector(".chart-frame.expanded")); const date=(await page.getByRole("region",{name:"信号证据检索",exact:true}).innerText()).match(/图表日期[^\n]*/)?.[0]; await page.getByRole("button",{name:"返回图表",exact:true}).click(); await page.getByRole("region",{name:"蜡烛图绘图区",exact:true}).waitFor(); if(await nav.getByRole("button",{name:/看图/}).getAttribute("aria-pressed")!=="true")throw Error("not chart"); return {date,fullscreenClosed:true,returnedPrimary:true}; })(page);
+```

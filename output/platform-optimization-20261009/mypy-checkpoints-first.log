@@ -1,0 +1,2 @@
+src/easy_tdx/backtest/optimizer.py:210: error: Name "point" already defined on line 208  [no-redef]
+Found 1 error in 1 file (checked 279 source files)

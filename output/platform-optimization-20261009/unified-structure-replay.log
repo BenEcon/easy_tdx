@@ -1,0 +1,6 @@
+### Result
+{"detail":"极值日期\n2025\n11-24\n三类买点\n已确认\n确认日期\n2026-02-10\n识别来源\n已确认线段 · 基础结构\n\n线段基础三买：结构确认\n\n查看结构依据\n规则\n已确认线段构成的基础结构；不是按图表周期推定的高级别结构。\n离开线段\n5\n回试线段\n6\n中枢构成\n4 条线段\n固定核心\n16.43 — 17.62\n\n首次回试已完成，未重新进入中枢。\n\n极值位置\n2025-11-24；可用时间：2026-02-10\n结构确认\n确认前一根\n确认时刻","beforeReplay":"2026-02-09 · 646/800\n返回末尾","noPrematureSignal":true}
+### Ran Playwright code
+```js
+await (async page => { const browser=page.getByRole("region",{name:"信号证据检索",exact:true}); await browser.getByRole("button",{name:"结构买卖点 1",exact:true}).click(); await browser.getByText("查看结构依据",{exact:true}).click(); const detail=await browser.locator(".signal-record").innerText(); await browser.getByRole("button",{name:"三类买点：回放到确认前一根",exact:true}).click(); await page.waitForFunction(()=>document.querySelector(".replay-position")?.textContent.includes("2026-02-09") && !document.querySelector(".replay-position")?.textContent.includes("重新计算"),{},{timeout:60000}); if(await browser.locator(".signal-record").count()) throw Error("signal visible before confirmation"); return {detail,beforeReplay:await page.locator(".replay-position").innerText(),noPrematureSignal:true}; })(page);
+```

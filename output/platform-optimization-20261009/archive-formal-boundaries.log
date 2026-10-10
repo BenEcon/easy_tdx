@@ -1,0 +1,16 @@
+F....................................................................... [ 82%]
+...............                                                          [100%]
+=================================== FAILURES ===================================
+_____________ test_formal_app_archive_routes_and_persistent_store ______________
+tests/unit/test_archive_ingress.py:57: in test_formal_app_archive_routes_and_persistent_store
+    assert response.json()["payload"] == original
+E   KeyError: 'payload'
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_archive_ingress.py::test_formal_app_archive_routes_and_persistent_store
+1 failed, 86 passed, 1 warning in 11.64s

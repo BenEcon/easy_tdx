@@ -1,0 +1,24 @@
+easy-tdx
+========
+
+This project is an independent implementation of the TongDaXin (TDX)
+TCP protocol client for Chinese A-share market data.
+
+Attribution
+-----------
+
+This project was inspired by and incorporates ideas from:
+
+- pytdx (https://github.com/rainx/pytdx)
+  The offline data reading module (daily bars, minute bars, block data,
+  gbbq share structure changes, historical financial data) borrows file
+  format parsing methods from pytdx. The gbbq XOR decryption key is
+  directly ported from pytdx.
+
+- xmtdx (https://github.com/minionszyw/xmtdx)
+  The initial project structure and online protocol implementation were
+  based on xmtdx, which has since been substantially rewritten with bug
+  fixes, new features, and a different architecture.
+
+Both upstream projects are licensed under the MIT License.
+Their original copyright notices are preserved in the LICENSE file.

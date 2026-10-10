@@ -1,0 +1,20 @@
+............F........................................................... [ 92%]
+......                                                                   [100%]
+=================================== FAILURES ===================================
+________ test_durable_progress_survives_reopen_but_not_attempt_recovery ________
+tests/unit/test_factor_progress.py:110: in test_durable_progress_survives_reopen_but_not_attempt_recovery
+    store.finish_after_exit(fresh)
+src/easy_tdx/web/task_store.py:831: in finish_after_exit
+    self._validate_outcome(result, error)
+src/easy_tdx/web/task_store.py:778: in _validate_outcome
+    raise ValueError("必须且只能提供完整结果或失败原因")
+E   ValueError: 必须且只能提供完整结果或失败原因
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_progress.py::test_durable_progress_survives_reopen_but_not_attempt_recovery
+1 failed, 77 passed, 1 warning in 21.26s

@@ -1,0 +1,9 @@
+### Result
+{"samePageInvalidation":true,"runs":0}
+### Ran Playwright code
+```js
+await (async (page) => { let runs=0; const listener=r=>{if(r.url().endsWith("/backtest/run"))runs++}; page.on("request",listener); await page.evaluate(()=>{const url=new URL(location.href);url.searchParams.delete("adjust");history.pushState({},"",url);dispatchEvent(new PopStateEvent("popstate"))}); await page.getByRole("alert").filter({hasText:"缺少原扫描复权"}).waitFor(); if(await page.locator(".report-content").count() || runs)throw Error("stale result or unexpected run"); return {samePageInvalidation:true,runs}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:18094/?review=signal&autoRun=1&symbol=300750&market=SZ&category=MIN_30&scanAsOf=2026-09-30+14%3A30%3A00&scanFingerprint=7f6b0a06acaf9e5bb871995809dbd72bc16239f3edf32342b5d653db1b6522e1&signal=BUY&signalDate=2026-09-30+13%3A30&strategy=ma_cross&strategyName=%E6%9C%AC%E6%9C%BA%E7%9C%9F%E5%AE%9E+ma_cross&strategyLabel=%E5%9D%87%E7%BA%BF%E4%BA%A4%E5%8F%89&params=%7B%7D&count=800&startDate=2024-09-30&endDate=2026-09-30
+- Page Title: 股票分析 · Analysis Studio

@@ -1,0 +1,33 @@
+Local factor research archive checkpoint — 2026-10-10
+
+Before: source-after-vwap.tar.gz
+SHA256: 1c8aecf0ea2121eac7700907a78a335f9ea3834693196e5f23f05cbaa5a3726d
+After: source-after-factor-archives.tar.gz
+SHA256: 2686cb875156ccdd95d9c1156a26264347ed5cb965415de8f77c9dc26ba22b1f
+
+Both contain the preexisting dirty source tree. Do not reset/overwrite the user's
+working tree or databases. Extract into a fresh temporary directory and compare
+selected files. Secrets, databases, dependency directories and dist excluded.
+Old clients do not understand the new factor archive kind: preserve compatible
+readers or inspect an old release in isolation, never delete archives to downgrade.
+
+Validation: 1138 backend tests, 583 + 28 frontend tests, Ruff, Mypy 312, build passed.
+Targeted archive suite: 33 tests. Existing short-EMA / Starlette / large-bundle
+warnings retained. Logs: archive-{backend,frontend,mypy,build,ruff}.log.
+
+WebKit: frozen 000001 daily 160 bars, save/read (no compute request), explicit
+recompute/new independent record; synthetic 8-asset evaluation, complete export,
+read and import as independent copy. Final QA directory has 4 active records;
+evaluation original and imported copy have equal payload digest and distinct IDs.
+390px document width=390, modal=374, preview=338. Screenshots and evidence:
+output/playwright/factor-archive-*.
+QA server: /private/tmp/tdx-factor-archive-qa.M6tEQs/server.py, dedicated PID 7846;
+only temporary accounts/databases, no production writes or deployment.
+
+Chanlun and MyTT compared against before archive: unchanged (excluding caches).
+Implementation details and remaining requirements: docs/factor-archives-20261010.md
+Next priority: independently reproduce near-constant cross-section floating-point
+rank/correlation artifact observed in proportional synthetic prices, then fix the
+statistical guard without discarding legitimate small-valued factors.
+Global goal stays active; Alpha101/GTJA191, OOS/rolling/combination/tasks and other
+listed requirements remain incomplete. No new factor kernels in this batch.

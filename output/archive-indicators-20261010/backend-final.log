@@ -1,0 +1,18 @@
+........................................................................ [ 33%]
+........................................................................ [ 67%]
+.....................................................................    [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_archive_indicators.py: 40 warnings
+  /Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/archive_indicators.py:109: UserWarning: 数据仅 40 行，EMA 类指标至少需要 120 行才能精确收敛
+    values = compute_indicators(
+
+tests/unit/test_archive_indicators.py: 34 warnings
+  /Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_archive_indicators.py:28: UserWarning: 数据仅 40 行，EMA 类指标至少需要 120 行才能精确收敛
+    expected = compute_indicators(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+213 passed, 75 warnings in 16.28s

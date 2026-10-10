@@ -1,0 +1,47 @@
+✔ library original/extended multi replay uses saved costs despite global preference changes (88.705291ms)
+✔ portfolio load -> actual store task lifecycle -> save uses identical context and all costs (29.265084ms)
+✔ portfolio catalog-stage input is isolated before saved fetch (21.99175ms)
+✔ portfolio catalog-stage params is isolated before saved fetch (25.3065ms)
+✔ portfolio catalog-stage owner is isolated before saved fetch (16.869167ms)
+✔ portfolio catalog-stage failure is isolated before saved fetch (15.211084ms)
+✔ portfolio catalog-stage empty is isolated before saved fetch (15.582833ms)
+✔ pending portfolio cannot survive input (14.993167ms)
+✔ pending portfolio cannot survive owner (15.371ms)
+✔ pending portfolio cannot survive unmount (18.003625ms)
+✔ store account epoch clears completed results in all four task families (13.530541ms)
+✔ runPortfolio old account error is ignored even after switching back (12.384334ms)
+✔ runMultiStrategy old account error is ignored even after switching back (14.816334ms)
+✔ runOptimize old account error is ignored even after switching back (12.39725ms)
+✔ runOptimizeAll old account error is ignored even after switching back (12.142667ms)
+✔ optimizer takes an input snapshot before awaiting bars and hands off the result strategy/adjustment (18.09775ms)
+✔ portfolio late save cannot close or annotate newly changed configuration (13.782667ms)
+✔ library name lookup cannot mix later input or account into a save (54.391625ms)
+✔ library saves a multi result with submitted adjustment, not the later global preference (17.433ms)
+✔ late library list cannot replace a newly created record and owner change clears all personal rows (17.403917ms)
+✔ portfolio identity rejects mixed markets, repeats and invalid lengths (0.261208ms)
+✔ catalog-stage input cannot restore saved inputs or dispatch a task (7.660959ms)
+✔ catalog-stage params cannot restore saved inputs or dispatch a task (2.448083ms)
+✔ catalog-stage owner cannot restore saved inputs or dispatch a task (1.469208ms)
+✔ catalog-stage failure cannot restore saved inputs or dispatch a task (1.929459ms)
+✔ optimization context restores every execution field and malformed context blocks dispatch (1.729917ms)
+✔ actual backtest view loads exact saved context without running, then saves the configuration used (1.515209ms)
+✔ late saved record cannot overwrite owner (1.478375ms)
+✔ late saved record cannot overwrite route (1.194291ms)
+✔ late saved record cannot overwrite input (1.163334ms)
+✔ late saved record cannot overwrite unmount (1.24125ms)
+✔ invalid saved context blocks run, while legacy missing fields disclose fallback (4.155083ms)
+✔ every execution input invalidates the old result before it can be saved (12.812709ms)
+✔ editing a cost while bars are pending never runs the new form on the old request (0.892875ms)
+✔ save completion after owner cannot write into a different page or account (1.215625ms)
+✔ save completion after route cannot write into a different page or account (0.964917ms)
+✔ save completion after unmount cannot write into a different page or account (0.901584ms)
+✔ initial schema and refreshed catalog preserve supplied parameters; strategy change alone resets (3.273292ms)
+✔ late catalog defaults are suspended until route validation and then fill only missing fields (0.649166ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 39
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 894.539208

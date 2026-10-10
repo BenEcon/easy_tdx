@@ -1,0 +1,252 @@
+### Page
+- Page URL: http://127.0.0.1:8766/chanlun?from=tracking&targetKind=stock&symbol=300750&market=SZ&name=%E5%AE%81%E5%BE%B7%E6%97%B6%E4%BB%A3&boardType=&category=DAY&adjust=QFQ
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- generic [ref=f3e5]:
+  - generic [ref=f3e6]:
+    - button "打开导航" [ref=f3e7] [cursor=pointer]: ☰
+    - heading "缠论结构" [level=1] [ref=f3e9]
+    - generic [ref=f3e10]:
+      - link "个人账户" [ref=f3e11]:
+        - /url: /account
+        - generic [ref=f3e12]: T
+      - button "退出登录" [ref=f3e13] [cursor=pointer]
+  - main [ref=f3e16]:
+    - generic [ref=f3e17]:
+      - button "分析设置 · 300750 展开" [ref=f3e18] [cursor=pointer]:
+        - generic [ref=f3e19]: 分析设置 · 300750
+        - generic [ref=f3e20]: 展开
+      - main [ref=f3e21]:
+        - generic [ref=f3e22]:
+          - navigation "缠论工作区" [ref=f3e23]:
+            - button [ref=f3e24] [cursor=pointer]:
+              - strong [ref=f3e25]: 看图
+            - button [ref=f3e26] [cursor=pointer]:
+              - strong [ref=f3e27]: 研究
+            - button [pressed] [ref=f3e28] [cursor=pointer]:
+              - strong [ref=f3e29]: 审核
+          - generic [ref=f3e30]:
+            - generic [ref=f3e31]:
+              - generic [ref=f3e32]:
+                - generic "个股 · 300750" [ref=f3e33]
+                - generic [ref=f3e34]: DAY
+              - paragraph [ref=f3e37]: 当前 向下笔 · 进行中，尚未形成中枢
+            - generic [ref=f3e38]:
+              - generic [ref=f3e39]:
+                - strong [ref=f3e40]: "240"
+                - generic [ref=f3e41]: 原始 K 线
+              - generic [ref=f3e42]:
+                - strong [ref=f3e43]: "183"
+                - generic [ref=f3e44]: 合并 K 线
+              - generic [ref=f3e45]:
+                - strong [ref=f3e46]: "93"
+                - generic [ref=f3e47]: 分型
+              - generic [ref=f3e48]:
+                - strong [ref=f3e49]: "18"
+                - generic [ref=f3e50]: 笔
+              - generic [ref=f3e51]:
+                - strong [ref=f3e52]: "0"
+                - generic [ref=f3e53]: 基础中枢
+              - generic [ref=f3e54]:
+                - strong [ref=f3e55]: "2"
+                - generic [ref=f3e56]: 线段
+              - generic [ref=f3e57]:
+                - strong [ref=f3e58]: "0"
+                - generic [ref=f3e59]: 买卖点
+              - generic [ref=f3e60]:
+                - strong [ref=f3e61]: "2"
+                - generic [ref=f3e62]: 背离 / 背驰
+          - region "当前分析上下文" [ref=f3e63]:
+            - region "行情数据口径" [ref=f3e64]:
+              - group [ref=f3e65]:
+                - generic "› 数据口径 MAC 行情 · 前复权 收盘截至 2026-10-09 15:00:00" [ref=f3e66] [cursor=pointer]:
+                  - text: ›
+                  - strong [ref=f3e67]: 数据口径
+                  - generic [ref=f3e68]: MAC 行情 · 前复权
+                  - time [ref=f3e69]: 收盘截至 2026-10-09 15:00:00
+            - paragraph [ref=f3e70]: 线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。
+            - generic [ref=f3e71]:
+              - generic [ref=f3e72]:
+                - generic [ref=f3e73]:
+                  - strong [ref=f3e74]: 快照末尾
+                  - button "回放上一根 K 线" [ref=f3e75] [cursor=pointer]: 上一根
+                  - slider "K 线回放位置" [ref=f3e76] [cursor=pointer]: "240"
+                  - button "回放下一根 K 线" [disabled] [ref=f3e77]: 下一根
+                - generic [ref=f3e78]:
+                  - status [ref=f3e79]: 2026-10-09 · 240/240
+                  - button "返回末尾" [disabled] [ref=f3e80]
+              - generic [ref=f3e81]: 按当前标的快照回放，不代表历史当天的数据版本；个股与行业对比时采用共同截止点。
+            - generic [ref=f3e82]:
+              - generic [ref=f3e83]: 所属行业
+              - generic [ref=f3e84]: 暂无行业归属数据
+            - region "多周期图表对比" [ref=f3e329]:
+              - generic "周期明细审核" [ref=f3e330]:
+                - group [ref=f3e331]:
+                  - generic "周期明细审核 个股 · 300750 · 日线 · 240 根" [ref=f3e332] [cursor=pointer]:
+                    - strong [ref=f3e333]: 周期明细审核
+                    - generic [ref=f3e334]: 个股 · 300750 · 日线 · 240 根
+          - text: › › › › ›
+          - region "主周期审核工作区" [ref=f3e335]:
+            - generic [ref=f3e336]:
+              - heading "主周期完整审核" [level=3] [ref=f3e337]
+              - paragraph [ref=f3e338]: 以下结构明细对应个股 · 300750 · 日线，与上方对照周期证据分别核验。
+            - navigation "缠论结果分类" [ref=f3e339]:
+              - button "结构 20" [ref=f3e340] [cursor=pointer]:
+                - text: 结构
+                - generic [ref=f3e341]: "20"
+              - button "买卖点 0" [ref=f3e342] [cursor=pointer]:
+                - text: 买卖点
+                - generic [ref=f3e343]: "0"
+              - button "背离 / 背驰 2" [ref=f3e344] [cursor=pointer]:
+                - text: 背离 / 背驰
+                - generic [ref=f3e345]: "2"
+            - region "信号证据检索" [ref=f3e348]:
+              - generic [ref=f3e349]:
+                - generic [ref=f3e350]:
+                  - heading "信号证据" [level=3] [ref=f3e351]
+                  - paragraph [ref=f3e352]: 买卖点、M1、背离与核验共用检索，各自保留独立依据。
+                - button "清除筛选" [ref=f3e353] [cursor=pointer]
+              - status [ref=f3e354]:
+                - generic [ref=f3e355]:
+                  - strong [ref=f3e356]: 图表日期 · 2026-06-30
+                  - paragraph [ref=f3e357]: 匹配极值、对照、提示、确认、失效日期，以及覆盖该日的 A/B/C 或拦截区间；不代表当时已确认。
+                - button "返回图表" [ref=f3e358] [cursor=pointer]
+              - generic [ref=f3e359]:
+                - generic [ref=f3e360]:
+                  - generic [ref=f3e361]: 日期或原因
+                  - searchbox "日期或原因" [ref=f3e362]
+                - generic [ref=f3e363]:
+                  - generic [ref=f3e364]: 识别类型
+                  - combobox "证据识别类型" [ref=f3e366] [cursor=pointer]:
+                    - generic [ref=f3e367]: 全部类型
+                - generic [ref=f3e370]:
+                  - generic [ref=f3e371]: 当前状态
+                  - combobox "证据当前状态" [ref=f3e373] [cursor=pointer]:
+                    - generic [ref=f3e374]: 全部状态
+                - generic [ref=f3e377]:
+                  - generic [ref=f3e378]: 方向
+                  - combobox "证据方向" [ref=f3e380] [cursor=pointer]:
+                    - generic [ref=f3e381]: 全部方向
+              - status [ref=f3e384]:
+                - text: 买卖点 0 / 0 条
+                - generic [aria-hidden] [ref=f3e385]: ·
+                - text: M1 0 / 0 条
+                - generic [aria-hidden] [ref=f3e386]: ·
+                - text: 背离 0 / 12 条
+                - generic [aria-hidden] [ref=f3e387]: ·
+                - text: 核验 10 / 308 组
+              - paragraph [ref=f3e388]: 仅搜索本次快照返回的日期、依据与拦截记录。M1 是部分已确认标准波段背离的提示，不是结构性一类点；各视图数量不相加作为信号总数。
+              - group "证据视图" [ref=f3e389]:
+                - button "结构买卖点 0" [ref=f3e390] [cursor=pointer]:
+                  - text: 结构买卖点
+                  - generic [ref=f3e391]: "0"
+                - button "MACD M1 0" [ref=f3e392] [cursor=pointer]:
+                  - text: MACD M1
+                  - generic [ref=f3e393]: "0"
+                - button "背离事件 0" [ref=f3e394] [cursor=pointer]:
+                  - text: 背离事件
+                  - generic [ref=f3e395]: "0"
+                - button "规则核验 10" [pressed] [ref=f3e396] [cursor=pointer]:
+                  - text: 规则核验
+                  - generic [ref=f3e397]: "10"
+              - group [ref=f3e398]:
+                - generic "背离核验与规则对照 10 组匹配 · 展示 10 组" [ref=f3e399] [cursor=pointer]:
+                  - strong [ref=f3e400]: 背离核验与规则对照
+                  - generic [ref=f3e401]: 10 组匹配 · 展示 10 组
+                - generic [ref=f3e402]:
+                  - generic [ref=f3e403]:
+                    - generic [ref=f3e404]:
+                      - term [ref=f3e405]: 标准
+                      - definition [ref=f3e406]: 使用有效 A
+                    - generic [ref=f3e407]:
+                      - term [ref=f3e408]: 非标准
+                      - definition [ref=f3e409]: 完整 A · 保留 DIF 改善、B/C 同侧与 B 回拉
+                    - generic [ref=f3e410]:
+                      - term [ref=f3e411]: 特殊
+                      - definition [ref=f3e412]: 对照前一 A 的指标极值
+                    - generic [ref=f3e413]:
+                      - term [ref=f3e414]: 双线
+                      - definition [ref=f3e415]: 对照最近局部极值
+                  - paragraph [ref=f3e416]: 各类分别记录依据，不互相覆盖。核验通过项数仅用于审核，不代表信号强弱或胜率。
+                  - group [ref=f3e417]:
+                    - generic "特殊底背离 未形成候选 B 2026-07-20 — 2026-07-20 3 / 4 项通过 B 尚未达到前一 A 的价格极值" [ref=f3e418]:
+                      - strong [ref=f3e419]: 特殊底背离
+                      - generic [ref=f3e420]: 未形成候选
+                      - generic [ref=f3e421]:
+                        - generic [ref=f3e422]: B 2026-07-20 — 2026-07-20
+                        - generic [ref=f3e423]: 3 / 4 项通过
+                      - generic [ref=f3e424]: B 尚未达到前一 A 的价格极值
+                  - group [ref=f3e425]:
+                    - generic "非标准底背离 未形成候选 C 2026-08-19 — 2026-10-08 12 / 16 项通过 C 同色柱面积未小于比较 A；B、C 内 DIF 触轴或跨轴；DIF 段内极值未改善，或不在目标零轴一侧；B、C 内 DEA 触轴或跨轴" [ref=f3e426]:
+                      - strong [ref=f3e427]: 非标准底背离
+                      - generic [ref=f3e428]: 未形成候选
+                      - generic [ref=f3e429]:
+                        - generic [ref=f3e430]: C 2026-08-19 — 2026-10-08
+                        - generic [ref=f3e431]: 12 / 16 项通过
+                      - generic [ref=f3e432]: C 同色柱面积未小于比较 A；B、C 内 DIF 触轴或跨轴；DIF 段内极值未改善，或不在目标零轴一侧；B、C 内 DEA 触轴或跨轴
+                  - group [ref=f3e433]:
+                    - generic "非标准顶背离 未形成候选 C 2026-07-20 — 2026-08-18 10 / 16 项通过 C 同色柱面积未小于比较 A；B、C 内 DIF 触轴或跨轴；DIF 段内极值未改善，或不在目标零轴一侧；B、C 内 DEA 触轴或跨轴；DEA 极值不在目标零轴一侧；B 最低低于 A 最低，或 B 最高高于 A 最高" [ref=f3e434]:
+                      - strong [ref=f3e435]: 非标准顶背离
+                      - generic [ref=f3e436]: 未形成候选
+                      - generic [ref=f3e437]:
+                        - generic [ref=f3e438]: C 2026-07-20 — 2026-08-18
+                        - generic [ref=f3e439]: 10 / 16 项通过
+                      - generic [ref=f3e440]: C 同色柱面积未小于比较 A；B、C 内 DIF 触轴或跨轴；DIF 段内极值未改善，或不在目标零轴一侧；B、C 内 DEA 触轴或跨轴；DEA 极值不在目标零轴一侧；B 最低低于 A 最低，或 B 最高高于 A 最高
+                  - group [ref=f3e441]:
+                    - generic "非标准底背离 未形成候选 C 2026-06-26 — 2026-07-17 13 / 16 项通过 C 同色柱面积未小于比较 A；DIF 段内极值未改善，或不在目标零轴一侧；B 最低低于 A 最低，或 B 最高高于 A 最高" [ref=f3e442]:
+                      - strong [ref=f3e443]: 非标准底背离
+                      - generic [ref=f3e444]: 未形成候选
+                      - generic [ref=f3e445]:
+                        - generic [ref=f3e446]: C 2026-06-26 — 2026-07-17
+                        - generic [ref=f3e447]: 13 / 16 项通过
+                      - generic [ref=f3e448]: C 同色柱面积未小于比较 A；DIF 段内极值未改善，或不在目标零轴一侧；B 最低低于 A 最低，或 B 最高高于 A 最高
+                  - group [ref=f3e449]:
+                    - generic "标准底背离 未形成候选 C 2026-08-19 — 2026-10-08 11 / 19 项通过 C 同色柱面积未小于比较 A；有效 A 或 C 内 DIF 触轴／跨轴；B 的 DIF 跨轴超过连续 5 根或发生多次跨轴；未满足：DIF 在有效 A、C 全程同侧；DIF 段内极值未改善，或不在目标零轴一侧；有效 ABC 内 DEA 触轴或跨轴；DEA 段内极值未改善，或不在目标零轴一侧" [ref=f3e450]:
+                      - strong [ref=f3e451]: 标准底背离
+                      - generic [ref=f3e452]: 未形成候选
+                      - generic [ref=f3e453]:
+                        - generic [ref=f3e454]: C 2026-08-19 — 2026-10-08
+                        - generic [ref=f3e455]: 11 / 19 项通过
+                      - generic [ref=f3e456]: C 同色柱面积未小于比较 A；有效 A 或 C 内 DIF 触轴／跨轴；B 的 DIF 跨轴超过连续 5 根或发生多次跨轴；未满足：DIF 在有效 A、C 全程同侧；DIF 段内极值未改善，或不在目标零轴一侧；有效 ABC 内 DEA 触轴或跨轴；DEA 段内极值未改善，或不在目标零轴一侧
+                  - group [ref=f3e457]:
+                    - generic "标准顶背离 未形成候选 C 2026-07-20 — 2026-08-18 2 / 3 项通过 A 尚无双线同在目标零轴一侧的有效尾段" [ref=f3e458]:
+                      - strong [ref=f3e459]: 标准顶背离
+                      - generic [ref=f3e460]: 未形成候选
+                      - generic [ref=f3e461]:
+                        - generic [ref=f3e462]: C 2026-07-20 — 2026-08-18
+                        - generic [ref=f3e463]: 2 / 3 项通过
+                      - generic [ref=f3e464]: A 尚无双线同在目标零轴一侧的有效尾段
+                  - group [ref=f3e465]:
+                    - generic "标准底背离 未形成候选 C 2026-06-26 — 2026-07-17 16 / 19 项通过 C 同色柱面积未小于比较 A；DIF 段内极值未改善，或不在目标零轴一侧；DEA 段内极值未改善，或不在目标零轴一侧" [ref=f3e466]:
+                      - strong [ref=f3e467]: 标准底背离
+                      - generic [ref=f3e468]: 未形成候选
+                      - generic [ref=f3e469]:
+                        - generic [ref=f3e470]: C 2026-06-26 — 2026-07-17
+                        - generic [ref=f3e471]: 16 / 19 项通过
+                      - generic [ref=f3e472]: C 同色柱面积未小于比较 A；DIF 段内极值未改善，或不在目标零轴一侧；DEA 段内极值未改善，或不在目标零轴一侧
+                  - group [ref=f3e473]:
+                    - generic "双线顶背离 未形成候选 2026-07-15 0 / 3 项通过 未满足：严格突破最近局部价格极值；未满足：两价格极值当根 DIF 改善且同侧；未满足：两价格极值当根 DEA 改善且同侧" [ref=f3e474]:
+                      - strong [ref=f3e475]: 双线顶背离
+                      - generic [ref=f3e476]: 未形成候选
+                      - generic [ref=f3e477]:
+                        - generic [ref=f3e478]: 2026-07-15
+                        - generic [ref=f3e479]: 0 / 3 项通过
+                      - generic [ref=f3e480]: 未满足：严格突破最近局部价格极值；未满足：两价格极值当根 DIF 改善且同侧；未满足：两价格极值当根 DEA 改善且同侧
+                  - group [ref=f3e481]:
+                    - generic "双线顶背离 未形成候选 2026-07-14 0 / 3 项通过 未满足：严格突破最近局部价格极值；未满足：两价格极值当根 DIF 改善且同侧；未满足：两价格极值当根 DEA 改善且同侧" [ref=f3e482]:
+                      - strong [ref=f3e483]: 双线顶背离
+                      - generic [ref=f3e484]: 未形成候选
+                      - generic [ref=f3e485]:
+                        - generic [ref=f3e486]: 2026-07-14
+                        - generic [ref=f3e487]: 0 / 3 项通过
+                      - generic [ref=f3e488]: 未满足：严格突破最近局部价格极值；未满足：两价格极值当根 DIF 改善且同侧；未满足：两价格极值当根 DEA 改善且同侧
+                  - group [ref=f3e489]:
+                    - generic "双线顶背离 未形成候选 2026-06-30 0 / 3 项通过 未满足：严格突破最近局部价格极值；未满足：两价格极值当根 DIF 改善且同侧；未满足：两价格极值当根 DEA 改善且同侧" [ref=f3e490]:
+                      - strong [ref=f3e491]: 双线顶背离
+                      - generic [ref=f3e492]: 未形成候选
+                      - generic [ref=f3e493]:
+                        - generic [ref=f3e494]: 2026-06-30
+                        - generic [ref=f3e495]: 0 / 3 项通过
+                      - generic [ref=f3e496]: 未满足：严格突破最近局部价格极值；未满足：两价格极值当根 DIF 改善且同侧；未满足：两价格极值当根 DEA 改善且同侧
+```

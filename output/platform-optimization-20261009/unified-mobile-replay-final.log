@@ -1,0 +1,6 @@
+### Result
+{"sizes":[{"width":390,"pageWidth":390},{"width":320,"pageWidth":320}],"replay":"2026-09-17 · 793/800\n返回末尾"}
+### Ran Playwright code
+```js
+await (async page => { const browser=page.getByRole("region",{name:"信号证据检索",exact:true}); const sizes=[]; for(const width of [390,320]) { await page.setViewportSize({width,height:844}); const size=await page.evaluate(()=>({width:innerWidth,pageWidth:document.documentElement.scrollWidth})); if(size.pageWidth>width) throw Error(JSON.stringify(size)); sizes.push(size); } await browser.locator(".macd-prompt-row").first().getByRole("button",{name:"MACD M1 提示：回放到确认时刻",exact:true}).click(); await page.waitForFunction(()=>document.querySelector(".replay-position")?.textContent.includes("2026-09-17") && !document.querySelector(".replay-position")?.textContent.includes("重新计算"),{},{timeout:60000}); return {sizes,replay:await page.locator(".replay-position").innerText()}; })(page);
+```

@@ -1,0 +1,38 @@
+### Page
+- Page URL: http://127.0.0.1:8768/login?redirect=/account
+- Page Title: 股票分析 · Analysis Studio
+### Snapshot
+```yaml
+- main [ref=e17]:
+  - link "股票分析首页" [ref=e19]:
+    - /url: /
+    - generic [ref=e24]:
+      - strong [ref=e25]: 股票分析
+      - generic [ref=e26]: Analysis Studio
+  - generic [ref=e27]:
+    - region [ref=e28]:
+      - generic [ref=e29]:
+        - paragraph [ref=e30]: RESEARCH WORKSPACE
+        - heading "行情、策略与公司资料， 在一处完成。" [level=1] [ref=e31]: 行情、策略与公司资料，在一处完成。
+        - paragraph [ref=e32]: 统一管理行情观察、技术分析、策略验证与研究数据。
+      - generic [ref=e34]:
+        - generic [ref=e35]: MARKET STRUCTURE
+        - generic [ref=e36]: 研究视图
+    - region [ref=e42]:
+      - generic [ref=e43]:
+        - generic [ref=e44]:
+          - paragraph [ref=e45]: ACCOUNT ACCESS
+          - heading "登录账户" [level=2] [ref=e46]
+          - paragraph [ref=e47]: 使用你的 easy-tdx 账户进入研究工作台。
+        - generic [ref=e48]:
+          - generic [ref=e49]:
+            - generic [ref=e50]: 用户名
+            - textbox "用户名" [active] [ref=e51]:
+              - /placeholder: 请输入用户名
+          - generic [ref=e52]:
+            - generic [ref=e53]: 密码
+            - textbox "密码" [ref=e54]:
+              - /placeholder: 请输入密码
+          - button "登录工作台" [ref=e55] [cursor=pointer]
+        - paragraph [ref=e57]: 服务器记录登录 IP、研究查询及估算活跃时长，仅管理员可查看。IP 归属地按需由外部服务查询。
+```

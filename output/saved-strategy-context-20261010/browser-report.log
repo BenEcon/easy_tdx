@@ -1,0 +1,28 @@
+### Result
+{
+  "id": "b5217f210511",
+  "trades": 12,
+  "barCount": 424,
+  "manualRequests": 2,
+  "matchingCosts": true,
+  "reopenNoRun": true,
+  "widths": [
+    {
+      "width": 1440,
+      "overflow": false
+    },
+    {
+      "width": 390,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "overflow": false
+    }
+  ],
+  "errors": []
+}
+### Ran Playwright code
+```js
+await page.evaluate('() => (window.__savedQaReport)');
+```

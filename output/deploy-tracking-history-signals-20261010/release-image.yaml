@@ -1,0 +1,3 @@
+services:
+  easy-tdx:
+    image: easy-tdx:tracking-history-signals-20261010

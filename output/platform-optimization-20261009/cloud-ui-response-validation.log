@@ -1,0 +1,11 @@
+### Result
+{"fatalErrors":[],"archivedRows":2,"width":320}
+### Ran Playwright code
+```js
+await (async page => { const errors=[];const handle=e=>errors.push(e.message);page.on("pageerror",handle);try {await page.reload();await page.getByRole("alert").filter({hasText:"任务列表响应格式异常"}).waitFor(); const cloud=page.locator(".cloud-archives");await cloud.locator(":scope > summary").click();await cloud.locator("li").first().waitFor();if(await cloud.locator("li").count()!==2)throw Error("missing archives");await page.route("**/research/archives",route=>route.fulfill({json:{items:null}}));await cloud.getByRole("button",{name:"刷新云目录",exact:true}).click();await cloud.getByRole("alert").filter({hasText:"响应格式不正确"}).waitFor();if(await cloud.locator("li").count()!==2)throw Error("lost previous records");await page.unroute("**/research/archives");await cloud.getByRole("button",{name:"刷新云目录",exact:true}).click();await cloud.getByRole("alert").waitFor({state:"hidden"});await page.route("**/backtest/tasks?*",route=>route.fulfill({json:{tasks:[],count:0,storage:"memory"}}));await page.getByRole("region",{name:"后台计算"}).getByRole("button",{name:"刷新",exact:true}).click();await page.getByText("暂无后台任务",{exact:true}).waitFor();await cloud.locator("li").filter({hasText:"多周期研究"}).getByRole("button",{name:"查看原档",exact:true}).click();await page.getByRole("dialog",{name:"云端研究原档",exact:true}).waitFor();await page.getByRole("button",{name:"关闭云存档",exact:true}).click();await cloud.scrollIntoViewIfNeeded();await page.screenshot({path:"../output/playwright/cloud-account-320-validated.png"});if(errors.length)throw Error(JSON.stringify(errors));return {fatalErrors:errors,archivedRows:await cloud.locator("li").count(),width:await page.evaluate(()=>document.documentElement.scrollWidth)};}finally{page.off("pageerror",handle);await page.unroute("**/research/archives");await page.unroute("**/backtest/tasks?*");}})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8766/account
+- Page Title: 股票分析 · Analysis Studio
+### Events
+- New console entries: .playwright-cli/console-2026-10-09T13-31-56-093Z.log#L138-L145

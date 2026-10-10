@@ -1,0 +1,73 @@
+async (page) => {
+  const requests=[],errors=[],receipts=[];
+  const onRequest=r=>requests.push({method:r.method(),path:new URL(r.url()).pathname});
+  const onError=e=>errors.push(String(e));
+  const onResponse=async r=>{if(r.url().includes('/scan-evidence/')&&r.ok())receipts.push(await r.json())};
+  page.on('request',onRequest);page.on('pageerror',onError);page.on('response',onResponse);
+  const check=(v,m)=>{if(!v)throw Error(m)};
+  const canonical=v=>JSON.stringify(v&&typeof v==='object'?(Array.isArray(v)?v.map(x=>JSON.parse(canonical(x))):Object.fromEntries(Object.keys(v).sort().map(k=>[k,JSON.parse(canonical(v[k]))]))):v);
+  try {
+    await page.setViewportSize({width:1440,height:1000});
+    await page.goto('http://127.0.0.1:8769/signals');
+    const scanDone=page.waitForResponse(async r=>new URL(r.url()).pathname.startsWith('/api/v1/backtest/tasks/')&&r.ok()&&(await r.json()).status==='done');
+    await page.getByRole('button',{name:'一键扫描',exact:true}).click();await scanDone;
+    await page.getByRole('button',{name:'复核信号',exact:true}).first().click();
+    await page.waitForURL(u=>u.searchParams.get('review')==='signal');
+    const url=new URL(page.url());url.pathname='/chanlun';
+    const analyzed=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/chanlun/replay'&&r.ok(),{timeout:60000});
+    await page.goto(url.toString());await analyzed;
+    const replayed=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/chanlun/replay'&&r.ok(),{timeout:60000});
+    await page.getByRole('button',{name:'回放上一根 K 线',exact:true}).click();await replayed;
+    await page.getByRole('navigation',{name:'缠论工作区'}).getByRole('button',{name:'研究 多周期观察与快照'}).click();
+    const local=page.locator('.workspace-tools');
+    await local.locator(':scope > summary').click();
+    await local.getByLabel('快照名称',{exact:true}).fill('原扫描独立存档 QA');
+    await local.getByRole('button',{name:'保存当前研究快照',exact:true}).click();
+    await local.getByRole('button',{name:'查看',exact:true}).first().waitFor();
+    const localData=await page.evaluate(()=>new Promise((resolve,reject)=>{
+      const q=indexedDB.open('tdx-research-snapshots',1);q.onerror=()=>reject(q.error);
+      q.onsuccess=()=>{const db=q.result,r=db.transaction('snapshots').objectStore('snapshots').getAll();r.onsuccess=()=>{resolve(r.result);db.close()};r.onerror=()=>reject(r.error)};
+    }));
+    const savedLocal=localData.find(r=>r.radarSource?.receipt.task_id===receipts.at(-1)?.task_id);
+    check(savedLocal,'new local snapshot not found');
+    const source=savedLocal.radarSource;
+    check(source.receipt.bars.length===800,'local original must retain all 800 bars');
+    check(savedLocal.charts[0].bars.length===799,'chart must retain only replay prefix');
+    check(canonical(source.receipt)===canonical(receipts.at(-1)),'local source changed original receipt');
+    const cloud=page.locator('.cloud-archives').first();await cloud.locator(':scope > summary').click();
+    const uploaded=page.waitForResponse(r=>r.request().method()==='PUT'&&r.url().includes('/research/archives/'));
+    await cloud.getByRole('button',{name:'保存当前结果到云端',exact:true}).click();
+    const response=await uploaded;check(response.status()===201,await response.text());
+    const record=await response.json();
+    const raw=await page.request.get(`http://127.0.0.1:8769/api/v1/research/archives/${record.id}`);
+    const saved=await raw.json();
+    check(canonical(saved.payload.radarSource)===canonical(source),'cloud source differs from local');
+    check(saved.payload.charts[0].bars.length===799,'cloud chart prefix differs');
+    await page.request.post('http://127.0.0.1:8769/qa/evict');
+    const missing=await page.request.get(`http://127.0.0.1:8769/api/v1/backtest/tasks/${source.receipt.task_id}/scan-evidence/${source.receipt.row_index}`);
+    check(missing.status()===404,'source task was not removed');
+    const start=requests.length;
+    await local.getByRole('button',{name:'查看',exact:true}).first().click();
+    const localDialog=page.getByRole('dialog',{name:'已保存研究快照'});
+    await localDialog.locator('.archived-radar > summary').click();
+    check((await localDialog.innerText()).includes('800 根已封存'),'local source missing after task deletion');
+    await localDialog.getByRole('button',{name:'关闭快照',exact:true}).click();
+    await page.goto('http://127.0.0.1:8769/account');
+    const accountCloud=page.locator('.cloud-archives').first();await accountCloud.locator(':scope > summary').click();
+    await accountCloud.getByRole('button',{name:'查看原档',exact:true}).first().click();
+    const dialog=page.getByRole('dialog',{name:'云端研究原档'});
+    await dialog.locator('.archived-radar > summary').click();
+    check((await dialog.innerText()).includes('800 根已封存'),'cloud source missing on fresh page');
+    check((await dialog.innerText()).includes('799 根'),'cloud original chart missing');
+    const sizes=[];
+    for(const width of [1440,390,320]) {
+      await page.setViewportSize({width,height:1000});
+      const geometry=await page.evaluate(()=>({page:document.documentElement.scrollWidth,viewport:innerWidth,dialog:document.querySelector('dialog[open]').getBoundingClientRect().width,source:document.querySelector('dialog[open] .archived-radar').getBoundingClientRect().width}));
+      check(geometry.page<=width+1&&geometry.dialog<=width,'page or dialog overflow');sizes.push({width,...geometry});
+      await page.screenshot({path:`/Users/bowen/Documents/Python/Google/TDX-work/output/playwright/radar-archive-${width}.png`});
+    }
+    const forbidden=requests.slice(start).filter(r=>/scan-evidence|\/bars(?:\/|$)|\/chanlun\/(?:replay|observations|archive-recompute)|\/indicator\/compute/.test(r.path));
+    check(forbidden.length===0,JSON.stringify(forbidden));check(errors.length===0,JSON.stringify(errors));
+    return {taskRemoved:true,taskReadStatus:missing.status(),originalBars:source.receipt.bars.length,chartBars:saved.payload.charts[0].bars.length,signals:source.receipt.row.recent_signals,params:source.review.params,provenance:saved.provenance,readonlyAnalysisRequests:forbidden,errors,sizes,archiveId:record.id,status:await (await page.request.get('http://127.0.0.1:8769/qa/status')).json()};
+  } finally {page.off('request',onRequest);page.off('pageerror',onError);page.off('response',onResponse)}
+}

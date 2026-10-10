@@ -1,0 +1,62 @@
+INFO:     Started server process [36744]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8768 (Press CTRL+C to quit)
+INFO:     127.0.0.1:54543 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54576 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54594 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54619 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:54619 - "GET /login?redirect=/account HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54619 - "GET /assets/index-BagQfGGq.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54632 - "GET /assets/index-BVSB2M49.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54619 - "GET /api/v1/auth/status HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54632 - "GET /assets/LoginView-C6otUSAi.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54755 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54755 - "GET /assets/ChartFrame-DpbssJ_h.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54758 - "GET /assets/TechnicalIndicatorPicker-DK8CWXik.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54755 - "GET /assets/AccountView-DFlKvEz4.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54757 - "GET /assets/NumberStepper-8K7Mvx4I.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54760 - "GET /assets/MultiPeriodOverviewTable-BvTcnRGq.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54761 - "GET /assets/CloudResearchArchives-DBUIy7Tn.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54759 - "GET /assets/MacSelect-8VETZDy2.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54758 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54755 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54757 - "GET /api/v1/auth/me HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54760 - "POST /api/v1/chanlun/archive-recompute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54761 - "PUT /api/v1/research/archives/f960ca14-057c-49b1-8b33-9b390538a490 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:54759 - "POST /api/v1/chanlun/archive-recompute HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54758 - "PUT /api/v1/research/archives/58e58d9a-97e5-4164-bff5-45d8e868f8f9 HTTP/1.1" 201 Created
+INFO:     127.0.0.1:54755 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54757 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54760 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54760 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54842 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54859 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54871 - "POST /api/v1/auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54872 - "PUT /api/v1/research/archives/47a11833-79ef-4a76-b1c2-aa68373a67cd HTTP/1.1" 201 Created
+INFO:     127.0.0.1:54872 - "GET /api/v1/research/archives HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54859 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54859 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54918 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54939 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54939 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54939 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54982 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55007 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55007 - "POST /api/v1/auth/activity HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55007 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55084 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55098 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55136 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55151 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55168 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55200 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55219 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55236 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55258 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55282 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55306 - "GET /api/v1/backtest/tasks?limit=20 HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [36744]
