@@ -5,11 +5,11 @@ from scripts.factor_acceptance_report import checklist, gate, read_evidence
 
 def test_missing_evidence_is_incomplete_for_every_factor():
     rows = checklist({})
-    assert len(rows) == 330
+    assert len(rows) == 335
     assert all(r["kernel_evidence"] == "incomplete" for r in rows)
     assert all(r["full_goal_acceptance"] == "not_established" for r in rows)
     assert len([r for r in rows if r["library"] == "qlib_alpha158"]) == 158
-    assert len([r for r in rows if r["library"] == "gtja191"]) == 153
+    assert len([r for r in rows if r["library"] == "gtja191"]) == 158
 
 
 def test_partial_and_skipped_cases_cannot_pass_the_gate():

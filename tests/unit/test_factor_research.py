@@ -202,6 +202,21 @@ def test_every_eligible_builtin_preserves_dates_and_causal_prefix(name):
         index=pd.date_range("2025-01-01", periods=100, freq="B"),
     )
     factor = get_factor(name)()
+    if name in {f"gtja191_{n:03d}" for n in (35, 61, 87, 92, 156)}:
+        from tests.unit.test_gtja191_linear_decay import DEFAULTS, independent
+
+        number = int(name[-3:])
+        pool = {"A": frame, "B": frame.copy()}
+        values = FactorEngine().compute_matrix(pool, factor)
+        oracle_pool = {s: f.rename_axis("datetime").reset_index() for s, f in pool.items()}
+        np.testing.assert_allclose(
+            values, independent(oracle_pool, number, DEFAULTS[number]), equal_nan=True
+        )
+        pd.testing.assert_frame_equal(
+            values.iloc[:75],
+            FactorEngine().compute_matrix({s: f.iloc[:75] for s, f in pool.items()}, factor),
+        )
+        return
     if name.startswith("gtja191_") and "vwap" in factor.inputs:
         from tests.unit.test_gtja191_vwap import DEFAULTS, independent
 

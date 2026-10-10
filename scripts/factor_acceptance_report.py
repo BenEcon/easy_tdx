@@ -516,7 +516,8 @@ def checklist(evidence: dict[tuple[str, str], str]) -> list[dict[str, Any]]:
                         "真实不复权成交量额核验与冻结逐值对照",
                         module,
                         [
-                            f"test_vwap_real_qualified_none_daily_minute_and_zero_transactions[{number}]"
+                            f"test_vwap_real_qualified_none_daily_minute_and_zero_transactions[{number}]",
+                            f"test_vwap_long_real_default_windows_have_observed_values[{number}]",
                         ],
                     ),
                     gate(
@@ -543,6 +544,72 @@ def checklist(evidence: dict[tuple[str, str], str]) -> list[dict[str, Any]]:
                             "滚动和精确零并列回归",
                             module,
                             ["test_vwap_036_window_sum_preserves_exact_zero_rank_tie"],
+                        )
+                    )
+                if number in {16, 36, 90, 179}:
+                    checks.append(
+                        gate(
+                            evidence,
+                            "真实常数排名不填零",
+                            module,
+                            [
+                                f"test_vwap_real_constant_price_ranks_are_undefined_not_zero[{number}]"
+                            ],
+                        )
+                    )
+            if number in {35, 61, 87, 92, 156}:
+                module = "tests.unit.test_gtja191_linear_decay"
+                checks = [
+                    gate(
+                        evidence,
+                        "独立线性加权公式、默认改参、因果前缀与标的顺序",
+                        module,
+                        [
+                            f"test_decay_independent_defaults_custom_causal_and_order[{size}-{number}]"
+                            for size in ("None", 3, 7)
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "输入缺失、完整窗口、零分母及不跳过缺失分支",
+                        module,
+                        [
+                            f"test_decay_invalid_fields_dates_constant_zero_recovery[{number}]",
+                            "test_decay_hand_weights_missing_branch_and_zero_denominator",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "十股真实不复权冻结行情逐行独立对照",
+                        module,
+                        [
+                            f"test_decay_real_ten_stock_default_values[{number}]",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "中文元数据、默认预热、参数及输入限制、取消",
+                        module,
+                        [
+                            f"test_decay_metadata_reject_single_missing_adjusted_and_cancel[{number}]",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "实际研究原档只读及冻结重算",
+                        module,
+                        [
+                            "test_decay_research_archive_readonly_recompute",
+                        ],
+                    ),
+                ]
+                if number == 61:
+                    checks.append(
+                        gate(
+                            evidence,
+                            "线性加权排名精确并列及变动成员数",
+                            module,
+                            ["test_decay_061_exact_rank_weight_ties_and_changing_membership"],
                         )
                     )
             boundary_cases = {

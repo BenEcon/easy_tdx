@@ -24,7 +24,7 @@ from easy_tdx.computation import computation_checkpoint
 from easy_tdx.factor.base import Factor, PanelFactor, register_factor
 from easy_tdx.factor.panel import FactorPanel, cross_section_rank, observation_index
 
-VERSION = "gtja191-complete-window-v7"
+VERSION = "gtja191-complete-window-v8"
 SOURCE_COMMIT = "43ace2cc4b81d048864ec2e40c25728d5d464e05"
 SOURCE = f"https://github.com/dolphindb/DolphinDBModules/blob/{SOURCE_COMMIT}/gtja191Alpha/src/gtja191Alpha.dos"
 REPORT = "https://guorn.com/static/upload/file/3/134065454575605.pdf"
@@ -1229,6 +1229,78 @@ _vwap_spec(
 )
 
 
+_DECAY_LABELS = {
+    "lag": "价格差分间隔",
+    "price_decay": "价格线性加权窗口",
+    "corr": "相关窗口",
+    "corr_decay": "相关线性加权窗口",
+    "volume_mean": "均量窗口",
+    "ratio_decay": "比值线性加权窗口",
+    "rank": "时序排名窗口",
+    "mix_lag": "混合价格差分间隔",
+    "mix_decay": "混合价格线性加权窗口",
+}
+for _n, _title, _inputs, _formula, _windows, _paths in (
+    (
+        35,
+        "开盘变化与量价相关加权排名",
+        ("open", "volume"),
+        "−min(R(D_price_decay(diff_lag(O))),R(D_corr_decay(corr_corr(V,O))))；原式0.65O+0.35O合并为O",
+        (("lag", 1), ("price_decay", 15), ("corr", 17), ("corr_decay", 7)),
+        ((0, ("lag", "price_decay")), (-1, ("corr", "corr_decay"))),
+    ),
+    (
+        61,
+        "均价变化与低价均量相关加权排名",
+        ("vwap", "low", "volume"),
+        "−max(R(D_price_decay(diff_lag(W))),R(D_corr_decay(R(corr_corr(L,mean_volume_mean(V))))))",
+        (("lag", 1), ("price_decay", 12), ("volume_mean", 80), ("corr", 8), ("corr_decay", 17)),
+        ((0, ("lag", "price_decay")), (-2, ("volume_mean", "corr", "corr_decay"))),
+    ),
+    (
+        87,
+        "均价变化与开盘位置加权排名",
+        ("vwap", "open", "high", "low"),
+        "−R(D_price_decay(diff_lag(W)))−TSRANK_rank(D_ratio_decay((L−W)/(O−(H+L)/2)))；原式0.9L+0.1L合并为L",
+        (("lag", 4), ("price_decay", 7), ("ratio_decay", 11), ("rank", 7)),
+        ((0, ("lag", "price_decay")), (-1, ("ratio_decay", "rank"))),
+    ),
+    (
+        92,
+        "混合均价变化与量价相关强度",
+        ("close", "vwap", "volume"),
+        "−max(R(D_price_decay(diff_lag(0.35C+0.65W))),TSRANK_rank(D_corr_decay(abs(corr_corr(mean_volume_mean(V),C)))))",
+        (
+            ("lag", 2),
+            ("price_decay", 3),
+            ("volume_mean", 180),
+            ("corr", 13),
+            ("corr_decay", 5),
+            ("rank", 15),
+        ),
+        ((0, ("lag", "price_decay")), (-3, ("volume_mean", "corr", "corr_decay", "rank"))),
+    ),
+    (
+        156,
+        "成交均价与混合低价变化排名",
+        ("vwap", "open", "low"),
+        "X=0.15O+0.85L；−max(R(D_price_decay(diff_lag(W))),R(D_mix_decay(−diff_mix_lag(X)/X)))",
+        (("lag", 5), ("price_decay", 3), ("mix_lag", 2), ("mix_decay", 3)),
+        ((0, ("lag", "price_decay")), (0, ("mix_lag", "mix_decay"))),
+    ),
+):
+    _compound(
+        _n,
+        _title,
+        _inputs,
+        _formula + "；R为当期真实股票池排名；D为完整窗口内由旧至新1…w归一线性加权；"
+        "min/max逐元素比较且任一缺失则缺失",
+        tuple(Window(k, v, _DECAY_LABELS[k], 2 if k == "corr" else 1) for k, v in _windows),
+        _paths,
+        panel=True,
+    )
+
+
 def _minimum_window(spec: Spec) -> int:
     return (
         2
@@ -1989,6 +2061,45 @@ def _linear_mean(a: pd.DataFrame, window: int) -> pd.DataFrame:
     return a.replace([np.inf, -np.inf], np.nan).rolling(window).apply(weighted, raw=True)
 
 
+def _linear_rank_mean(a: pd.DataFrame, window: int) -> pd.DataFrame:
+    """Only for percentile ranks: preserve exact weighted ties before ranking again.
+
+    Average-tie percentile ranks have a denominator at most twice pool size,
+    including changing valid membership. Never rationalize raw prices.
+    """
+    bound = 2 * len(a.columns)
+    denominator = window * (window + 1) // 2
+
+    def weighted(values: NDArray[np.float64]) -> float:
+        computation_checkpoint()
+        return float(
+            sum((i + 1) * Fraction(float(x)).limit_denominator(bound) for i, x in enumerate(values))
+            / denominator
+        )
+
+    return a.rolling(window).apply(weighted, raw=True)
+
+
+def _linear_decay(a: pd.DataFrame, window: int) -> pd.DataFrame:
+    """Local compensated sum; keep the legacy 124 arithmetic unchanged."""
+    denominator = window * (window + 1) // 2
+
+    def weighted(values: NDArray[np.float64]) -> float:
+        computation_checkpoint()
+        try:
+            total = fsum((i + 1) * float(x) for i, x in enumerate(values))
+            if np.isfinite(total):
+                return total / denominator
+        except (OverflowError, ValueError):
+            pass
+        scale = float(np.max(np.abs(values)))
+        return (
+            fsum((i + 1) * (float(x) / scale) for i, x in enumerate(values)) / denominator * scale
+        )
+
+    return a.replace([np.inf, -np.inf], np.nan).rolling(window).apply(weighted, raw=True)
+
+
 def _compute_panel_compound(panel: FactorPanel, spec: Spec) -> pd.DataFrame:
     p, n = spec.resolved_parameters, spec.number
     fields = {key: panel.fields[key].copy() for key in spec.inputs}
@@ -2010,6 +2121,7 @@ def _compute_panel_compound(panel: FactorPanel, spec: Spec) -> pd.DataFrame:
     w = fields.get("vwap", empty)
     complete = valid.rolling(spec.warmup).sum().eq(spec.warmup)
     rank, corr, trank = cross_section_rank, _panel_correlation, _panel_time_rank
+    decay = _linear_decay
 
     def span(a: pd.DataFrame, length: int) -> pd.DataFrame:
         return a.where(valid.rolling(length).sum().eq(length))
@@ -2029,6 +2141,40 @@ def _compute_panel_compound(panel: FactorPanel, spec: Spec) -> pd.DataFrame:
             ) * rank(span(v.diff(p["lag"]), p["lag"] + 1))
         elif n == 8:
             result = rank(span(-(0.2 * (h + l) / 2 + 0.8 * w).diff(p["lag"]), p["lag"] + 1))
+        elif n == 35:
+            left = rank(decay(span(o.diff(p["lag"]), p["lag"] + 1), p["price_decay"]))
+            right = rank(decay(corr(v, o, p["corr"]), p["corr_decay"]))
+            result = -np.minimum(left, right)
+        elif n == 61:
+            left = rank(decay(span(w.diff(p["lag"]), p["lag"] + 1), p["price_decay"]))
+            right = rank(
+                _linear_rank_mean(
+                    rank(corr(l, v.rolling(p["volume_mean"]).mean(), p["corr"])), p["corr_decay"]
+                )
+            )
+            result = -np.maximum(left, right)
+        elif n == 87:
+            left = rank(decay(span(w.diff(p["lag"]), p["lag"] + 1), p["price_decay"]))
+            ratio = (l - w) / (o - (h / 2 + l / 2))
+            right = trank(decay(ratio, p["ratio_decay"]), p["rank"])
+            result = -(left + right)
+        elif n == 92:
+            mix = 0.35 * c + 0.65 * w
+            left = rank(decay(span(mix.diff(p["lag"]), p["lag"] + 1), p["price_decay"]))
+            right = trank(
+                decay(
+                    corr(v.rolling(p["volume_mean"]).mean(), c, p["corr"]).abs(), p["corr_decay"]
+                ),
+                p["rank"],
+            )
+            result = -np.maximum(left, right)
+        elif n == 156:
+            mix = 0.15 * o + 0.85 * l
+            left = rank(decay(span(w.diff(p["lag"]), p["lag"] + 1), p["price_decay"]))
+            right = rank(
+                decay(span(-mix.diff(p["mix_lag"]) / mix, p["mix_lag"] + 1), p["mix_decay"])
+            )
+            result = -np.maximum(left, right)
         elif n == 12:
             result = -rank(o - w.rolling(p["mean"]).mean()) * rank((c - w).abs())
         elif n == 16:
@@ -2210,6 +2356,11 @@ def definition_metadata(
         "unavailable_reason": "需要股票池截面检验" if spec.panel else "",
         "evaluation_unavailable_reason": "",
         "data_requirements": list(spec.inputs),
+        "adjustment_unavailable_reason": (
+            "VWAP仅支持不复权：需同根实际成交额与实际股数；不能用收盘价或复权比例替代"
+            if "vwap" in spec.inputs
+            else ""
+        ),
         "supported_adjustments": ["NONE"] if "vwap" in spec.inputs else ["NONE", "QFQ", "HFQ"],
         "limitations": [
             "GTJA191 完整窗口适配；不是逐位复现参考软件。未实现编号不登记为可选项。",
@@ -2219,6 +2370,21 @@ def definition_metadata(
             "006 的加权价格符号用输入浮点数往返十进制值比较，避免浮点消减噪音将相等值拆成涨跌。",
             "049—051 与128的价格和方向使用往返十进制比较；相等不计为上涨或下跌。",
             "成交量 V 为已核验的实际股数，不随价格复权逆向缩放；三价均值乘量不等于实际成交额。",
+            *(
+                [
+                    "007遵循因子表括号：先相加两个排名，再乘量变排名；固定参考模块漏括号的运算优先级未沿用。"
+                ]
+                if spec.number == 7
+                else []
+            ),
+            *(
+                [
+                    "原报告算子表把MIN/MAX定义为两值比较，但本式使用MIN/MAX(序列,整数)，与窗口写法混用。"
+                    "本App显式采用滚动窗口解释（TSMIN/TSMAX），不是逐项与常数比较；不声称歧义已有唯一原文结论。"
+                ]
+                if spec.number in {7, 17, 41, 108, 154}
+                else []
+            ),
             *(
                 [
                     "W为独立核验实际成交额/实际股数的VWAP，仅支持不复权；零成交量均价为空，不用收盘价替代。",

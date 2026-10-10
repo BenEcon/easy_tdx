@@ -1,0 +1,109 @@
+......F....F....F....F...FFFFF.                                          [100%]
+=================================== FAILURES ===================================
+________ test_decay_independent_defaults_custom_causal_and_order[3-61] _________
+tests/unit/test_gtja191_linear_decay.py:140: in test_decay_independent_defaults_custom_causal_and_order
+    np.testing.assert_allclose(out, independent(data, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 40 / 1250 (3.2%)
+E   Max absolute difference among violations: 0.2
+E   Max relative difference among violations: 0.33333333
+E    ACTUAL: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...
+E    DESIRED: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...
+________ test_decay_independent_defaults_custom_causal_and_order[7-61] _________
+tests/unit/test_gtja191_linear_decay.py:140: in test_decay_independent_defaults_custom_causal_and_order
+    np.testing.assert_allclose(out, independent(data, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 11 / 1250 (0.88%)
+E   Max absolute difference among violations: 0.2
+E   Max relative difference among violations: 0.33333333
+E    ACTUAL: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...
+E    DESIRED: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...
+__________ test_decay_invalid_fields_dates_constant_zero_recovery[61] __________
+tests/unit/test_gtja191_linear_decay.py:160: in test_decay_invalid_fields_dates_constant_zero_recovery
+    np.testing.assert_allclose(out, independent(changed, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 6 / 350 (1.71%)
+E   Max absolute difference among violations: 0.2
+E   Max relative difference among violations: 0.33333333
+E    ACTUAL: array([[      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],...
+E    DESIRED: array([[      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],...
+_________________ test_decay_real_ten_stock_default_values[61] _________________
+tests/unit/test_gtja191_linear_decay.py:190: in test_decay_real_ten_stock_default_values
+    np.testing.assert_allclose(out, independent(data, n, DEFAULTS[n]), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 5 / 3200 (0.156%)
+E   Max absolute difference among violations: 0.05
+E   Max relative difference among violations: 0.1
+E    ACTUAL: array([[ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],...
+E    DESIRED: array([[ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],...
+______ test_decay_metadata_reject_single_missing_adjusted_and_cancel[35] _______
+tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'
+______ test_decay_metadata_reject_single_missing_adjusted_and_cancel[61] _______
+tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'
+______ test_decay_metadata_reject_single_missing_adjusted_and_cancel[87] _______
+tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'
+______ test_decay_metadata_reject_single_missing_adjusted_and_cancel[92] _______
+tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'
+______ test_decay_metadata_reject_single_missing_adjusted_and_cancel[156] ______
+tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_independent_defaults_custom_causal_and_order[3-61]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_independent_defaults_custom_causal_and_order[7-61]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_invalid_fields_dates_constant_zero_recovery[61]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_real_ten_stock_default_values[61]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_metadata_reject_single_missing_adjusted_and_cancel[35]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_metadata_reject_single_missing_adjusted_and_cancel[61]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_metadata_reject_single_missing_adjusted_and_cancel[87]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_metadata_reject_single_missing_adjusted_and_cancel[92]
+FAILED tests/unit/test_gtja191_linear_decay.py::test_decay_metadata_reject_single_missing_adjusted_and_cancel[156]
+9 failed, 22 passed, 1 warning in 8.85s

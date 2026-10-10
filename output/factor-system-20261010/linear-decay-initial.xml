@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="9" skipped="0" tests="31" time="8.824" timestamp="2026-10-10T15:06:28.561320+08:00" hostname="BowenECON.local"><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[None-35]" time="0.984" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[None-61]" time="0.299" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[None-87]" time="0.062" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[None-92]" time="0.218" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[None-156]" time="0.055" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[3-35]" time="0.168" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[3-61]" time="0.127"><failure message="AssertionError: &#10;Not equal to tolerance rtol=1e-07, atol=2e-10&#10;&#10;Mismatched elements: 40 / 1250 (3.2%)&#10;Max absolute difference among violations: 0.2&#10;Max relative difference among violations: 0.33333333&#10; ACTUAL: array([[ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],...&#10; DESIRED: array([[ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],...">tests/unit/test_gtja191_linear_decay.py:140: in test_decay_independent_defaults_custom_causal_and_order
+    np.testing.assert_allclose(out, independent(data, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 40 / 1250 (3.2%)
+E   Max absolute difference among violations: 0.2
+E   Max relative difference among violations: 0.33333333
+E    ACTUAL: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...
+E    DESIRED: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[3-87]" time="0.060" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[3-92]" time="0.181" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[3-156]" time="0.052" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[7-35]" time="0.309" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[7-61]" time="0.271"><failure message="AssertionError: &#10;Not equal to tolerance rtol=1e-07, atol=2e-10&#10;&#10;Mismatched elements: 11 / 1250 (0.88%)&#10;Max absolute difference among violations: 0.2&#10;Max relative difference among violations: 0.33333333&#10; ACTUAL: array([[ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],...&#10; DESIRED: array([[ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan,  nan,  nan],...">tests/unit/test_gtja191_linear_decay.py:140: in test_decay_independent_defaults_custom_causal_and_order
+    np.testing.assert_allclose(out, independent(data, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 11 / 1250 (0.88%)
+E   Max absolute difference among violations: 0.2
+E   Max relative difference among violations: 0.33333333
+E    ACTUAL: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...
+E    DESIRED: array([[ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],
+E          [ nan,  nan,  nan,  nan,  nan],...</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[7-87]" time="0.062" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[7-92]" time="0.323" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_independent_defaults_custom_causal_and_order[7-156]" time="0.056" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_invalid_fields_dates_constant_zero_recovery[35]" time="0.104" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_invalid_fields_dates_constant_zero_recovery[61]" time="0.042"><failure message="AssertionError: &#10;Not equal to tolerance rtol=1e-07, atol=2e-10&#10;&#10;Mismatched elements: 6 / 350 (1.71%)&#10;Max absolute difference among violations: 0.2&#10;Max relative difference among violations: 0.33333333&#10; ACTUAL: array([[      nan,       nan,       nan,       nan,       nan],&#10;       [      nan,       nan,       nan,       nan,       nan],&#10;       [      nan,       nan,       nan,       nan,       nan],...&#10; DESIRED: array([[      nan,       nan,       nan,       nan,       nan],&#10;       [      nan,       nan,       nan,       nan,       nan],&#10;       [      nan,       nan,       nan,       nan,       nan],...">tests/unit/test_gtja191_linear_decay.py:160: in test_decay_invalid_fields_dates_constant_zero_recovery
+    np.testing.assert_allclose(out, independent(changed, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 6 / 350 (1.71%)
+E   Max absolute difference among violations: 0.2
+E   Max relative difference among violations: 0.33333333
+E    ACTUAL: array([[      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],...
+E    DESIRED: array([[      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan],...</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_invalid_fields_dates_constant_zero_recovery[87]" time="0.073" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_invalid_fields_dates_constant_zero_recovery[92]" time="0.167" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_invalid_fields_dates_constant_zero_recovery[156]" time="0.055" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_real_ten_stock_default_values[35]" time="2.253" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_real_ten_stock_default_values[61]" time="0.838"><failure message="AssertionError: &#10;Not equal to tolerance rtol=1e-07, atol=2e-10&#10;&#10;Mismatched elements: 5 / 3200 (0.156%)&#10;Max absolute difference among violations: 0.05&#10;Max relative difference among violations: 0.1&#10; ACTUAL: array([[ nan,  nan,  nan, ...,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan, ...,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan, ...,  nan,  nan,  nan],...&#10; DESIRED: array([[ nan,  nan,  nan, ...,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan, ...,  nan,  nan,  nan],&#10;       [ nan,  nan,  nan, ...,  nan,  nan,  nan],...">tests/unit/test_gtja191_linear_decay.py:190: in test_decay_real_ten_stock_default_values
+    np.testing.assert_allclose(out, independent(data, n, DEFAULTS[n]), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 5 / 3200 (0.156%)
+E   Max absolute difference among violations: 0.05
+E   Max relative difference among violations: 0.1
+E    ACTUAL: array([[ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],...
+E    DESIRED: array([[ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],
+E          [ nan,  nan,  nan, ...,  nan,  nan,  nan],...</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_real_ten_stock_default_values[87]" time="0.180" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_real_ten_stock_default_values[92]" time="0.851" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_real_ten_stock_default_values[156]" time="0.165" /><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_metadata_reject_single_missing_adjusted_and_cancel[35]" time="0.004"><failure message="AttributeError: 'str' object has no attribute 'name'">tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_metadata_reject_single_missing_adjusted_and_cancel[61]" time="0.002"><failure message="AttributeError: 'str' object has no attribute 'name'">tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_metadata_reject_single_missing_adjusted_and_cancel[87]" time="0.003"><failure message="AttributeError: 'str' object has no attribute 'name'">tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_metadata_reject_single_missing_adjusted_and_cancel[92]" time="0.003"><failure message="AttributeError: 'str' object has no attribute 'name'">tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_metadata_reject_single_missing_adjusted_and_cancel[156]" time="0.002"><failure message="AttributeError: 'str' object has no attribute 'name'">tests/unit/test_gtja191_linear_decay.py:207: in test_decay_metadata_reject_single_missing_adjusted_and_cancel
+    metadata = describe_factor(f"gtja191_{n:03d}")
+src/easy_tdx/factor/catalog.py:113: in describe_factor
+    name = cls.name
+E   AttributeError: 'str' object has no attribute 'name'</failure></testcase><testcase classname="tests.unit.test_gtja191_linear_decay" name="test_decay_hand_weights_missing_branch_and_zero_denominator" time="0.013" /></testsuite></testsuites>

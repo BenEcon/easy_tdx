@@ -412,12 +412,13 @@ def test_panel_frozen_three_stock_all_adjustments(n, adjust):
 
 
 def test_panel_named_parameters_catalog_and_no_single_stock_substitute():
+    from tests.unit.test_gtja191_linear_decay import DEFAULTS as DECAY_DEFAULTS
     from tests.unit.test_gtja191_vwap import DEFAULTS as VWAP_DEFAULTS
     from tests.unit.test_gtja191_vwap import SERIES
 
-    assert {n for n, s in SPECS.items() if s.panel and s.windows} == set(DEFAULTS) | (
-        set(VWAP_DEFAULTS) - SERIES - {120}
-    )
+    assert {n for n, s in SPECS.items() if s.panel and s.windows} == set(DEFAULTS) | set(
+        DECAY_DEFAULTS
+    ) | (set(VWAP_DEFAULTS) - SERIES - {120})
     for n, p in DEFAULTS.items():
         factor = configure_factor(f"gtja191_{n:03d}")
         assert factor.spec.resolved_parameters == p and factor.spec.warmup == WARMUP[n]

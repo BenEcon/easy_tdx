@@ -1,0 +1,23 @@
+....F
+=================================== FAILURES ===================================
+_________ test_vwap_long_real_default_windows_have_observed_values[16] _________
+tests/unit/test_gtja191_vwap.py:536: in test_vwap_long_real_default_windows_have_observed_values
+    assert values.notna().any().any(), "Default formula must produce actual post-warmup evidence"
+E   AssertionError: Default formula must produce actual post-warmup evidence
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = 000001    False\n300750    False\n600036    False\ndtype: bool.any
+E    +      where 000001    False\n300750    False\n600036    False\ndtype: bool = any()
+E    +        where any =             000001  300750  600036\n2025-06-16   False   False   False\n2025-06-17   False   False   False\n2025-06-18   ...0   False   False   False\n2026-10-08   False   False   False\n2026-10-09   False   False   False\n\n[320 rows x 3 columns].any
+E    +          where             000001  300750  600036\n2025-06-16   False   False   False\n2025-06-17   False   False   False\n2025-06-18   ...0   False   False   False\n2026-10-08   False   False   False\n2026-10-09   False   False   False\n\n[320 rows x 3 columns] = notna()
+E    +            where notna =             000001  300750  600036\n2025-06-16     NaN     NaN     NaN\n2025-06-17     NaN     NaN     NaN\n2025-06-18   ...0     NaN     NaN     NaN\n2026-10-08     NaN     NaN     NaN\n2026-10-09     NaN     NaN     NaN\n\n[320 rows x 3 columns].notna
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_vwap.py::test_vwap_long_real_default_windows_have_observed_values[16]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 4 passed, 144 deselected, 1 warning in 1.85s

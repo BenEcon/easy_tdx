@@ -17,7 +17,12 @@ from tempfile import TemporaryDirectory
 from zoneinfo import ZoneInfo
 
 
-async def acquire(output: Path) -> None:
+async def acquire(
+    output: Path,
+    count: int = 160,
+    adjustments: tuple[str, ...] = ("NONE", "QFQ", "HFQ"),
+    stocks: list[str] | None = None,
+) -> None:
     from easy_tdx.mac.client import AsyncMacClient
     from easy_tdx.mac.enums import Adjust, Period
 
@@ -25,13 +30,19 @@ async def acquire(output: Path) -> None:
     client = AsyncMacClient("121.36.248.138", timeout=4, auto_reconnect=False)
     try:
         await asyncio.wait_for(client.connect(), 15)
-        for market, code, period in [
-            (0, "000001", Period.DAILY),
-            (0, "300750", Period.DAILY),
-            (1, "600036", Period.DAILY),
-            (0, "300750", Period.MIN_30),
-        ]:
-            for adjust in (Adjust.NONE, Adjust.QFQ, Adjust.HFQ):
+        samples = (
+            [
+                (0, "000001", Period.DAILY),
+                (0, "300750", Period.DAILY),
+                (1, "600036", Period.DAILY),
+                (0, "300750", Period.MIN_30),
+            ]
+            if stocks is None
+            else [(int(s.split(":")[0]), s.split(":")[1], Period[s.split(":")[2]]) for s in stocks]
+        )
+        for market, code, period in samples:
+            for name in adjustments:
+                adjust = Adjust[name]
                 path = output / f"{market}-{code}-{period.name}-{adjust.name}.json"
                 if path.exists():
                     raise FileExistsError(f"Refusing to overwrite {path}")
@@ -40,7 +51,7 @@ async def acquire(output: Path) -> None:
                         market,
                         code,
                         period,
-                        count=160,
+                        count=count,
                         adjust=adjust,
                         bar_time="start",
                     ),
@@ -63,6 +74,7 @@ async def acquire(output: Path) -> None:
                     "adjust": adjust.name,
                     "observed_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat(),
                     "historical_data_vintage": False,
+                    "requested_count": count,
                     "attributes": frame.attrs,
                     "bars_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
                     "bars": rows,
@@ -77,10 +89,27 @@ async def acquire(output: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--count", type=int, default=160)
+    parser.add_argument("--adjust", choices=("NONE", "QFQ", "HFQ"), action="append")
+    parser.add_argument("--stock", action="append", help="Explicit market:code:period, at most 20")
     args = parser.parse_args()
+    if not 1 <= args.count <= 800:
+        parser.error("count must be between 1 and 800; no silent truncation")
+    adjustments = tuple(args.adjust or ("NONE", "QFQ", "HFQ"))
+    if len(set(adjustments)) != len(adjustments):
+        parser.error("duplicate adjustments are not allowed")
+    if args.stock:
+        import re
+
+        if (
+            len(args.stock) > 20
+            or len(set(args.stock)) != len(args.stock)
+            or any(not re.fullmatch(r"[01]:[0-9]{6}:(DAILY|MIN_30)", s) for s in args.stock)
+        ):
+            parser.error("stock must be unique market:6-digit-code:DAILY/MIN_30, at most 20")
     with TemporaryDirectory(prefix="factor-unit-config-") as config:
         os.environ["EASY_TDX_CONFIG_DIR"] = config
-        asyncio.run(acquire(args.output))
+        asyncio.run(acquire(args.output, args.count, adjustments, args.stock))
 
 
 if __name__ == "__main__":

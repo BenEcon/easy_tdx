@@ -5,8 +5,11 @@ No production rolling/ranking/formula helper is used to produce expected values.
 """
 
 import copy
+import hashlib
+import json
 import math
 import statistics
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -495,5 +498,68 @@ async def test_vwap_panel_real_evaluation_freeze_readonly_and_recompute(monkeypa
 
 
 def test_vwap_inventory_not_panel_substitutes():
-    assert {n for n, s in SPECS.items() if "vwap" in s.inputs} == set(DEFAULTS)
+    assert {n for n, s in SPECS.items() if "vwap" in s.inputs} == set(DEFAULTS) | {61, 87, 92, 156}
     assert {n for n in DEFAULTS if not SPECS[n].panel} == SERIES
+
+
+def long_frozen(name):
+    root = Path(__file__).parents[1] / "fixtures/factor_vwap_long"
+    hashes = dict(line.split()[::-1] for line in (root / "SHA256SUMS").read_text().splitlines())
+    raw = (root / name).read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == hashes[name]
+    payload = json.loads(raw)
+    encoded = json.dumps(payload["bars"], ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    assert hashlib.sha256(encoded.encode()).hexdigest() == payload["bars_sha256"]
+    assert payload["source"] == "MAC" and payload["adjust"] == "NONE"
+    assert payload["requested_count"] == len(payload["bars"]) == 320
+    frame = pd.DataFrame(payload["bars"])
+    frame["datetime"] = pd.to_datetime(frame.datetime)
+    frame.attrs["snapshot_metadata"] = dict(
+        source="MAC",
+        actual_adjust="NONE",
+        category="DAY" if payload["period"] == "DAILY" else payload["period"],
+        observed_at=payload["observed_at"],
+    )
+    return qualify_factor_fields(frame, frame, need_vwap=True)
+
+
+@pytest.mark.parametrize("n", sorted(DEFAULTS))
+def test_vwap_long_real_default_windows_have_observed_values(n):
+    data = {
+        code: long_frozen(f"{market}-{code}-DAILY-NONE.json")
+        for market, code in [
+            (0, "000001"),
+            (0, "300750"),
+            (1, "600036"),
+            (0, "000002"),
+            (0, "000100"),
+            (0, "000725"),
+            (1, "600050"),
+            (1, "600000"),
+            (1, "600015"),
+            (1, "601998"),
+        ]
+    }
+    values = calculate(data, n)
+    np.testing.assert_allclose(
+        values, independent(data, n, DEFAULTS[n]), atol=2e-10, rtol=2e-8, equal_nan=True
+    )
+    assert values.notna().any().any(), "Default formula must produce actual post-warmup evidence"
+    if n in SERIES:
+        data = {"300750": long_frozen("0-300750-MIN_30-NONE.json")}
+        values = calculate(data, n)
+        np.testing.assert_allclose(
+            values, independent(data, n, DEFAULTS[n]), atol=2e-10, rtol=2e-8, equal_nan=True
+        )
+        assert values.notna().any().any()
+
+
+@pytest.mark.parametrize("n", [16, 36, 90, 179])
+def test_vwap_real_constant_price_ranks_are_undefined_not_zero(n):
+    data = {
+        code: long_frozen(f"{market}-{code}-DAILY-NONE.json")
+        for market, code in [(0, "000001"), (0, "300750"), (1, "600036")]
+    }
+    values = calculate(data, n)
+    np.testing.assert_allclose(values, independent(data, n, DEFAULTS[n]), equal_nan=True)
+    assert values.isna().all().all()
