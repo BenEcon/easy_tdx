@@ -1,0 +1,4877 @@
+{
+  "schema": "alpha-reference-interface-audit-v2",
+  "reference_repository": "https://github.com/dolphindb/DolphinDBModules",
+  "reference_commit": "43ace2cc4b81d048864ec2e40c25728d5d464e05",
+  "reference_license": "Apache-2.0",
+  "license_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+  "scope": "Interface inventory only; not original-formula validation or redistribution clearance",
+  "libraries": {
+    "alpha101": {
+      "path": "wq101alpha/src/wq101alpha.dos",
+      "sha256": "ae7a52198542aa879d00d7f97a6281e036af116fcbb6c82fa95308021235f64a",
+      "interfaces": 101,
+      "implemented_in_app": 0,
+      "entries": [
+        {
+          "number": 1,
+          "reference_function": "WQAlpha1",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 21,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 2,
+          "reference_function": "WQAlpha2",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "open"
+          ],
+          "reference_line": 31,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 3,
+          "reference_function": "WQAlpha3",
+          "reference_inputs": [
+            "vol",
+            "open"
+          ],
+          "reference_line": 42,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 4,
+          "reference_function": "WQAlpha4",
+          "reference_inputs": [
+            "low"
+          ],
+          "reference_line": 51,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 5,
+          "reference_function": "WQAlpha5",
+          "reference_inputs": [
+            "vwap",
+            "open",
+            "close"
+          ],
+          "reference_line": 60,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 6,
+          "reference_function": "WQAlpha6",
+          "reference_inputs": [
+            "vol",
+            "open"
+          ],
+          "reference_line": 71,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 7,
+          "reference_function": "WQAlpha7",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 79,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 8,
+          "reference_function": "WQAlpha8",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 89,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 9,
+          "reference_function": "WQAlpha9",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 99,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 10,
+          "reference_function": "WQAlpha10",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 110,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 11,
+          "reference_function": "WQAlpha11",
+          "reference_inputs": [
+            "vwap",
+            "vol",
+            "close"
+          ],
+          "reference_line": 121,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 12,
+          "reference_function": "WQAlpha12",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 134,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 13,
+          "reference_function": "WQAlpha13",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 143,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 14,
+          "reference_function": "WQAlpha14",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "close"
+          ],
+          "reference_line": 152,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 15,
+          "reference_function": "WQAlpha15",
+          "reference_inputs": [
+            "vol",
+            "high"
+          ],
+          "reference_line": 163,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 16,
+          "reference_function": "WQAlpha16",
+          "reference_inputs": [
+            "vol",
+            "high"
+          ],
+          "reference_line": 172,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 17,
+          "reference_function": "WQAlpha17",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 181,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 18,
+          "reference_function": "WQAlpha18",
+          "reference_inputs": [
+            "close",
+            "open"
+          ],
+          "reference_line": 193,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 19,
+          "reference_function": "WQAlpha19",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 202,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 20,
+          "reference_function": "WQAlpha20",
+          "reference_inputs": [
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 211,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 21,
+          "reference_function": "WQAlpha21",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 223,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 22,
+          "reference_function": "WQAlpha22",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "high"
+          ],
+          "reference_line": 235,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 23,
+          "reference_function": "WQAlpha23",
+          "reference_inputs": [
+            "high"
+          ],
+          "reference_line": 245,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 24,
+          "reference_function": "WQAlpha24",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 255,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 25,
+          "reference_function": "WQAlpha25",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "high",
+            "vwap"
+          ],
+          "reference_line": 265,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 26,
+          "reference_function": "WQAlpha26",
+          "reference_inputs": [
+            "vol",
+            "high"
+          ],
+          "reference_line": 274,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 27,
+          "reference_function": "WQAlpha27",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 283,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 28,
+          "reference_function": "WQAlpha28",
+          "reference_inputs": [
+            "vol",
+            "high",
+            "low",
+            "close"
+          ],
+          "reference_line": 292,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 29,
+          "reference_function": "WQAlpha29",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 302,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 30,
+          "reference_function": "WQAlpha30",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 314,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 31,
+          "reference_function": "WQAlpha31",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "low"
+          ],
+          "reference_line": 324,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 32,
+          "reference_function": "WQAlpha32",
+          "reference_inputs": [
+            "close",
+            "vwap"
+          ],
+          "reference_line": 338,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 33,
+          "reference_function": "WQAlpha33",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 351,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 34,
+          "reference_function": "WQAlpha34",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 360,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 35,
+          "reference_function": "WQAlpha35",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 369,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 36,
+          "reference_function": "WQAlpha36",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "close",
+            "vwap"
+          ],
+          "reference_line": 378,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 37,
+          "reference_function": "WQAlpha37",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 387,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 38,
+          "reference_function": "WQAlpha38",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 396,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 39,
+          "reference_function": "WQAlpha39",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 405,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 40,
+          "reference_function": "WQAlpha40",
+          "reference_inputs": [
+            "vol",
+            "high"
+          ],
+          "reference_line": 415,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 41,
+          "reference_function": "WQAlpha41",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vwap"
+          ],
+          "reference_line": 422,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 42,
+          "reference_function": "WQAlpha42",
+          "reference_inputs": [
+            "vwap",
+            "close"
+          ],
+          "reference_line": 429,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 43,
+          "reference_function": "WQAlpha43",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 438,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 44,
+          "reference_function": "WQAlpha44",
+          "reference_inputs": [
+            "vol",
+            "high"
+          ],
+          "reference_line": 447,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 45,
+          "reference_function": "WQAlpha45",
+          "reference_inputs": [
+            "vol",
+            "close"
+          ],
+          "reference_line": 456,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 46,
+          "reference_function": "WQAlpha46",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 465,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 47,
+          "reference_function": "WQAlpha47",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "high",
+            "vwap"
+          ],
+          "reference_line": 475,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 48,
+          "reference_function": "WQAlpha48",
+          "reference_inputs": [
+            "close",
+            "indclass"
+          ],
+          "reference_line": 855,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 49,
+          "reference_function": "WQAlpha49",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 484,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 50,
+          "reference_function": "WQAlpha50",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 494,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 51,
+          "reference_function": "WQAlpha51",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 503,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 52,
+          "reference_function": "WQAlpha52",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "low"
+          ],
+          "reference_line": 513,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 53,
+          "reference_function": "WQAlpha53",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 522,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 54,
+          "reference_function": "WQAlpha54",
+          "reference_inputs": [
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 531,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 55,
+          "reference_function": "WQAlpha55",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 540,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 56,
+          "reference_function": "WQAlpha56",
+          "reference_inputs": [
+            "close",
+            "cap"
+          ],
+          "reference_line": 866,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "historical_market_cap_with_units",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_cap_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 57,
+          "reference_function": "WQAlpha57",
+          "reference_inputs": [
+            "close",
+            "vwap"
+          ],
+          "reference_line": 549,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 58,
+          "reference_function": "WQAlpha58",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 877,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 59,
+          "reference_function": "WQAlpha59",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 887,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 60,
+          "reference_function": "WQAlpha60",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 558,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 61,
+          "reference_function": "WQAlpha61",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 571,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 62,
+          "reference_function": "WQAlpha62",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "open",
+            "high",
+            "low"
+          ],
+          "reference_line": 580,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 63,
+          "reference_function": "WQAlpha63",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "close",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 897,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 64,
+          "reference_function": "WQAlpha64",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "open",
+            "high",
+            "low"
+          ],
+          "reference_line": 589,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 65,
+          "reference_function": "WQAlpha65",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "open"
+          ],
+          "reference_line": 601,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 66,
+          "reference_function": "WQAlpha66",
+          "reference_inputs": [
+            "vwap",
+            "high",
+            "low",
+            "open"
+          ],
+          "reference_line": 612,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 67,
+          "reference_function": "WQAlpha67",
+          "reference_inputs": [
+            "vol",
+            "high",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 909,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 68,
+          "reference_function": "WQAlpha68",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 621,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 69,
+          "reference_function": "WQAlpha69",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 921,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 70,
+          "reference_function": "WQAlpha70",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 933,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 71,
+          "reference_function": "WQAlpha71",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "close",
+            "open",
+            "low"
+          ],
+          "reference_line": 633,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 72,
+          "reference_function": "WQAlpha72",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "high",
+            "low"
+          ],
+          "reference_line": 646,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 73,
+          "reference_function": "WQAlpha73",
+          "reference_inputs": [
+            "vwap",
+            "open",
+            "low"
+          ],
+          "reference_line": 657,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 74,
+          "reference_function": "WQAlpha74",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "close",
+            "high"
+          ],
+          "reference_line": 670,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 75,
+          "reference_function": "WQAlpha75",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "low"
+          ],
+          "reference_line": 681,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 76,
+          "reference_function": "WQAlpha76",
+          "reference_inputs": [
+            "vol",
+            "low",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 945,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 77,
+          "reference_function": "WQAlpha77",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "high",
+            "low"
+          ],
+          "reference_line": 690,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 78,
+          "reference_function": "WQAlpha78",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "low"
+          ],
+          "reference_line": 701,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 79,
+          "reference_function": "WQAlpha79",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "close",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 958,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 80,
+          "reference_function": "WQAlpha80",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "high",
+            "indclass"
+          ],
+          "reference_line": 970,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 81,
+          "reference_function": "WQAlpha81",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 712,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 82,
+          "reference_function": "WQAlpha82",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "indclass"
+          ],
+          "reference_line": 983,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 83,
+          "reference_function": "WQAlpha83",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 723,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 84,
+          "reference_function": "WQAlpha84",
+          "reference_inputs": [
+            "vwap",
+            "close"
+          ],
+          "reference_line": 732,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 85,
+          "reference_function": "WQAlpha85",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 741,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 86,
+          "reference_function": "WQAlpha86",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "open",
+            "close"
+          ],
+          "reference_line": 752,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 87,
+          "reference_function": "WQAlpha87",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 996,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 88,
+          "reference_function": "WQAlpha88",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 763,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 89,
+          "reference_function": "WQAlpha89",
+          "reference_inputs": [
+            "vol",
+            "low",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 1009,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 90,
+          "reference_function": "WQAlpha90",
+          "reference_inputs": [
+            "vol",
+            "low",
+            "close",
+            "indclass"
+          ],
+          "reference_line": 1019,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 91,
+          "reference_function": "WQAlpha91",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 1032,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 92,
+          "reference_function": "WQAlpha92",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 774,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 93,
+          "reference_function": "WQAlpha93",
+          "reference_inputs": [
+            "vol",
+            "close",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 1044,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 94,
+          "reference_function": "WQAlpha94",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 785,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 95,
+          "reference_function": "WQAlpha95",
+          "reference_inputs": [
+            "vol",
+            "open",
+            "high",
+            "low"
+          ],
+          "reference_line": 796,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 96,
+          "reference_function": "WQAlpha96",
+          "reference_inputs": [
+            "vol",
+            "vwap",
+            "close"
+          ],
+          "reference_line": 807,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 97,
+          "reference_function": "WQAlpha97",
+          "reference_inputs": [
+            "vol",
+            "low",
+            "vwap",
+            "indclass"
+          ],
+          "reference_line": 1056,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 98,
+          "reference_function": "WQAlpha98",
+          "reference_inputs": [
+            "vwap",
+            "open",
+            "vol"
+          ],
+          "reference_line": 818,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 99,
+          "reference_function": "WQAlpha99",
+          "reference_inputs": [
+            "vol",
+            "high",
+            "low"
+          ],
+          "reference_line": 827,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 100,
+          "reference_function": "WQAlpha100",
+          "reference_inputs": [
+            "vol",
+            "high",
+            "low",
+            "close",
+            "indclass"
+          ],
+          "reference_line": 1069,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "historical_industry_membership_and_classification_levels",
+            "explicit_universe_and_exact_timestamp_alignment",
+            "reference_uses_first_industry_row_not_point_in_time"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 101,
+          "reference_function": "WQAlpha101",
+          "reference_inputs": [
+            "close",
+            "open",
+            "high",
+            "low"
+          ],
+          "reference_line": 838,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        }
+      ]
+    },
+    "gtja191": {
+      "path": "gtja191Alpha/src/gtja191Alpha.dos",
+      "sha256": "e3d93adcdacff263795b8f0b97de1b806ce3666b118f7819af59d9ef5ff98543",
+      "interfaces": 191,
+      "implemented_in_app": 0,
+      "entries": [
+        {
+          "number": 1,
+          "reference_function": "gtjaAlpha1",
+          "reference_inputs": [
+            "open",
+            "close",
+            "vol"
+          ],
+          "reference_line": 21,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 2,
+          "reference_function": "gtjaAlpha2",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 30,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 3,
+          "reference_function": "gtjaAlpha3",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 39,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 4,
+          "reference_function": "gtjaAlpha4",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 48,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 5,
+          "reference_function": "gtjaAlpha5",
+          "reference_inputs": [
+            "high",
+            "vol"
+          ],
+          "reference_line": 60,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 6,
+          "reference_function": "gtjaAlpha6",
+          "reference_inputs": [
+            "open",
+            "high"
+          ],
+          "reference_line": 68,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 7,
+          "reference_function": "gtjaAlpha7",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 77,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 8,
+          "reference_function": "gtjaAlpha8",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vwap"
+          ],
+          "reference_line": 85,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 9,
+          "reference_function": "gtjaAlpha9",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 94,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 10,
+          "reference_function": "gtjaAlpha10",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 103,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 11,
+          "reference_function": "gtjaAlpha11",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 111,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 12,
+          "reference_function": "gtjaAlpha12",
+          "reference_inputs": [
+            "open",
+            "close",
+            "vwap"
+          ],
+          "reference_line": 119,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 13,
+          "reference_function": "gtjaAlpha13",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vwap"
+          ],
+          "reference_line": 127,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 14,
+          "reference_function": "gtjaAlpha14",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 135,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 15,
+          "reference_function": "gtjaAlpha15",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 143,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 16,
+          "reference_function": "gtjaAlpha16",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 151,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 17,
+          "reference_function": "gtjaAlpha17",
+          "reference_inputs": [
+            "close",
+            "vwap"
+          ],
+          "reference_line": 159,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 18,
+          "reference_function": "gtjaAlpha18",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 167,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 19,
+          "reference_function": "gtjaAlpha19",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 175,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 20,
+          "reference_function": "gtjaAlpha20",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 183,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 21,
+          "reference_function": "gtjaAlpha21",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 191,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 22,
+          "reference_function": "gtjaAlpha22",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 200,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 23,
+          "reference_function": "gtjaAlpha23",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 209,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 24,
+          "reference_function": "gtjaAlpha24",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 219,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 25,
+          "reference_function": "gtjaAlpha25",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 228,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 26,
+          "reference_function": "gtjaAlpha26",
+          "reference_inputs": [
+            "close",
+            "vwap"
+          ],
+          "reference_line": 236,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 27,
+          "reference_function": "gtjaAlpha27",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 244,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 28,
+          "reference_function": "gtjaAlpha28",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 252,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 29,
+          "reference_function": "gtjaAlpha29",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 262,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 30,
+          "reference_function": "gtjaAlpha30",
+          "reference_inputs": [
+            "close",
+            "index_close",
+            "MKT",
+            "SMB",
+            "HML"
+          ],
+          "reference_line": 272,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "timestamp_aligned_benchmark_close",
+            "timestamp_aligned_market_risk_factor",
+            "timestamp_aligned_size_risk_factor",
+            "timestamp_aligned_value_risk_factor"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 31,
+          "reference_function": "gtjaAlpha31",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 280,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 32,
+          "reference_function": "gtjaAlpha32",
+          "reference_inputs": [
+            "high",
+            "vol"
+          ],
+          "reference_line": 288,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 33,
+          "reference_function": "gtjaAlpha33",
+          "reference_inputs": [
+            "close",
+            "low",
+            "vol"
+          ],
+          "reference_line": 296,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 34,
+          "reference_function": "gtjaAlpha34",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 304,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 35,
+          "reference_function": "gtjaAlpha35",
+          "reference_inputs": [
+            "open",
+            "vol"
+          ],
+          "reference_line": 312,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 36,
+          "reference_function": "gtjaAlpha36",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 320,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 37,
+          "reference_function": "gtjaAlpha37",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 328,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 38,
+          "reference_function": "gtjaAlpha38",
+          "reference_inputs": [
+            "high"
+          ],
+          "reference_line": 336,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 39,
+          "reference_function": "gtjaAlpha39",
+          "reference_inputs": [
+            "open",
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 344,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 40,
+          "reference_function": "gtjaAlpha40",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 352,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 41,
+          "reference_function": "gtjaAlpha41",
+          "reference_inputs": [
+            "vwap"
+          ],
+          "reference_line": 360,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 42,
+          "reference_function": "gtjaAlpha42",
+          "reference_inputs": [
+            "high",
+            "vol"
+          ],
+          "reference_line": 368,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 43,
+          "reference_function": "gtjaAlpha43",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 376,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 44,
+          "reference_function": "gtjaAlpha44",
+          "reference_inputs": [
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 384,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 45,
+          "reference_function": "gtjaAlpha45",
+          "reference_inputs": [
+            "open",
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 392,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 46,
+          "reference_function": "gtjaAlpha46",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 400,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 47,
+          "reference_function": "gtjaAlpha47",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 408,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 48,
+          "reference_function": "gtjaAlpha48",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 417,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 49,
+          "reference_function": "gtjaAlpha49",
+          "reference_inputs": [
+            "high",
+            "low"
+          ],
+          "reference_line": 425,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 50,
+          "reference_function": "gtjaAlpha50",
+          "reference_inputs": [
+            "high",
+            "low"
+          ],
+          "reference_line": 435,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 51,
+          "reference_function": "gtjaAlpha51",
+          "reference_inputs": [
+            "high",
+            "low"
+          ],
+          "reference_line": 445,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 52,
+          "reference_function": "gtjaAlpha52",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 455,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 53,
+          "reference_function": "gtjaAlpha53",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 463,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 54,
+          "reference_function": "gtjaAlpha54",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 471,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 55,
+          "reference_function": "gtjaAlpha55",
+          "reference_inputs": [
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 479,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 56,
+          "reference_function": "gtjaAlpha56",
+          "reference_inputs": [
+            "open",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 507,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 57,
+          "reference_function": "gtjaAlpha57",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 515,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 58,
+          "reference_function": "gtjaAlpha58",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 524,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 59,
+          "reference_function": "gtjaAlpha59",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 532,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 60,
+          "reference_function": "gtjaAlpha60",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 540,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 61,
+          "reference_function": "gtjaAlpha61",
+          "reference_inputs": [
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 549,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 62,
+          "reference_function": "gtjaAlpha62",
+          "reference_inputs": [
+            "high",
+            "vol"
+          ],
+          "reference_line": 557,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 63,
+          "reference_function": "gtjaAlpha63",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 565,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 64,
+          "reference_function": "gtjaAlpha64",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 575,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 65,
+          "reference_function": "gtjaAlpha65",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 583,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 66,
+          "reference_function": "gtjaAlpha66",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 591,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 67,
+          "reference_function": "gtjaAlpha67",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 599,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 68,
+          "reference_function": "gtjaAlpha68",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 609,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 69,
+          "reference_function": "gtjaAlpha69",
+          "reference_inputs": [
+            "open",
+            "high",
+            "low"
+          ],
+          "reference_line": 618,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 70,
+          "reference_function": "gtjaAlpha70",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 632,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 71,
+          "reference_function": "gtjaAlpha71",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 640,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 72,
+          "reference_function": "gtjaAlpha72",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 648,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 73,
+          "reference_function": "gtjaAlpha73",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 657,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 74,
+          "reference_function": "gtjaAlpha74",
+          "reference_inputs": [
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 665,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 75,
+          "reference_function": "gtjaAlpha75",
+          "reference_inputs": [
+            "open",
+            "close",
+            "index_open",
+            "index_close"
+          ],
+          "reference_line": 673,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "timestamp_aligned_benchmark_open",
+            "timestamp_aligned_benchmark_close"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 76,
+          "reference_function": "gtjaAlpha76",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 681,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 77,
+          "reference_function": "gtjaAlpha77",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 689,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 78,
+          "reference_function": "gtjaAlpha78",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 697,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 79,
+          "reference_function": "gtjaAlpha79",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 705,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 80,
+          "reference_function": "gtjaAlpha80",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 715,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 81,
+          "reference_function": "gtjaAlpha81",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 723,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 82,
+          "reference_function": "gtjaAlpha82",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 731,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 83,
+          "reference_function": "gtjaAlpha83",
+          "reference_inputs": [
+            "high",
+            "vol"
+          ],
+          "reference_line": 740,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 84,
+          "reference_function": "gtjaAlpha84",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 748,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 85,
+          "reference_function": "gtjaAlpha85",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 756,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 86,
+          "reference_function": "gtjaAlpha86",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 764,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 87,
+          "reference_function": "gtjaAlpha87",
+          "reference_inputs": [
+            "open",
+            "high",
+            "low",
+            "vwap"
+          ],
+          "reference_line": 775,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 88,
+          "reference_function": "gtjaAlpha88",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 783,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 89,
+          "reference_function": "gtjaAlpha89",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 791,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 90,
+          "reference_function": "gtjaAlpha90",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 800,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 91,
+          "reference_function": "gtjaAlpha91",
+          "reference_inputs": [
+            "close",
+            "low",
+            "vol"
+          ],
+          "reference_line": 808,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 92,
+          "reference_function": "gtjaAlpha92",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 816,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 93,
+          "reference_function": "gtjaAlpha93",
+          "reference_inputs": [
+            "open",
+            "low"
+          ],
+          "reference_line": 824,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 94,
+          "reference_function": "gtjaAlpha94",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 832,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 95,
+          "reference_function": "gtjaAlpha95",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 840,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 96,
+          "reference_function": "gtjaAlpha96",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 848,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 97,
+          "reference_function": "gtjaAlpha97",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 858,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 98,
+          "reference_function": "gtjaAlpha98",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 866,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 99,
+          "reference_function": "gtjaAlpha99",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 876,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 100,
+          "reference_function": "gtjaAlpha100",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 884,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 101,
+          "reference_function": "gtjaAlpha101",
+          "reference_inputs": [
+            "close",
+            "high",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 892,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 102,
+          "reference_function": "gtjaAlpha102",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 900,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 103,
+          "reference_function": "gtjaAlpha103",
+          "reference_inputs": [
+            "low"
+          ],
+          "reference_line": 910,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 104,
+          "reference_function": "gtjaAlpha104",
+          "reference_inputs": [
+            "close",
+            "high",
+            "vol"
+          ],
+          "reference_line": 918,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 105,
+          "reference_function": "gtjaAlpha105",
+          "reference_inputs": [
+            "open",
+            "vol"
+          ],
+          "reference_line": 926,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 106,
+          "reference_function": "gtjaAlpha106",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 934,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 107,
+          "reference_function": "gtjaAlpha107",
+          "reference_inputs": [
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 942,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 108,
+          "reference_function": "gtjaAlpha108",
+          "reference_inputs": [
+            "high",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 950,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 109,
+          "reference_function": "gtjaAlpha109",
+          "reference_inputs": [
+            "high",
+            "low"
+          ],
+          "reference_line": 958,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 110,
+          "reference_function": "gtjaAlpha110",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 967,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 111,
+          "reference_function": "gtjaAlpha111",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 975,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 112,
+          "reference_function": "gtjaAlpha112",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 984,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 113,
+          "reference_function": "gtjaAlpha113",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 994,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 114,
+          "reference_function": "gtjaAlpha114",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1002,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 115,
+          "reference_function": "gtjaAlpha115",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1010,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 116,
+          "reference_function": "gtjaAlpha116",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1018,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 117,
+          "reference_function": "gtjaAlpha117",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1026,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 118,
+          "reference_function": "gtjaAlpha118",
+          "reference_inputs": [
+            "open",
+            "high",
+            "low"
+          ],
+          "reference_line": 1034,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 119,
+          "reference_function": "gtjaAlpha119",
+          "reference_inputs": [
+            "open",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1042,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 120,
+          "reference_function": "gtjaAlpha120",
+          "reference_inputs": [
+            "close",
+            "vwap"
+          ],
+          "reference_line": 1050,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 121,
+          "reference_function": "gtjaAlpha121",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1058,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 122,
+          "reference_function": "gtjaAlpha122",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1066,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 123,
+          "reference_function": "gtjaAlpha123",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1075,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 124,
+          "reference_function": "gtjaAlpha124",
+          "reference_inputs": [
+            "close",
+            "vwap"
+          ],
+          "reference_line": 1083,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 125,
+          "reference_function": "gtjaAlpha125",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1091,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 126,
+          "reference_function": "gtjaAlpha126",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1099,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 127,
+          "reference_function": "gtjaAlpha127",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1107,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 128,
+          "reference_function": "gtjaAlpha128",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1115,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 129,
+          "reference_function": "gtjaAlpha129",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1123,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 130,
+          "reference_function": "gtjaAlpha130",
+          "reference_inputs": [
+            "high",
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1131,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 131,
+          "reference_function": "gtjaAlpha131",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1139,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 132,
+          "reference_function": "gtjaAlpha132",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1147,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 133,
+          "reference_function": "gtjaAlpha133",
+          "reference_inputs": [
+            "high",
+            "low"
+          ],
+          "reference_line": 1155,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 134,
+          "reference_function": "gtjaAlpha134",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 1163,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 135,
+          "reference_function": "gtjaAlpha135",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1171,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 136,
+          "reference_function": "gtjaAlpha136",
+          "reference_inputs": [
+            "open",
+            "close",
+            "vol"
+          ],
+          "reference_line": 1180,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 137,
+          "reference_function": "gtjaAlpha137",
+          "reference_inputs": [
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1188,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 138,
+          "reference_function": "gtjaAlpha138",
+          "reference_inputs": [
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1201,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 139,
+          "reference_function": "gtjaAlpha139",
+          "reference_inputs": [
+            "open",
+            "vol"
+          ],
+          "reference_line": 1209,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 140,
+          "reference_function": "gtjaAlpha140",
+          "reference_inputs": [
+            "open",
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1217,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 141,
+          "reference_function": "gtjaAlpha141",
+          "reference_inputs": [
+            "high",
+            "vol"
+          ],
+          "reference_line": 1225,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 142,
+          "reference_function": "gtjaAlpha142",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 1233,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 143,
+          "reference_function": "gtjaAlpha143",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1241,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 144,
+          "reference_function": "gtjaAlpha144",
+          "reference_inputs": [
+            "close",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1249,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 145,
+          "reference_function": "gtjaAlpha145",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 1257,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 146,
+          "reference_function": "gtjaAlpha146",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1265,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 147,
+          "reference_function": "gtjaAlpha147",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1275,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 148,
+          "reference_function": "gtjaAlpha148",
+          "reference_inputs": [
+            "open",
+            "vol"
+          ],
+          "reference_line": 1283,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 149,
+          "reference_function": "gtjaAlpha149",
+          "reference_inputs": [
+            "close",
+            "index_close"
+          ],
+          "reference_line": 1291,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "timestamp_aligned_benchmark_close"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 150,
+          "reference_function": "gtjaAlpha150",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1300,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 151,
+          "reference_function": "gtjaAlpha151",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1308,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 152,
+          "reference_function": "gtjaAlpha152",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1317,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 153,
+          "reference_function": "gtjaAlpha153",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1327,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 154,
+          "reference_function": "gtjaAlpha154",
+          "reference_inputs": [
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1335,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 155,
+          "reference_function": "gtjaAlpha155",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 1343,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 156,
+          "reference_function": "gtjaAlpha156",
+          "reference_inputs": [
+            "open",
+            "low",
+            "vwap"
+          ],
+          "reference_line": 1353,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 157,
+          "reference_function": "gtjaAlpha157",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1361,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 158,
+          "reference_function": "gtjaAlpha158",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1369,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 159,
+          "reference_function": "gtjaAlpha159",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1378,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 160,
+          "reference_function": "gtjaAlpha160",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1390,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 161,
+          "reference_function": "gtjaAlpha161",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1399,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 162,
+          "reference_function": "gtjaAlpha162",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1407,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 163,
+          "reference_function": "gtjaAlpha163",
+          "reference_inputs": [
+            "close",
+            "high",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1419,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 164,
+          "reference_function": "gtjaAlpha164",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1427,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 165,
+          "reference_function": "gtjaAlpha165",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1437,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 166,
+          "reference_function": "gtjaAlpha166",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1445,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 167,
+          "reference_function": "gtjaAlpha167",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1453,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 168,
+          "reference_function": "gtjaAlpha168",
+          "reference_inputs": [
+            "vol"
+          ],
+          "reference_line": 1461,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 169,
+          "reference_function": "gtjaAlpha169",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1469,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 170,
+          "reference_function": "gtjaAlpha170",
+          "reference_inputs": [
+            "close",
+            "high",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1480,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 171,
+          "reference_function": "gtjaAlpha171",
+          "reference_inputs": [
+            "open",
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1488,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 172,
+          "reference_function": "gtjaAlpha172",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1496,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 173,
+          "reference_function": "gtjaAlpha173",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1509,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 174,
+          "reference_function": "gtjaAlpha174",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1519,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 175,
+          "reference_function": "gtjaAlpha175",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1528,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 176,
+          "reference_function": "gtjaAlpha176",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1536,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 177,
+          "reference_function": "gtjaAlpha177",
+          "reference_inputs": [
+            "high"
+          ],
+          "reference_line": 1544,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 178,
+          "reference_function": "gtjaAlpha178",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 1552,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 179,
+          "reference_function": "gtjaAlpha179",
+          "reference_inputs": [
+            "low",
+            "vol",
+            "vwap"
+          ],
+          "reference_line": 1560,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy",
+            "verified_same_adjustment_vwap",
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 180,
+          "reference_function": "gtjaAlpha180",
+          "reference_inputs": [
+            "close",
+            "vol"
+          ],
+          "reference_line": 1569,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 181,
+          "reference_function": "gtjaAlpha181",
+          "reference_inputs": [
+            "close",
+            "index_close"
+          ],
+          "reference_line": 1577,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "timestamp_aligned_benchmark_close"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 182,
+          "reference_function": "gtjaAlpha182",
+          "reference_inputs": [
+            "open",
+            "close",
+            "index_open",
+            "index_close"
+          ],
+          "reference_line": 1585,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "timestamp_aligned_benchmark_open",
+            "timestamp_aligned_benchmark_close"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 183,
+          "reference_function": "gtjaAlpha183",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1593,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 184,
+          "reference_function": "gtjaAlpha184",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 1601,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 185,
+          "reference_function": "gtjaAlpha185",
+          "reference_inputs": [
+            "open",
+            "close"
+          ],
+          "reference_line": 1609,
+          "reference_has_cross_section_operator": true,
+          "dependency_review": [
+            "explicit_universe_and_exact_timestamp_alignment"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 186,
+          "reference_function": "gtjaAlpha186",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low"
+          ],
+          "reference_line": 1617,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 187,
+          "reference_function": "gtjaAlpha187",
+          "reference_inputs": [
+            "open",
+            "high"
+          ],
+          "reference_line": 1630,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 188,
+          "reference_function": "gtjaAlpha188",
+          "reference_inputs": [
+            "high",
+            "low"
+          ],
+          "reference_line": 1638,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 189,
+          "reference_function": "gtjaAlpha189",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1647,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 190,
+          "reference_function": "gtjaAlpha190",
+          "reference_inputs": [
+            "close"
+          ],
+          "reference_line": 1655,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        },
+        {
+          "number": 191,
+          "reference_function": "gtjaAlpha191",
+          "reference_inputs": [
+            "close",
+            "high",
+            "low",
+            "vol"
+          ],
+          "reference_line": 1672,
+          "reference_has_cross_section_operator": false,
+          "dependency_review": [
+            "verified_volume_units_and_zero_policy"
+          ],
+          "app_status": "not_implemented",
+          "formula_verified": false,
+          "count_as_available": false
+        }
+      ]
+    }
+  }
+}

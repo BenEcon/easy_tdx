@@ -1,0 +1,87 @@
+.............F....FFFFFF.........F.....F.....F...........                [100%]
+=================================== FAILURES ===================================
+___________ test_third_missing_invalid_constant_and_zero_volume[15] ____________
+tests/unit/test_alpha101_third.py:101: in test_third_missing_invalid_constant_and_zero_volume
+    assert actual.iloc[-1].notna().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nName: 2025-03-04 00:00:00, dtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nName: 2025-03-04 00:00:00, dtype: bool = notna()
+E    +        where notna = S0   NaN\nS1   NaN\nS2   NaN\nS3   NaN\nName: 2025-03-04 00:00:00, dtype: float64.notna
+____________ test_third_metadata_parameters_scope_and_isolation[14] ____________
+tests/unit/test_alpha101_third.py:126: in test_third_metadata_parameters_scope_and_isolation
+    assert describe_factor(cls, instance=factor)["formula_sha256"] != before["formula_sha256"]
+E   TypeError: describe_factor() got an unexpected keyword argument 'instance'
+____________ test_third_metadata_parameters_scope_and_isolation[15] ____________
+tests/unit/test_alpha101_third.py:126: in test_third_metadata_parameters_scope_and_isolation
+    assert describe_factor(cls, instance=factor)["formula_sha256"] != before["formula_sha256"]
+E   TypeError: describe_factor() got an unexpected keyword argument 'instance'
+____________ test_third_metadata_parameters_scope_and_isolation[18] ____________
+tests/unit/test_alpha101_third.py:126: in test_third_metadata_parameters_scope_and_isolation
+    assert describe_factor(cls, instance=factor)["formula_sha256"] != before["formula_sha256"]
+E   TypeError: describe_factor() got an unexpected keyword argument 'instance'
+____________ test_third_metadata_parameters_scope_and_isolation[20] ____________
+tests/unit/test_alpha101_third.py:126: in test_third_metadata_parameters_scope_and_isolation
+    assert describe_factor(cls, instance=factor)["formula_sha256"] != before["formula_sha256"]
+E   TypeError: describe_factor() got an unexpected keyword argument 'instance'
+____________ test_third_metadata_parameters_scope_and_isolation[35] ____________
+tests/unit/test_alpha101_third.py:126: in test_third_metadata_parameters_scope_and_isolation
+    assert describe_factor(cls, instance=factor)["formula_sha256"] != before["formula_sha256"]
+E   TypeError: describe_factor() got an unexpected keyword argument 'instance'
+____________ test_third_metadata_parameters_scope_and_isolation[37] ____________
+tests/unit/test_alpha101_third.py:126: in test_third_metadata_parameters_scope_and_isolation
+    assert describe_factor(cls, instance=factor)["formula_sha256"] != before["formula_sha256"]
+E   TypeError: describe_factor() got an unexpected keyword argument 'instance'
+_____________________ test_third_real_adjustments[NONE-15] _____________________
+tests/unit/test_alpha101_third.py:215: in test_third_real_adjustments
+    assert actual.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = 0-000001-DAILY-NONE.json    False\n0-300750-DAILY-NONE.json    False\n1-600036-DAILY-NONE.json    False\ndtype: bool.any
+E    +      where 0-000001-DAILY-NONE.json    False\n0-300750-DAILY-NONE.json    False\n1-600036-DAILY-NONE.json    False\ndtype: bool = any()
+E    +        where any =             0-000001-DAILY-NONE.json  ...  1-600036-DAILY-NONE.json\n2026-02-05                     False  ...         ....                     False\n2026-10-09                     False  ...                     False\n\n[160 rows x 3 columns].any
+E    +          where             0-000001-DAILY-NONE.json  ...  1-600036-DAILY-NONE.json\n2026-02-05                     False  ...         ....                     False\n2026-10-09                     False  ...                     False\n\n[160 rows x 3 columns] = notna()
+E    +            where notna =             0-000001-DAILY-NONE.json  ...  1-600036-DAILY-NONE.json\n2026-02-05                       NaN  ...         ....                       NaN\n2026-10-09                       NaN  ...                       NaN\n\n[160 rows x 3 columns].notna
+_____________________ test_third_real_adjustments[QFQ-15] ______________________
+tests/unit/test_alpha101_third.py:215: in test_third_real_adjustments
+    assert actual.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = 0-000001-DAILY-QFQ.json    False\n0-300750-DAILY-QFQ.json    False\n1-600036-DAILY-QFQ.json    False\ndtype: bool.any
+E    +      where 0-000001-DAILY-QFQ.json    False\n0-300750-DAILY-QFQ.json    False\n1-600036-DAILY-QFQ.json    False\ndtype: bool = any()
+E    +        where any =             0-000001-DAILY-QFQ.json  ...  1-600036-DAILY-QFQ.json\n2026-02-05                    False  ...            ... ...                    False\n2026-10-09                    False  ...                    False\n\n[160 rows x 3 columns].any
+E    +          where             0-000001-DAILY-QFQ.json  ...  1-600036-DAILY-QFQ.json\n2026-02-05                    False  ...            ... ...                    False\n2026-10-09                    False  ...                    False\n\n[160 rows x 3 columns] = notna()
+E    +            where notna =             0-000001-DAILY-QFQ.json  ...  1-600036-DAILY-QFQ.json\n2026-02-05                      NaN  ...            ... ...                      NaN\n2026-10-09                      NaN  ...                      NaN\n\n[160 rows x 3 columns].notna
+_____________________ test_third_real_adjustments[HFQ-15] ______________________
+tests/unit/test_alpha101_third.py:215: in test_third_real_adjustments
+    assert actual.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = 0-000001-DAILY-HFQ.json    False\n0-300750-DAILY-HFQ.json    False\n1-600036-DAILY-HFQ.json    False\ndtype: bool.any
+E    +      where 0-000001-DAILY-HFQ.json    False\n0-300750-DAILY-HFQ.json    False\n1-600036-DAILY-HFQ.json    False\ndtype: bool = any()
+E    +        where any =             0-000001-DAILY-HFQ.json  ...  1-600036-DAILY-HFQ.json\n2026-02-05                    False  ...            ... ...                    False\n2026-10-09                    False  ...                    False\n\n[160 rows x 3 columns].any
+E    +          where             0-000001-DAILY-HFQ.json  ...  1-600036-DAILY-HFQ.json\n2026-02-05                    False  ...            ... ...                    False\n2026-10-09                    False  ...                    False\n\n[160 rows x 3 columns] = notna()
+E    +            where notna =             0-000001-DAILY-HFQ.json  ...  1-600036-DAILY-HFQ.json\n2026-02-05                      NaN  ...            ... ...                      NaN\n2026-10-09                      NaN  ...                      NaN\n\n[160 rows x 3 columns].notna
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_alpha101_third.py::test_third_missing_invalid_constant_and_zero_volume[14]
+tests/unit/test_alpha101_third.py::test_third_missing_invalid_constant_and_zero_volume[35]
+  /Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_alpha101_third.py:94: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value 'inf' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+    modified["S0"].loc[modified["S0"].index[10], field] = value
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_alpha101_third.py::test_third_missing_invalid_constant_and_zero_volume[15]
+FAILED tests/unit/test_alpha101_third.py::test_third_metadata_parameters_scope_and_isolation[14]
+FAILED tests/unit/test_alpha101_third.py::test_third_metadata_parameters_scope_and_isolation[15]
+FAILED tests/unit/test_alpha101_third.py::test_third_metadata_parameters_scope_and_isolation[18]
+FAILED tests/unit/test_alpha101_third.py::test_third_metadata_parameters_scope_and_isolation[20]
+FAILED tests/unit/test_alpha101_third.py::test_third_metadata_parameters_scope_and_isolation[35]
+FAILED tests/unit/test_alpha101_third.py::test_third_metadata_parameters_scope_and_isolation[37]
+FAILED tests/unit/test_alpha101_third.py::test_third_real_adjustments[NONE-15]
+FAILED tests/unit/test_alpha101_third.py::test_third_real_adjustments[QFQ-15]
+FAILED tests/unit/test_alpha101_third.py::test_third_real_adjustments[HFQ-15]
+10 failed, 47 passed, 3 warnings in 99.13s (0:01:39)

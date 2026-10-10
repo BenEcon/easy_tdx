@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="4.113" timestamp="2026-10-10T16:18:52.563468+08:00" hostname="BowenECON.local"><testcase classname="" name="tests.unit.test_factor_research" time="0.000"><error message="collection failure">tests/unit/test_factor_research.py:185: in &lt;module&gt;
+    "name", [f["name"] for f in list_factors() if f["category"] not in {"value", "chanlun"}]
+src/easy_tdx/factor/builtin/__init__.py:27: in list_factors
+    return [describe_factor(cls) for cls in FACTORY_REGISTRY.values()]
+src/easy_tdx/factor/builtin/__init__.py:27: in &lt;listcomp&gt;
+    return [describe_factor(cls) for cls in FACTORY_REGISTRY.values()]
+src/easy_tdx/factor/catalog.py:253: in describe_factor
+    gtja191.definition_metadata(cls, instance if isinstance(instance, GTJAFactor) else None)
+src/easy_tdx/factor/builtin/gtja191.py:3031: in definition_metadata
+    "unit": w.unit,
+E   NameError: name 'w' is not defined</error></testcase></testsuite></testsuites>

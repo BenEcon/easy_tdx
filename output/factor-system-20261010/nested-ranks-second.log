@@ -1,0 +1,54 @@
+..FFF............F...........................                            [100%]
+=================================== FAILURES ===================================
+________ test_nested_independent_defaults_custom_causal_order[None-121] ________
+tests/unit/test_gtja191_nested_ranks.py:289: in test_nested_independent_defaults_custom_causal_order
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-01-01 NaN NaN NaN NaN NaN\n2024-01-02 NaN NaN NaN NaN NaN\n2024-01-03 NaN NaN NaN Na...aN\n2024-10-24 NaN NaN NaN NaN NaN\n2024-10-25 NaN NaN NaN NaN NaN\n2024-10-26 NaN NaN NaN NaN NaN\n\n[300 rows x 5 columns].notna
+________ test_nested_independent_defaults_custom_causal_order[None-138] ________
+tests/unit/test_gtja191_nested_ranks.py:289: in test_nested_independent_defaults_custom_causal_order
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-01-01 NaN NaN NaN NaN NaN\n2024-01-02 NaN NaN NaN NaN NaN\n2024-01-03 NaN NaN NaN Na...aN\n2024-10-24 NaN NaN NaN NaN NaN\n2024-10-25 NaN NaN NaN NaN NaN\n2024-10-26 NaN NaN NaN NaN NaN\n\n[300 rows x 5 columns].notna
+________ test_nested_independent_defaults_custom_causal_order[None-140] ________
+tests/unit/test_gtja191_nested_ranks.py:289: in test_nested_independent_defaults_custom_causal_order
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-01-01 NaN NaN NaN NaN NaN\n2024-01-02 NaN NaN NaN NaN NaN\n2024-01-03 NaN NaN NaN Na...aN\n2024-10-24 NaN NaN NaN NaN NaN\n2024-10-25 NaN NaN NaN NaN NaN\n2024-10-26 NaN NaN NaN NaN NaN\n\n[300 rows x 5 columns].notna
+_________ test_nested_independent_defaults_custom_causal_order[7-138] __________
+tests/unit/test_gtja191_nested_ranks.py:289: in test_nested_independent_defaults_custom_causal_order
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-01-01 NaN NaN NaN NaN NaN\n2024-01-02 NaN NaN NaN NaN NaN\n2024-01-03 NaN NaN NaN Na...aN\n2024-10-24 NaN NaN NaN NaN NaN\n2024-10-25 NaN NaN NaN NaN NaN\n2024-10-26 NaN NaN NaN NaN NaN\n\n[300 rows x 5 columns].notna
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[None-121]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[None-138]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[None-140]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[7-138]
+4 failed, 41 passed, 1 warning in 25.16s

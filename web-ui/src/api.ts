@@ -36,7 +36,7 @@ import type {
 
 const BASE = '/api/v1'
 
-type ResearchRequest = { code: string; category: Category; bars: Bar[]; visible_count: number }
+type ResearchRequest = { code: string; category: Category; bars: Bar[]; visible_count: number; structure_settings?: import('./structure-settings').StructureSettings }
 export function replayExhaustive(req: ResearchRequest & {cursor?: string | null; page_size?: number}, signal?: AbortSignal) {
   return request<import('./exhaustive-research').SearchPage>('/chanlun/replay/exhaustive', {method: 'POST', body: JSON.stringify(req), signal})
 }
@@ -44,13 +44,13 @@ export function replayCandidateAudit(req: ResearchRequest & {solution_token?: st
   return request<import('./exhaustive-research').CandidateAudit>('/chanlun/replay/candidate-audit', {method: 'POST', body: JSON.stringify(req), signal})
 }
 
-export function replayReleaseHistory(req: { code: string; category: Category; bars: Bar[]; visible_count: number; start_count: number }, signal?: AbortSignal) {
+export function replayReleaseHistory(req: ResearchRequest & { start_count: number }, signal?: AbortSignal) {
   return request<import('./release-review').ReleaseHistoryBatch>('/chanlun/replay/release-history', {
     method: 'POST', body: JSON.stringify(req), signal,
   })
 }
 
-export function replayReleaseComparison(req: { code: string; category: Category; bars: Bar[]; visible_count: number }, signal?: AbortSignal) {
+export function replayReleaseComparison(req: ResearchRequest, signal?: AbortSignal) {
   return request<import('./release-review').ReleaseComparison>('/chanlun/replay/release-comparison', {
     method: 'POST', body: JSON.stringify(req), signal,
   })
@@ -549,7 +549,7 @@ export function submitFactorRecomputeTask(payload:{source_archive_id:string;expe
   return request('/research/factors/recompute/async',{method:'POST',body:JSON.stringify(payload),signal:context.signal,headers:{'X-Task-Owner':context.owner,'X-Research-Owner':context.owner}})
 }
 
-export function evaluateResearchFactors(payload:{stocks:Array<{market:string;code:string}>;factors:string[];factor_parameters?:import('./factor-parameters').FactorParameters;count:number;horizon:number;horizons?:number[]|null;groups:number;preprocess:string;adjust:string;validation?:import('./factor-validation').FactorValidationConfig|null;composition?:import('./factor-composition').CompositionConfig|null},signal?:AbortSignal) {
+export function evaluateResearchFactors(payload:{stocks:Array<{market:string;code:string}>;factors:string[];factor_parameters?:import('./factor-parameters').FactorParameters;count:number;horizon:number;horizons?:number[]|null;groups:number;preprocess:string;adjust:string;validation?:import('./factor-validation').FactorValidationConfig|null;composition?:import('./factor-composition').CompositionConfig|null;benchmark?:string|null},signal?:AbortSignal) {
   return request<{data:import('./factor-research').FactorEvaluation}>('/research/factors/evaluate',{method:'POST',body:JSON.stringify(payload),signal})
 }
 
@@ -564,6 +564,7 @@ export function computeResearchFactors(payload: {
   count: number
   factors: string[]
   factor_parameters?: import('./factor-parameters').FactorParameters
+  benchmark?: string|null
   adjust?: AdjustMode
 }, signal?: AbortSignal): Promise<DictDataResponse> {
   return request<DictDataResponse>('/research/factors/compute', {
@@ -655,7 +656,7 @@ export async function fetchBarSnapshot(market: string, code: string, category: C
 }
 
 /** 执行完整缠论管道：K 线合并 → 分型 → 笔 → 中枢 → 线段 → 买卖点 → 背驰。 */
-export function analyzeIndustry(req: { stock_market: string; stock_code: string; board_code: string; category: Category; count: number }, signal?: AbortSignal): Promise<{ bars: Bar[]; result: ChanlunResult }> {
+export function analyzeIndustry(req: { stock_market: string; stock_code: string; board_code: string; category: Category; count: number; structure_settings?: import('./structure-settings').StructureSettings }, signal?: AbortSignal): Promise<{ bars: Bar[]; result: ChanlunResult }> {
   return request('/chanlun/industry?ownership_history=summary', { method: 'POST', body: JSON.stringify(req), signal })
 }
 
@@ -663,12 +664,12 @@ export function fetchStockIndustries(market: string, code: string, signal?: Abor
   return request(queryPath('/chanlun/industries', { market, code }), { signal })
 }
 
-export function replayChanlun(req: { code: string; category: Category; bars: Bar[]; visible_count: number }, signal?: AbortSignal): Promise<ChanlunResult> {
+export function replayChanlun(req: ResearchRequest, signal?: AbortSignal): Promise<ChanlunResult> {
   return request('/chanlun/replay?ownership_history=summary', { method: 'POST', body: JSON.stringify(req), signal })
 }
 
 export function replayChanlunComparison(req: {
-  stock: { code: string; category: Category; bars: Bar[]; visible_count: number }
+  stock: ResearchRequest
   industry: { code: string; bars: Bar[] }
 }, signal?: AbortSignal): Promise<{
   stock: ChanlunResult

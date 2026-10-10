@@ -16,8 +16,10 @@ from easy_tdx.chanlun.exhaustive_recursion import GRAMMAR, exhaustive_leaf
 from easy_tdx.chanlun.ownership_history import OwnershipHistoryMode
 from easy_tdx.chanlun.release_review import POLICIES, review_changes, review_state
 from easy_tdx.chanlun.released_recursion import released_movement_snapshot
+from easy_tdx.chanlun.structure_filter import filter_base_outputs
 from easy_tdx.web.research_cursor import decode_cursor, encode_cursor, fingerprint
 from easy_tdx.web.resource_admission import BoundedComputeRoute
+from easy_tdx.web.structure_settings import StructureSettings
 
 router = APIRouter(tags=["chanlun"], route_class=BoundedComputeRoute)
 
@@ -55,6 +57,7 @@ class ReplaySeries(BaseModel):
 
 
 class ReplayRequest(ReplaySeries):
+    structure_settings: StructureSettings = Field(default_factory=StructureSettings)
     category: Literal[
         "DAY", "WEEK", "MONTH", "YEAR", "MIN_1", "MIN_5", "MIN_15", "MIN_30", "MIN_60", "MIN_120"
     ] = "DAY"
@@ -78,10 +81,15 @@ def replay_snapshot(
         if req.category.startswith("MIN_")
         else req.category.lower()
     )
-    result = (
-        ChanlunAnalyser(code=req.code, frequency=frequency)
-        .process_klines(frame)
-        .to_dict(ownership_history=ownership_history)
+    analysed = ChanlunAnalyser(
+        code=req.code, frequency=frequency, config=req.structure_settings.engine_config()
+    ).process_klines(frame)
+    result = filter_base_outputs(analysed, req.structure_settings.zs_min_lines).to_dict(
+        ownership_history=ownership_history
+    )
+    result["structure_settings"] = req.structure_settings.model_dump()
+    result["structure_settings_scope"] = (
+        "strict_price_preserved_base_output_filter_not_recursive_seed"
     )
     result["replay"] = {
         "visible_count": req.visible_count,
@@ -122,7 +130,13 @@ class CandidateAuditRequest(ReplayRequest):
 def _research_input(req: ReplayRequest) -> tuple[str, ChanlunResult]:
     raw = [bar.model_dump(mode="json") for bar in req.bars[: req.visible_count]]
     identity = fingerprint(
-        {"grammar": GRAMMAR, "code": req.code, "category": req.category, "bars": raw}
+        {
+            "grammar": GRAMMAR,
+            "code": req.code,
+            "category": req.category,
+            "bars": raw,
+            "structure_settings": req.structure_settings.model_dump(),
+        }
     )
     frame = pd.DataFrame(raw)
     frequency = (
@@ -130,7 +144,9 @@ def _research_input(req: ReplayRequest) -> tuple[str, ChanlunResult]:
         if req.category.startswith("MIN_")
         else req.category.lower()
     )
-    result = ChanlunAnalyser(code=req.code, frequency=frequency).process_klines(frame)
+    result = ChanlunAnalyser(
+        code=req.code, frequency=frequency, config=req.structure_settings.engine_config()
+    ).process_klines(frame)
     return identity, result
 
 
@@ -233,7 +249,9 @@ def _release_prefix(req: ReplayRequest, count: int) -> dict[str, Any]:
         if req.category.startswith("MIN_")
         else req.category.lower()
     )
-    result = ChanlunAnalyser(code=req.code, frequency=frequency).process_klines(frame)
+    result = ChanlunAnalyser(
+        code=req.code, frequency=frequency, config=req.structure_settings.engine_config()
+    ).process_klines(frame)
     return released_movement_snapshot(result.xds, result.klines, result.macd)
 
 
@@ -269,7 +287,9 @@ def replay_release_comparison(req: ReplayRequest) -> dict[str, Any]:
         if req.category.startswith("MIN_")
         else req.category.lower()
     )
-    result = ChanlunAnalyser(code=req.code, frequency=frequency).process_klines(frame)
+    result = ChanlunAnalyser(
+        code=req.code, frequency=frequency, config=req.structure_settings.engine_config()
+    ).process_klines(frame)
     variants = [
         {
             "policy": policy,
@@ -304,6 +324,7 @@ def replay_comparison(
                 category=req.stock.category,
                 bars=req.industry.bars,
                 visible_count=len(visible),
+                structure_settings=req.stock.structure_settings,
             ),
             ownership_history=ownership_history,
         )

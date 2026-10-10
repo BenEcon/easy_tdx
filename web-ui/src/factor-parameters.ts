@@ -2,6 +2,10 @@ export type FactorParameters = Record<string, Record<string, number>>
 export type FactorDefinition = Record<string, unknown>
 type Parameter = {default:number;value?:number;editable:boolean;min?:number;max?:number;unit?:string;step?:number;integer?:boolean;label?:string}
 
+export function factorParameterUnit(unit?:string):string {
+  return unit==='selected_observations'?'个下跌样本':unit==='multiple'?'倍':unit==='dimensionless'?'（无量纲）':unit==='bars'||!unit?'根':unit
+}
+
 // Server publishes declarative dependency paths, never executable expressions.
 function compoundWarmup(definition:FactorDefinition, values:Record<string,number>):number|undefined {
   const terms=definition.warmup_terms
@@ -36,7 +40,7 @@ export function parameterizedFactorName(definition:FactorDefinition, parameters:
   const specs=Object.fromEntries(editableFactorParameters(definition))
   if(definition.parameterized_title&&Object.entries(parameters).some(([key,value])=>value!==specs[key]?.default)){
     const values=Object.fromEntries(Object.entries(specs).map(([key,spec])=>[key,parameters[key]??spec.default]))
-    const suffix=Object.keys(values).length===1&&values.window!==undefined?`${values.window}周期`:Object.entries(values).map(([key,value])=>`${specs[key]?.label??key} ${value}`).join(' / ')
+    const suffix=Object.keys(values).length===1&&values.window!==undefined?`${values.window}${specs.window?.unit==='selected_observations'?'个下跌样本':'周期'}`:Object.entries(values).map(([key,value])=>`${specs[key]?.label??key} ${value}`).join(' / ')
     return `${definition.parameterized_title} · ${suffix}`
   }
   return title
@@ -54,13 +58,15 @@ export function factorParameterError(names:readonly string[], definitions:Factor
     }
     const defaults=definition.parameters as Record<string,Parameter>|undefined
     const effective=Object.fromEntries(Object.entries(defaults??{}).map(([key,p])=>[key,values[name]?.[key]??p.default]))
+    const aliases=(definition.parameter_aliases??{}) as Record<string,string>
+    const canonicalParameters=Object.fromEntries(Object.entries(effective).map(([key,value])=>[aliases[key]??key,value]).sort(([a],[b])=>String(a).localeCompare(String(b))))
     if(effective.short!==undefined&&effective.long!==undefined&&effective.short>=effective.long)return `${name}：短窗口必须小于长窗口。`
     const warmup=compoundWarmup(definition,values[name]??{})
     if(warmup!==undefined&&typeof definition.warmup_limit==='number'&&warmup>definition.warmup_limit)return `${name}：复合依赖窗口需要 ${warmup} 根，不能超过 ${definition.warmup_limit} 根；请调整参数。`
     const meanRatio=(definition.library==='qlib_alpha158'&&definition.family==='MA')||(definition.library==='gtja191'&&definition.family==='mean_ratio')
     const identity=meanRatio?`price_mean_ratio:${effective.window}`:definition.library==='qlib_alpha158'
       ? `${definition.library}:${definition.family}:${values[name]?.window??defaults?.window?.default??''}`
-      : `${definition.parameter_family??definition.canonical_name??name}:${JSON.stringify(effective)}`
+      : `${definition.parameter_family??definition.canonical_name??name}:${JSON.stringify(canonicalParameters)}`
     if(identities.has(identity))return '存在相同公式及窗口的重复因子，请调整窗口或移除其中一项。'
     identities.add(identity)
   }
@@ -77,6 +83,7 @@ export function factorWarmupWarnings(names:readonly string[], definitions:Factor
     const warmup=compoundWarmup(d,values[name]??{})??(typeof d.warmup_multiplier==='number'&&typeof d.warmup_offset==='number'&&specs?.window
       ? (values[name]?.window??specs.window.default)*d.warmup_multiplier+d.warmup_offset
       : typeof d.warmup_bars==='number'?d.warmup_bars+delta:0)
+    if(specs?.window?.unit==='selected_observations')return [`${parameterizedFactorName(d,values[name])}需要 ${values[name]?.window??specs.window.default} 个有效基准下跌样本，不是相同根数的行情；当前请求 ${count} 根，样本不足将留空，不自动补数。`]
     return warmup>count?[`${parameterizedFactorName(d,values[name])}至少需要 ${warmup} 根，当前请求 ${count} 根；请增加历史长度或缩短窗口。`]:[]
   })
 }

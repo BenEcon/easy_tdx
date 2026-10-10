@@ -1,0 +1,26 @@
+gtja-benchmark-panel.json read-only/no-fetch replay/original preserved: PASS
+gtja-benchmark-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-compound-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-conditional-series.json read-only/no-fetch replay/original preserved: PASS
+settings: {'market': 'SZ', 'code': '000001', 'category': 'DAY', 'count': 500, 'factors': ['gtja191_132', 'gtja191_023'], 'factor_parameters': {'gtja191_132': {'window': 7}}, 'adjust': 'QFQ'}
+unit provenance: {'version': 'mac-factor-units-v1', 'provider': 'MAC', 'volume_unit': 'shares', 'amount_unit': 'CNY', 'volume_adjustment': 'actual_traded_shares_unadjusted', 'unit_validation': 'raw_amount_div_native_volume_within_raw_bar_range', 'verified_rows': 160, 'zero_volume_rows': 0, 'raw_adjust': 'NONE', 'price_adjust': 'QFQ', 'raw_data_fingerprint': '370a65744e14c2458c36bbeb9d598798f34d735dc22a53823e7e8ef87af3c566', 'raw_observed_at': '2026-10-10 14:14:36.587379', 'historical_data_vintage': False, 'instrument': 'SZ:000001'}
+definitions: [('gtja191_132', 'gtja191-complete-window-v6', {'window': 7}, 7), ('gtja191_023', 'gtja191-complete-window-v6', {'std': 20, 'smooth': 20}, 39)]
+gtja-linear-decay-panel.json read-only/no-fetch replay/original preserved: PASS
+gtja-literal-panel.json read-only/no-fetch replay/original preserved: PASS
+gtja-literal-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-multistage-panel.json read-only/no-fetch replay/original preserved: PASS
+gtja-multistage-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-nested-panel.json read-only/no-fetch replay/original preserved: PASS
+gtja-nested-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-panel-compound.json read-only/no-fetch replay/original preserved: PASS
+gtja-panel.json read-only/no-fetch replay/original preserved: PASS
+gtja-rolling-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-self-panel.json read-only/no-fetch replay/original preserved: PASS
+gtja-self-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-smoothing-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-statistics-pool.json read-only/no-fetch replay/original preserved: PASS
+gtja-statistics-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-vwap-series.json read-only/no-fetch replay/original preserved: PASS
+gtja-window-pool.json read-only/no-fetch replay/original preserved: PASS
+gtja-window-series.json read-only/no-fetch replay/original preserved: PASS

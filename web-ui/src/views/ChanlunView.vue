@@ -56,6 +56,7 @@ import { useResearchPreferences } from '../research-preferences'
 import ResearchWorkspaceNav from '../components/ResearchWorkspaceNav.vue'
 import ResearchWorkspaceTools from '../components/ResearchWorkspaceTools.vue'
 import type { ResearchWorkspace } from '../research-workspace'
+import { defaultStructureSettings, strokeRuleOptions, readStructureSettings, structureSettingsLabel } from '../structure-settings'
 
 const route = useRoute()
 const entryContext = computed(() => readResearchNavigation(route.query))
@@ -144,12 +145,12 @@ async function loadIndustry(manual = false) {
   industryLoading.value = true
   industryError.value = ''
   try {
-    const data = industrySnapshot.value ?? await queryAction(manual)(() => analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value }, signal))
+    const data = industrySnapshot.value ?? await queryAction(manual)(() => analyzeIndustry({ stock_market: detectMarket(code.value), stock_code: code.value, board_code: industryCode.value, category: category.value, count: count.value, structure_settings: readStructureSettings(snapshotResult.value?.structure_settings) }, signal))
     if (version !== industryVersion) return
     industrySnapshot.value = data
     if (!snapshotResult.value || !bars.value.length) return
     const aligned = await replayChanlunComparison({
-      stock: { code: snapshotResult.value.code, category: category.value, bars: snapshotBars.value, visible_count: bars.value.length },
+      stock: { code: snapshotResult.value.code, category: category.value, bars: snapshotBars.value, visible_count: bars.value.length, structure_settings: readStructureSettings(snapshotResult.value.structure_settings) },
       industry: { code: industryCode.value, bars: data.bars },
     }, signal)
     if (version === industryVersion) {
@@ -181,6 +182,7 @@ watch(targetKey, () => {
 }, { flush: 'sync' })
 const category = ref<Category>('DAY')
 const count = ref(600)
+const structureSettings = ref({ ...defaultStructureSettings })
 const loading = ref(false)
 const error = ref('')
 const result = ref<ChanlunResult | null>(null)
@@ -221,6 +223,12 @@ function clearReplay() {
   industryLoading.value = false
 }
 watch([targetKey, category, count], clearReplay, { flush: 'sync' })
+watch(structureSettings, () => {
+  analysisVersion++; industryVersion++
+  clearReplay(); loading.value = false; result.value = null; bars.value = []
+  visitedWorkspaces.value = { research: false, audit: false }
+  error.value = ''
+}, { deep: true, flush: 'sync' })
 onBeforeUnmount(() => { analysisVersion++; industryVersion++; replayVersion++; analysisAbort?.abort(); industryAbort?.abort(); replayAbort?.abort() })
 async function seekReplay(position: number) {
   if (!snapshotResult.value || replayBusy.value || loading.value || industryLoading.value) return
@@ -235,6 +243,7 @@ async function seekReplay(position: number) {
     const request = {
       code: snapshotResult.value.code, category: category.value,
       bars: snapshotBars.value, visible_count: target,
+      structure_settings: readStructureSettings(snapshotResult.value.structure_settings),
     }
     const comparison = industryView.value !== 'stock' && industrySnapshot.value
       ? await queryAction(true)(() => replayChanlunComparison({ stock: request, industry: { code: industryCode.value, bars: industrySnapshot.value!.bars } }, signal))
@@ -477,6 +486,7 @@ async function runAnalysis(manual = false) {
     const nextResult = await query(() => replayChanlun({
       code: instrument.kind === 'stock' ? `${market}${instrument.code}` : targetIdentity(instrument), category: category.value,
       bars: nextBars, visible_count: nextBars.length,
+      structure_settings: readStructureSettings(structureSettings.value),
     }, signal))
     if (version !== analysisVersion) return
     bars.value = nextBars
@@ -606,6 +616,22 @@ watch(() => route.fullPath, () => { if (route.path === '/chanlun') void loadRout
         <AdjustPicker v-if="isStock" />
         <p v-else class="target-note">指数与板块不复权；笔、中枢及背离规则与个股一致。</p>
       </section>
+
+      <details class="inspector-section structure-settings-section">
+        <summary class="ma-heading"><h3>结构计算设置</h3><span>{{ structureSettings.bi_type === 'new' ? '新笔' : structureSettings.bi_type === 'old' ? '老笔' : '简单笔' }} · {{ structureSettings.zs_min_lines }} 段</span><i aria-hidden="true"></i></summary>
+        <div class="field">
+          <label>成笔规则</label>
+          <MacSelect v-model="structureSettings.bi_type" :options="strokeRuleOptions" aria-label="成笔规则" />
+        </div>
+        <p class="ma-help">只切换独立 K 线间距；顶底交替及严格价格条件始终保留。</p>
+        <div class="field">
+          <label>基础中枢最少线段数</label>
+          <NumberStepper :model-value="structureSettings.zs_min_lines" :min="3" :max="6" :step="1" aria-label="基础中枢最少线段数" @update:model-value="structureSettings.zs_min_lines = Math.max(3, Math.min(6, Math.round($event)))" />
+        </div>
+        <p class="ma-help">筛选基础中枢及其结构信号（3–6 段），不改变三段核心、高层级递归或 MACD 提示。信号按确认时已知的线段数筛选，不用后来延伸补足。</p>
+        <p class="ma-help">修改后请重新分析；主图、周期对比、行业、回放及新存档使用相同设置。</p>
+        <button type="button" class="line-width-reset" @click="structureSettings = { ...defaultStructureSettings }">恢复默认</button>
+      </details>
 
       <details class="inspector-section ma-section">
         <summary class="ma-heading"><h3>均线系统</h3><span>周期 · K 线数</span><i aria-hidden="true"></i></summary>
@@ -779,6 +805,7 @@ watch(() => route.fullPath, () => { if (route.path === '/chanlun') void loadRout
         <section ref="chartWorkspaceAnchor" class="chart-workspace" :aria-label="workspace === 'chart' ? '看图工作区' : '当前分析上下文'">
           <DataProvenance v-if="snapshotMetadata" :metadata="snapshotMetadata" :count="snapshotBars.length">
             <p>结构 MACD 参数 12 / 26 / 9；EMA 从窗口首根开始预热。</p>
+            <p>{{ structureSettingsLabel(result.structure_settings) }} · 严格价格条件保留；最少线段数仅筛选基础层。</p>
           </DataProvenance>
           <p v-if="bars.some(bar => bar.is_closed === false)" class="structure-scope">虚线空心柱表示尚未确认收盘的 K 线、成交量及 MACD 柱；当前结构和信号仍可能随本周期行情变化。</p>
           <p v-if="result.structure_metadata" class="structure-scope">线段基础结构 · 研究版 — 高层级递归尚未完成；买卖点标在极值处，交易依据为确认时间。</p>
@@ -849,7 +876,7 @@ watch(() => route.fullPath, () => { if (route.path === '/chanlun') void loadRout
         <section v-if="visitedWorkspaces.research" v-show="workspace === 'research'" ref="researchWorkspaceAnchor" class="research-mode-workspace" aria-label="研究工作区">
           <header class="workspace-section-heading"><h3>多周期研究</h3><p>{{ targetTitle }} · 主周期 {{ periodLabel(category) }} · 共同截止 {{ researchAsOf }}</p></header>
           <ResearchWorkspaceTools v-if="multiCharts" :capture="captureResearch" :busy="loading || replayBusy" />
-          <MultiPeriodResearch v-if="snapshotMetadata" :active="workspace === 'research'" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :ma-periods="maAvailablePeriods" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" :radar-source="radarArchiveSource" />
+          <MultiPeriodResearch v-if="snapshotMetadata" :structure-settings="result.structure_settings" :active="workspace === 'research'" :target="target" :code="code" :adjust="effectiveAdjust" :as-of="researchAsOf" :busy="loading || replayBusy" :primary-category="category" :ma-periods="maAvailablePeriods" :primary-snapshot="{ bars: snapshotBars, metadata: snapshotMetadata }" :radar-source="radarArchiveSource" />
           <PenConsolidationPanel v-if="layers.consolidations && result.pen_consolidations?.length" :areas="result.pen_consolidations" />
         </section>
 
@@ -952,7 +979,7 @@ watch(() => route.fullPath, () => { if (route.path === '/chanlun') void loadRout
             <ExtensionHierarchyInspector :data="result.extension_hierarchy" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <EngineeringTrendInspector :data="result.engineering_movement_hierarchy ?? result.engineering_trend_hierarchy" :historical="!!result.layered_movement_ownership" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <ReleasedRecursionInspector :data="result.released_movement_recursion" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" @locate="locateReleased" />
-            <ReleaseResearchDesk :code="result.code" :category="category" :bars="bars" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
+            <ReleaseResearchDesk :structure-settings="result.structure_settings" :code="result.code" :category="category" :bars="bars" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <LayeredOwnershipInspector :data="result.recursive_movement_ownership ?? result.layered_movement_ownership" :historical="!!result.released_movement_recursion" :total="snapshotBars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" />
             <ExpansionInspector :data="result.expansion_regrouping" :versions="result.regrouping_versions" :total="snapshotBars.length" :visible-count="bars.length" :busy="replayBusy || loading || industryLoading" @seek="jumpToConfirmation" @locate="locateExpansion" />
           </div>
@@ -1031,7 +1058,10 @@ watch(() => route.fullPath, () => { if (route.path === '/chanlun') void loadRout
 .inspector-section .ma-heading h3 { margin: 0; }
 .ma-heading span { margin-left: auto; color: var(--text-dim); font-size: 9px; }
 .ma-heading i { width: 5px; height: 5px; margin-right: 3px; border-right: 1px solid var(--text-dim); border-bottom: 1px solid var(--text-dim); transform: rotate(-45deg); transition: transform .15s; }
-.ma-section[open] .ma-heading i { transform: rotate(45deg); }
+.ma-section[open] .ma-heading i, .structure-settings-section[open] .ma-heading i { transform: rotate(45deg); }
+.structure-settings-section > .field { margin-top: 14px; }
+.structure-settings-section > .ma-help { margin: 8px 0; line-height: 1.7; }
+.structure-settings-section > .line-width-reset { margin-top: 6px; }
 .ma-heading:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 .ma-settings { display: flex; flex-direction: column; margin-top: 8px; }
 .ma-setting { display: grid; grid-template-columns: minmax(0, 1fr) 78px; align-items: center; gap: 14px; min-height: 41px; border-bottom: 1px solid rgba(255,255,255,.045); }

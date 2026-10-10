@@ -8,6 +8,7 @@ from easy_tdx.factor.base import FACTORY_REGISTRY, Factor
 
 # 导入所有子模块以触发 @register_factor 装饰器
 from easy_tdx.factor.builtin import (  # noqa: F401
+    alpha101,
     alpha158,
     chanlun,
     gtja191,

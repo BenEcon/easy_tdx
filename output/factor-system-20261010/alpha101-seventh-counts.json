@@ -1,0 +1,22 @@
+{
+  "registered": 414,
+  "canonical": 396,
+  "implemented": 394,
+  "page_eligibility": {
+    "NONE": {
+      "series": 313,
+      "evaluation": 391
+    },
+    "QFQ": {
+      "series": 308,
+      "evaluation": 350
+    },
+    "HFQ": {
+      "series": 308,
+      "evaluation": 350
+    }
+  },
+  "alpha101_registered": 45,
+  "alpha101_canonical": 28,
+  "deployed": 0
+}

@@ -1,0 +1,14 @@
+WARN mypy==2.4.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.1 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.2.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+src/easy_tdx/factor/builtin/alpha101_compound.py:181: error: Incompatible types in assignment (expression has type "list[Fraction | None]", variable has type "Fraction | None")  [assignment]
+src/easy_tdx/factor/builtin/alpha101_compound.py:182: error: Incompatible types in assignment (expression has type "list[Fraction | None]", variable has type "Fraction | None")  [assignment]
+src/easy_tdx/factor/builtin/alpha101_compound.py:183: error: Incompatible types in assignment (expression has type "list[Fraction | None]", variable has type "Fraction | None")  [assignment]
+src/easy_tdx/factor/builtin/alpha101_compound.py:185: error: Value of type "Fraction | None" is not indexable  [index]
+src/easy_tdx/factor/builtin/alpha101_compound.py:187: error: Value of type "Fraction | None" is not indexable  [index]
+Found 5 errors in 1 file (checked 334 source files)

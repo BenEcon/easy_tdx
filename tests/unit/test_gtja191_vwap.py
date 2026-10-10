@@ -498,7 +498,24 @@ async def test_vwap_panel_real_evaluation_freeze_readonly_and_recompute(monkeypa
 
 
 def test_vwap_inventory_not_panel_substitutes():
-    assert {n for n, s in SPECS.items() if "vwap" in s.inputs} == set(DEFAULTS) | {61, 87, 92, 156}
+    assert {n for n, s in SPECS.items() if "vwap" in s.inputs} == set(DEFAULTS) | {
+        39,
+        44,
+        61,
+        64,
+        73,
+        74,
+        77,
+        87,
+        92,
+        101,
+        119,
+        121,
+        125,
+        130,
+        138,
+        156,
+    }
     assert {n for n in DEFAULTS if not SPECS[n].panel} == SERIES
 
 

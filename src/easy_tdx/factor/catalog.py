@@ -10,7 +10,31 @@ from typing import Any
 from easy_tdx.factor.base import Factor
 
 CATALOG_VERSION = "easy-tdx-factor-catalog-v1"
-ALIASES = {"turnover_rate": "amount_relative_20"}
+ALIASES = {
+    "turnover_rate": "amount_relative_20",
+    **{
+        f"alpha101_{a:03d}": f"gtja191_{g:03d}"
+        for a, g in (
+            (3, 105),
+            (11, 7),
+            (13, 99),
+            (14, 136),
+            (15, 32),
+            (16, 83),
+            (20, 107),
+            (22, 104),
+            (35, 117),
+            (37, 184),
+            (40, 42),
+            (41, 13),
+            (42, 120),
+            (44, 62),
+            (45, 113),
+            (46, 86),
+            (50, 16),
+        )
+    },
+}
 BAR_PERIODS = ["DAY", "WEEK", "MONTH", "MIN_1", "MIN_5", "MIN_15", "MIN_30", "MIN_60"]
 
 # Minimum input rows, not a claim of numerical convergence for seeded EWMs.
@@ -245,16 +269,42 @@ def describe_factor(cls: type[Factor], parameters: dict[str, Any] | None = None)
         result["formula_sha256"] = hashlib.sha256(
             (json.dumps(result, sort_keys=True) + source_text).encode()
         ).hexdigest()
-    from easy_tdx.factor.builtin import gtja191
+    from easy_tdx.factor.builtin import alpha101, gtja191
+    from easy_tdx.factor.builtin.alpha101 import Alpha101Factor
     from easy_tdx.factor.builtin.gtja191 import GTJAFactor
+
+    if issubclass(cls, Alpha101Factor):
+        result.update(
+            alpha101.definition_metadata(
+                cls, instance if isinstance(instance, Alpha101Factor) else None
+            )
+        )
+        result["implementation_source_available"] = True
+        source = inspect.getsource(alpha101)
+        if cls.spec.windows:
+            from easy_tdx.factor.builtin import alpha101_compound
+
+            source += inspect.getsource(alpha101_compound)
+        if cls.spec.reference is not None or cls.spec.number in {33, 38}:
+            source += inspect.getsource(gtja191)
+        result["formula_sha256"] = hashlib.sha256(
+            (json.dumps(result, sort_keys=True) + source).encode()
+        ).hexdigest()
+        limitations = result["limitations"]
 
     if issubclass(cls, GTJAFactor):
         result.update(
             gtja191.definition_metadata(cls, instance if isinstance(instance, GTJAFactor) else None)
         )
         result["implementation_source_available"] = True
+        source = inspect.getsource(gtja191)
+        if cls.spec.number == 30:
+            from easy_tdx.factor import risk_inputs
+            from easy_tdx.factor.builtin import risk_residuals
+
+            source += inspect.getsource(risk_residuals) + inspect.getsource(risk_inputs)
         result["formula_sha256"] = hashlib.sha256(
-            (json.dumps(result, sort_keys=True) + inspect.getsource(gtja191)).encode()
+            (json.dumps(result, sort_keys=True) + source).encode()
         ).hexdigest()
         limitations = result["limitations"]
     if panel_factor:

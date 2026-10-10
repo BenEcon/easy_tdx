@@ -32,6 +32,8 @@ def test_replay_equals_independent_prefix(cutoff):
     request = ReplayRequest(code="SH600699", bars=rows, visible_count=cutoff)
     actual = replay_snapshot(request)
     assert actual.pop("replay")["historical_data_vintage"] is False
+    assert actual.pop("structure_settings") == {"bi_type": "new", "zs_min_lines": 3}
+    actual.pop("structure_settings_scope")
     expected = (
         ChanlunAnalyser(code="SH600699", frequency="day")
         .process_klines(pd.DataFrame(rows[:cutoff]))

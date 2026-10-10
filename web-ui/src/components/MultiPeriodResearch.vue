@@ -16,10 +16,11 @@ import MacSelect from './MacSelect.vue'
 import ResearchContextDetails from './ResearchContextDetails.vue'
 import MultiPeriodOverviewTable from './MultiPeriodOverviewTable.vue'
 import { overviewPeriods } from '../period-overview'
+import { readStructureSettings, type StructureSettings } from '../structure-settings'
 import { canAutoStudy } from '../research-workspace'
 import { studyPeriods as periods, studyLabel as label, studyNumber as fmt, studyWindowError, studyTime, type Study, type StudyPeriod as Period } from '../research-study'
 
-const props = withDefaults(defineProps<{ code: string; target?: ResearchTarget; adjust: AdjustMode; asOf: string; busy?: boolean; primaryCategory: Category; primarySnapshot: BarSnapshot; maPeriods?: number[]; active?: boolean; radarSource?:RadarArchiveSource|null }>(), {active:true})
+const props = withDefaults(defineProps<{ code: string; target?: ResearchTarget; adjust: AdjustMode; asOf: string; busy?: boolean; primaryCategory: Category; primarySnapshot: BarSnapshot; maPeriods?: number[]; active?: boolean; radarSource?:RadarArchiveSource|null; structureSettings?: StructureSettings }>(), {active:true})
 const {currentUser}=useAuth()
 const selected = ref<Period[]>([...overviewPeriods])
 const automatic = ref(true)
@@ -39,7 +40,7 @@ const loading = ref(false)
 const errors = ref<string[]>([])
 const periodErrors = ref<Record<string, string>>({})
 const completed = shallowRef<{payload:StudyArchivePayload;settings:string;owner:string}|null>(null)
-const settingsKey = computed(() => JSON.stringify([props.code, props.target, props.adjust, props.asOf, props.primaryCategory, props.primarySnapshot, props.radarSource, selected.value, volumeMultiple.value, squeezePercent.value, maResearch.value, windowMode.value, windowBars.value, windowStart.value, windowEnd.value]))
+const settingsKey = computed(() => JSON.stringify([props.structureSettings, props.code, props.target, props.adjust, props.asOf, props.primaryCategory, props.primarySnapshot, props.radarSource, selected.value, volumeMultiple.value, squeezePercent.value, maResearch.value, windowMode.value, windowBars.value, windowStart.value, windowEnd.value]))
 let generation = 0
 let controller: AbortController | null = null
 let scheduled: ReturnType<typeof setTimeout> | undefined
@@ -82,7 +83,7 @@ async function run(manual = false) {
   const query=queryAction(manual)
   const identity = { code: props.code, adjust: props.adjust, asOf: props.asOf }
   const instrument: ResearchTarget = props.target ? {...props.target} : {kind:'stock',code:props.code,market:detectMarket(props.code)}
-  const options = { volume_multiple: volumeMultiple.value, squeeze_quantile: squeezePercent.value / 100,
+  const options = { structure_settings: readStructureSettings(props.structureSettings), volume_multiple: volumeMultiple.value, squeeze_quantile: squeezePercent.value / 100,
     ma_periods: maResearch.value, window_bars: windowMode.value === 'custom' ? windowBars.value : Number(windowMode.value) || 20,
     ...(windowMode.value === 'range' ? {window_start:windowStart.value, window_end:windowEnd.value} : {}) }
   study.value = null; completed.value = null; errors.value = []; periodErrors.value = {}; loading.value = true

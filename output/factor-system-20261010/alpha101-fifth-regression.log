@@ -1,0 +1,46 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 16%]
+........................................................................ [ 21%]
+........................................................................ [ 27%]
+........................................................................ [ 32%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 49%]
+........................................................................ [ 54%]
+....................................F...F............................... [ 59%]
+........................................................................ [ 65%]
+........................................................................ [ 70%]
+........................................................................ [ 76%]
+........................................................................ [ 81%]
+........................................................................ [ 87%]
+........................................................................ [ 92%]
+........................................................................ [ 98%]
+.........................                                                [100%]
+=================================== FAILURES ===================================
+_ test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_042] __
+tests/unit/test_factor_research.py:211: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    result = FactorEngine().compute_matrix(frames, factor)
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:79: in build
+    raise ValueError(f"{symbol} 缺少字段：{', '.join(sorted(missing))}")
+E   ValueError: SZ:000001 缺少字段：vwap
+_ test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_050] __
+tests/unit/test_factor_research.py:211: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    result = FactorEngine().compute_matrix(frames, factor)
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:79: in build
+    raise ValueError(f"{symbol} 缺少字段：{', '.join(sorted(missing))}")
+E   ValueError: SZ:000001 缺少字段：vwap
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_042]
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_050]
+2 failed, 1319 passed, 1 warning in 459.94s (0:07:39)

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="16" skipped="0" tests="33" time="83.440" timestamp="2026-10-10T18:01:38.570960+08:00" hostname="BowenECON.local"><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[None-146]" time="5.614" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[None-165]" time="0.199" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[None-166]" time="0.205" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[None-183]" time="0.110" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[3-146]" time="5.044" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[3-165]" time="0.016" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[3-166]" time="0.027" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[3-183]" time="0.015" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[7-146]" time="5.940" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[7-165]" time="0.026" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[7-166]" time="0.044" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_default_custom_oracle_prefix[7-183]" time="0.026" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_missing_constant_extreme_and_cancel[146]" time="0.071" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_missing_constant_extreme_and_cancel[165]" time="0.012" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_missing_constant_extreme_and_cancel[166]" time="0.013" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_missing_constant_extreme_and_cancel[183]" time="0.012" /><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[NONE-146]" time="20.057"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    [1e200*(1+i%7*.1) for i in range(30)],
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[NONE-165]" time="0.723"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    [1e200*(1+i%7*.1) for i in range(30)],
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[NONE-166]" time="0.533"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    [1e200*(1+i%7*.1) for i in range(30)],
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[NONE-183]" time="0.345"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    [1e200*(1+i%7*.1) for i in range(30)],
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-NONE.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[QFQ-146]" time="20.639"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[QFQ-165]" time="0.738"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[QFQ-166]" time="0.560"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[QFQ-183]" time="0.349"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-QFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[HFQ-146]" time="19.202"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[HFQ-165]" time="0.673"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[HFQ-166]" time="0.449"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_real_periods_adjustments[HFQ-183]" time="0.330"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'">tests/unit/test_gtja191_window_interpretations.py:122: in test_interpreted_real_periods_adjustments
+    factor = configure_factor(f"gtja191_{number:03}", p)
+tests/unit/test_factor_data.py:23: in frozen
+    data = (ROOT / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_units/0-300750-MIN30-HFQ.json'</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_pool_identity_and_metadata[146]" time="0.331"><failure message="TypeError: issubclass() arg 1 must be a class">tests/unit/test_gtja191_window_interpretations.py:140: in test_interpreted_pool_identity_and_metadata
+    [1e200 * (1 + i % 7 * 0.1) for i in range(30)],
+src/easy_tdx/factor/catalog.py:117: in describe_factor
+    panel_factor = issubclass(cls, PanelFactor)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/abc.py:123: in __subclasscheck__
+    return _abc_subclasscheck(cls, subclass)
+E   TypeError: issubclass() arg 1 must be a class</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_pool_identity_and_metadata[165]" time="0.022"><failure message="TypeError: issubclass() arg 1 must be a class">tests/unit/test_gtja191_window_interpretations.py:140: in test_interpreted_pool_identity_and_metadata
+    [1e200 * (1 + i % 7 * 0.1) for i in range(30)],
+src/easy_tdx/factor/catalog.py:117: in describe_factor
+    panel_factor = issubclass(cls, PanelFactor)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/abc.py:123: in __subclasscheck__
+    return _abc_subclasscheck(cls, subclass)
+E   TypeError: issubclass() arg 1 must be a class</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_pool_identity_and_metadata[166]" time="0.025"><failure message="TypeError: issubclass() arg 1 must be a class">tests/unit/test_gtja191_window_interpretations.py:140: in test_interpreted_pool_identity_and_metadata
+    [1e200 * (1 + i % 7 * 0.1) for i in range(30)],
+src/easy_tdx/factor/catalog.py:117: in describe_factor
+    panel_factor = issubclass(cls, PanelFactor)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/abc.py:123: in __subclasscheck__
+    return _abc_subclasscheck(cls, subclass)
+E   TypeError: issubclass() arg 1 must be a class</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_pool_identity_and_metadata[183]" time="0.021"><failure message="TypeError: issubclass() arg 1 must be a class">tests/unit/test_gtja191_window_interpretations.py:140: in test_interpreted_pool_identity_and_metadata
+    [1e200 * (1 + i % 7 * 0.1) for i in range(30)],
+src/easy_tdx/factor/catalog.py:117: in describe_factor
+    panel_factor = issubclass(cls, PanelFactor)
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/abc.py:123: in __subclasscheck__
+    return _abc_subclasscheck(cls, subclass)
+E   TypeError: issubclass() arg 1 must be a class</failure></testcase><testcase classname="tests.unit.test_gtja191_window_interpretations" name="test_interpreted_hand_examples_and_invalid_windows" time="0.004" /></testsuite></testsuites>

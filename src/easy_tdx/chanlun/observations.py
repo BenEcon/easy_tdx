@@ -7,8 +7,10 @@ from typing import Any, SupportsFloat
 import pandas as pd
 
 from easy_tdx.chanlun import ChanlunAnalyser
+from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.chanlun.observation_signals import observation_signals
 from easy_tdx.chanlun.research_context import DEFAULT_MA, build_context, pair_context
+from easy_tdx.chanlun.structure_filter import filter_base_outputs
 
 
 def observe(
@@ -20,11 +22,16 @@ def observe(
     ma_periods: Sequence[int] = DEFAULT_MA,
     window_bars: int = 20,
     window_start: datetime | None = None,
+    structure_config: ChanlunConfig | None = None,
+    base_min_lines: int = 3,
 ) -> dict[str, Any]:
     close, vol = frame.close, frame.vol
     ma5, ma10 = close.rolling(5).mean(), close.rolling(10).mean()
     v5, v10 = vol.rolling(5).mean(), vol.rolling(10).mean()
-    result = ChanlunAnalyser(frequency=category).process_klines(frame)
+    result = filter_base_outputs(
+        ChanlunAnalyser(frequency=category, config=structure_config).process_klines(frame),
+        base_min_lines,
+    )
     macd = result.macd
 
     def number(value: SupportsFloat | None) -> float | None:
@@ -79,7 +86,12 @@ def observe(
             observations.append("价格创前 20 根新低，但未形成负向 MACD 柱；特殊观察，非一买")
     active = [b for b in result.bcs if b.status != "superseded"]
     context = build_context(
-        frame, result, ma_periods=ma_periods, window_bars=window_bars, window_start=window_start
+        frame,
+        result,
+        ma_periods=ma_periods,
+        window_bars=window_bars,
+        window_start=window_start,
+        structure_config=structure_config,
     )
     if "error" in context:
         return {"category": category, **context}

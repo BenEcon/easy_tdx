@@ -1,0 +1,59 @@
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 32%]
+........................................................................ [ 43%]
+........................................................................ [ 53%]
+........................................................................ [ 64%]
+........................................................................ [ 75%]
+........................................................................ [ 86%]
+..............................F.........F..FF........................... [ 97%]
+....................                                                     [100%]
+=================================== FAILURES ===================================
+_ test_series_frozen_dispatch_matches_sync_including_missing_factor_and_full_archive _
+tests/unit/test_factor_series_tasks.py:53: in test_series_frozen_dispatch_matches_sync_including_missing_factor_and_full_archive
+    result = dispatch_task(round_trip(value))
+src/easy_tdx/web/task_dispatch.py:153: in dispatch_task
+    raise ValueError("因子序列冻结配置字段不完整或含未知字段")
+E   ValueError: 因子序列冻结配置字段不完整或含未知字段
+___ test_series_progress_storage_failure_is_not_a_missing_factor_diagnostic ____
+tests/unit/test_factor_series_tasks.py:113: in test_series_progress_storage_failure_is_not_a_missing_factor_diagnostic
+    dispatch_task(value)
+src/easy_tdx/web/task_dispatch.py:153: in dispatch_task
+    raise ValueError("因子序列冻结配置字段不完整或含未知字段")
+E   ValueError: 因子序列冻结配置字段不完整或含未知字段
+__________________ test_series_real_worker_result_and_reopen ___________________
+tests/unit/test_factor_series_tasks.py:179: in test_series_real_worker_result_and_reopen
+    expected = dispatch_task(frozen)
+src/easy_tdx/web/task_dispatch.py:153: in dispatch_task
+    raise ValueError("因子序列冻结配置字段不完整或含未知字段")
+E   ValueError: 因子序列冻结配置字段不完整或含未知字段
+_______________ test_series_memory_cancel_and_full_result_budget _______________
+tests/unit/test_factor_series_tasks.py:210: in test_series_memory_cancel_and_full_result_budget
+    assert reached.wait(2)
+E   assert False
+E    +  where False = wait(2)
+E    +    where wait = <threading.Event object at 0x10e378040>.wait
+------------------------------ Captured log call -------------------------------
+ERROR    easy_tdx.web.task_runner:task_runner.py:405 回测任务 c696762ad71446cd8f6f7d49ab3d7391 失败
+Traceback (most recent call last):
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/task_runner.py", line 383, in _run
+    result = func()
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/task_runner.py", line 146, in guarded
+    result = func()
+  File "/Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_factor_series_tasks.py", line 209, in <lambda>
+    task = runner.submit(lambda: dispatch_task(value), owner_id="alice")
+  File "/Users/bowen/Documents/Python/Google/TDX-work/src/easy_tdx/web/task_dispatch.py", line 153, in dispatch_task
+    raise ValueError("因子序列冻结配置字段不完整或含未知字段")
+ValueError: 因子序列冻结配置字段不完整或含未知字段
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_factor_series_tasks.py::test_series_frozen_dispatch_matches_sync_including_missing_factor_and_full_archive
+FAILED tests/unit/test_factor_series_tasks.py::test_series_progress_storage_failure_is_not_a_missing_factor_diagnostic
+FAILED tests/unit/test_factor_series_tasks.py::test_series_real_worker_result_and_reopen
+FAILED tests/unit/test_factor_series_tasks.py::test_series_memory_cancel_and_full_result_budget
+4 failed, 664 passed, 1 warning in 68.53s (0:01:08)

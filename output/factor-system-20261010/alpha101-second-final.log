@@ -1,0 +1,169 @@
+.....FF...........FF...........FF.....................................F. [  6%]
+........................................................................ [ 12%]
+........................................................................ [ 19%]
+........................................................................ [ 25%]
+........................................................................ [ 32%]
+.........................................FF............................. [ 38%]
+........................................................................ [ 45%]
+........................................................................ [ 51%]
+........................................................................ [ 57%]
+........................................................................ [ 64%]
+........................................................................ [ 70%]
+........................................................................ [ 77%]
+........................................................................ [ 83%]
+........................................................................ [ 90%]
+........................................................................ [ 96%]
+.......................................                                  [100%]
+=================================== FAILURES ===================================
+_____ test_second_default_custom_independent_prefix_permutation[False-33] ______
+tests/unit/test_alpha101_second.py:128: in test_second_default_custom_independent_prefix_permutation
+    np.testing.assert_allclose(actual, expected, atol=1e-11, equal_nan=True)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-11
+E   
+E   Mismatched elements: 6 / 480 (1.25%)
+E   Max absolute difference among violations: 0.08333333
+E   Max relative difference among violations: 0.14285714
+E    ACTUAL: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+E    DESIRED: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+_____ test_second_default_custom_independent_prefix_permutation[False-38] ______
+tests/unit/test_alpha101_second.py:128: in test_second_default_custom_independent_prefix_permutation
+    np.testing.assert_allclose(actual, expected, atol=1e-11, equal_nan=True)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-11
+E   
+E   Mismatched elements: 316 / 480 (65.8%)
+E   Max absolute difference among violations: 0.41666667
+E   Max relative difference among violations: 0.71428571
+E    ACTUAL: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],...
+E    DESIRED: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],...
+______ test_second_default_custom_independent_prefix_permutation[True-33] ______
+tests/unit/test_alpha101_second.py:128: in test_second_default_custom_independent_prefix_permutation
+    np.testing.assert_allclose(actual, expected, atol=1e-11, equal_nan=True)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-11
+E   
+E   Mismatched elements: 6 / 480 (1.25%)
+E   Max absolute difference among violations: 0.08333333
+E   Max relative difference among violations: 0.14285714
+E    ACTUAL: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+E    DESIRED: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+______ test_second_default_custom_independent_prefix_permutation[True-38] ______
+tests/unit/test_alpha101_second.py:128: in test_second_default_custom_independent_prefix_permutation
+    np.testing.assert_allclose(actual, expected, atol=1e-11, equal_nan=True)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-11
+E   
+E   Mismatched elements: 348 / 480 (72.5%)
+E   Max absolute difference among violations: 0.3125
+E   Max relative difference among violations: 0.71428571
+E    ACTUAL: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [-0.583333, -0.486111, -0.097222, -0.388889, -0.291667, -0.194444],...
+E    DESIRED: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [-0.583333, -0.486111, -0.097222, -0.291667, -0.291667, -0.291667],...
+______ test_second_every_input_missing_invalid_constant_and_recovery[33] _______
+tests/unit/test_alpha101_second.py:162: in test_second_every_input_missing_invalid_constant_and_recovery
+    np.testing.assert_allclose(actual, expected, atol=1e-11, equal_nan=True)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-11
+E   
+E   Mismatched elements: 6 / 480 (1.25%)
+E   Max absolute difference among violations: 0.08333333
+E   Max relative difference among violations: 0.14285714
+E    ACTUAL: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+E    DESIRED: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+______ test_second_every_input_missing_invalid_constant_and_recovery[38] _______
+tests/unit/test_alpha101_second.py:162: in test_second_every_input_missing_invalid_constant_and_recovery
+    np.testing.assert_allclose(actual, expected, atol=1e-11, equal_nan=True)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-11
+E   
+E   Mismatched elements: 316 / 480 (65.8%)
+E   Max absolute difference among violations: 0.41666667
+E   Max relative difference among violations: 0.71428571
+E    ACTUAL: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],...
+E    DESIRED: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],...
+_____________________ test_second_real_pool_and_minute[38] _____________________
+tests/unit/test_alpha101_second.py:245: in test_second_real_pool_and_minute
+    np.testing.assert_allclose(actual, expected, atol=1e-11, equal_nan=True)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-11
+E   
+E   Mismatched elements: 2 / 3200 (0.0625%)
+E   Max absolute difference among violations: 0.035
+E   Max relative difference among violations: 0.07692308
+E    ACTUAL: array([[   nan,    nan,    nan, ...,    nan,    nan,    nan],
+E          [   nan,    nan,    nan, ...,    nan,    nan,    nan],
+E          [   nan,    nan,    nan, ...,    nan,    nan,    nan],...
+E    DESIRED: array([[   nan,    nan,    nan, ...,    nan,    nan,    nan],
+E          [   nan,    nan,    nan, ...,    nan,    nan,    nan],
+E          [   nan,    nan,    nan, ...,    nan,    nan,    nan],...
+_ test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_033] __
+tests/unit/test_factor_research.py:212: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    np.testing.assert_allclose(
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-12
+E   
+E   Mismatched elements: 6 / 480 (1.25%)
+E   Max absolute difference among violations: 0.08333333
+E   Max relative difference among violations: 0.14285714
+E    ACTUAL: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+E    DESIRED: array([[0.666667, 0.333333, 1.      , 0.5     , 0.833333, 0.166667],
+E          [0.333333, 1.      , 0.833333, 0.5     , 0.666667, 0.166667],
+E          [0.166667, 0.333333, 1.      , 0.5     , 0.666667, 0.833333],...
+_ test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_038] __
+tests/unit/test_factor_research.py:212: in test_every_eligible_builtin_preserves_dates_and_causal_prefix
+    np.testing.assert_allclose(
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=1e-12
+E   
+E   Mismatched elements: 326 / 480 (67.9%)
+E   Max absolute difference among violations: 0.41666667
+E   Max relative difference among violations: 0.71428571
+E    ACTUAL: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],...
+E    DESIRED: array([[      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],
+E          [      nan,       nan,       nan,       nan,       nan,       nan],...
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_alpha101_second.py::test_second_default_custom_independent_prefix_permutation[False-33]
+FAILED tests/unit/test_alpha101_second.py::test_second_default_custom_independent_prefix_permutation[False-38]
+FAILED tests/unit/test_alpha101_second.py::test_second_default_custom_independent_prefix_permutation[True-33]
+FAILED tests/unit/test_alpha101_second.py::test_second_default_custom_independent_prefix_permutation[True-38]
+FAILED tests/unit/test_alpha101_second.py::test_second_every_input_missing_invalid_constant_and_recovery[33]
+FAILED tests/unit/test_alpha101_second.py::test_second_every_input_missing_invalid_constant_and_recovery[38]
+FAILED tests/unit/test_alpha101_second.py::test_second_real_pool_and_minute[38]
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_033]
+FAILED tests/unit/test_factor_research.py::test_every_eligible_builtin_preserves_dates_and_causal_prefix[alpha101_038]
+9 failed, 1110 passed, 1 warning in 172.50s (0:02:52)

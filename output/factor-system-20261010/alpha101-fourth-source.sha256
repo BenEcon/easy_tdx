@@ -1,0 +1,7 @@
+e808979c514428e67d14c4c7cc5dbd399bc49baa73cfeb28c520c7673d3b6698  output/factor-system-20261010/source-before-alpha101-fourth.tar.gz
+aa3ad50dcf407d7a5cb8858a8ec4896c376c597996bde15ab6961dc2bca3a92a  output/factor-system-20261010/source-after-alpha101-fourth.tar.gz
+cf38e9b20e020a00dc8fcba9cf2cc8482c845c296a1a2415e5d3c634309215dd  output/factor-system-20261010/alpha101-fourth-final.xml
+30b31dd5fcbc58d057fb5cd386a3c6c57ce990da680ec1fcf0b9937fb24108ba  output/factor-system-20261010/alpha101-fourth-regression.xml
+59e88dd8c9576423bb1e4bf11f1f08b65af603d2c3eac3c2b71b81f9bd7aa5f7  output/factor-system-20261010/alpha101-fourth-evidence.json
+a658dcccb1d2bf0adf49cfee8f7bc20540298069a21e253a22d4112171847e49  ../output/playwright/alpha101-fourth-series.json
+fc5ad0e21cafd82dfc5d2cbc720be041cea0499ee9441a8bc056654051fded4a  ../output/playwright/alpha101-fourth-pool.json

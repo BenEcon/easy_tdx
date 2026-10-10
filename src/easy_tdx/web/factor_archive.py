@@ -410,6 +410,20 @@ def validate_factor_archive(payload: dict[str, Any]) -> None:
             "股票池与原始输入不一致",
         )
         frames = [restore_input(s) for s in snapshots]
+        from easy_tdx.factor.benchmark import BENCHMARKS, FIELDS, validate_benchmark_pool
+
+        benchmark = settings.get("benchmark")
+        dependent = any(set(d.get("inputs", [])).intersection(FIELDS) for d in definitions.values())
+        _require(
+            (isinstance(benchmark, str) and benchmark in BENCHMARKS)
+            if dependent
+            else benchmark is None,
+            "冻结公式依赖与基准配置不一致",
+        )
+        validate_benchmark_pool(frames, benchmark)
+        from easy_tdx.factor.risk_inputs import validate_risk_pool
+
+        validate_risk_pool(frames)
         for frame in frames:
             _require(len(frame) <= settings["count"], "输入行数超过所选范围")
             metadata = frame.attrs.get("snapshot_metadata")

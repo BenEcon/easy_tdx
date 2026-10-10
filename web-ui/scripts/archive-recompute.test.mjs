@@ -35,6 +35,22 @@ test('study plan preserves actual research settings and saved time labels',()=>{
   assert.deepEqual(request.ma_periods,[5,13]);assert.equal(request.series[0].bar_time,'start')
   assert.equal(request.series.length,1)
 })
+test('saved structural settings survive chart and study archive replay; mismatch is rejected',()=>{
+  const settings={bi_type:'old',zs_min_lines:5},payload=chart()
+  payload.charts[0].result.structure_settings=settings
+  const job=planArchiveRecompute(record(payload)).jobs[0]
+  assert.deepEqual(job.request.chart.structure_settings,settings)
+  const returned=response(job)
+  returned.scope='structure_and_macd_saved_settings'
+  returned.result.structure_settings=settings
+  assert.doesNotThrow(()=>checkRecomputeResult(returned,job,'request'))
+  returned.result.structure_settings={bi_type:'new',zs_min_lines:3}
+  assert.throws(()=>checkRecomputeResult(returned,job,'request'),/结构设置/)
+  const s=study();s.result.parameters.structure_settings=settings
+  assert.deepEqual(planArchiveRecompute(record(s,'study')).jobs[0].request.study.structure_settings,settings)
+  payload.charts[0].result.structure_settings={bi_type:'unknown',zs_min_lines:5}
+  assert.throws(()=>planArchiveRecompute(record(payload)),/结构计算设置/)
+})
 test('unrounded path diff distinguishes null, missing, structure, empty arrays, and ordering',()=>{
   const before={p:1.234567891,x:null,empty:[],a:[1,2]},after={p:1.234567892,y:null,empty:{},a:[2,1,3]}
   const diff=compareArchiveValues(before,after),map=new Map(diff.map(row=>[row.path,row]))

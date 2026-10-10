@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed} from 'vue'
 import NumberStepper from './NumberStepper.vue'
-import {editableFactorParameters,resetFactorParameter,type FactorParameters,type FactorDefinition} from '../factor-parameters'
+import {editableFactorParameters,resetFactorParameter,factorParameterUnit,type FactorParameters,type FactorDefinition} from '../factor-parameters'
 const model=defineModel<FactorParameters>({required:true})
 const props=defineProps<{names:string[];definitions:FactorDefinition[]}>()
 const rows=computed(()=>props.names.flatMap(name=>{
@@ -14,9 +14,9 @@ function reset(name:string,key:string){model.value=resetFactorParameter(model.va
 <template>
   <details v-if="rows.length" class="factor-parameters" open>
     <summary>因子参数 <span>{{ rows.length }} 项可编辑</span></summary>
-    <p>窗口单位为当前 K 线根数；修改后须重新计算。标识保留原值，结果记录实际公式与窗口。</p>
+    <p>普通窗口按 K 线根数；条件样本数、倍数与指数另标单位。修改后须重新计算，结果记录实际公式与参数。</p>
     <div v-for="row in rows" :key="`${row.name}:${row.key}`" class="parameter-row">
-      <label><strong>{{ row.definition.parameterized_title??row.definition.display_name }}</strong><small>{{ row.name }} · {{ row.spec.label??'窗口' }} · 默认 {{ row.spec.default }} {{ row.spec.unit==='multiple'?'倍':'根' }}</small></label>
+      <label><strong>{{ row.definition.parameterized_title??row.definition.display_name }}</strong><small>{{ row.name }} · {{ row.spec.label??'窗口' }} · 默认 {{ row.spec.default }} {{ factorParameterUnit(row.spec.unit) }}</small></label>
       <div class="parameter-actions"><NumberStepper :model-value="model[row.name]?.[row.key]??row.spec.default" :min="row.spec.min" :max="row.spec.max" :step="row.spec.step??1" :aria-label="`${row.name} ${row.spec.label??'窗口根数'}`" compact @update:model-value="update(row.name,row.key,$event)"/><button type="button" :disabled="model[row.name]?.[row.key]===undefined" :aria-label="`恢复${row.name}${row.spec.label??'窗口'}默认参数`" @click="reset(row.name,row.key)">重置</button></div>
     </div>
   </details>

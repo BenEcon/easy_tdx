@@ -1,6 +1,16 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {browseFactors,factorAvailabilityReason} from '../src/factor-catalog.ts'
+import {browseFactors,factorAvailabilityReason,eligibleEvaluationFactors} from '../src/factor-catalog.ts'
+
+test('evaluation keeps exact-search aliases until query-aware browsing',()=>{
+  const alpha={name:'alpha101_013',library:'alpha101',alias_of:'gtja191_099',evaluation_available:true}
+  const disabled={name:'gtja191_030',library:'gtja191',evaluation_available:false}
+  const eligible=eligibleEvaluationFactors([alpha,disabled])
+  assert.deepEqual(eligible,[alpha])
+  assert.deepEqual(browseFactors(eligible,'alpha101',''),[])
+  assert.deepEqual(browseFactors(eligible,'alpha101','alpha101_013'),[alpha])
+  assert.deepEqual(browseFactors(eligible,'alpha101','', ['alpha101_013']),[alpha])
+})
 
 const rows=[
   {name:'momentum_20d',library:'easy_tdx_builtin',display_name:'动量'},

@@ -1,0 +1,9 @@
+### Result
+{"staleResultsCleared":true,"collapsedByDefault":true,"pageWidth":390,"settings":"结构计算设置\n新笔 · 3 段\n成笔规则\n新笔 · 至少 1 根独立 K 线\n\n只切换独立 K 线间距；顶底交替及严格价格条件始终保留。\n\n基础中枢最少线段数\n\n筛选基础中枢及其结构信号（3–6 段），不改变三段核心、高层级递归或 MACD 提示。信号按确认时已知的线段数筛选，不用后来延伸补足。\n\n修改后请重新分析；主图、周期对比、行业、回放及新存档使用相同设置。\n\n恢复默认"}
+### Ran Playwright code
+```js
+await (async page => { await page.getByRole('button',{name:'基础中枢最少线段数增加',exact:true}).click(); await page.getByRole('heading',{name:'观察价格如何形成结构',exact:true}).waitFor(); if(await page.getByRole('button',{name:'双图对比',exact:true}).count())throw Error('stale comparison retained'); await page.reload(); await page.locator('.structure-settings-section').waitFor(); const collapsed=await page.locator('.structure-settings-section').evaluate(e=>!e.open); await page.locator('.structure-settings-section summary').click(); await page.locator('.structure-settings-section').scrollIntoViewIfNeeded(); await page.screenshot({path:'output/playwright/structure-settings-desktop.png'}); await page.setViewportSize({width:390,height:844}); await page.locator('.structure-settings-section').scrollIntoViewIfNeeded(); await page.screenshot({path:'output/playwright/structure-settings-mobile.png'}); return {staleResultsCleared:true,collapsedByDefault:collapsed,pageWidth:await page.evaluate(()=>document.documentElement.scrollWidth),settings:await page.locator('.structure-settings-section').innerText()}; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:8773/chanlun
+- Page Title: 股票分析 · Analysis Studio

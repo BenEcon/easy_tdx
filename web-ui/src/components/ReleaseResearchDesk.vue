@@ -9,7 +9,7 @@ import ConfirmationReplay from './ConfirmationReplay.vue'
 import ReleasedRecursionInspector from './ReleasedRecursionInspector.vue'
 import ExhaustiveResearch from './ExhaustiveResearch.vue'
 
-const props = defineProps<{ code: string; category: Category; bars: Bar[]; total: number; busy: boolean }>()
+const props = defineProps<{ code: string; category: Category; bars: Bar[]; total: number; busy: boolean; structureSettings?: import('../structure-settings').StructureSettings }>()
 const emit = defineEmits<{ seek: [position: number] }>()
 const events = ref<ReleaseHistoryEvent[]>([]), through = ref(0), pending = ref(false), error = ref('')
 const comparison = ref<ReleaseComparison | null>(null)
@@ -17,7 +17,7 @@ const policy = ref('earliest')
 let version = 0, controller: AbortController | undefined
 function cancel() { version++; controller?.abort(); pending.value = false }
 function reset() { cancel(); events.value = []; through.value = 0; comparison.value = null; error.value = '' }
-watch(() => [props.code, props.category, props.bars], reset)
+watch(() => [props.code, props.category, props.bars, props.structureSettings], reset)
 watch(() => props.busy, busy => { if (busy) cancel() })
 onBeforeUnmount(cancel)
 const selected = computed(() => comparison.value?.variants.find(v => v.policy === policy.value))
@@ -25,7 +25,7 @@ const policies: Record<string, string> = {earliest: '默认 · 最早可用优�
 async function load(mode: 'history' | 'comparison') {
   if (props.busy || pending.value || !props.bars.length) return
   const run = ++version; controller = new AbortController(); pending.value = true; error.value = ''
-  const request = {code: props.code, category: props.category, bars: props.bars, visible_count: props.bars.length}
+  const request = {code: props.code, category: props.category, bars: props.bars, visible_count: props.bars.length, structure_settings: props.structureSettings}
   try {
     if (mode === 'history') {
       for (let start = through.value + 1; start <= request.visible_count; start += 40) {
@@ -55,7 +55,7 @@ async function load(mode: 'history' | 'comparison') {
   <details class="research-desk research-panel research-hierarchy">
     <summary><strong>归属时间轴与分解研究</strong><span>按需计算 · 不改变默认分析</span></summary>
     <div class="research-panel-body">
-    <ExhaustiveResearch :code="code" :category="category" :bars="bars" :total="total" :busy="busy || pending" @seek="emit('seek', $event)" />
+    <ExhaustiveResearch :structure-settings="structureSettings" :code="code" :category="category" :bars="bars" :total="total" :busy="busy || pending" @seek="emit('seek', $event)" />
     <dl class="research-copy"><div><dt>重建方式</dt><dd>使用当前复权快照逐根截断、重新识别笔和线段，再计算归属。</dd></div><div><dt>数据版本</dt><dd>不是交易日当时保存的数据版本，也不把最新结果倒填过去。</dd></div></dl>
     <div class="actions">
       <button :disabled="busy || pending || through === bars.length" @click="load('history')">{{ through === bars.length ? '时间轴已完成' : through ? '继续重建时间轴' : '重建归属时间轴' }}</button>

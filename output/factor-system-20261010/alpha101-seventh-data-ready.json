@@ -1,0 +1,2800 @@
+{
+  "scope": "指定十股320根不复权日线冻结池；不代表实时、历史PIT或生产许可就绪",
+  "inputs": [
+    {
+      "file": "0-000001-DAILY-NONE.json",
+      "sha256": "7c562e05057350f63bbba48f0c6fd0a9e670bb7998be66fc2f40d4a5c99bb25b"
+    },
+    {
+      "file": "0-000002-DAILY-NONE.json",
+      "sha256": "b092be1ec866ed0a65004d0bee328c57a699998faadacff3f14508277e5a9301"
+    },
+    {
+      "file": "0-000100-DAILY-NONE.json",
+      "sha256": "c23a1da8493d8e1f084974dc4671b1b8b4defd701d68ebfdafd5bbceb69a9792"
+    },
+    {
+      "file": "0-000725-DAILY-NONE.json",
+      "sha256": "fd7364b50f76ecce61b0ffd47feff24dbd7bc5244fa602d21efebeabb4b9b74d"
+    },
+    {
+      "file": "0-300750-DAILY-NONE.json",
+      "sha256": "f24bd0cf2941b218dc237ee4402ada374e9b06f22c72689a168fd7a667eb6dad"
+    },
+    {
+      "file": "1-600000-DAILY-NONE.json",
+      "sha256": "dbeaba7ee5923ac8e61a5005912de47a459d8000cdaaba53da2a492bde394ac9"
+    },
+    {
+      "file": "1-600015-DAILY-NONE.json",
+      "sha256": "5401b4a7d6f8b2c3bbf7f0a70d40ca823c21d1d333f383bc18aae0bf4bd07b8c"
+    },
+    {
+      "file": "1-600036-DAILY-NONE.json",
+      "sha256": "64c0138d9bb831dbabf27ef36f01528302121ceeba6e63cad89a78b3d637fa37"
+    },
+    {
+      "file": "1-600050-DAILY-NONE.json",
+      "sha256": "f220d665632a7841e82127012f8e0096ccd515e80155dfb89f4545b199327c27"
+    },
+    {
+      "file": "1-601998-DAILY-NONE.json",
+      "sha256": "d04292c4bc89713f589830d8875eb4f255ef95ec3386f379a31cb674cd977798"
+    }
+  ],
+  "registered_in_batch": 45,
+  "canonical_definitions": 28,
+  "canonical_ever_finite": 28,
+  "canonical_latest_any": 28,
+  "canonical_latest_all": 24,
+  "ever_finite": 45,
+  "latest_any": 44,
+  "latest_all": 36,
+  "rows": [
+    {
+      "name": "alpha101_002",
+      "alias_of": null,
+      "definition_sha256": "5fa7755ee730ba72c9b02dfb414d30d379f37e58013f8ec17c7f75c1d5a33465",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3130,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_003",
+      "alias_of": "gtja191_105",
+      "definition_sha256": "0608c4dba1c6c39ab4bb014032bada4a1914899fb7c8cc64da62ded829cdf86c",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 357,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 2,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 33,
+          "first_valid": "2025-11-04 00:00:00",
+          "last_valid": "2026-01-27 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 85,
+          "first_valid": "2025-09-25 00:00:00",
+          "last_valid": "2026-04-16 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 55,
+          "first_valid": "2026-01-12 00:00:00",
+          "last_valid": "2026-06-03 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 22,
+          "first_valid": "2026-04-02 00:00:00",
+          "last_valid": "2026-07-01 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 50,
+          "first_valid": "2025-11-04 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 44,
+          "first_valid": "2025-09-17 00:00:00",
+          "last_valid": "2026-07-28 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 43,
+          "first_valid": "2025-11-28 00:00:00",
+          "last_valid": "2026-06-15 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 25,
+          "first_valid": "2026-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_004",
+      "alias_of": null,
+      "definition_sha256": "02b48cb7f46452ad3977d8f2d4bea2db5cd44b68dff47abe60e7d411722945c3",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3120,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_005",
+      "alias_of": null,
+      "definition_sha256": "8c73241d727f5dd9c2188d5fd1247e3c1be228f6cde2250cdde84cf511ca0a9e",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_006",
+      "alias_of": null,
+      "definition_sha256": "06d6a61e8bff78d915183e62f5592ac5abc97b3c7f87da49aced45582082df7c",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_008",
+      "alias_of": null,
+      "definition_sha256": "24ee9092850e9261acb76d6cbda458339fe61ccfd9a6e0ac4cd0d797669161e0",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3050,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 305,
+          "first_valid": "2025-07-07 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_009",
+      "alias_of": null,
+      "definition_sha256": "c29409e7858ba97036e397cdba26f69bb2b4953a520716dddc505f3537217804",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3150,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_010",
+      "alias_of": null,
+      "definition_sha256": "3e03c60d133cec8f321532784b9d67cc61c634b677e96187840ecef3540e0131",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3160,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_011",
+      "alias_of": "gtja191_007",
+      "definition_sha256": "79ffe0d3e97b030d8567cfe57d4e4099c476e59c808329c7a82cd6a392967fd3",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3170,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 317,
+          "first_valid": "2025-06-19 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_012",
+      "alias_of": null,
+      "definition_sha256": "1a25b9cd2144c860d4914bb61b946179ccb0e1ed261bfc93743a5221da140f7f",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3190,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_013",
+      "alias_of": "gtja191_099",
+      "definition_sha256": "c1d4a73367ca7db7a45900c992363039d63ee0dbaa1dd7a3eb9165662606702d",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3160,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_014",
+      "alias_of": "gtja191_136",
+      "definition_sha256": "e4e151924ab6050609334d48eda360fb7ad83caf105e9acbbedc3854340d09e4",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_015",
+      "alias_of": "gtja191_032",
+      "definition_sha256": "9100c580aeff0f298ca252c90e3f899be1dfa888d1e4df307be6f19cbe2461e0",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 20,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 2,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 4,
+          "first_valid": "2025-11-06 00:00:00",
+          "last_valid": "2026-01-21 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 5,
+          "first_valid": "2026-02-02 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 4,
+          "first_valid": "2026-01-30 00:00:00",
+          "last_valid": "2026-02-04 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 4,
+          "first_valid": "2025-11-06 00:00:00",
+          "last_valid": "2026-01-21 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 3,
+          "first_valid": "2026-01-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        }
+      }
+    },
+    {
+      "name": "alpha101_016",
+      "alias_of": "gtja191_083",
+      "definition_sha256": "5c40b0967e1c7f9500bf7493735b0217895513c4350658f543174c8dd8778ef1",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3160,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_018",
+      "alias_of": null,
+      "definition_sha256": "e86e2446a4ff3f78100810d52f3485106bc2f8d8dbe63a2dc5a72aebc24fc494",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_019",
+      "alias_of": null,
+      "definition_sha256": "8791537a37f24695fac5bb45c8c2fc8f0f12ececdccec6c381a6d520110cff6f",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 700,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 70,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_020",
+      "alias_of": "gtja191_107",
+      "definition_sha256": "710608bd0774c5353181e26c9bb1e66d8407c738851c6ebf97c2e20fdc3d444c",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3190,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_022",
+      "alias_of": "gtja191_104",
+      "definition_sha256": "a1ec26304016fa66583b9ee196b5e9448b30c35af1dd8e2368cd716b00dc9473",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3010,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_023",
+      "alias_of": null,
+      "definition_sha256": "57b10201c3a8a81477dcb917ea6e71694e99aedd88abf87a956d5e60caa70af2",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3010,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_024",
+      "alias_of": null,
+      "definition_sha256": "1ab410c9778b7bb99aeaf6c67fb070ff7b6fc3cb155c81ee8f69fbc2fd61ee6a",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 1210,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 121,
+          "first_valid": "2026-04-10 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_026",
+      "alias_of": null,
+      "definition_sha256": "aa990e45dac6135ddac2c620b73070a33c242f61d87182f4f40fe27efff77db0",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 2798,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 9,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 276,
+          "first_valid": "2025-07-02 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 292,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 286,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 285,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 286,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 259,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 284,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 269,
+          "first_valid": "2025-07-01 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 291,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 270,
+          "first_valid": "2025-06-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_027",
+      "alias_of": null,
+      "definition_sha256": "9ff7e5be4f445acba2910dad1feb93cc0f3ac048ef09ea57fcbb7e90bbb10c8d",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 137,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 2,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 17,
+          "first_valid": "2025-11-05 00:00:00",
+          "last_valid": "2026-01-21 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 30,
+          "first_valid": "2025-09-26 00:00:00",
+          "last_valid": "2026-03-26 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 19,
+          "first_valid": "2026-01-13 00:00:00",
+          "last_valid": "2026-05-27 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 7,
+          "first_valid": "2026-05-22 00:00:00",
+          "last_valid": "2026-06-25 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 24,
+          "first_valid": "2025-11-05 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 15,
+          "first_valid": "2025-09-26 00:00:00",
+          "last_valid": "2026-07-17 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 13,
+          "first_valid": "2025-12-01 00:00:00",
+          "last_valid": "2026-05-26 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 12,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_030",
+      "alias_of": null,
+      "definition_sha256": "d287690d714d7440d91f6fd2e8aa54106feaff3aed356a40424d06bda64f9296",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3010,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_032",
+      "alias_of": null,
+      "definition_sha256": "afb99f06c9170bd4c4fe0343968eb3ae51e32a98d4a103c9ef8aa306909b76c4",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 860,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 86,
+          "first_valid": "2026-06-03 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_033",
+      "alias_of": null,
+      "definition_sha256": "8c67bce5d3fefbc256cc6e303629dc639bfc6b904d4c9de5cb898f7297b3e6c2",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3200,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_034",
+      "alias_of": null,
+      "definition_sha256": "20d516175b8bbfcdd4fc4d2583be5dd70691a056beeaf545dec341e701e364aa",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3150,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_035",
+      "alias_of": "gtja191_117",
+      "definition_sha256": "753287ec94c12809affea4ea8bd8ba28294c5f5dab6e3541cbd6d795cf0821ce",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 2880,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 288,
+          "first_valid": "2025-07-30 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_037",
+      "alias_of": "gtja191_184",
+      "definition_sha256": "f100bf1e99151f46ce4808d5d32458582ec7a5c04720dd29c9ff59fe93688928",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 1200,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 120,
+          "first_valid": "2026-04-13 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_038",
+      "alias_of": null,
+      "definition_sha256": "1fca3f247e9da78046d6110952da755f036cdf1715a0b61e080019b5b58d073c",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_040",
+      "alias_of": "gtja191_042",
+      "definition_sha256": "ff63b81993f1db9cd62edc840279574805256c16fba3b366bc60c8bceef5b872",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_041",
+      "alias_of": "gtja191_013",
+      "definition_sha256": "e098ac56ee59affa5cbbefa13fffb516b0622b704cd0189e7580dea4b1d84026",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3200,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_042",
+      "alias_of": "gtja191_120",
+      "definition_sha256": "c76ebaee62ea98cca24fae3c009d9fdcefea45743c4baf1cd100eeba8c589332",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3200,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_044",
+      "alias_of": "gtja191_062",
+      "definition_sha256": "4d9aceacd4d32338c8d6db850b17127aaf4b981e0cb066b81a53223fb8ea18ee",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 2313,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 8,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 306,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 264,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 151,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-09-24 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 101,
+          "first_valid": "2025-07-01 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 75,
+          "first_valid": "2025-08-13 00:00:00",
+          "last_valid": "2026-09-29 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 308,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 299,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 293,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 230,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 286,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_045",
+      "alias_of": "gtja191_113",
+      "definition_sha256": "0f3f1ca791852ea0bc157287c7dadb1ef60f32e8d9c4df451bf9bdd2a476f8c5",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 2779,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 8,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 279,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 276,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 276,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 269,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 296,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 285,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 272,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 291,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 261,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 274,
+          "first_valid": "2025-07-18 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_046",
+      "alias_of": "gtja191_086",
+      "definition_sha256": "f10467d81b52d219a4b6f7a24ab4aac7e59ed719960fa8e46e7651f039310d1a",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3000,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_049",
+      "alias_of": null,
+      "definition_sha256": "e2518e2f9cda29390c6528605cc726e52d4bf4d5fc64621671d1df7138e0249d",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3000,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_050",
+      "alias_of": "gtja191_016",
+      "definition_sha256": "a0cbde075130801fc59b3f7ba2c118d8f200c43e97249c8c925a2cbcd8a795dc",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 17,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 0,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 1,
+          "first_valid": "2025-11-10 00:00:00",
+          "last_valid": "2025-11-10 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 5,
+          "first_valid": "2026-02-03 00:00:00",
+          "last_valid": "2026-02-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 4,
+          "first_valid": "2026-02-03 00:00:00",
+          "last_valid": "2026-02-06 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 3,
+          "first_valid": "2025-11-10 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 2,
+          "first_valid": "2026-06-26 00:00:00",
+          "last_valid": "2026-06-29 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 2,
+          "first_valid": "2026-09-30 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_051",
+      "alias_of": null,
+      "definition_sha256": "70059762c9e71bcd2bce6e355c62da0aa28824f5bad24dc48332fae22223350f",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3000,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_052",
+      "alias_of": null,
+      "definition_sha256": "a32e3515b147c90a8ed5536a09b87a39b2bc7b6ea0782562271c3afd5fe15be4",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 800,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 80,
+          "first_valid": "2026-06-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_053",
+      "alias_of": null,
+      "definition_sha256": "90ebc163e8fb3c3bfdb99d2ad0d059b814e7573bf441b663fadf0f6edfba4a7c",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 2839,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 7,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 293,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 279,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 287,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 276,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 284,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 276,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 285,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 272,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 297,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_054",
+      "alias_of": null,
+      "definition_sha256": "29a31cfd630a06000a18fc21ff7c8890360ff5c37bfc28390883bac436d096e1",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3199,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_055",
+      "alias_of": null,
+      "definition_sha256": "f2cd203d89e0dd19266ed47806f4996ecac6ade1080ce73f036766f10830d060",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 2301,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 8,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 299,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 259,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 154,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-09-28 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 107,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 84,
+          "first_valid": "2025-08-13 00:00:00",
+          "last_valid": "2026-09-30 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 299,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 293,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 285,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 234,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 287,
+          "first_valid": "2025-07-08 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_057",
+      "alias_of": null,
+      "definition_sha256": "bd5421a5e63c362a2bffb87cc340aede2c47b34b03cc86baef22a28d1b7f3fbe",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 2900,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-07-28 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_060",
+      "alias_of": null,
+      "definition_sha256": "dbd56cd71e1ce3252a613398b567e39784d0a42cc9170b1220b19f7d38a97cb9",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3109,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 310,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_101",
+      "alias_of": null,
+      "definition_sha256": "5d099149cf296681cf03529bf5f77028e68c1379c0fbc1e4a19f7c6ac52f99ce",
+      "version": "alpha101-complete-window-v7",
+      "finite_cells": 3200,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+F....................................................................... [  3%]
+........................................................................ [  7%]
+........................................................................ [ 11%]
+........................................................................ [ 15%]
+........................................................................ [ 19%]
+........................................................................ [ 23%]
+........................................................................ [ 27%]
+........................................................................ [ 30%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 42%]
+........................................................................ [ 46%]
+........................................................................ [ 50%]
+........................................................................ [ 54%]
+........................................................................ [ 58%]
+............................................F........................... [ 61%]
+........................................................................ [ 65%]
+........................................................................ [ 69%]
+........................................................................ [ 73%]
+........................................................................ [ 77%]
+........................................................................ [ 81%]
+........................................................................ [ 85%]
+........................................................................ [ 89%]
+........................................................................ [ 92%]
+........................................................................ [ 96%]
+.....................................................F......             [100%]
+=================================== FAILURES ===================================
+______________ test_exact_implemented_set_and_default_parameters _______________
+tests/unit/test_gtja191.py:361: in test_exact_implemented_set_and_default_parameters
+    assert {
+E   assert {2, 3, 6, 11, 14, 15, ...} == {2, 3, 6, 11, 14, 15, ...}
+E     
+E     Extra items in the left set:
+E     143
+E     Use -v to get more diff
+________________ test_self_research_archive_readonly_recompute _________________
+src/easy_tdx/web/factor_archive.py:420: in validate_factor_archive
+    _require(metadata.get("category") == settings["category"], "原行情周期不一致")
+src/easy_tdx/web/factor_archive.py:17: in _require
+    raise ValueError(message)
+E   ValueError: 原行情周期不一致
+
+The above exception was the direct cause of the following exception:
+tests/unit/test_gtja191_self_recursion.py:196: in test_self_research_archive_readonly_recompute
+    count=100,
+src/easy_tdx/web/factor_archive.py:534: in validate_factor_archive
+    raise ArchiveError(422, f"因子原档不完整或不一致：{exc}") from exc
+E   easy_tdx.web.research_archive.ArchiveError: 因子原档不完整或不一致：原行情周期不一致
+___ test_self_recursive_factor_requires_numerical_range_and_archive_evidence ___
+tests/unit/test_factor_acceptance_report.py:27: in test_self_recursive_factor_requires_numerical_range_and_archive_evidence
+    assert (
+E   AssertionError: assert 'passed_listed_checks' == 'passed'
+E     
+E     - passed
+E     + passed_listed_checks
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191.py::test_exact_implemented_set_and_default_parameters
+FAILED tests/unit/test_gtja191_self_recursion.py::test_self_research_archive_readonly_recompute
+FAILED tests/unit/test_factor_acceptance_report.py::test_self_recursive_factor_requires_numerical_range_and_archive_evidence
+3 failed, 1857 passed, 1 warning in 475.50s (0:07:55)

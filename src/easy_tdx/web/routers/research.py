@@ -13,6 +13,11 @@ import pandas as pd
 from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from easy_tdx.factor.benchmark import (
+    needs_benchmark,
+    validate_benchmark_pool,
+    validate_frozen_benchmark,
+)
 from easy_tdx.factor.composition import CompositionConfig, normalize_composition
 from easy_tdx.factor.validation import ValidationConfig
 from easy_tdx.web.account_store import UserRecord
@@ -73,9 +78,13 @@ def recompute_factor_payload(record: dict[str, Any]) -> dict[str, Any]:
     )
     legacy_fields = (
         expected_fields - set(settings)
-        if source["mode"] == "evaluation"
-        and set(settings) <= expected_fields
-        and expected_fields - set(settings) <= {"validation", "horizons", "composition"}
+        if set(settings) <= expected_fields
+        and expected_fields - set(settings)
+        <= (
+            {"validation", "horizons", "composition", "benchmark"}
+            if source["mode"] == "evaluation"
+            else {"benchmark"}
+        )
         else set()
     )
     legacy_validation = "validation" in legacy_fields
@@ -86,6 +95,8 @@ def recompute_factor_payload(record: dict[str, Any]) -> dict[str, Any]:
         settings["horizons"] = None  # Known old schema had exactly one requested horizon.
     if "composition" in legacy_fields:
         settings["composition"] = None  # Never invent a combination for a historical archive.
+    if "benchmark" in legacy_fields:
+        settings["benchmark"] = None  # Old archives never implicitly selected an index.
     if set(settings) != expected_fields:
         raise ValueError("原配置字段与当前实现不兼容；未补入默认值或忽略未知字段")
     # Freeze defaults too: a new release's defaults must not alter this replay.
@@ -101,6 +112,7 @@ def recompute_factor_payload(record: dict[str, Any]) -> dict[str, Any]:
         request_evaluation = FactorEvaluationRequest.model_validate(
             {k: v for k, v in settings.items() if k != "category"}
         )
+        validate_benchmark_pool(frames.values(), request_evaluation.benchmark)
         result = cross_section_report(
             frames,
             request_evaluation.factors,
@@ -143,6 +155,9 @@ def recompute_factor_payload(record: dict[str, Any]) -> dict[str, Any]:
             else None,
             "horizon_migration": "legacy_single_horizon_to_explicit_horizons_none"
             if "horizons" in legacy_fields
+            else None,
+            "benchmark_migration": "legacy_no_benchmark_to_explicit_none"
+            if "benchmark" in legacy_fields
             else None,
             "composition_migration": "legacy_without_composition_to_explicit_none"
             if "composition" in legacy_fields
@@ -233,6 +248,7 @@ class FactorComputeRequest(BaseModel):
     factors: list[str] = Field(..., min_length=1, max_length=12)
     factor_parameters: dict[str, dict[str, Any]] = Field(default_factory=dict)
     adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
+    benchmark: Literal["SH:000001", "SZ:399001", "SH:000300", "SZ:399006"] | None = None
 
     @model_validator(mode="after")
     def validate_factors(self) -> FactorComputeRequest:
@@ -241,6 +257,8 @@ class FactorComputeRequest(BaseModel):
         from easy_tdx.factor.configuration import configured_selection
 
         configured_selection(self.factors, self.factor_parameters)
+        if needs_benchmark(self.factors) != (self.benchmark is not None):
+            raise ValueError("基准依赖因子须选择基准指数；其他因子不接受未使用的基准配置")
 
         if len({canonical_factor_name(n) for n in self.factors}) != len(self.factors):
             raise ValueError("不能重复选择同一因子或其兼容别名")
@@ -264,6 +282,7 @@ class FactorEvaluationRequest(BaseModel):
     adjust: Literal["NONE", "QFQ", "HFQ"] = "QFQ"
     validation: ValidationConfig | None = None
     composition: CompositionConfig | None = None
+    benchmark: Literal["SH:000001", "SZ:399001", "SH:000300", "SZ:399006"] | None = None
 
     @field_validator("horizons", mode="before")
     @classmethod
@@ -282,6 +301,8 @@ class FactorEvaluationRequest(BaseModel):
         from easy_tdx.factor.horizons import normalize_horizons
 
         configured_selection(self.factors, self.factor_parameters)
+        if needs_benchmark(self.factors) != (self.benchmark is not None):
+            raise ValueError("基准依赖因子须选择基准指数；其他因子不接受未使用的基准配置")
         if self.composition is not None:
             self.composition = CompositionConfig.model_validate(
                 normalize_composition(self.composition.model_dump(), self.factors)
@@ -328,6 +349,40 @@ async def factor_list() -> list[dict[str, Any]]:
     from easy_tdx.factor import list_factors
 
     return list_factors()
+
+
+async def _benchmark_source(
+    symbol: str | None, category: str, count: int, client: Any, mac_client: Any
+) -> pd.DataFrame | str | None:
+    if symbol is None:
+        return None
+    from easy_tdx.web.factor_benchmark import load_factor_benchmark
+
+    try:
+        return await load_factor_benchmark(symbol, category, count, client, mac_client)
+    except Exception as exc:
+        return f"基准指数取数失败：{getattr(exc, 'detail', None) or str(exc) or type(exc).__name__}"
+
+
+def _attach_benchmark_source(
+    frame: pd.DataFrame, symbol: str | None, source: pd.DataFrame | str | None
+) -> pd.DataFrame:
+    if symbol is None:
+        return frame
+    from easy_tdx.factor.benchmark import FIELDS, attach_benchmark
+
+    reason = source if isinstance(source, str) else "基准指数缺少原始行情"
+    if isinstance(source, pd.DataFrame):
+        try:
+            return attach_benchmark(frame, source, symbol)
+        except ValueError as exc:
+            reason = f"基准指数对齐失败：{exc}"
+    result = frame.copy(deep=True)
+    result.attrs["factor_input_errors"] = {
+        **frame.attrs.get("factor_input_errors", {}),
+        **dict.fromkeys(FIELDS, reason),
+    }
+    return result
 
 
 async def _factor_fields(
@@ -430,6 +485,7 @@ async def _evaluation_frames(
     req: FactorEvaluationRequest, client: Any, mac_client: Any
 ) -> dict[str, pd.DataFrame]:
     frames = {}
+    benchmark = await _benchmark_source(req.benchmark, "DAY", req.count, client, mac_client)
     for stock in req.stocks:
         df = closed_frame(
             await fetch_adjusted_bars(
@@ -456,7 +512,7 @@ async def _evaluation_frames(
             req.count,
             req.adjust,
         )
-        frames[symbol] = df
+        frames[symbol] = _attach_benchmark_source(df, req.benchmark, benchmark)
     return frames
 
 
@@ -473,6 +529,7 @@ def evaluation_result(
     expected = [f"{stock.market}:{stock.code}" for stock in req.stocks]
     if list(frames) != expected:
         raise ValueError("因子冻结行情与完整股票池顺序不匹配")
+    validate_benchmark_pool(frames.values(), req.benchmark)
     result = cross_section_report(
         frames,
         req.factors,
@@ -489,6 +546,7 @@ def evaluation_result(
         count=req.count,
         adjust=req.adjust,
         stocks=[stock.model_dump() for stock in req.stocks],
+        benchmark=req.benchmark,
     )
     computation_checkpoint()
     snapshots = []
@@ -556,7 +614,8 @@ async def _series_frame(req: FactorComputeRequest, client: Any, mac_client: Any)
         req.adjust,
     )
 
-    return df
+    benchmark = await _benchmark_source(req.benchmark, req.category, req.count, client, mac_client)
+    return _attach_benchmark_source(df, req.benchmark, benchmark)
 
 
 def validate_series_task_frame(req: FactorComputeRequest, df: pd.DataFrame) -> None:
@@ -605,6 +664,7 @@ def _factor_result(req: FactorComputeRequest, df: pd.DataFrame) -> DictResponse:
     from easy_tdx.factor.snapshot import freeze_input
     from easy_tdx.progress import report_progress
 
+    validate_frozen_benchmark(df, req.benchmark)
     engine = FactorEngine()
     result = df.copy()
     errors: dict[str, str] = {}
@@ -639,6 +699,11 @@ def _factor_result(req: FactorComputeRequest, df: pd.DataFrame) -> DictResponse:
                 "status": "available" if valid_count else "no_valid_values",
                 "reason": ""
                 if valid_count
+                else (
+                    "需要足够基准下跌样本且样本内指数收益方差非零；"
+                    "缺失后重新积累，未自动补数或缩小窗口"
+                )
+                if definition.get("family") == "benchmark_filtered_beta"
                 else "预热不足、缺失或零分母导致没有有效值；未以 0 替代",
             }
         except Exception as exc:
@@ -664,6 +729,8 @@ def _factor_result(req: FactorComputeRequest, df: pd.DataFrame) -> DictResponse:
         json.dumps({"settings": settings, "definitions": definitions}, sort_keys=True).encode()
     )
     fingerprint.update(json.dumps(df.attrs.get("factor_data_contract"), sort_keys=True).encode())
+    if "factor_benchmark" in df.attrs:
+        fingerprint.update(json.dumps(df.attrs["factor_benchmark"], sort_keys=True).encode())
     report_progress("archive", 0, 1)
     snapshots = [freeze_input(f"{req.market}:{req.code}", df)]
     report_progress("archive", 1, 1)

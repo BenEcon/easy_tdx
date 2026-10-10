@@ -1,0 +1,20 @@
+WARN mypy==2.4.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.1 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.2.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+src/easy_tdx/factor/builtin/window_interpretations.py:53: error: Unsupported operand types for * ("float" and "Decimal")  [operator]
+src/easy_tdx/factor/builtin/window_interpretations.py:53: note: Left operand is of type "Decimal | float"
+src/easy_tdx/factor/builtin/window_interpretations.py:76: error: Unsupported operand types for - ("Decimal" and "float")  [operator]
+src/easy_tdx/factor/builtin/window_interpretations.py:76: note: Right operand is of type "Decimal | float"
+src/easy_tdx/factor/builtin/window_interpretations.py:79: error: Generator has incompatible item type "Decimal | Any"; expected "bool"  [misc]
+src/easy_tdx/factor/builtin/window_interpretations.py:79: error: Unsupported operand types for - ("Decimal" and "float")  [operator]
+src/easy_tdx/factor/builtin/window_interpretations.py:79: note: Right operand is of type "Decimal | float"
+src/easy_tdx/factor/builtin/window_interpretations.py:87: error: "float" has no attribute "sqrt"  [attr-defined]
+src/easy_tdx/factor/builtin/window_interpretations.py:117: error: Argument 1 to "append" of "deque" has incompatible type "tuple[Decimal | Any, Decimal | float]"; expected "tuple[Decimal, Decimal]"  [arg-type]
+src/easy_tdx/factor/builtin/window_interpretations.py:117: error: Unsupported operand types for - ("Decimal" and "float")  [operator]
+src/easy_tdx/factor/builtin/window_interpretations.py:117: note: Right operand is of type "Decimal | float"
+Found 7 errors in 1 file (checked 330 source files)

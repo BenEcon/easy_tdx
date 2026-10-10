@@ -2,6 +2,7 @@
 import {computed,ref} from 'vue'
 import {validateFactorArchive,archivedEvaluation} from '../factor-archive'
 import {factorValue,factorStatisticsLabel} from '../factor-research'
+import {benchmarkLabel} from '../factor-benchmark'
 import FactorDefinitionDetails from './FactorDefinitionDetails.vue'
 import FactorDiagnosticChart from './FactorDiagnosticChart.vue'
 import FactorSeriesComparison from './FactorSeriesComparison.vue'
@@ -45,6 +46,7 @@ const lineage=computed(()=>{
     <header><div><h3>{{ archive.title }}</h3><p>{{ new Date(archive.savedAt).toLocaleString('zh-CN') }} · {{ periodLabel(String(result.settings.category) as Category) }} · {{ ({NONE:'不复权',QFQ:'前复权',HFQ:'后复权'} as Record<string,string>)[String(result.settings.adjust)] }} · {{ archive.mode==='series'?'时间序列':'截面检验' }}</p></div><span>只读原档</span></header>
     <details v-if="lineage"><summary>重算来源 · 原始输入／当前实现</summary><p>来源存档 {{ lineage.archive_id }} · v{{ lineage.revision }}</p><p>来源摘要：{{ lineage.digest }}</p><p>只读展示已保存的重算结果；不刷新行情、不重新执行。保留原公式及迁移记录，不表示原始行情已通过真实性核验。</p><pre>{{ JSON.stringify(lineage,null,2) }}</pre></details>
     <p v-for="(reason,key) in result.errors" :key="key" role="status">{{ label(String(key)) }}：{{ reason }}</p>
+    <p v-if="result.settings.benchmark">基准指数：{{ benchmarkLabel(result.settings.benchmark) }} · 独立不复权快照 · 精确日期对齐</p>
     <div class="selection"><MacSelect :model-value="selected" aria-label="存档因子" :options="names.map(n=>({value:n,label:label(n)}))" @update:model-value="focus=$event" /><MacSelect v-model="precision" aria-label="存档数值精度" :options="[{value:'auto',label:'易读精度'},{value:'raw',label:'原始精度'}]" /></div>
     <FactorDefinitionDetails v-if="definition" :definition="definition" />
     <template v-if="archive.mode==='series'">

@@ -1,0 +1,146 @@
+F......FF...F......F.FF.FFF.F................                            [100%]
+=================================== FAILURES ===================================
+________ test_nested_independent_defaults_custom_causal_order[None-64] _________
+tests/unit/test_gtja191_nested_ranks.py:268: in test_nested_independent_defaults_custom_causal_order
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-01-01 NaN NaN NaN NaN NaN\n2024-01-02 NaN NaN NaN NaN NaN\n2024-01-03 NaN NaN NaN Na...aN\n2024-10-24 NaN NaN NaN NaN NaN\n2024-10-25 NaN NaN NaN NaN NaN\n2024-10-26 NaN NaN NaN NaN NaN\n\n[300 rows x 5 columns].notna
+__________ test_nested_independent_defaults_custom_causal_order[3-64] __________
+tests/unit/test_gtja191_nested_ranks.py:268: in test_nested_independent_defaults_custom_causal_order
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-01-01 NaN NaN NaN NaN NaN\n2024-01-02 NaN NaN NaN NaN NaN\n2024-01-03 NaN NaN NaN Na...aN\n2024-10-24 NaN NaN NaN NaN NaN\n2024-10-25 NaN NaN NaN NaN NaN\n2024-10-26 NaN NaN NaN NaN NaN\n\n[300 rows x 5 columns].notna
+_________ test_nested_independent_defaults_custom_causal_order[3-119] __________
+tests/unit/test_gtja191_nested_ranks.py:268: in test_nested_independent_defaults_custom_causal_order
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-01-01  False  False  False  False  False\n2024-01-02  False  False  ...lse\n2024-10-25  False  False  False  False  False\n2024-10-26  False  False  False  False  False\n\n[300 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-01-01 NaN NaN NaN NaN NaN\n2024-01-02 NaN NaN NaN NaN NaN\n2024-01-03 NaN NaN NaN Na...aN\n2024-10-24 NaN NaN NaN NaN NaN\n2024-10-25 NaN NaN NaN NaN NaN\n2024-10-26 NaN NaN NaN NaN NaN\n\n[300 rows x 5 columns].notna
+_________ test_nested_independent_defaults_custom_causal_order[3-157] __________
+tests/unit/test_gtja191_nested_ranks.py:267: in test_nested_independent_defaults_custom_causal_order
+    np.testing.assert_allclose(out, independent(data, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 92 / 1500 (6.13%)
+E   Max absolute difference among violations: 0.1
+E   Max relative difference among violations: 0.14199029
+E    ACTUAL: array([[     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],...
+E    DESIRED: array([[     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],...
+_________ test_nested_independent_defaults_custom_causal_order[7-157] __________
+tests/unit/test_gtja191_nested_ranks.py:267: in test_nested_independent_defaults_custom_causal_order
+    np.testing.assert_allclose(out, independent(data, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 76 / 1500 (5.07%)
+E   Max absolute difference among violations: 0.08
+E   Max relative difference among violations: 0.10548347
+E    ACTUAL: array([[     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],...
+E    DESIRED: array([[     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],...
+____________ test_nested_invalid_missing_constant_zero_recovery[64] ____________
+tests/unit/test_gtja191_nested_ranks.py:288: in test_nested_invalid_missing_constant_zero_recovery
+    assert out.iloc[80:].notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-03-21 NaN NaN NaN NaN NaN\n2024-03-22 NaN NaN NaN NaN NaN\n2024-03-23 NaN NaN NaN Na...aN\n2024-06-26 NaN NaN NaN NaN NaN\n2024-06-27 NaN NaN NaN NaN NaN\n2024-06-28 NaN NaN NaN NaN NaN\n\n[100 rows x 5 columns].notna
+___________ test_nested_invalid_missing_constant_zero_recovery[119] ____________
+tests/unit/test_gtja191_nested_ranks.py:288: in test_nested_invalid_missing_constant_zero_recovery
+    assert out.iloc[80:].notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-03-21 NaN NaN NaN NaN NaN\n2024-03-22 NaN NaN NaN NaN NaN\n2024-03-23 NaN NaN NaN Na...aN\n2024-06-26 NaN NaN NaN NaN NaN\n2024-06-27 NaN NaN NaN NaN NaN\n2024-06-28 NaN NaN NaN NaN NaN\n\n[100 rows x 5 columns].notna
+___________ test_nested_invalid_missing_constant_zero_recovery[138] ____________
+tests/unit/test_gtja191_nested_ranks.py:288: in test_nested_invalid_missing_constant_zero_recovery
+    assert out.iloc[80:].notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-03-21 NaN NaN NaN NaN NaN\n2024-03-22 NaN NaN NaN NaN NaN\n2024-03-23 NaN NaN NaN Na...aN\n2024-06-26 NaN NaN NaN NaN NaN\n2024-06-27 NaN NaN NaN NaN NaN\n2024-06-28 NaN NaN NaN NaN NaN\n\n[100 rows x 5 columns].notna
+___________ test_nested_invalid_missing_constant_zero_recovery[140] ____________
+tests/unit/test_gtja191_nested_ranks.py:288: in test_nested_invalid_missing_constant_zero_recovery
+    assert out.iloc[80:].notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns].any
+E    +          where                S0     S1     S2     S3     S4\n2024-03-21  False  False  False  False  False\n2024-03-22  False  False  ...lse\n2024-06-27  False  False  False  False  False\n2024-06-28  False  False  False  False  False\n\n[100 rows x 5 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-03-21 NaN NaN NaN NaN NaN\n2024-03-22 NaN NaN NaN NaN NaN\n2024-03-23 NaN NaN NaN Na...aN\n2024-06-26 NaN NaN NaN NaN NaN\n2024-06-27 NaN NaN NaN NaN NaN\n2024-06-28 NaN NaN NaN NaN NaN\n\n[100 rows x 5 columns].notna
+___________ test_nested_invalid_missing_constant_zero_recovery[157] ____________
+tests/unit/test_gtja191_nested_ranks.py:287: in test_nested_invalid_missing_constant_zero_recovery
+    np.testing.assert_allclose(out, independent(changed, n, p), equal_nan=True, atol=2e-10)
+E   AssertionError: 
+E   Not equal to tolerance rtol=1e-07, atol=2e-10
+E   
+E   Mismatched elements: 62 / 900 (6.89%)
+E   Max absolute difference among violations: 0.1
+E   Max relative difference among violations: 0.14199029
+E    ACTUAL: array([[     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],...
+E    DESIRED: array([[     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],
+E          [     nan,      nan,      nan,      nan,      nan],...
+________________ test_nested_real_ten_stock_default_values[64] _________________
+tests/unit/test_gtja191_nested_ranks.py:316: in test_nested_real_ten_stock_default_values
+    assert out.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = 000001    False\n300750    False\n600036    False\n000002    False\n000100    False\n000725    False\n600050    False\n600000    False\n600015    False\n601998    False\ndtype: bool.any
+E    +      where 000001    False\n300750    False\n600036    False\n000002    False\n000100    False\n000725    False\n600050    False\n600000    False\n600015    False\n601998    False\ndtype: bool = any()
+E    +        where any =             000001  300750  600036  000002  ...  600050  600000  600015  601998\n2025-06-16   False   False   False   F... False   False\n2026-10-09   False   False   False   False  ...   False   False   False   False\n\n[320 rows x 10 columns].any
+E    +          where             000001  300750  600036  000002  ...  600050  600000  600015  601998\n2025-06-16   False   False   False   F... False   False\n2026-10-09   False   False   False   False  ...   False   False   False   False\n\n[320 rows x 10 columns] = notna()
+E    +            where notna =             000001  300750  600036  000002  ...  600050  600000  600015  601998\n2025-06-16     NaN     NaN     NaN    ...   NaN     NaN\n2026-10-09     NaN     NaN     NaN     NaN  ...     NaN     NaN     NaN     NaN\n\n[320 rows x 10 columns].notna
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[None-64]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[3-64]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[3-119]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[3-157]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_independent_defaults_custom_causal_order[7-157]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_invalid_missing_constant_zero_recovery[64]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_invalid_missing_constant_zero_recovery[119]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_invalid_missing_constant_zero_recovery[138]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_invalid_missing_constant_zero_recovery[140]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_invalid_missing_constant_zero_recovery[157]
+FAILED tests/unit/test_gtja191_nested_ranks.py::test_nested_real_ten_stock_default_values[64]
+11 failed, 34 passed, 1 warning in 21.35s

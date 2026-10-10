@@ -1,0 +1,12 @@
+....................................................................     [100%]
+=============================== warnings summary ===============================
+tests/unit/test_gtja191_risk_residuals.py::test_risk_real_prices_synthetic_factors_oracle[NONE]
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_gtja191_risk_residuals.py::test_risk_invalid_close_rewarms_all_dependencies[0.0]
+  /Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_gtja191_risk_residuals.py:59: RuntimeWarning: divide by zero encountered in divide
+    y = close[1:] / close[:-1] - 1
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+68 passed, 2 warnings in 13.65s

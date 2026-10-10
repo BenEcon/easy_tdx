@@ -482,6 +482,7 @@ export interface WaveDiagnostic extends WaveAudit {
 }
 
 export interface ChanlunResult {
+  structure_settings?: import('./structure-settings').StructureSettings
   wave_diagnostics?: WaveDiagnostic[]
   macd?: { dif: number[]; dea: number[]; hist: number[] }
   pen_consolidations?: Array<{

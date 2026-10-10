@@ -4,7 +4,7 @@ import type { Bar, Category } from '../types'
 import { replayExhaustive, replayCandidateAudit, formatError } from '../api'
 import { validSearchPage, validAudit, reasons, gates, detailText, type SearchPage, type CandidateAudit } from '../exhaustive-research'
 import ReleasedRecursionInspector from './ReleasedRecursionInspector.vue'
-const props = defineProps<{code: string; category: Category; bars: Bar[]; total: number; busy: boolean}>()
+const props = defineProps<{code: string; category: Category; bars: Bar[]; total: number; busy: boolean; structureSettings?: import('../structure-settings').StructureSettings}>()
 const emit = defineEmits<{seek: [position: number]}>()
 const page = ref<SearchPage | null>(null), audit = ref<CandidateAudit | null>(null)
 const progress = ref({emitted: 0, complete: false})
@@ -14,10 +14,10 @@ let generation = 0, controller: AbortController | undefined, auditToken: string 
 const selected = computed(() => page.value?.results[selectedIndex.value])
 function stop() { generation++; controller?.abort(); working.value = false }
 function reset() { stop(); page.value = null; audit.value = null; progress.value = {emitted: 0, complete: false}; error.value = ''; checkpoints.value = [{cursor: null, before: 0}]; pageIndex.value = 0; selectedIndex.value = 0 }
-watch(() => [props.code, props.category, props.bars], reset)
+watch(() => [props.code, props.category, props.bars, props.structureSettings], reset)
 watch(() => props.busy, value => { if (value) stop() })
 onBeforeUnmount(stop)
-function request() { return {code: props.code, category: props.category, bars: props.bars, visible_count: props.bars.length} }
+function request() { return {code: props.code, category: props.category, bars: props.bars, visible_count: props.bars.length, structure_settings: props.structureSettings} }
 async function search(index: number, continuous = false) {
   if (working.value || props.busy || !props.bars.length) return
   const run = ++generation; controller = new AbortController(); working.value = true; error.value = ''; audit.value = null

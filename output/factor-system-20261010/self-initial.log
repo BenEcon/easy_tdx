@@ -1,0 +1,30 @@
+........F...F                                                            [100%]
+=================================== FAILURES ===================================
+_______________ test_self_real_stocks_periods_adjustments[NONE] ________________
+tests/unit/test_gtja191_self_recursion.py:126: in test_self_real_stocks_periods_adjustments
+    close = long_frozen(path).close
+tests/unit/test_gtja191_vwap.py:525: in long_frozen
+    raw = (root / name).read_bytes()
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1126: in read_bytes
+    with self.open(mode='rb') as f:
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/pathlib.py:1119: in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+E   FileNotFoundError: [Errno 2] No such file or directory: '/Users/bowen/Documents/Python/Google/TDX-work/tests/fixtures/factor_vwap_long/0-000001-MIN_30-NONE.json'
+________________ test_self_research_archive_readonly_recompute _________________
+tests/unit/test_gtja191_self_recursion.py:182: in test_self_research_archive_readonly_recompute
+    result = (await research.factor_evaluate(req, None, None)).data
+src/easy_tdx/web/routers/research.py:396: in factor_evaluate
+    frames = await _evaluation_frames(req, client, mac_client)
+src/easy_tdx/web/routers/research.py:444: in _evaluation_frames
+    raise ValueError(f"{symbol} 复权来源不一致或缺失；已停止检验")
+E   ValueError: SZ:000000 复权来源不一致或缺失；已停止检验
+=============================== warnings summary ===============================
+tests/unit/test_gtja191_self_recursion.py::test_self_pool_prefix_permutation_missing_dates_and_inputs
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_self_recursion.py::test_self_real_stocks_periods_adjustments[NONE]
+FAILED tests/unit/test_gtja191_self_recursion.py::test_self_research_archive_readonly_recompute
+2 failed, 11 passed, 1 warning in 2.06s

@@ -8,6 +8,7 @@ from easy_tdx.factor.base import FACTORY_REGISTRY, Factor
 
 
 def configure_factor(name: str, parameters: dict[str, Any] | None = None) -> Factor:
+    from easy_tdx.factor.builtin.alpha101 import Alpha101Factor
     from easy_tdx.factor.builtin.alpha158 import Alpha158Factor
     from easy_tdx.factor.builtin.gtja191 import GTJAFactor
 
@@ -19,6 +20,8 @@ def configure_factor(name: str, parameters: dict[str, Any] | None = None) -> Fac
         raise ValueError("因子参数必须是字典")
     if not parameters:
         return cls()
+    if issubclass(cls, Alpha101Factor):
+        return cls(**parameters)
     if issubclass(cls, GTJAFactor):
         if cls.spec.windows:
             if any(type(value) is not int for value in parameters.values()):
@@ -46,6 +49,7 @@ def configure_factor(name: str, parameters: dict[str, Any] | None = None) -> Fac
 def configured_selection(
     names: list[str], parameters: dict[str, dict[str, Any]] | None = None
 ) -> list[Factor]:
+    from easy_tdx.factor.builtin.alpha101 import Alpha101Factor, definition_metadata
     from easy_tdx.factor.builtin.alpha158 import Alpha158Factor
     from easy_tdx.factor.builtin.gtja191 import GTJAFactor
     from easy_tdx.factor.catalog import builtin_defaults, canonical_factor_name
@@ -58,7 +62,12 @@ def configured_selection(
     for factor in factors:
         canonical = canonical_factor_name(factor.name)
         defaults = builtin_defaults(factor.name)
-        if isinstance(factor, GTJAFactor):
+        if isinstance(factor, Alpha101Factor):
+            metadata = definition_metadata(type(factor), factor)
+            mapping = metadata.get("parameter_aliases", {})
+            resolved = {mapping.get(k, k): v for k, v in metadata["resolved_parameters"].items()}
+            identities.append((metadata["parameter_family"], tuple(sorted(resolved.items()))))
+        elif isinstance(factor, GTJAFactor):
             family = (
                 "price_mean_ratio"
                 if factor.spec.family == "mean_ratio"

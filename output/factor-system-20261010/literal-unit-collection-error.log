@@ -1,0 +1,24 @@
+
+==================================== ERRORS ====================================
+_____________ ERROR collecting tests/unit/test_factor_research.py ______________
+tests/unit/test_factor_research.py:185: in <module>
+    "name", [f["name"] for f in list_factors() if f["category"] not in {"value", "chanlun"}]
+src/easy_tdx/factor/builtin/__init__.py:27: in list_factors
+    return [describe_factor(cls) for cls in FACTORY_REGISTRY.values()]
+src/easy_tdx/factor/builtin/__init__.py:27: in <listcomp>
+    return [describe_factor(cls) for cls in FACTORY_REGISTRY.values()]
+src/easy_tdx/factor/catalog.py:253: in describe_factor
+    gtja191.definition_metadata(cls, instance if isinstance(instance, GTJAFactor) else None)
+src/easy_tdx/factor/builtin/gtja191.py:3031: in definition_metadata
+    "unit": w.unit,
+E   NameError: name 'w' is not defined
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/unit/test_factor_research.py - NameError: name 'w' is not defined
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 warning, 1 error in 4.12s

@@ -1,0 +1,1336 @@
+{
+  "scope": "指定十股320根不复权日线冻结池；不代表实时、历史PIT或生产许可就绪",
+  "inputs": [
+    {
+      "file": "0-000001-DAILY-NONE.json",
+      "sha256": "7c562e05057350f63bbba48f0c6fd0a9e670bb7998be66fc2f40d4a5c99bb25b"
+    },
+    {
+      "file": "0-000002-DAILY-NONE.json",
+      "sha256": "b092be1ec866ed0a65004d0bee328c57a699998faadacff3f14508277e5a9301"
+    },
+    {
+      "file": "0-000100-DAILY-NONE.json",
+      "sha256": "c23a1da8493d8e1f084974dc4671b1b8b4defd701d68ebfdafd5bbceb69a9792"
+    },
+    {
+      "file": "0-000725-DAILY-NONE.json",
+      "sha256": "fd7364b50f76ecce61b0ffd47feff24dbd7bc5244fa602d21efebeabb4b9b74d"
+    },
+    {
+      "file": "0-300750-DAILY-NONE.json",
+      "sha256": "f24bd0cf2941b218dc237ee4402ada374e9b06f22c72689a168fd7a667eb6dad"
+    },
+    {
+      "file": "1-600000-DAILY-NONE.json",
+      "sha256": "dbeaba7ee5923ac8e61a5005912de47a459d8000cdaaba53da2a492bde394ac9"
+    },
+    {
+      "file": "1-600015-DAILY-NONE.json",
+      "sha256": "5401b4a7d6f8b2c3bbf7f0a70d40ca823c21d1d333f383bc18aae0bf4bd07b8c"
+    },
+    {
+      "file": "1-600036-DAILY-NONE.json",
+      "sha256": "64c0138d9bb831dbabf27ef36f01528302121ceeba6e63cad89a78b3d637fa37"
+    },
+    {
+      "file": "1-600050-DAILY-NONE.json",
+      "sha256": "f220d665632a7841e82127012f8e0096ccd515e80155dfb89f4545b199327c27"
+    },
+    {
+      "file": "1-601998-DAILY-NONE.json",
+      "sha256": "d04292c4bc89713f589830d8875eb4f255ef95ec3386f379a31cb674cd977798"
+    }
+  ],
+  "registered_in_batch": 21,
+  "canonical_definitions": 14,
+  "canonical_ever_finite": 14,
+  "canonical_latest_any": 14,
+  "canonical_latest_all": 13,
+  "ever_finite": 21,
+  "latest_any": 21,
+  "latest_all": 18,
+  "rows": [
+    {
+      "name": "alpha101_002",
+      "alias_of": null,
+      "definition_sha256": "61347f22b80cd07f5c1e0cb74aa3b7cf69b741a3f9f1744fdaad982064671224",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3130,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 313,
+          "first_valid": "2025-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_003",
+      "alias_of": "gtja191_105",
+      "definition_sha256": "fc94737d9fbb2a7d68a3a1a42c7a75c76ee90685606c30edf0d7a8d243df34ae",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 357,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 2,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 33,
+          "first_valid": "2025-11-04 00:00:00",
+          "last_valid": "2026-01-27 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 85,
+          "first_valid": "2025-09-25 00:00:00",
+          "last_valid": "2026-04-16 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 55,
+          "first_valid": "2026-01-12 00:00:00",
+          "last_valid": "2026-06-03 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 22,
+          "first_valid": "2026-04-02 00:00:00",
+          "last_valid": "2026-07-01 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 50,
+          "first_valid": "2025-11-04 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 44,
+          "first_valid": "2025-09-17 00:00:00",
+          "last_valid": "2026-07-28 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 0,
+          "first_valid": "None",
+          "last_valid": "None"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 43,
+          "first_valid": "2025-11-28 00:00:00",
+          "last_valid": "2026-06-15 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 25,
+          "first_valid": "2026-06-25 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_004",
+      "alias_of": null,
+      "definition_sha256": "775a58a9efc86c8331998df3b4ecc7f3d7cc45cfe987ffe5e283b177ec279ef1",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3120,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 312,
+          "first_valid": "2025-06-26 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_006",
+      "alias_of": null,
+      "definition_sha256": "68c0ab585109942ab9865604dbd1fa1978820b7decebe2835f796d24a8b29353",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_009",
+      "alias_of": null,
+      "definition_sha256": "e9d1683450daf12b82a6225d273bebfbe5cd8c72a7b07539a6d11e012209f405",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3150,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 315,
+          "first_valid": "2025-06-23 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_010",
+      "alias_of": null,
+      "definition_sha256": "401ae69b8cd89d4b8dc4f6e7d48efeb6dd54dc828dba41e3857d30a46254e857",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3160,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_012",
+      "alias_of": null,
+      "definition_sha256": "bc5d80316b9a5c237312613745a1d48fbfac44e6611872e56bf1f38a3000b9cc",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3190,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-17 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_013",
+      "alias_of": "gtja191_099",
+      "definition_sha256": "4ae209e6c2fa9e4924e56f8f75d575dc0c71b7f49e6c088e878ba58e38b3f0a5",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3160,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_016",
+      "alias_of": "gtja191_083",
+      "definition_sha256": "089ae877ee6e3b3933fa9f1c52c6c656a2c8b86d8588b4141a530b84d01b8f0d",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3160,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 316,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_022",
+      "alias_of": "gtja191_104",
+      "definition_sha256": "f8bead5e97ab21445b79ee2673fdc04ffc226d7ba93abe4b0737a9f635b07322",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3010,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_023",
+      "alias_of": null,
+      "definition_sha256": "ff836ab42e9ade1438f987dc15466ea1a8a81bff93c0026af9efb0dd72a57fe2",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3010,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 301,
+          "first_valid": "2025-07-11 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_033",
+      "alias_of": null,
+      "definition_sha256": "e5dda0cfbe2cc38853234edd44fe5c3f56e2e4a2b73b4c5e61d5dacae6580509",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3200,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_038",
+      "alias_of": null,
+      "definition_sha256": "e918cedc5c7050034908dc3a41560b876554350854bc7746b674894f5645f726",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_040",
+      "alias_of": "gtja191_042",
+      "definition_sha256": "25b449401d01bff13f8b38bf023659e5305a235a77ad769d9ee6479dd790527a",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3110,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 311,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_044",
+      "alias_of": "gtja191_062",
+      "definition_sha256": "3ea972fe8bd3e2bc5e337174cc9605734c365117d05b234f54bc23f20eba2c35",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 2313,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 8,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 306,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 264,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 151,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-09-24 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 101,
+          "first_valid": "2025-07-01 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 75,
+          "first_valid": "2025-08-13 00:00:00",
+          "last_valid": "2026-09-29 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 308,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 299,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 293,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 230,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 286,
+          "first_valid": "2025-06-20 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_046",
+      "alias_of": "gtja191_086",
+      "definition_sha256": "b5178304fe7e0f8a496b768a26f4ab4ec55f023a0683824ebf4fb71f6767cad6",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3000,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_049",
+      "alias_of": null,
+      "definition_sha256": "f3f5e4cb0dbce2e358f995b215c1d335d6f1209e05bd61a9081168939a294783",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3000,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_051",
+      "alias_of": null,
+      "definition_sha256": "889fe87faefcc6198be18454a0f0786c34186ea2d855f41482346abed969759a",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3000,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 300,
+          "first_valid": "2025-07-14 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_053",
+      "alias_of": null,
+      "definition_sha256": "2ca7c345d1f9de7f00d903fcc8bc1b9caa5f68007a3982a15b84bad528deff8c",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 2839,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 7,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 293,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 279,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 287,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 276,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 290,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 284,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 276,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 285,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-08 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 272,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 297,
+          "first_valid": "2025-06-27 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_054",
+      "alias_of": null,
+      "definition_sha256": "f919ad3d104c4359d46803a0b5d071353022f3d168a2a88fc7fda3db09d2509a",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3199,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 319,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    },
+    {
+      "name": "alpha101_101",
+      "alias_of": null,
+      "definition_sha256": "75d2bcca36850b72b01e4bb2e9202b9adaf847c9e168d2a8ae61f98a96e56915",
+      "version": "alpha101-complete-window-v2",
+      "finite_cells": 3200,
+      "latest_date": "2026-10-09 00:00:00",
+      "latest_finite_symbols": 10,
+      "by_symbol": {
+        "0-000001-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000002-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000100-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-000725-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "0-300750-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600000-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600015-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600036-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-600050-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        },
+        "1-601998-DAILY-NONE": {
+          "finite": 320,
+          "first_valid": "2025-06-16 00:00:00",
+          "last_valid": "2026-10-09 00:00:00"
+        }
+      }
+    }
+  ]
+}

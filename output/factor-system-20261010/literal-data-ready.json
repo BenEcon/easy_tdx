@@ -1,0 +1,760 @@
+{
+  "scope": "Ten frozen 320-bar NONE tapes; not universal/live/PIT readiness. Constant intermediate ranks remain missing.",
+  "stocks": [
+    "000001",
+    "300750",
+    "600036",
+    "000002",
+    "000100",
+    "000725",
+    "600050",
+    "600000",
+    "600015",
+    "601998"
+  ],
+  "seconds": 9.676128249964677,
+  "registered": 359,
+  "definitions": 358,
+  "implemented": 356,
+  "conditional_ui": {
+    "NONE": {
+      "series": 293,
+      "evaluation": 354
+    },
+    "QFQ": {
+      "series": 288,
+      "evaluation": 317
+    },
+    "HFQ": {
+      "series": 288,
+      "evaluation": 317
+    }
+  },
+  "ready": 180,
+  "factors": [
+    {
+      "name": "gtja191_001",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_002",
+      "finite_values": 3188
+    },
+    {
+      "name": "gtja191_003",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_004",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_005",
+      "finite_values": 2798
+    },
+    {
+      "name": "gtja191_006",
+      "finite_values": 3160
+    },
+    {
+      "name": "gtja191_007",
+      "finite_values": 3170
+    },
+    {
+      "name": "gtja191_008",
+      "finite_values": 3160
+    },
+    {
+      "name": "gtja191_009",
+      "finite_values": 3130
+    },
+    {
+      "name": "gtja191_010",
+      "finite_values": 2960
+    },
+    {
+      "name": "gtja191_011",
+      "finite_values": 3144
+    },
+    {
+      "name": "gtja191_012",
+      "finite_values": 3110
+    },
+    {
+      "name": "gtja191_013",
+      "finite_values": 3200
+    },
+    {
+      "name": "gtja191_014",
+      "finite_values": 3150
+    },
+    {
+      "name": "gtja191_015",
+      "finite_values": 3190
+    },
+    {
+      "name": "gtja191_016",
+      "finite_values": 17
+    },
+    {
+      "name": "gtja191_017",
+      "finite_values": 3060
+    },
+    {
+      "name": "gtja191_018",
+      "finite_values": 3150
+    },
+    {
+      "name": "gtja191_019",
+      "finite_values": 3150
+    },
+    {
+      "name": "gtja191_020",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_021",
+      "finite_values": 3100
+    },
+    {
+      "name": "gtja191_022",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_023",
+      "finite_values": 2820
+    },
+    {
+      "name": "gtja191_024",
+      "finite_values": 3110
+    },
+    {
+      "name": "gtja191_025",
+      "finite_values": 700
+    },
+    {
+      "name": "gtja191_026",
+      "finite_values": 860
+    },
+    {
+      "name": "gtja191_027",
+      "finite_values": 3030
+    },
+    {
+      "name": "gtja191_028",
+      "finite_values": 3075
+    },
+    {
+      "name": "gtja191_029",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_031",
+      "finite_values": 3090
+    },
+    {
+      "name": "gtja191_032",
+      "finite_values": 20
+    },
+    {
+      "name": "gtja191_033",
+      "finite_values": 800
+    },
+    {
+      "name": "gtja191_034",
+      "finite_values": 3090
+    },
+    {
+      "name": "gtja191_035",
+      "finite_values": 2980
+    },
+    {
+      "name": "gtja191_036",
+      "finite_values": 137
+    },
+    {
+      "name": "gtja191_037",
+      "finite_values": 3050
+    },
+    {
+      "name": "gtja191_038",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_039",
+      "finite_values": 810
+    },
+    {
+      "name": "gtja191_040",
+      "finite_values": 2940
+    },
+    {
+      "name": "gtja191_041",
+      "finite_values": 3130
+    },
+    {
+      "name": "gtja191_042",
+      "finite_values": 3110
+    },
+    {
+      "name": "gtja191_043",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_044",
+      "finite_values": 2940
+    },
+    {
+      "name": "gtja191_045",
+      "finite_values": 1570
+    },
+    {
+      "name": "gtja191_046",
+      "finite_values": 2970
+    },
+    {
+      "name": "gtja191_047",
+      "finite_values": 3070
+    },
+    {
+      "name": "gtja191_048",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_049",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_050",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_051",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_052",
+      "finite_values": 2940
+    },
+    {
+      "name": "gtja191_053",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_054",
+      "finite_values": 3110
+    },
+    {
+      "name": "gtja191_055",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_056",
+      "finite_values": 2510
+    },
+    {
+      "name": "gtja191_057",
+      "finite_values": 3100
+    },
+    {
+      "name": "gtja191_058",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_059",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_060",
+      "finite_values": 2990
+    },
+    {
+      "name": "gtja191_061",
+      "finite_values": 2180
+    },
+    {
+      "name": "gtja191_062",
+      "finite_values": 2313
+    },
+    {
+      "name": "gtja191_063",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_064",
+      "finite_values": 0
+    },
+    {
+      "name": "gtja191_065",
+      "finite_values": 3150
+    },
+    {
+      "name": "gtja191_066",
+      "finite_values": 3150
+    },
+    {
+      "name": "gtja191_067",
+      "finite_values": 2960
+    },
+    {
+      "name": "gtja191_068",
+      "finite_values": 3050
+    },
+    {
+      "name": "gtja191_069",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_070",
+      "finite_values": 3150
+    },
+    {
+      "name": "gtja191_071",
+      "finite_values": 2970
+    },
+    {
+      "name": "gtja191_072",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_073",
+      "finite_values": 2860
+    },
+    {
+      "name": "gtja191_074",
+      "finite_values": 174
+    },
+    {
+      "name": "gtja191_076",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_077",
+      "finite_values": 2740
+    },
+    {
+      "name": "gtja191_078",
+      "finite_values": 2980
+    },
+    {
+      "name": "gtja191_079",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_080",
+      "finite_values": 3150
+    },
+    {
+      "name": "gtja191_081",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_082",
+      "finite_values": 2960
+    },
+    {
+      "name": "gtja191_083",
+      "finite_values": 3160
+    },
+    {
+      "name": "gtja191_084",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_085",
+      "finite_values": 2820
+    },
+    {
+      "name": "gtja191_086",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_087",
+      "finite_values": 2111
+    },
+    {
+      "name": "gtja191_088",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_089",
+      "finite_values": 2850
+    },
+    {
+      "name": "gtja191_090",
+      "finite_values": 132
+    },
+    {
+      "name": "gtja191_091",
+      "finite_values": 2770
+    },
+    {
+      "name": "gtja191_092",
+      "finite_values": 1110
+    },
+    {
+      "name": "gtja191_093",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_094",
+      "finite_values": 2900
+    },
+    {
+      "name": "gtja191_095",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_096",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_097",
+      "finite_values": 3110
+    },
+    {
+      "name": "gtja191_098",
+      "finite_values": 1210
+    },
+    {
+      "name": "gtja191_099",
+      "finite_values": 3160
+    },
+    {
+      "name": "gtja191_100",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_101",
+      "finite_values": 344
+    },
+    {
+      "name": "gtja191_102",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_103",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_104",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_105",
+      "finite_values": 357
+    },
+    {
+      "name": "gtja191_106",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_107",
+      "finite_values": 3190
+    },
+    {
+      "name": "gtja191_108",
+      "finite_values": 1960
+    },
+    {
+      "name": "gtja191_109",
+      "finite_values": 3020
+    },
+    {
+      "name": "gtja191_110",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_111",
+      "finite_values": 3089
+    },
+    {
+      "name": "gtja191_112",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_113",
+      "finite_values": 2779
+    },
+    {
+      "name": "gtja191_114",
+      "finite_values": 3139
+    },
+    {
+      "name": "gtja191_115",
+      "finite_values": 2770
+    },
+    {
+      "name": "gtja191_116",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_117",
+      "finite_values": 2880
+    },
+    {
+      "name": "gtja191_118",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_119",
+      "finite_values": 54
+    },
+    {
+      "name": "gtja191_120",
+      "finite_values": 3200
+    },
+    {
+      "name": "gtja191_121",
+      "finite_values": 2126
+    },
+    {
+      "name": "gtja191_122",
+      "finite_values": 2830
+    },
+    {
+      "name": "gtja191_123",
+      "finite_values": 2340
+    },
+    {
+      "name": "gtja191_124",
+      "finite_values": 2900
+    },
+    {
+      "name": "gtja191_125",
+      "finite_values": 2060
+    },
+    {
+      "name": "gtja191_126",
+      "finite_values": 3200
+    },
+    {
+      "name": "gtja191_127",
+      "finite_values": 2980
+    },
+    {
+      "name": "gtja191_128",
+      "finite_values": 3060
+    },
+    {
+      "name": "gtja191_129",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_130",
+      "finite_values": 144
+    },
+    {
+      "name": "gtja191_131",
+      "finite_values": 2370
+    },
+    {
+      "name": "gtja191_132",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_133",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_134",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_135",
+      "finite_values": 2800
+    },
+    {
+      "name": "gtja191_136",
+      "finite_values": 3110
+    },
+    {
+      "name": "gtja191_137",
+      "finite_values": 3190
+    },
+    {
+      "name": "gtja191_138",
+      "finite_values": 9
+    },
+    {
+      "name": "gtja191_139",
+      "finite_values": 3110
+    },
+    {
+      "name": "gtja191_140",
+      "finite_values": 1405
+    },
+    {
+      "name": "gtja191_141",
+      "finite_values": 118
+    },
+    {
+      "name": "gtja191_142",
+      "finite_values": 2970
+    },
+    {
+      "name": "gtja191_144",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_145",
+      "finite_values": 2950
+    },
+    {
+      "name": "gtja191_147",
+      "finite_values": 2980
+    },
+    {
+      "name": "gtja191_148",
+      "finite_values": 2480
+    },
+    {
+      "name": "gtja191_150",
+      "finite_values": 3200
+    },
+    {
+      "name": "gtja191_151",
+      "finite_values": 2810
+    },
+    {
+      "name": "gtja191_152",
+      "finite_values": 2680
+    },
+    {
+      "name": "gtja191_153",
+      "finite_values": 2970
+    },
+    {
+      "name": "gtja191_154",
+      "finite_values": 1240
+    },
+    {
+      "name": "gtja191_155",
+      "finite_values": 2850
+    },
+    {
+      "name": "gtja191_156",
+      "finite_values": 3130
+    },
+    {
+      "name": "gtja191_157",
+      "finite_values": 3090
+    },
+    {
+      "name": "gtja191_158",
+      "finite_values": 3200
+    },
+    {
+      "name": "gtja191_159",
+      "finite_values": 2960
+    },
+    {
+      "name": "gtja191_160",
+      "finite_values": 2820
+    },
+    {
+      "name": "gtja191_161",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_162",
+      "finite_values": 2970
+    },
+    {
+      "name": "gtja191_163",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_164",
+      "finite_values": 2947
+    },
+    {
+      "name": "gtja191_167",
+      "finite_values": 3080
+    },
+    {
+      "name": "gtja191_168",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_169",
+      "finite_values": 2760
+    },
+    {
+      "name": "gtja191_170",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_171",
+      "finite_values": 3055
+    },
+    {
+      "name": "gtja191_172",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_173",
+      "finite_values": 2840
+    },
+    {
+      "name": "gtja191_174",
+      "finite_values": 2820
+    },
+    {
+      "name": "gtja191_175",
+      "finite_values": 3140
+    },
+    {
+      "name": "gtja191_176",
+      "finite_values": 2301
+    },
+    {
+      "name": "gtja191_177",
+      "finite_values": 3010
+    },
+    {
+      "name": "gtja191_178",
+      "finite_values": 3190
+    },
+    {
+      "name": "gtja191_179",
+      "finite_values": 77
+    },
+    {
+      "name": "gtja191_180",
+      "finite_values": 2540
+    },
+    {
+      "name": "gtja191_184",
+      "finite_values": 1200
+    },
+    {
+      "name": "gtja191_185",
+      "finite_values": 3200
+    },
+    {
+      "name": "gtja191_186",
+      "finite_values": 2950
+    },
+    {
+      "name": "gtja191_187",
+      "finite_values": 3000
+    },
+    {
+      "name": "gtja191_188",
+      "finite_values": 3100
+    },
+    {
+      "name": "gtja191_189",
+      "finite_values": 3100
+    },
+    {
+      "name": "gtja191_190",
+      "finite_values": 2820
+    },
+    {
+      "name": "gtja191_191",
+      "finite_values": 2970
+    }
+  ]
+}

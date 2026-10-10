@@ -4,6 +4,7 @@ import type {FactorEvaluation} from './factor-research.ts'
 import {assertValidationResult} from './factor-validation.ts'
 import {assertHorizonComparison} from './factor-horizons.ts'
 import {assertComposition} from './factor-composition.ts'
+import {needsBenchmark,benchmarkOptions,validateBenchmarkPool} from './factor-benchmark.ts'
 
 type Row=Record<string,unknown>
 export interface FactorArchive {
@@ -24,6 +25,7 @@ export function validateFactorArchive(value:unknown):FactorArchive {
   for(const n of names){const d=r.factor_definitions[n];require(object(d)&&d.name===n&&['formula','implementation_version','source','catalog_version','formula_sha256'].every(k=>typeof d[k]==='string'&&d[k])&&object(d.resolved_parameters),'缺少完整公式或实际参数')}
   require(['NONE','QFQ','HFQ'].includes(String(s.adjust))&&Number.isInteger(s.count)&&Number(s.count)>=60&&Number(s.count)<=800,'复权或范围无效')
   const snapshots=r.input_snapshots;require(Array.isArray(snapshots)&&(evaluation?snapshots.length>=5&&snapshots.length<=20:snapshots.length===1),'原始输入缺失')
+  require(needsBenchmark(names,Object.values(r.factor_definitions) as Row[])?benchmarkOptions.some(o=>o.value===s.benchmark):s.benchmark===undefined||s.benchmark===null,'冻结公式与基准配置不一致')
   const symbols=evaluation?(Array.isArray(s.stocks)?s.stocks.map(stock=>object(stock)?`${stock.market}:${stock.code}`:''):[]):[`${s.market}:${s.code}`]
   require(symbols.length===snapshots.length&&new Set(symbols).size===symbols.length,'股票池无效')
   for(const [i,input] of snapshots.entries()){
@@ -35,6 +37,7 @@ export function validateFactorArchive(value:unknown):FactorArchive {
     require(typeof input.digest==='string'&&/^[a-f0-9]{64}$/.test(input.digest)&&object(input.attrs)&&object(input.attrs.snapshot_metadata),'输入摘要或来源缺失')
     require(input.attrs.snapshot_metadata.actual_adjust===s.adjust&&input.attrs.snapshot_metadata.category===s.category,'周期或复权来源不一致')
   }
+  validateBenchmarkPool(snapshots as Row[],s.benchmark)
   require(typeof r.input_fingerprint==='string'&&/^[a-f0-9]{64}$/.test(r.input_fingerprint),'计算指纹缺失')
   let good:unknown[]
   if(evaluation){

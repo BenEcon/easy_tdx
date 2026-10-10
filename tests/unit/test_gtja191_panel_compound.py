@@ -268,12 +268,33 @@ def independent(data, n, p):
     with np.errstate(all="ignore"):
         ret = c / lag(c) - 1
         if n == 1:
-            lv = np.log(np.where(v > 0, v, np.nan))
-            dv = lv - lag(lv, p["lag"])
-            dv = np.where(
-                roll((v > 0).astype(float), p["lag"] + 1, sum) == p["lag"] + 1, dv, np.nan
+
+            def ratio_ranks(a, b):
+                ranked = np.full_like(a, np.nan)
+                for i in range(len(a)):
+                    values = [
+                        Fraction(str(x)) / Fraction(str(y))
+                        if math.isfinite(x) and math.isfinite(y) and x > 0 and y > 0
+                        else None
+                        for x, y in zip(a[i], b[i])
+                    ]
+                    valid = [x for x in values if x is not None]
+                    if len(valid) < 2:
+                        continue
+                    for j, value in enumerate(values):
+                        if value is not None:
+                            ranked[i, j] = (
+                                sum(x < value for x in valid)
+                                + (sum(x == value for x in valid) + 1) / 2
+                            ) / len(valid)
+                return ranked
+
+            positive_span = roll((v > 0).astype(float), p["lag"] + 1, sum) == p["lag"] + 1
+            out = -rank_pairs(
+                ratio_ranks(np.where(positive_span, v, np.nan), lag(v, p["lag"])),
+                ratio_ranks(c, o),
+                p["corr"],
             )
-            out = -rank_pairs(xs(dv), xs((c - o) / o), p["corr"])
         elif n == 10:
             sd = roll(ret, p["volatility"], statistics.stdev)
             value = np.where(np.isfinite(sd), np.where(ret < 0, sd, c), np.nan)
@@ -413,12 +434,16 @@ def test_panel_frozen_three_stock_all_adjustments(n, adjust):
 
 def test_panel_named_parameters_catalog_and_no_single_stock_substitute():
     from tests.unit.test_gtja191_linear_decay import DEFAULTS as DECAY_DEFAULTS
+    from tests.unit.test_gtja191_multistage import DEFAULTS as MULTISTAGE_DEFAULTS
+    from tests.unit.test_gtja191_nested_ranks import DEFAULTS as NESTED_DEFAULTS
     from tests.unit.test_gtja191_vwap import DEFAULTS as VWAP_DEFAULTS
     from tests.unit.test_gtja191_vwap import SERIES
 
     assert {n for n, s in SPECS.items() if s.panel and s.windows} == set(DEFAULTS) | set(
         DECAY_DEFAULTS
-    ) | (set(VWAP_DEFAULTS) - SERIES - {120})
+    ) | (set(VWAP_DEFAULTS) - SERIES - {120}) | (set(MULTISTAGE_DEFAULTS) - {44}) | (
+        set(NESTED_DEFAULTS) - {159}
+    ) | {54}
     for n, p in DEFAULTS.items():
         factor = configure_factor(f"gtja191_{n:03d}")
         assert factor.spec.resolved_parameters == p and factor.spec.warmup == WARMUP[n]

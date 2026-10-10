@@ -90,6 +90,9 @@ def cross_section_report(
         from easy_tdx.factor.configuration import configured_selection
 
         configured_selection(factors, factor_parameters)
+    from easy_tdx.factor.risk_inputs import validate_risk_pool
+
+    validate_risk_pool(data.values())
     frames = {symbol: prepare_frame(frame) for symbol, frame in data.items()}
     closes = pd.concat(
         {symbol: frame["close"] for symbol, frame in frames.items()}, axis=1
@@ -200,6 +203,11 @@ def cross_section_report(
         fingerprint.update(
             json.dumps(frame.attrs.get("factor_data_contract"), sort_keys=True).encode()
         )
+        if "factor_benchmark" in frame.attrs:
+            from easy_tdx.factor.benchmark import validate_benchmark
+
+            validate_benchmark(frame)
+            fingerprint.update(json.dumps(frame.attrs["factor_benchmark"], sort_keys=True).encode())
     settings = {
         "factors": factors,
         "horizon": horizon,

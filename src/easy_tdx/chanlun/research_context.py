@@ -299,7 +299,9 @@ def indicator_events(
     return [e for e in events if e["index"] >= start]
 
 
-def pen_direction(frame: pd.DataFrame, bis: list[BI], fractals: list[FX]) -> PenObservation:
+def pen_direction(
+    frame: pd.DataFrame, bis: list[BI], fractals: list[FX], config: ChanlunConfig | None = None
+) -> PenObservation:
     """Observe after the latest strict anchor; never write into bis/fractals."""
     names = {"up": "向上", "down": "向下"}
     last = bis[-1] if bis else None
@@ -376,7 +378,7 @@ def pen_direction(frame: pd.DataFrame, bis: list[BI], fractals: list[FX]) -> Pen
     reverse = [f for f in fractals if f.k.index > anchor.k.index and f.fx_type != anchor.fx_type]
     if reverse:
         candidate = reverse[-1]
-        valid = _can_form_bi(anchor, candidate, ChanlunConfig())
+        valid = _can_form_bi(anchor, candidate, config or ChanlunConfig())
         out.update(
             {
                 "state": "formed" if valid else "fractal_waiting",
@@ -390,14 +392,16 @@ def pen_direction(frame: pd.DataFrame, bis: list[BI], fractals: list[FX]) -> Pen
     return out
 
 
-def direction_history(frame: pd.DataFrame, raw: list[Kline], start: int) -> list[DirectionEvent]:
+def direction_history(
+    frame: pd.DataFrame, raw: list[Kline], start: int, config: ChanlunConfig | None = None
+) -> list[DirectionEvent]:
     """Prefix reconstruction avoids dating a mutable endpoint with future data."""
     events: list[DirectionEvent] = []
     previous: tuple[str, str | None, str | None, str | None] | None = None
     for i in range(max(2, start - 1), len(frame)):
-        fxs = find_fractals(merge_klines(raw[: i + 1]))
-        pens = find_bis(fxs)
-        state = pen_direction(frame.iloc[: i + 1], pens, fxs)
+        fxs = find_fractals(merge_klines(raw[: i + 1]), config)
+        pens = find_bis(fxs, config)
+        state = pen_direction(frame.iloc[: i + 1], pens, fxs, config)
         key = (
             state["state"],
             state["direction"],
@@ -502,6 +506,7 @@ def build_context(
     ma_periods: Sequence[int] = DEFAULT_MA,
     window_bars: int = 20,
     window_start: datetime | None = None,
+    structure_config: ChanlunConfig | None = None,
 ) -> dict[str, Any]:
     frame = frame.reset_index(drop=True)
     start = max(0, len(frame) - window_bars)
@@ -574,8 +579,8 @@ def build_context(
                 else bool((dif if key == "DIF" else dea).iloc[-1] > 0),
             }
         )
-    observation = pen_direction(frame, result.bis, result.fractals)
-    observation["history"] = direction_history(frame, result.klines, start)
+    observation = pen_direction(frame, result.bis, result.fractals, structure_config)
+    observation["history"] = direction_history(frame, result.klines, start, structure_config)
     for n in (5, 10):
         count = 0
         for price, ma in reversed(list(zip(frame.close, values[n]))):

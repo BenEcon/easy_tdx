@@ -202,6 +202,120 @@ def test_every_eligible_builtin_preserves_dates_and_causal_prefix(name):
         index=pd.date_range("2025-01-01", periods=100, freq="B"),
     )
     factor = get_factor(name)()
+    if name.startswith("alpha101_"):
+        from tests.unit.test_alpha101 import independent, panel_oracle
+        from tests.unit.test_alpha101 import pool as alpha_pool
+
+        if isinstance(factor, PanelFactor):
+            frames = alpha_pool()
+            if "vwap" in factor.inputs:
+                # Explicit synthetic transaction prices for mathematical tests;
+                # real feed qualification is exercised by the frozen VWAP suite.
+                from tests.unit.test_alpha101_fifth import sample as vwap_alpha_pool
+
+                frames = vwap_alpha_pool(80)
+            result = FactorEngine().compute_matrix(frames, factor)
+            np.testing.assert_allclose(
+                result, panel_oracle(frames, factor.spec), atol=1e-12, equal_nan=True
+            )
+        else:
+            result = factor.compute(frame)
+            np.testing.assert_allclose(
+                result, independent(frame, factor.spec), atol=1e-12, equal_nan=True
+            )
+        return
+    if name == "gtja191_030":
+        from tests.unit.test_gtja191_risk_residuals import attach, independent
+
+        paired = attach(frame)
+        values = factor.compute(paired)
+        np.testing.assert_allclose(values, independent(paired), rtol=1e-8, atol=1e-18)
+        return
+    if name in {"gtja191_149", "gtja191_181"}:
+        from easy_tdx.factor.benchmark import attach_benchmark
+        from tests.unit.test_gtja191_benchmark import pair
+        from tests.unit.test_gtja191_benchmark_statistics import independent
+
+        stock, index = pair(frame)
+        paired = attach_benchmark(stock, index, "SH:000001")
+        values = factor.compute(paired)
+        np.testing.assert_allclose(
+            values, independent(paired, int(name[-3:]), factor.spec.window), rtol=1e-8, atol=1e-12
+        )
+        return
+    if name in {"gtja191_075", "gtja191_182"}:
+        from easy_tdx.factor.benchmark import attach_benchmark
+        from tests.unit.test_gtja191_benchmark import independent, pair
+
+        stock, index = pair(frame)
+        paired = attach_benchmark(stock, index, "SH:000001")
+        values = factor.compute(paired)
+        np.testing.assert_allclose(values, independent(paired, int(name[-3:]), factor.spec.window))
+        return
+    if name in {f"gtja191_{n:03}" for n in (146, 165, 166, 183)}:
+        from tests.unit.test_gtja191_window_interpretations import DEFAULTS, independent
+
+        number = int(name[-3:])
+        values = factor.compute(frame)
+        np.testing.assert_allclose(
+            values, independent(frame, number, DEFAULTS[number]), rtol=1e-9, atol=1e-12
+        )
+        pd.testing.assert_series_equal(values.iloc[:75], factor.compute(frame.iloc[:75]))
+        return
+    if name == "gtja191_143":
+        from tests.unit.test_gtja191_self_recursion import independent
+
+        values = factor.compute(frame)
+        np.testing.assert_allclose(values, independent(frame.close), rtol=1e-12, atol=0)
+        pd.testing.assert_series_equal(values.iloc[:75], factor.compute(frame.iloc[:75]))
+        return
+    if name in {f"gtja191_{n:03d}" for n in (28, 54, 190)}:
+        from tests.unit.test_gtja191_literal import DEFAULTS, independent
+
+        number = int(name[-3:])
+        pool = {"A": frame, "B": frame.copy()}
+        values = FactorEngine().compute_matrix(pool, factor)
+        oracle_pool = {s: f.rename_axis("datetime").reset_index() for s, f in pool.items()}
+        np.testing.assert_allclose(
+            values, independent(oracle_pool, number, DEFAULTS[number]), equal_nan=True
+        )
+        pd.testing.assert_frame_equal(
+            values.iloc[:75],
+            FactorEngine().compute_matrix({s: f.iloc[:75] for s, f in pool.items()}, factor),
+        )
+        return
+    if name in {f"gtja191_{n:03d}" for n in (64, 119, 121, 138, 140, 157, 159)}:
+        from tests.unit.test_gtja191_nested_ranks import DEFAULTS, independent
+
+        number = int(name[-3:])
+        pool = {"A": frame, "B": frame.copy()}
+        values = FactorEngine().compute_matrix(pool, factor)
+        oracle_pool = {s: f.rename_axis("datetime").reset_index() for s, f in pool.items()}
+        np.testing.assert_allclose(
+            values, independent(oracle_pool, number, DEFAULTS[number]), equal_nan=True
+        )
+        pd.testing.assert_frame_equal(
+            values.iloc[:75],
+            FactorEngine().compute_matrix({s: f.iloc[:75] for s, f in pool.items()}, factor),
+        )
+        return
+    if name in {
+        f"gtja191_{n:03d}" for n in (25, 33, 39, 44, 56, 73, 74, 77, 101, 123, 125, 130, 141)
+    }:
+        from tests.unit.test_gtja191_multistage import DEFAULTS, independent
+
+        number = int(name[-3:])
+        pool = {"A": frame, "B": frame.copy()}
+        values = FactorEngine().compute_matrix(pool, factor)
+        oracle_pool = {s: f.rename_axis("datetime").reset_index() for s, f in pool.items()}
+        np.testing.assert_allclose(
+            values, independent(oracle_pool, number, DEFAULTS[number]), equal_nan=True
+        )
+        pd.testing.assert_frame_equal(
+            values.iloc[:75],
+            FactorEngine().compute_matrix({s: f.iloc[:75] for s, f in pool.items()}, factor),
+        )
+        return
     if name in {f"gtja191_{n:03d}" for n in (35, 61, 87, 92, 156)}:
         from tests.unit.test_gtja191_linear_decay import DEFAULTS, independent
 

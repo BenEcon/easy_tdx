@@ -45,6 +45,6 @@ test('changes invalidate synchronously; same-account profile refresh does not ch
   user.value={id:'alice'};assert.equal(generation,2)
   user.value={id:'bob'};assert.equal(generation,3);stop()
   const source=readFileSync(new URL('../src/components/FactorEvaluationPanel.vue',import.meta.url),'utf8')
-  assert.match(source,/preprocess.value,validation.value,composition.value,adjustMode.value,currentUser.value\?\.id/)
+  assert.match(source,/preprocess.value,validation.value,composition.value,adjustMode.value,benchmark.value,currentUser.value\?\.id/)
   assert.match(source,/validation.value=validationDefaults\(\)/)
 })

@@ -8,7 +8,6 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Header, HTTPException, Response
 from pydantic import BaseModel, ConfigDict, model_validator
 
-from easy_tdx.chanlun.config import ChanlunConfig
 from easy_tdx.web.account_store import UserRecord
 from easy_tdx.web.archive_indicators import SavedChartIndicators, recompute_chart_indicators
 from easy_tdx.web.research_cursor import fingerprint
@@ -89,8 +88,13 @@ def recompute_archive(req: ArchiveRecomputeRequest, response: Response) -> dict[
     indicator_data = None
     if req.chart is not None:
         result = replay_snapshot(req.chart, ownership_history="summary")
-        parameters = ChanlunConfig().to_dict()
-        scope = "structure_and_macd_current_defaults"
+        parameters = req.chart.structure_settings.engine_config().to_dict()
+        parameters["zs_min_lines"] = req.chart.structure_settings.zs_min_lines
+        scope = (
+            "structure_and_macd_saved_settings"
+            if "structure_settings" in req.chart.model_fields_set
+            else "structure_and_macd_current_defaults"
+        )
         source = req.chart.model_dump(mode="json")
         if req.chart_indicators is not None:
             source["chart_indicators"] = req.chart_indicators.model_dump(mode="json")

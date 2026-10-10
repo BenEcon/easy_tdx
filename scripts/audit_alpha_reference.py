@@ -31,15 +31,43 @@ SOURCES = {
 LICENSE_SHA256 = "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
 
 
+def function_body(text: str, opening: int) -> tuple[str, int]:
+    """Find the matching brace, ignoring comments and quoted strings.
+
+    Do not include following helpers/comments in a factor's dependencies. This
+    is a lexical reader, never an evaluator for untrusted source text.
+    """
+    depth = 0
+    parts = []
+    token = re.compile(
+        r'//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|[{}]|[^{}"\'/]+|.', re.S
+    )
+    for match in token.finditer(text, opening):
+        value = match[0]
+        if value.startswith(("//", "/*", '"', "'")):
+            parts.append(" " * len(value))
+        elif value == "{":
+            depth += 1
+            if depth > 1:
+                parts.append(value)
+        elif value == "}":
+            depth -= 1
+            if depth == 0:
+                return "".join(parts), match.end()
+            parts.append(value)
+        else:
+            parts.append(value)
+    raise ValueError("Unclosed reference function body")
+
+
 def inventory(text: str, prefix: str, count: int) -> list[dict]:
     matches = list(re.finditer(r"^def\s+" + prefix + r"(\d+)\s*\(([^)]*)\)\s*\{", text, re.M))
     numbers = [int(match[1]) for match in matches]
     if sorted(numbers) != list(range(1, count + 1)):
         raise ValueError(f"{prefix}: missing, duplicate or unexpected factor IDs")
     entries = []
-    for offset, match in enumerate(matches):
-        end = matches[offset + 1].start() if offset + 1 < len(matches) else len(text)
-        body = re.sub(r"/\*.*?\*/|//[^\n]*", "", text[match.end() : end], flags=re.S)
+    for match in matches:
+        body, _ = function_body(text, match.end() - 1)
         fields = [field.strip() for field in match[2].split(",")]
         special = {
             "indclass": "historical_industry_membership_and_classification_levels",
@@ -53,11 +81,13 @@ def inventory(text: str, prefix: str, count: int) -> list[dict]:
             "vol": "verified_volume_units_and_zero_policy",
         }
         flags = [special[field] for field in fields if field in special]
-        cross_section = bool(re.search(r"\b(rowRank|contextby)\b", body))
+        cross_section = bool(re.search(r"\b(rowRank|rowSum|contextby)\b", body))
         if cross_section:
             flags.append("explicit_universe_and_exact_timestamp_alignment")
         if "indclass.row(0)" in body:
             flags.append("reference_uses_first_industry_row_not_point_in_time")
+        if "cap.row(0)" in body:
+            flags.append("reference_uses_first_cap_row_not_point_in_time")
         entries.append(
             {
                 "number": int(match[1]),
@@ -66,7 +96,7 @@ def inventory(text: str, prefix: str, count: int) -> list[dict]:
                 "reference_line": text[: match.start()].count("\n") + 1,
                 "reference_has_cross_section_operator": cross_section,
                 "dependency_review": flags,
-                "app_status": "not_implemented",
+                "app_status": "not_assessed_by_interface_audit",
                 "formula_verified": False,
                 "count_as_available": False,
             }
@@ -79,7 +109,7 @@ def audit(root: Path) -> dict:
     if hashlib.sha256(license_bytes).hexdigest() != LICENSE_SHA256:
         raise ValueError("Reference LICENSE changed; review before continuing")
     result = {
-        "schema": "alpha-reference-interface-audit-v1",
+        "schema": "alpha-reference-interface-audit-v2",
         "reference_repository": "https://github.com/dolphindb/DolphinDBModules",
         "reference_commit": COMMIT,
         "reference_license": "Apache-2.0",
@@ -98,7 +128,7 @@ def audit(root: Path) -> dict:
             "path": relative,
             "sha256": digest,
             "interfaces": len(entries),
-            "implemented_in_app": 0,
+            "implemented_in_app": None,
             "entries": entries,
         }
     return result

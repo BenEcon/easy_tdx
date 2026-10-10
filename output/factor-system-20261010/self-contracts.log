@@ -1,0 +1,26 @@
+............F........................................................... [ 14%]
+........................................................................ [ 28%]
+........................................................................ [ 42%]
+........................................................................ [ 56%]
+........................................................................ [ 70%]
+........................................................................ [ 84%]
+........................................................................ [ 98%]
+.........                                                                [100%]
+=================================== FAILURES ===================================
+________________ test_self_research_archive_readonly_recompute _________________
+tests/unit/test_gtja191_self_recursion.py:184: in test_self_research_archive_readonly_recompute
+    result = (await research.factor_evaluate(req, None, None)).data
+src/easy_tdx/web/routers/research.py:396: in factor_evaluate
+    frames = await _evaluation_frames(req, client, mac_client)
+src/easy_tdx/web/routers/research.py:444: in _evaluation_frames
+    raise ValueError(f"{symbol} 复权来源不一致或缺失；已停止检验")
+E   ValueError: SZ:000000 复权来源不一致或缺失；已停止检验
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_self_recursion.py::test_self_research_archive_readonly_recompute
+1 failed, 512 passed, 1 warning in 33.58s

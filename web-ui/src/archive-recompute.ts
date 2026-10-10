@@ -5,6 +5,7 @@ import { freezeArchiveDraft, type ArchiveDraft, type ArchiveRecord } from './clo
 import { archivedIndicatorSettings, projectRecomputedIndicators } from './archive-indicator-recompute.ts'
 import type { FrozenChartIndicators } from './frozen-chart-indicators.ts'
 import type { Bar } from './types'
+import { readStructureSettings } from './structure-settings.ts'
 
 type RecordValue = Record<string, unknown>
 export interface RecomputeJob { category: string; before: unknown; request: RecordValue; frozenBefore?: FrozenChartIndicators }
@@ -31,7 +32,7 @@ export function planArchiveRecompute(record: ArchiveRecord): RecomputePlan {
   const warnings = ['只使用保存的原行情，不请求最新行情、不重新复权；差异不能证明行情真实性或历史当时可得性。']
   const jobs: RecomputeJob[] = []
   if (record.kind === 'chart') {
-    warnings.push('图表按当前结构算法默认参数重算；旧档未完整记录原算法参数，因此不是原版本复现。', '有冻结指标的周期按保存参数重算全部均线及指标，保留预热空值；无冻结指标的旧周期仅重算结构与 MACD，不补造原参数。')
+    warnings.push('图表按当前算法与原档结构设置重算；未记录设置的旧档使用新笔／3 段，不是原版本复现。', '有冻结指标的周期按保存参数重算全部均线及指标，保留预热空值；无冻结指标的旧周期仅重算结构与 MACD，不补造原参数。')
     for (const entry of payload.charts as RecordValue[]) {
       const result = entry.result as RecordValue
       if (typeof result.code !== 'string' || !result.code || result.code.length > 24) throw Error('原图缺少有效的计算标的身份，不能以当前选股替代')
@@ -39,12 +40,14 @@ export function planArchiveRecompute(record: ArchiveRecord): RecomputePlan {
       if(bars.length<120)warnings.push(`${entry.category} 仅 ${bars.length} 根原行情，EMA 类指标可能尚未充分收敛；不自动补取更早行情。`)
       const frozen=entry.frozenIndicators as FrozenChartIndicators|undefined
       jobs.push({ category: String(entry.category), before: frozen?{result,frozenIndicators:frozen}:result, frozenBefore:frozen,
-        request: { kind:'chart', chart:{ code:result.code,category:entry.category,bars,visible_count:bars.length },...(frozen?{chart_indicators:archivedIndicatorSettings(frozen)}:{}) } })
+        request: { kind:'chart', chart:{ code:result.code,category:entry.category,bars,visible_count:bars.length,
+          ...(result.structure_settings === undefined ? {} : {structure_settings:readStructureSettings(result.structure_settings)}) },...(frozen?{chart_indicators:archivedIndicatorSettings(frozen)}:{}) } })
     }
   } else {
     const result = payload.result as RecordValue, parameters = result.parameters
     if (!archiveObject(parameters)) throw Error('旧研究缺少参数，不能用当前页面设置补造；仍可查看原档')
     const keys = ['volume_multiple','squeeze_quantile','ma_periods','window_bars','window_start','window_end']
+    if (parameters.structure_settings !== undefined) { readStructureSettings(parameters.structure_settings); keys.push('structure_settings') }
     if (keys.some(key => !Object.hasOwn(parameters,key))) throw Error('旧研究的窗口或指标参数不完整，未重算')
     if (!archiveNumber(parameters.volume_multiple) || parameters.volume_multiple < 1 || parameters.volume_multiple > 10
       || !archiveNumber(parameters.squeeze_quantile) || parameters.squeeze_quantile <= 0 || parameters.squeeze_quantile >= 1
@@ -77,12 +80,16 @@ export function checkRecomputeResult(value: unknown, job: RecomputeJob, requestI
     || typeof value.input_digest !== 'string' || !/^[a-f\d]{64}$/.test(value.input_digest)
     || value.source !== 'client_supplied_archived_bars_not_market_verified' || value.historical_data_vintage !== false
     || !archiveObject(value.result) || !archiveObject(value.parameters)
-    || value.scope !== (value.kind === 'chart' ? withIndicators?'structure_macd_and_saved_chart_indicators':'structure_and_macd_current_defaults' : 'study_saved_parameters_current_algorithm')) throw Error('重算响应缺少匹配的请求、执行版本或输入证据，未采用结果')
+    || value.scope !== (value.kind === 'chart' ? withIndicators?'structure_macd_and_saved_chart_indicators':(job.request.chart as RecordValue).structure_settings?'structure_and_macd_saved_settings':'structure_and_macd_current_defaults' : 'study_saved_parameters_current_algorithm')) throw Error('重算响应缺少匹配的请求、执行版本或输入证据，未采用结果')
   if (value.kind === 'chart') {
     validateArchiveChartResult(value.result,'recomputed.result')
     if (value.result.code !== (job.request.chart as RecordValue).code) throw Error('重算标的与原档不匹配')
+    const saved = (job.request.chart as RecordValue).structure_settings
+    if (saved !== undefined && (value.result.structure_settings === undefined || JSON.stringify(readStructureSettings(saved)) !== JSON.stringify(readStructureSettings(value.result.structure_settings)))) throw Error('重算结构设置与原档不一致')
   } else {
     const expected = ((job.request.study as RecordValue).series as RecordValue[]).map(row=>row.category)
+    const saved = (job.request.study as RecordValue).structure_settings
+    if (saved !== undefined && (value.parameters.structure_settings === undefined || JSON.stringify(readStructureSettings(saved)) !== JSON.stringify(readStructureSettings(value.parameters.structure_settings)))) throw Error('重算研究的结构设置与原档不一致')
     if (!Array.isArray(value.result.rows) || value.result.rows.length !== expected.length
       || value.result.rows.some((row,i)=>!archiveObject(row)||row.category!==expected[i])) throw Error('重算周期与原档不匹配，未丢弃缺失周期')
   }

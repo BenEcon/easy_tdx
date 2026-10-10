@@ -10,6 +10,7 @@ def test_all_ids_required_once_and_sorted():
     rows = inventory(text, "WQAlpha", 2)
     assert [row["number"] for row in rows] == [1, 2]
     assert not any(row["count_as_available"] for row in rows)
+    assert all(row["app_status"] == "not_assessed_by_interface_audit" for row in rows)
 
 
 @pytest.mark.parametrize(
@@ -37,3 +38,22 @@ def test_real_extra_risk_fields_and_industry_dependency_not_hidden():
 def test_comments_not_treated_as_actual_operators():
     text = "def X1(close){\n// rowRank(close)\n/* contextby */\nreturn close\n}"
     assert not inventory(text, "X", 1)[0]["reference_has_cross_section_operator"]
+
+
+def test_scale_only_is_still_cross_section_and_cap_is_not_pit():
+    row = inventory("def X1(cap){ return cap / rowSum(cap.row(0)) }", "X", 1)[0]
+    assert row["reference_has_cross_section_operator"]
+    assert "reference_uses_first_cap_row_not_point_in_time" in row["dependency_review"]
+
+
+def test_following_helper_strings_and_comments_do_not_pollute_factor():
+    text = """def X1(close){ print("rowRank({})"); return close }
+def helper(x){ return rowRank(x) }
+// def X99(close){ close }
+"""
+    assert not inventory(text, "X", 1)[0]["reference_has_cross_section_operator"]
+
+
+def test_unclosed_function_rejected():
+    with pytest.raises(ValueError, match="Unclosed"):
+        inventory("def X1(close){ return close", "X", 1)

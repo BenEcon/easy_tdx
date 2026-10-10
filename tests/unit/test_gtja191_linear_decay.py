@@ -219,7 +219,7 @@ def test_decay_metadata_reject_single_missing_adjusted_and_cancel(monkeypatch, n
     with pytest.raises(ValueError, match="股票池"):
         factor.compute(data["S0"])
     metadata = describe_factor(type(factor))
-    assert metadata["implementation_version"].endswith("v8")
+    assert metadata["implementation_version"] == gtja191.VERSION
     for k in INPUTS[n]:
         with pytest.raises(ValueError):
             calculate({s: f.drop(columns=k) for s, f in data.items()}, n)

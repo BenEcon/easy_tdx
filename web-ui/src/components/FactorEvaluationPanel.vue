@@ -8,10 +8,12 @@ import {useAuth} from '../auth'
 import {useMarketPreferences} from '../market-preferences'
 import {stockDisplayName} from '../stock-history'
 import {factorValue,factorStatisticsLabel,sortedFactorRows,type FactorEvaluation} from '../factor-research'
-import {browseFactors,factorLibraries,factorAvailabilityReason} from '../factor-catalog'
+import {browseFactors,factorLibraries,factorAvailabilityReason,eligibleEvaluationFactors} from '../factor-catalog'
 import MacSelect from './MacSelect.vue'
 import StocksPicker from './StocksPicker.vue'
 import AdjustPicker from './AdjustPicker.vue'
+import FactorBenchmarkPicker from './FactorBenchmarkPicker.vue'
+import {needsBenchmark} from '../factor-benchmark'
 import ChartFrame from './ChartFrame.vue'
 import DataProvenance from './DataProvenance.vue'
 import FactorDiagnosticChart from './FactorDiagnosticChart.vue'
@@ -35,6 +37,8 @@ const props=defineProps<{factors:Array<Record<string,unknown>>;names:Record<stri
 const symbols=ref(['SZ:000001','SH:600036','SH:601166','SH:601998','SH:601818','SH:600000','SH:600016','SH:600015'])
 const selected=ref(['momentum_20d','volatility_20d'])
 const factorParameters=ref<FactorParameters>({})
+const benchmark=ref('SH:000001')
+const benchmarkRequired=computed(()=>needsBenchmark(selected.value,props.factors))
 const parameterError=computed(()=>factorParameterError(selected.value,props.factors,factorParameters.value))
 const library=ref('easy_tdx_builtin'),query=ref(''),factorLimit=ref(24)
 const favorites=useFactorFavorites(),onlyFavorites=ref(false)
@@ -60,13 +64,13 @@ const name=(key:string)=>{
   const definition=report.value?.factor_definitions?.[key]??props.factors.find(f=>f.name===key)
   return definition?parameterizedFactorName(definition,factorParameters.value[key]):props.names[key]??key
 }
-const eligible=computed(()=>props.factors.filter(f=>f.evaluation_available===true&&(!f.alias_of||selected.value.includes(String(f.name)))))
+const eligible=computed(()=>eligibleEvaluationFactors(props.factors))
 const matching=computed(()=>browseFactors(eligible.value,library.value,query.value,selected.value).filter(f=>!onlyFavorites.value||favorites.items.value.includes(favoriteKey(f))))
 const detailReport=computed(()=>horizonView(report.value,displayHorizon.value))
 const active=computed(()=>detailReport.value?.reports.find(r=>r.name===focus.value)??detailReport.value?.reports[0])
 const ranking=computed(()=>sortedFactorRows(report.value?.latest??[],active.value?.name??'',order.value==='desc'?-1:1))
-const inputKey=computed(()=>JSON.stringify([symbols.value,selected.value,factorParameters.value,horizon.value,horizons.value,groups.value,count.value,preprocess.value,validation.value,composition.value,adjustMode.value,currentUser.value?.id]))
-watch(()=>currentUser.value?.id,()=>{factorParameters.value={};validation.value=validationDefaults();horizons.value=[5];composition.value=compositionDefaults()},{flush:'sync'})
+const inputKey=computed(()=>JSON.stringify([symbols.value,selected.value,factorParameters.value,horizon.value,horizons.value,groups.value,count.value,preprocess.value,validation.value,composition.value,adjustMode.value,benchmark.value,currentUser.value?.id]))
+watch(()=>currentUser.value?.id,()=>{factorParameters.value={};benchmark.value='SH:000001';validation.value=validationDefaults();horizons.value=[5];composition.value=compositionDefaults()},{flush:'sync'})
 function invalidate(){generation++;task.clear();report.value=null}
 watch(inputKey,invalidate,{flush:'sync'});onBeforeUnmount(invalidate)
 function toggle(key:string){selected.value=selected.value.includes(key)?selected.value.filter(x=>x!==key):selected.value.length<4?[...selected.value,key]:selected.value}
@@ -80,7 +84,7 @@ async function run(){
     const chosen=selectedHorizons(horizons.value)
     const split=validationConfig(validation.value,Math.max(...chosen),Number(count.value))
     const combined=compositionConfig(composition.value,selected.value)
-    const completed=await task.run({stocks:symbols.value.map(s=>{const [market='',code='']=s.split(':');return {market,code}}),factors:[...selected.value],factor_parameters:selectedFactorParameters(selected.value,factorParameters.value),count:Number(count.value),horizon:chosen[0]!,horizons:chosen,groups:Number(groups.value),preprocess:preprocess.value,adjust:adjustMode.value,validation:split,composition:combined})
+    const completed=await task.run({stocks:symbols.value.map(s=>{const [market='',code='']=s.split(':');return {market,code}}),factors:[...selected.value],factor_parameters:selectedFactorParameters(selected.value,factorParameters.value),count:Number(count.value),horizon:chosen[0]!,horizons:chosen,groups:Number(groups.value),preprocess:preprocess.value,adjust:adjustMode.value,validation:split,composition:combined,benchmark:benchmarkRequired.value?benchmark.value:null})
     if(stamp!==generation||!completed)return
     const result=task.result.value
     if(result?.version!=='factor-cross-section-v1'||!Array.isArray(result.reports))throw Error('因子检验返回格式不完整')
@@ -107,6 +111,7 @@ async function run(){
       <button v-if="matching.length>factorLimit" @click="factorLimit+=24">再展开 24 项（共 {{ matching.length }} 项）</button>
       <fieldset class="horizon-options"><legend>远期窗口 · 可多选</legend><label v-for="n in [1,5,10,20]" :key="n"><input type="checkbox" :checked="horizons.includes(n)" :aria-label="`${n} 个观测日远期窗口`" @change="toggleHorizon(n)">{{ n }} 个观测日</label></fieldset>
       <AdjustPicker compact />
+      <FactorBenchmarkPicker v-if="benchmarkRequired" v-model="benchmark" />
       <FactorValidationSettings v-model="validation" />
       <details class="advanced"><summary>高级设置</summary><div class="parameter"><label>历史长度</label><MacSelect v-model="count" aria-label="检验历史长度" :options="[120,300,500,800].map(n=>({value:String(n),label:`${n} 根`}))" /></div><div class="parameter"><label>分位组数</label><MacSelect v-model="groups" aria-label="分位组数" :options="[{value:'3',label:'三组'},{value:'5',label:'五组'}]" /></div><div class="parameter"><label>截面预处理</label><MacSelect v-model="preprocess" aria-label="截面预处理" :options="[{value:'raw',label:'原始值'},{value:'mad_zscore',label:'中位去极值＋标准化'}]" /></div><p>只在同一天横截面处理，不填充缺失值。相同因子值不强制拆入不同组。</p></details>
       <button class="primary" :disabled="loading" @click="run">{{ loading?'正在获取行情并检验…':'开始因子检验' }}</button>

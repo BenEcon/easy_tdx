@@ -69,7 +69,181 @@ def checklist(evidence: dict[tuple[str, str], str]) -> list[dict[str, Any]]:
             continue
         name = item["name"]
         checks = []
-        if item["library"] == "qlib_alpha158":
+        if item["library"] == "alpha101":
+            number = int(name[-3:])
+            module = "tests.unit.test_alpha101"
+            cases = [
+                f"test_alpha101_independent_prefix_and_parameters[False-{number}]",
+                f"test_alpha101_independent_prefix_and_parameters[True-{number}]",
+                f"test_alpha101_metadata_validation_and_no_mutation[{number}]",
+                "test_alpha101_hand_examples_and_ties",
+                "test_alpha101_cancellation_and_relative_scale",
+            ]
+            if number in {3, 4}:
+                cases += [
+                    f"test_alpha101_real_panel_oracle[{number}]",
+                    "test_alpha101_joint_pool_archive",
+                ]
+            else:
+                cases += [
+                    f"test_alpha101_missing_invalid_constant_and_recovery[{number}]",
+                    f"test_alpha101_series_archive_readonly_recompute[{number}]",
+                    *[
+                        f"test_alpha101_real_three_adjustment_oracle[{number}-{adjust}]"
+                        for adjust in ("NONE", "QFQ", "HFQ")
+                    ],
+                ]
+            checks = [
+                gate(
+                    evidence,
+                    "本地适配：独立数值、边界、真实价格与存档（生产许可待复核）",
+                    module,
+                    cases,
+                )
+            ]
+            if number in {2, 10, 13, 16, 22, 33, 38, 40, 44, 46, 49, 51, 54}:
+                module = "tests.unit.test_alpha101_second"
+                cases = [
+                    f"test_second_default_custom_independent_prefix_permutation[False-{number}]",
+                    f"test_second_default_custom_independent_prefix_permutation[True-{number}]",
+                    f"test_second_every_input_missing_invalid_constant_and_recovery[{number}]",
+                    f"test_second_metadata_validation_identity_and_no_mutation[{number}]",
+                    f"test_second_real_pool_and_minute[{number}]",
+                    f"test_second_frozen_archive_readonly_recompute[{number}]",
+                    "test_second_alias_reuse_and_parameter_duplicates",
+                    "test_second_hand_thresholds_ties_zero_volume_and_scale",
+                    "test_second_midway_cancellation",
+                    "test_second_proportional_volume_and_return_ties_do_not_create_correlation",
+                    "test_second_ratio_ranks_survive_overflow_and_close_ratios",
+                ]
+                if number in {46, 49, 51, 54}:
+                    cases += [
+                        f"test_second_real_three_adjustments[{a}-{number}]"
+                        for a in ("NONE", "QFQ", "HFQ")
+                    ]
+                checks = [
+                    gate(
+                        evidence,
+                        "本地适配及跨库复用：独立预期／边界／冻结数据／存档",
+                        module,
+                        cases,
+                    )
+                ]
+            if number in {14, 15, 18, 20, 35, 37}:
+                module = "tests.unit.test_alpha101_third"
+                cases = [
+                    f"test_third_independent_default_custom_prefix_permutation[{custom}-{number}]"
+                    for custom in (False, True)
+                ] + [
+                    f"test_third_missing_invalid_constant_and_zero_volume[{number}]",
+                    f"test_third_metadata_parameters_scope_and_isolation[{number}]",
+                    f"test_third_frozen_ten_stocks_and_minute[{number}]",
+                    f"test_third_frozen_archive_readonly_recompute[{number}]",
+                    *[
+                        f"test_third_real_adjustments[{adjust}-{number}]"
+                        for adjust in ("NONE", "QFQ", "HFQ")
+                    ],
+                    "test_third_aliases_and_distinct_body_std_defaults",
+                    "test_third_014_correlation_not_covariance_and_scale",
+                    "test_third_cancellation_is_not_success",
+                ]
+                checks = [
+                    gate(evidence, "本地跨库适配：独立公式／边界／冻结数据／存档", module, cases)
+                ]
+            if number in {8, 19, 26, 30, 34, 45}:
+                module = "tests.unit.test_alpha101_fourth"
+                cases = [
+                    f"test_fourth_default_custom_independent_prefix_permutation[{custom}-{number}]"
+                    for custom in (False, True)
+                ] + [
+                    f"test_fourth_missing_invalid_constant_and_zero[{number}]",
+                    f"test_fourth_metadata_limits_empty_scope_and_no_mutation[{number}]",
+                    f"test_fourth_frozen_pool_and_minute[{number}]",
+                    f"test_fourth_frozen_archive_readonly_recompute[{number}]",
+                    *[
+                        f"test_fourth_real_adjustments[{adjust}-{number}]"
+                        for adjust in ("NONE", "QFQ", "HFQ")
+                    ],
+                    "test_fourth_exact_nested_ties_extreme_scale_and_boundaries",
+                    "test_fourth_nested_ties_and_volume_sum_overflow",
+                    "test_fourth_midway_cancel_and_compound_source_fingerprint",
+                ]
+                checks = [
+                    gate(
+                        evidence,
+                        "本地复合窗口：独立公式／精确并列／边界／真实数据／原档",
+                        module,
+                        cases,
+                    )
+                ]
+            if number in {24, 41, 42, 50, 55}:
+                module = "tests.unit.test_alpha101_fifth"
+                cases = [
+                    f"test_fifth_independent_prefix_permutation[{custom}-{number}]"
+                    for custom in (False, True)
+                ] + [
+                    f"test_fifth_invalid_missing_constant_recovery[{number}]",
+                    f"test_fifth_metadata_parameter_scope_and_mutation[{number}]",
+                    f"test_fifth_real_frozen_pool_minute[{number}]",
+                    f"test_fifth_archive_readonly_and_frozen_recompute[{number}]",
+                    "test_fifth_threshold_equality_exact_large_values_and_alias_sign",
+                    "test_fifth_midway_cancellation",
+                ]
+                if number in {24, 55}:
+                    cases += [
+                        f"test_fifth_real_adjustments[{a}-{number}]" for a in ("NONE", "QFQ", "HFQ")
+                    ]
+                else:
+                    cases += [f"test_fifth_vwap_adjustments_are_not_silently_converted[{number}]"]
+                checks = [
+                    gate(evidence, "条件阈值／负号区分／VWAP边界／冻结数据与原档", module, cases)
+                ]
+            if number in {5, 11, 27, 52}:
+                module = "tests.unit.test_alpha101_sixth"
+                cases = [
+                    f"test_sixth_independent_prefix_and_permutation[{custom}-{number}]"
+                    for custom in (False, True)
+                ] + [
+                    f"test_sixth_invalid_missing_constant_recovery[{number}]",
+                    f"test_sixth_metadata_configuration_identity_and_limits[{number}]",
+                    f"test_sixth_real_frozen_default_pool_and_minute[{number}]",
+                    f"test_sixth_archive_readonly_frozen_recompute[{number}]",
+                    "test_sixth_absolute_rank_threshold_and_reference_window_distinctions",
+                    "test_sixth_midway_cancellation_and_exact_ties",
+                ]
+                if number == 52:
+                    cases += [
+                        f"test_sixth_052_real_adjustments[{a}]" for a in ("NONE", "QFQ", "HFQ")
+                    ]
+                checks = [
+                    gate(
+                        evidence,
+                        "绝对值位置／排名阈值／收益窗口差异／真实数据与原档",
+                        module,
+                        cases,
+                    )
+                ]
+            if number in {32, 57, 60}:
+                module = "tests.unit.test_alpha101_seventh"
+                cases = [
+                    f"test_seventh_independent_prefix_and_permutation[{custom}-{number}]"
+                    for custom in (False, True)
+                ] + [
+                    f"test_seventh_invalid_constant_missing_and_recovery[{number}]",
+                    f"test_seventh_metadata_parameter_and_scope[{number}]",
+                    f"test_seventh_real_frozen_default_pool_and_minute[{number}]",
+                    f"test_seventh_archive_readonly_frozen_recompute[{number}]",
+                    "test_seventh_position_ties_decay_scale_and_non_alias",
+                    "test_seventh_cancellation_and_extreme_scale",
+                ]
+                if number == 60:
+                    cases += [
+                        f"test_seventh_060_real_adjustments[{a}]" for a in ("NONE", "QFQ", "HFQ")
+                    ]
+                checks = [
+                    gate(evidence, "极值位置／并列／线性衰减／独立归一化与存档", module, cases)
+                ]
+        elif item["library"] == "qlib_alpha158":
             key = name.removeprefix("alpha158_").upper()
             spec = SPECS[key]
             old = "tests.unit.test_alpha158"
@@ -612,6 +786,436 @@ def checklist(evidence: dict[tuple[str, str], str]) -> list[dict[str, Any]]:
                             ["test_decay_061_exact_rank_weight_ties_and_changing_membership"],
                         )
                     )
+            if number in {25, 33, 39, 44, 56, 73, 74, 77, 101, 123, 125, 130, 141}:
+                module = "tests.unit.test_gtja191_multistage"
+                group_index = next(
+                    i
+                    for i, group in enumerate(
+                        ((25, 33, 39, 44), (56, 73, 74, 77), (101, 123, 125, 130), (141,))
+                    )
+                    if number in group
+                )
+                checks = [
+                    gate(
+                        evidence,
+                        "独立嵌套公式、默认改参、因果前缀与顺序",
+                        module,
+                        [
+                            f"test_multistage_independent_defaults_custom_causal_order[{size}-{number}]"
+                            for size in ("None", 3, 7)
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "全部输入异常、缺日、常数、零量与恢复",
+                        module,
+                        [f"test_multistage_invalid_missing_constant_zero_recovery[{number}]"],
+                    ),
+                    gate(
+                        evidence,
+                        "十股真实冻结默认窗口逐值核验",
+                        module,
+                        [f"test_multistage_real_ten_stock_default_values[{number}]"],
+                    ),
+                    gate(
+                        evidence,
+                        "元数据、预热、输入复权限制与取消",
+                        module,
+                        [f"test_multistage_metadata_inputs_adjustment_cancel[{number}]"],
+                    ),
+                    gate(
+                        evidence,
+                        "实际研究原档只读与禁止实时取数复算",
+                        module,
+                        [
+                            f"test_multistage_research_archive_readonly_recompute[group{group_index}]"
+                        ],
+                    ),
+                ]
+                if number == 33:
+                    checks.append(
+                        gate(
+                            evidence,
+                            "原研报括号手算与长短窗口约束",
+                            module,
+                            [
+                                "test_multistage_033_report_parentheses_change_rank",
+                                "test_multistage_033_long_short_constraint",
+                            ],
+                        )
+                    )
+                if number == 44:
+                    checks.append(
+                        gate(
+                            evidence,
+                            "真实分钟时序而非截面替代",
+                            module,
+                            [
+                                "test_multistage_044_real_minute_is_single_series_not_pool_rank",
+                            ],
+                        )
+                    )
+            if number in {64, 119, 121, 138, 140, 157, 159}:
+                module = "tests.unit.test_gtja191_nested_ranks"
+                group_index = 0 if number in {64, 119, 121, 138} else 1
+                checks = [
+                    gate(
+                        evidence,
+                        "嵌套公式独立预期、默认改参、因果与顺序",
+                        module,
+                        [
+                            f"test_nested_independent_defaults_custom_causal_order[{size}-{number}]"
+                            for size in ("None", 3, 7)
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "异常输入、缺日、常数零量与恢复",
+                        module,
+                        [
+                            f"test_nested_invalid_missing_constant_zero_recovery[{number}]",
+                            "test_nested_rank_contrast_exact_zero_and_time_rank_weights",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "真实十股逐值与无定义缺失核验（不保证有有限值）",
+                        module,
+                        [f"test_nested_real_ten_stock_default_values[{number}]"],
+                    ),
+                    gate(
+                        evidence,
+                        "元数据、完整预热、输入复权及取消",
+                        module,
+                        [f"test_nested_metadata_inputs_adjustment_cancel[{number}]"],
+                    ),
+                    gate(
+                        evidence,
+                        "实际研究原档只读与无取数复算",
+                        module,
+                        [f"test_nested_research_archive_readonly_recompute[group{group_index}]"],
+                    ),
+                ]
+                if number == 159:
+                    checks.append(
+                        gate(
+                            evidence,
+                            "原表权重手算及真实分钟",
+                            module,
+                            [
+                                "test_nested_159_literal_weights_and_parameter_order",
+                                "test_nested_159_real_minute_single_series",
+                            ],
+                        )
+                    )
+            if number in {28, 54, 190}:
+                module = "tests.unit.test_gtja191_literal"
+                checks = [
+                    gate(
+                        evidence,
+                        "原表口径默认改参独立预期与前缀",
+                        module,
+                        [
+                            f"test_literal_defaults_custom_prefix_permutation[{size}-{number}]"
+                            for size in ("None", 3, 7)
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "逐输入异常、缺日、常数与恢复",
+                        module,
+                        [
+                            f"test_literal_invalid_missing_constant_and_recovery[{number}]",
+                            f"test_literal_metadata_parameters_and_single_scope[{number}]",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "真实三复权日线及可用分钟（单股不能冒充股票池）",
+                        module,
+                        [
+                            f"test_literal_real_stocks_periods_adjustments[{adjust}-{number}]"
+                            for adjust in ("NONE", "QFQ", "HFQ")
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "原文差异手算与冻结原档",
+                        module,
+                        [
+                            "test_literal_research_archive_readonly_recompute",
+                            "test_literal_190_asymmetric_hand_counts_and_exact_ties"
+                            if number == 190
+                            else "test_literal_hand_distinct_denominators_and_correlation_ties",
+                        ],
+                    ),
+                ]
+            if number == 143:
+                module = "tests.unit.test_gtja191_self_recursion"
+                checks = [
+                    gate(
+                        evidence,
+                        "独立有理数乘积、种子手算、历史起点及数值上下溢恢复",
+                        module,
+                        [
+                            "test_self_hand_seed_constant_and_history_origin",
+                            "test_self_underflow_overflow_preserves_state_and_decimal_ties",
+                            "test_self_pool_prefix_permutation_missing_dates_and_inputs",
+                            "test_self_tiny_research_values_are_not_collapsed_to_zero",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "全部价格异常重置与声明／中途取消",
+                        module,
+                        [
+                            "test_self_metadata_and_midway_cancellation",
+                            *[
+                                f"test_self_invalid_prices_reset_and_recover[{v}]"
+                                for v in ("nan", "inf", "-inf", "0.0", "-1.0")
+                            ],
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "真实三复权、多股票、日线与分钟",
+                        module,
+                        [
+                            f"test_self_real_stocks_periods_adjustments[{a}]"
+                            for a in ("NONE", "QFQ", "HFQ")
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "原档只读、禁实时冻结重算",
+                        module,
+                        [
+                            "test_self_research_archive_readonly_recompute",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "单股原档只读与显式重算",
+                        "tests.unit.test_gtja191_archive",
+                        [
+                            "test_every_gtja_series_freezes_and_recomputes_without_live_data[gtja191_143]",
+                        ],
+                    ),
+                ]
+            if number == 30:
+                module = "tests.unit.test_gtja191_risk_residuals"
+                checks = [
+                    gate(
+                        evidence,
+                        "独立回归与正交手算、默认改参和因果前缀",
+                        module,
+                        [
+                            "test_risk_hand_orthogonal_design",
+                            *[
+                                f"test_risk_default_custom_independent_and_prefix[{r}-{s}]"
+                                for r, s in ((60, 20), (5, 1), (8, 3), (20, 7))
+                            ],
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "缺失、秩亏、尺度、取消及恢复",
+                        module,
+                        [
+                            "test_risk_gaps_rank_constant_and_recovery",
+                            "test_risk_cancellation",
+                            "test_risk_scaling_does_not_change_regression[1e-150]",
+                            "test_risk_scaling_does_not_change_regression[1e+150]",
+                            "test_risk_ill_conditioned_not_silently_regularized",
+                            *[
+                                f"test_risk_invalid_close_rewarms_all_dependencies[{value}]"
+                                for value in ("0.0", "-1.0", "nan", "inf")
+                            ],
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "三复权真实价格但合成风险输入（非真实风险数据验收）",
+                        module,
+                        [
+                            f"test_risk_real_prices_synthetic_factors_oracle[{a}]"
+                            for a in ("NONE", "QFQ", "HFQ")
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "缺数据禁用及原始输入只读再算",
+                        module,
+                        [
+                            "test_risk_metadata_and_missing_data_are_not_false_availability",
+                            "test_risk_web_refuses_missing_source",
+                            "test_risk_raw_snapshot_readonly_and_explicit_kernel_recompute",
+                        ],
+                    ),
+                ]
+            if number in {146, 165, 166, 183}:
+                module = "tests.unit.test_gtja191_window_interpretations"
+                checks = [
+                    gate(
+                        evidence,
+                        "公开解释默认／改参、独立算式与因果前缀",
+                        module,
+                        [
+                            f"test_interpreted_default_custom_oracle_prefix[{size}-{number}]"
+                            for size in ("None", 3, 7)
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "缺失常数、数值尺度、中途取消与手算",
+                        module,
+                        [
+                            f"test_interpreted_missing_constant_extreme_and_cancel[{number}]",
+                            "test_interpreted_hand_examples_and_invalid_windows",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "真实多股多周期三复权",
+                        module,
+                        [
+                            f"test_interpreted_real_periods_adjustments[{a}-{number}]"
+                            for a in ("NONE", "QFQ", "HFQ")
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "整池身份及公开解释元数据",
+                        module,
+                        [
+                            f"test_interpreted_pool_identity_and_metadata[{number}]",
+                            f"test_interpreted_declared_input_and_parameter_contract[{number}]",
+                            "test_interpreted_equivalent_windows_are_not_duplicate_factors",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "冻结原档禁止实时取数重算",
+                        "tests.unit.test_gtja191_archive",
+                        [
+                            f"test_every_gtja_series_freezes_and_recomputes_without_live_data[gtja191_{number:03d}]"
+                        ],
+                    ),
+                ]
+            if number in {149, 181}:
+                module = "tests.unit.test_gtja191_benchmark_statistics"
+                windows = (2, 7, 252) if number == 149 else (1, 3, 20)
+                checks = [
+                    gate(
+                        evidence,
+                        "独立默认／改参公式与未来前缀",
+                        module,
+                        [
+                            f"test_default_custom_independent_formula_and_prefix[{number}-{w}]"
+                            for w in windows
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "缺失常数与中途取消",
+                        module,
+                        [
+                            f"test_constant_invalid_missing_and_cancel[{number}]",
+                            "test_filtered_beta_counts_selected_samples_holds_non_down_and_resets_gap"
+                            if number == 149
+                            else "test_signed_cubic_exact_zero_and_old_outlier_leaves_window",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "真实多周期三复权",
+                        module,
+                        [
+                            f"test_real_multi_period_adjustments_and_independent_indices[{a}-{number}]"
+                            for a in ("NONE", "QFQ", "HFQ")
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "800根真实默认参数多股独立对照",
+                        module,
+                        [
+                            f"test_default_real_800_bars_multi_stock_independent_oracle[{name}-{number}]"
+                            for name in (
+                                "SZ-000001-stock.json",
+                                "SZ-300750-stock.json",
+                                "SH-600036-stock.json",
+                            )
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "冻结输入显式重算",
+                        "tests.unit.test_gtja191_archive",
+                        [
+                            f"test_every_gtja_series_freezes_and_recomputes_without_live_data[gtja191_{number:03d}]"
+                        ],
+                    ),
+                ]
+            if number in {75, 182}:
+                module = "tests.unit.test_gtja191_benchmark"
+                checks = [
+                    gate(
+                        evidence,
+                        "独立窗口计数、参数预热与前缀",
+                        module,
+                        [
+                            f"test_independent_window_oracle_custom_warmup_and_prefix[{w}-{number}]"
+                            for w in (1, 3, 20, 50)
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "平盘／零分母／缺失与独立基准校验",
+                        module,
+                        [
+                            f"test_hand_ties_constant_zero_denominator_and_missing_window[{number}]",
+                            f"test_formula_requires_independent_source_and_consistent_pair[{number}]",
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "真实四指数、多股、三复权与分钟",
+                        module,
+                        [
+                            *[
+                                f"test_real_frozen_independent_indices_multi_stock_default_oracle[{s}-{number}]"
+                                for s in ("SH:000001", "SZ:399001", "SH:000300", "SZ:399006")
+                            ],
+                            *[
+                                f"test_real_frozen_adjustments_and_minute_exact_alignment[{a}-{number}]"
+                                for a in ("NONE", "QFQ", "HFQ")
+                            ],
+                        ],
+                    ),
+                    gate(
+                        evidence,
+                        "取数隔离、原档及旧配置兼容",
+                        module,
+                        [
+                            "test_series_pool_fetch_once_archive_and_missing_index_does_not_hide_other_factors",
+                            "test_normal_factor_does_not_fetch_benchmark_and_invalid_choice_is_rejected",
+                            "test_old_archive_migration_is_explicit_and_new_config_cannot_change_index",
+                            "test_pool_shared_index_snapshot_and_reject_mixed_versions_in_archive_and_recompute",
+                        ],
+                    ),
+                ]
+            if number == 1:
+                checks.append(
+                    gate(
+                        evidence,
+                        "精确比例并列不得制造相关",
+                        "tests.unit.test_alpha101_second",
+                        [
+                            "test_second_proportional_volume_and_return_ties_do_not_create_correlation"
+                        ],
+                    )
+                )
             boundary_cases = {
                 21: ["test_regression_uses_mean_close_not_reference_modules_raw_close"],
                 147: ["test_regression_uses_mean_close_not_reference_modules_raw_close"],

@@ -1,0 +1,75 @@
+.............F..F..F.FFF.F.                                              [100%]
+=================================== FAILURES ===================================
+____________ test_literal_real_stocks_periods_adjustments[NONE-54] _____________
+tests/unit/test_gtja191_literal.py:159: in test_literal_real_stocks_periods_adjustments
+    out = calculate(data, n, p)
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:52: in compute_matrix
+    raise ValueError("整池截面因子至少需要 2 个明确标的，不能使用单股替代")
+E   ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代
+_____________ test_literal_real_stocks_periods_adjustments[QFQ-54] _____________
+tests/unit/test_gtja191_literal.py:159: in test_literal_real_stocks_periods_adjustments
+    out = calculate(data, n, p)
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:52: in compute_matrix
+    raise ValueError("整池截面因子至少需要 2 个明确标的，不能使用单股替代")
+E   ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代
+_____________ test_literal_real_stocks_periods_adjustments[HFQ-54] _____________
+tests/unit/test_gtja191_literal.py:159: in test_literal_real_stocks_periods_adjustments
+    out = calculate(data, n, p)
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:52: in compute_matrix
+    raise ValueError("整池截面因子至少需要 2 个明确标的，不能使用单股替代")
+E   ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代
+____________ test_literal_metadata_parameters_and_single_scope[28] _____________
+tests/unit/test_gtja191_literal.py:181: in test_literal_metadata_parameters_and_single_scope
+    assert calculate(sample(size), n).isna().all().all()
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:59: in build
+    raise ValueError("股票池含无行情标的，未静默缩小股票池")
+E   ValueError: 股票池含无行情标的，未静默缩小股票池
+____________ test_literal_metadata_parameters_and_single_scope[54] _____________
+tests/unit/test_gtja191_literal.py:181: in test_literal_metadata_parameters_and_single_scope
+    assert calculate(sample(size), n).isna().all().all()
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:59: in build
+    raise ValueError("股票池含无行情标的，未静默缩小股票池")
+E   ValueError: 股票池含无行情标的，未静默缩小股票池
+____________ test_literal_metadata_parameters_and_single_scope[190] ____________
+tests/unit/test_gtja191_literal.py:181: in test_literal_metadata_parameters_and_single_scope
+    assert calculate(sample(size), n).isna().all().all()
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:59: in build
+    raise ValueError("股票池含无行情标的，未静默缩小股票池")
+E   ValueError: 股票池含无行情标的，未静默缩小股票池
+____________ test_literal_190_asymmetric_hand_counts_and_exact_ties ____________
+tests/unit/test_gtja191_literal.py:218: in test_literal_190_asymmetric_hand_counts_and_exact_ties
+    assert actual.iloc[-1, 0] > 5  # Literal lower residual includes minus two.
+E   assert np.float64(4.101522473012274) > 5
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_literal.py::test_literal_real_stocks_periods_adjustments[NONE-54]
+FAILED tests/unit/test_gtja191_literal.py::test_literal_real_stocks_periods_adjustments[QFQ-54]
+FAILED tests/unit/test_gtja191_literal.py::test_literal_real_stocks_periods_adjustments[HFQ-54]
+FAILED tests/unit/test_gtja191_literal.py::test_literal_metadata_parameters_and_single_scope[28]
+FAILED tests/unit/test_gtja191_literal.py::test_literal_metadata_parameters_and_single_scope[54]
+FAILED tests/unit/test_gtja191_literal.py::test_literal_metadata_parameters_and_single_scope[190]
+FAILED tests/unit/test_gtja191_literal.py::test_literal_190_asymmetric_hand_counts_and_exact_ties
+7 failed, 20 passed, 1 warning in 13.14s

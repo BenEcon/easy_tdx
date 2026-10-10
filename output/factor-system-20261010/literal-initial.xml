@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="27" time="12.976" timestamp="2026-10-10T16:08:07.548127+08:00" hostname="BowenECON.local"><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[None-28]" time="0.129" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[None-54]" time="0.389" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[None-190]" time="0.451" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[3-28]" time="0.141" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[3-54]" time="0.142" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[3-190]" time="0.221" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[7-28]" time="0.098" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[7-54]" time="0.261" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_defaults_custom_prefix_permutation[7-190]" time="0.279" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_invalid_missing_constant_and_recovery[28]" time="0.558" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_invalid_missing_constant_and_recovery[54]" time="0.617" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_invalid_missing_constant_and_recovery[190]" time="0.373" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[NONE-28]" time="0.125" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[NONE-54]" time="0.227"><failure message="ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代">tests/unit/test_gtja191_literal.py:159: in test_literal_real_stocks_periods_adjustments
+    out = calculate(data, n, p)
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:52: in compute_matrix
+    raise ValueError("整池截面因子至少需要 2 个明确标的，不能使用单股替代")
+E   ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代</failure></testcase><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[NONE-190]" time="0.292" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[QFQ-28]" time="0.122" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[QFQ-54]" time="0.227"><failure message="ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代">tests/unit/test_gtja191_literal.py:159: in test_literal_real_stocks_periods_adjustments
+    out = calculate(data, n, p)
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:52: in compute_matrix
+    raise ValueError("整池截面因子至少需要 2 个明确标的，不能使用单股替代")
+E   ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代</failure></testcase><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[QFQ-190]" time="0.288" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[HFQ-28]" time="0.122" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[HFQ-54]" time="0.223"><failure message="ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代">tests/unit/test_gtja191_literal.py:159: in test_literal_real_stocks_periods_adjustments
+    out = calculate(data, n, p)
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:52: in compute_matrix
+    raise ValueError("整池截面因子至少需要 2 个明确标的，不能使用单股替代")
+E   ValueError: 整池截面因子至少需要 2 个明确标的，不能使用单股替代</failure></testcase><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_real_stocks_periods_adjustments[HFQ-190]" time="0.294" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_metadata_parameters_and_single_scope[28]" time="0.005"><failure message="ValueError: 股票池含无行情标的，未静默缩小股票池">tests/unit/test_gtja191_literal.py:181: in test_literal_metadata_parameters_and_single_scope
+    assert calculate(sample(size), n).isna().all().all()
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:59: in build
+    raise ValueError("股票池含无行情标的，未静默缩小股票池")
+E   ValueError: 股票池含无行情标的，未静默缩小股票池</failure></testcase><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_metadata_parameters_and_single_scope[54]" time="0.006"><failure message="ValueError: 股票池含无行情标的，未静默缩小股票池">tests/unit/test_gtja191_literal.py:181: in test_literal_metadata_parameters_and_single_scope
+    assert calculate(sample(size), n).isna().all().all()
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:59: in build
+    raise ValueError("股票池含无行情标的，未静默缩小股票池")
+E   ValueError: 股票池含无行情标的，未静默缩小股票池</failure></testcase><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_metadata_parameters_and_single_scope[190]" time="0.004"><failure message="ValueError: 股票池含无行情标的，未静默缩小股票池">tests/unit/test_gtja191_literal.py:181: in test_literal_metadata_parameters_and_single_scope
+    assert calculate(sample(size), n).isna().all().all()
+tests/unit/test_gtja191_literal.py:108: in calculate
+    return FactorEngine().compute_matrix(data, configure_factor(f"gtja191_{n:03d}", p or {}))
+src/easy_tdx/factor/engine.py:53: in compute_matrix
+    panel = FactorPanel.build(data, resolved.inputs)
+src/easy_tdx/factor/panel.py:59: in build
+    raise ValueError("股票池含无行情标的，未静默缩小股票池")
+E   ValueError: 股票池含无行情标的，未静默缩小股票池</failure></testcase><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_hand_distinct_denominators_and_correlation_ties" time="0.012" /><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_190_asymmetric_hand_counts_and_exact_ties" time="0.013"><failure message="assert np.float64(4.101522473012274) &gt; 5">tests/unit/test_gtja191_literal.py:218: in test_literal_190_asymmetric_hand_counts_and_exact_ties
+    assert actual.iloc[-1, 0] &gt; 5  # Literal lower residual includes minus two.
+E   assert np.float64(4.101522473012274) &gt; 5</failure></testcase><testcase classname="tests.unit.test_gtja191_literal" name="test_literal_research_archive_readonly_recompute" time="6.414" /></testsuite></testsuites>

@@ -1,0 +1,84 @@
+...F....F.F..F.......................FFF.                                [100%]
+=================================== FAILURES ===================================
+_____________ test_fifth_independent_prefix_permutation[False-50] ______________
+tests/unit/test_alpha101_fifth.py:91: in test_fifth_independent_prefix_permutation
+    assert actual.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3\n2025-01-01  False  False  False  False\n2025-01-02  False  False  False  False\n2...lse  False  False\n2025-11-17  False  False  False  False\n2025-11-18  False  False  False  False\n\n[230 rows x 4 columns].any
+E    +          where                S0     S1     S2     S3\n2025-01-01  False  False  False  False\n2025-01-02  False  False  False  False\n2...lse  False  False\n2025-11-17  False  False  False  False\n2025-11-18  False  False  False  False\n\n[230 rows x 4 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3\n2025-01-01 NaN NaN NaN NaN\n2025-01-02 NaN NaN NaN NaN\n2025-01-03 NaN NaN NaN NaN\n2025-01-06...aN NaN NaN NaN\n2025-11-14 NaN NaN NaN NaN\n2025-11-17 NaN NaN NaN NaN\n2025-11-18 NaN NaN NaN NaN\n\n[230 rows x 4 columns].notna
+______________ test_fifth_independent_prefix_permutation[True-50] ______________
+tests/unit/test_alpha101_fifth.py:91: in test_fifth_independent_prefix_permutation
+    assert actual.notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3\n2025-01-01  False  False  False  False\n2025-01-02  False  False  False  False\n2...lse  False  False\n2025-11-17  False  False  False  False\n2025-11-18  False  False  False  False\n\n[230 rows x 4 columns].any
+E    +          where                S0     S1     S2     S3\n2025-01-01  False  False  False  False\n2025-01-02  False  False  False  False\n2...lse  False  False\n2025-11-17  False  False  False  False\n2025-11-18  False  False  False  False\n\n[230 rows x 4 columns] = notna()
+E    +            where notna =             S0  S1  S2  S3\n2025-01-01 NaN NaN NaN NaN\n2025-01-02 NaN NaN NaN NaN\n2025-01-03 NaN NaN NaN NaN\n2025-01-06...aN NaN NaN NaN\n2025-11-14 NaN NaN NaN NaN\n2025-11-17 NaN NaN NaN NaN\n2025-11-18 NaN NaN NaN NaN\n\n[230 rows x 4 columns].notna
+_______________ test_fifth_invalid_missing_constant_recovery[24] _______________
+tests/unit/test_alpha101_fifth.py:107: in test_fifth_invalid_missing_constant_recovery
+    actual, expected(data, factor.spec), equal_nan=True, atol=1e-10
+tests/unit/test_alpha101_fifth.py:71: in expected
+    return pd.DataFrame({s: series_oracle(f, spec) for s, f in frames.items()})
+tests/unit/test_alpha101_fifth.py:71: in <dictcomp>
+    return pd.DataFrame({s: series_oracle(f, spec) for s, f in frames.items()})
+tests/unit/test_alpha101_fifth.py:55: in series_oracle
+    c = [Fraction(str(v)) for v in frame.close.iloc[: i + 1]]
+tests/unit/test_alpha101_fifth.py:55: in <listcomp>
+    c = [Fraction(str(v)) for v in frame.close.iloc[: i + 1]]
+../../../../.local/share/uv/python/cpython-3.10.18-macos-aarch64-none/lib/python3.10/fractions.py:115: in __new__
+    raise ValueError('Invalid literal for Fraction: %r' %
+E   ValueError: Invalid literal for Fraction: 'nan'
+_______________ test_fifth_invalid_missing_constant_recovery[50] _______________
+tests/unit/test_alpha101_fifth.py:110: in test_fifth_invalid_missing_constant_recovery
+    assert actual.S0.iloc[30:].notna().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = 2025-02-12    False\n2025-02-13    False\n2025-02-14    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\n2025-02-20    False\n2025-02-21    False\n2025-02-24    False\n2025-02-25    False\nName: S0, dtype: bool.any
+E    +      where 2025-02-12    False\n2025-02-13    False\n2025-02-14    False\n2025-02-17    False\n2025-02-18    False\n2025-02-19    False\n2025-02-20    False\n2025-02-21    False\n2025-02-24    False\n2025-02-25    False\nName: S0, dtype: bool = notna()
+E    +        where notna = 2025-02-12   NaN\n2025-02-13   NaN\n2025-02-14   NaN\n2025-02-17   NaN\n2025-02-18   NaN\n2025-02-19   NaN\n2025-02-20   NaN\n2025-02-21   NaN\n2025-02-24   NaN\n2025-02-25   NaN\nName: S0, dtype: float64.notna
+_____________ test_fifth_archive_readonly_and_frozen_recompute[42] _____________
+tests/unit/test_alpha101_fifth.py:273: in test_fifth_archive_readonly_and_frozen_recompute
+    req = research.FactorEvaluationRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for FactorEvaluationRequest
+E   stocks
+E     List should have at least 5 items after validation, not 4 [type=too_short, input_value=[{'market': 'SZ', 'code':...'SZ', 'code': '000004'}], input_type=list]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_short
+_____________ test_fifth_archive_readonly_and_frozen_recompute[50] _____________
+tests/unit/test_alpha101_fifth.py:273: in test_fifth_archive_readonly_and_frozen_recompute
+    req = research.FactorEvaluationRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for FactorEvaluationRequest
+E   stocks
+E     List should have at least 5 items after validation, not 4 [type=too_short, input_value=[{'market': 'SZ', 'code':...'SZ', 'code': '000004'}], input_type=list]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_short
+_____________ test_fifth_archive_readonly_and_frozen_recompute[55] _____________
+tests/unit/test_alpha101_fifth.py:273: in test_fifth_archive_readonly_and_frozen_recompute
+    req = research.FactorEvaluationRequest(
+E   pydantic_core._pydantic_core.ValidationError: 1 validation error for FactorEvaluationRequest
+E   stocks
+E     List should have at least 5 items after validation, not 4 [type=too_short, input_value=[{'market': 'SZ', 'code':...'SZ', 'code': '000004'}], input_type=list]
+E       For further information visit https://errors.pydantic.dev/2.13/v/too_short
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+tests/unit/test_alpha101_fifth.py::test_fifth_invalid_missing_constant_recovery[55]
+  /Users/bowen/Documents/Python/Google/TDX-work/tests/unit/test_alpha101_fifth.py:104: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise an error in a future version of pandas. Value 'inf' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+    data["S0"].loc[data["S0"].index[15], field] = invalid
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_alpha101_fifth.py::test_fifth_independent_prefix_permutation[False-50]
+FAILED tests/unit/test_alpha101_fifth.py::test_fifth_independent_prefix_permutation[True-50]
+FAILED tests/unit/test_alpha101_fifth.py::test_fifth_invalid_missing_constant_recovery[24]
+FAILED tests/unit/test_alpha101_fifth.py::test_fifth_invalid_missing_constant_recovery[50]
+FAILED tests/unit/test_alpha101_fifth.py::test_fifth_archive_readonly_and_frozen_recompute[42]
+FAILED tests/unit/test_alpha101_fifth.py::test_fifth_archive_readonly_and_frozen_recompute[50]
+FAILED tests/unit/test_alpha101_fifth.py::test_fifth_archive_readonly_and_frozen_recompute[55]
+7 failed, 34 passed, 2 warnings in 6.71s

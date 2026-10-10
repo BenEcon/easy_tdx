@@ -300,7 +300,7 @@ def test_named_parameters_metadata_limits_no_default_mutation():
 
     assert {n for n, s in SPECS.items() if s.windows and not s.panel} == set(DEFAULTS) | set(
         CONDITIONAL_DEFAULTS
-    ) | {26, 154}
+    ) | {26, 28, 30, 44, 146, 154, 159, 190}
     for n, p in DEFAULTS.items():
         name = f"gtja191_{n:03d}"
         cls = get_factor(name)

@@ -14,6 +14,7 @@ import * as target from '../src/chanlun-target.ts'
 import * as overview from '../src/period-overview.ts'
 import * as workspace from '../src/research-workspace.ts'
 import * as origin from '../src/query-origin.ts'
+import * as structureSettings from '../src/structure-settings.ts'
 import {prepareArchiveImport} from '../src/archive-import.ts'
 import {planArchiveRecompute,recomputedArchiveDraft} from '../src/archive-recompute.ts'
 
@@ -30,6 +31,7 @@ function radarSource(){
 function mount({get=async(_target,category)=>snapshot(category),respond=async body=>({as_of:body.window_end??body.as_of,rows:body.series.map(s=>row(s.category)),parameters:{macd:[12,26,9],boll:[20,2],window_start:null,window_end:null,...body},conflicts:[],policy:'QA',rule_version:'qa'})}={}){
   const owner=vue.ref({id:'alice'}),stops=[],requests=[],gets=[]
   const mocks={vue:{...vue,onBeforeUnmount:f=>stops.push(f)},'../auth':{useAuth:()=>({currentUser:owner})},'../query-origin':origin,'../study-archive':studyArchive,'../research-study':study,'../market':market,'../market-data-contract':contract,'../chanlun-target':target,'../period-overview':overview,'../research-workspace':workspace,
+    '../structure-settings':structureSettings,
     '../api':{formatError:e=>e.message,fetchResearchSnapshot:(...args)=>{gets.push(origin.queryIntentHeaders()['X-Query-Origin']);return get(...args)}}}
   const mod={exports:{}}
   vm.runInNewContext(compiled,{module:mod,exports:mod.exports,require:p=>mocks[p]??(p.endsWith('.vue')?{}:require(p)),AbortController,setTimeout:()=>1,clearTimeout(){},fetch:async(_url,init)=>{const body=JSON.parse(init.body);requests.push({body,headers:init.headers});return new Response(JSON.stringify(await respond(body))) }},{filename:file.pathname})

@@ -149,9 +149,13 @@ def dispatch_task(value: TaskInput) -> dict[str, Any]:
         from easy_tdx.web.task_store import _result_bytes
 
         _frame_count(value, 1)
-        if set(value.request) != set(FactorComputeRequest.model_fields):
+        request_data = dict(value.request)
+        if set(request_data) == set(FactorComputeRequest.model_fields) - {"benchmark"}:
+            # Only the known pre-benchmark schema; never invent an index choice.
+            request_data["benchmark"] = None
+        if set(request_data) != set(FactorComputeRequest.model_fields):
             raise ValueError("因子序列冻结配置字段不完整或含未知字段")
-        series_request = FactorComputeRequest.model_validate(value.request)
+        series_request = FactorComputeRequest.model_validate(request_data)
         if value.context != {
             "symbol": f"{series_request.market}:{series_request.code}",
             "category": series_request.category,

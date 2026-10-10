@@ -1,0 +1,32 @@
+............F..F......                                                   [100%]
+=================================== FAILURES ===================================
+________________ test_self_research_archive_readonly_recompute _________________
+src/easy_tdx/web/factor_archive.py:420: in validate_factor_archive
+    _require(metadata.get("category") == settings["category"], "原行情周期不一致")
+src/easy_tdx/web/factor_archive.py:17: in _require
+    raise ValueError(message)
+E   ValueError: 原行情周期不一致
+
+The above exception was the direct cause of the following exception:
+tests/unit/test_gtja191_self_recursion.py:196: in test_self_research_archive_readonly_recompute
+    validate_factor_archive(original)
+src/easy_tdx/web/factor_archive.py:534: in validate_factor_archive
+    raise ArchiveError(422, f"因子原档不完整或不一致：{exc}") from exc
+E   easy_tdx.web.research_archive.ArchiveError: 因子原档不完整或不一致：原行情周期不一致
+___ test_self_recursive_factor_requires_numerical_range_and_archive_evidence ___
+tests/unit/test_factor_acceptance_report.py:27: in test_self_recursive_factor_requires_numerical_range_and_archive_evidence
+    assert next(r for r in checklist(evidence) if r["name"] == name)["kernel_evidence"] == "passed"
+E   AssertionError: assert 'passed_listed_checks' == 'passed'
+E     
+E     - passed
+E     + passed_listed_checks
+=============================== warnings summary ===============================
+tests/unit/test_gtja191_self_recursion.py::test_self_pool_prefix_permutation_missing_dates_and_inputs
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_self_recursion.py::test_self_research_archive_readonly_recompute
+FAILED tests/unit/test_factor_acceptance_report.py::test_self_recursive_factor_requires_numerical_range_and_archive_evidence
+2 failed, 20 passed, 1 warning in 13.24s

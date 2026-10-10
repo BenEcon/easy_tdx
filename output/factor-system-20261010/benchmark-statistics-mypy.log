@@ -1,0 +1,16 @@
+WARN mypy==2.4.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.1 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.2.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+src/easy_tdx/factor/builtin/benchmark_statistics.py:40: error: Generator has incompatible item type "Decimal | Any"; expected "bool"  [misc]
+src/easy_tdx/factor/builtin/benchmark_statistics.py:40: error: Unsupported operand types for - ("Decimal" and "float")  [operator]
+src/easy_tdx/factor/builtin/benchmark_statistics.py:40: note: Right operand is of type "Decimal | float"
+src/easy_tdx/factor/builtin/benchmark_statistics.py:42: error: Generator has incompatible item type "Decimal | Any"; expected "bool"  [misc]
+src/easy_tdx/factor/builtin/benchmark_statistics.py:42: error: Unsupported operand types for - ("Decimal" and "float")  [operator]
+src/easy_tdx/factor/builtin/benchmark_statistics.py:42: note: Right operand is of type "Decimal | float"
+src/easy_tdx/factor/builtin/benchmark_statistics.py:72: error: Argument 1 to "append" of "deque" has incompatible type "tuple[Fraction | float, Fraction | float]"; expected "tuple[Fraction, Fraction]"  [arg-type]
+Found 5 errors in 1 file (checked 329 source files)

@@ -14,6 +14,7 @@ from easy_tdx.chanlun.research_context import RULE_VERSION
 from easy_tdx.web.bar_snapshot import period_end
 from easy_tdx.web.resource_admission import BoundedComputeRoute
 from easy_tdx.web.routers.chanlun_replay import ReplaySeries
+from easy_tdx.web.structure_settings import StructureSettings
 
 router = APIRouter(tags=["chanlun"], route_class=BoundedComputeRoute)
 
@@ -26,6 +27,7 @@ class StudySeries(ReplaySeries):
 
 
 class StudyRequest(BaseModel):
+    structure_settings: StructureSettings = Field(default_factory=StructureSettings)
     as_of: datetime
     series: list[StudySeries] = Field(min_length=1, max_length=9)
     volume_multiple: float = Field(default=2, ge=1, le=10)
@@ -89,6 +91,8 @@ def observations(req: StudyRequest) -> dict[str, Any]:
             ma_periods=req.ma_periods,
             window_bars=req.window_bars,
             window_start=req.window_start,
+            structure_config=req.structure_settings.engine_config(),
+            base_min_lines=req.structure_settings.zs_min_lines,
         )
         row["excluded_bars"] = len(source.bars) - len(eligible)
         row["last_closed_at"] = period_end(
@@ -244,6 +248,7 @@ def observations(req: StudyRequest) -> dict[str, Any]:
         "rule_version": RULE_VERSION + "+signal-evidence-20261010",
         "eligible_for_trading": False,
         "parameters": {
+            "structure_settings": req.structure_settings.model_dump(),
             "macd": [12, 26, 9],
             "boll": [20, 2],
             "volume_multiple": req.volume_multiple,

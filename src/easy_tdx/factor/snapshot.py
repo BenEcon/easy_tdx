@@ -15,7 +15,8 @@ import pandas as pd
 
 VERSION = "factor-input-v1"
 _DTYPE = re.compile(
-    r"^(?:object|bool|u?int(?:8|16|32|64)|float(?:32|64)|datetime64\[(?:ns|us|ms|s)\])$"
+    r"^(?:object|bool|u?int(?:8|16|32|64)|float(?:32|64)|"
+    r"datetime64\[(?:ns|us|ms|s)(?:, (?:UTC|Asia/Shanghai))?\])$"
 )
 
 
@@ -118,7 +119,13 @@ def freeze_input(symbol: str, frame: pd.DataFrame) -> dict[str, Any]:
         "attrs": copy.deepcopy(
             {
                 key: frame.attrs[key]
-                for key in ("snapshot_metadata", "factor_data_contract", "factor_input_errors")
+                for key in (
+                    "snapshot_metadata",
+                    "factor_data_contract",
+                    "factor_input_errors",
+                    "factor_benchmark",
+                    "factor_risk_inputs",
+                )
                 if key in frame.attrs
             }
         ),
@@ -184,4 +191,10 @@ def restore_input(value: dict[str, Any]) -> pd.DataFrame:
         raise ValueError("因子快照索引重复")
     frame.index = saved_index
     frame.attrs = copy.deepcopy(value["attrs"])
+    from easy_tdx.factor.benchmark import validate_benchmark
+
+    validate_benchmark(frame)
+    from easy_tdx.factor.risk_inputs import validate_risk_inputs
+
+    validate_risk_inputs(frame)
     return frame

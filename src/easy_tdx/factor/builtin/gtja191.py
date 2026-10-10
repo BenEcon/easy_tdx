@@ -24,7 +24,7 @@ from easy_tdx.computation import computation_checkpoint
 from easy_tdx.factor.base import Factor, PanelFactor, register_factor
 from easy_tdx.factor.panel import FactorPanel, cross_section_rank, observation_index
 
-VERSION = "gtja191-complete-window-v8"
+VERSION = "gtja191-complete-window-v17"
 SOURCE_COMMIT = "43ace2cc4b81d048864ec2e40c25728d5d464e05"
 SOURCE = f"https://github.com/dolphindb/DolphinDBModules/blob/{SOURCE_COMMIT}/gtja191Alpha/src/gtja191Alpha.dos"
 REPORT = "https://guorn.com/static/upload/file/3/134065454575605.pdf"
@@ -36,6 +36,7 @@ class Window:
     value: int
     label: str
     minimum: int = 1
+    unit: str = "bars"
 
 
 @dataclass(frozen=True)
@@ -1301,12 +1302,545 @@ for _n, _title, _inputs, _formula, _windows, _paths in (
     )
 
 
+_MULTISTAGE_LABELS = {
+    "lag": "差分或滞后间隔",
+    "volume_mean": "均量窗口",
+    "volume_sum": "均量累计窗口",
+    "return_sum": "收益累计窗口",
+    "volume_decay": "量比线性加权窗口",
+    "trough": "低点窗口",
+    "long": "长收益窗口",
+    "short": "短收益窗口",
+    "volume_rank": "成交量时序排名窗口",
+    "price_decay": "价格线性加权窗口",
+    "corr": "相关窗口",
+    "corr_decay": "相关线性加权窗口",
+    "corr_rank": "相关时序排名窗口",
+    "price_rank": "价格时序排名窗口",
+    "price_sum": "价格累计窗口",
+    "rank_corr": "排名相关窗口",
+    "rank_decay": "排名相关线性加权窗口",
+    "trough_open": "开盘低点窗口",
+    "inner_decay": "内层线性加权窗口",
+    "outer_decay": "外层线性加权窗口",
+    "second_corr": "第二相关窗口",
+}
+for _n, _title, _inputs, _formula, _multi_windows, _multi_paths in (
+    (
+        25,
+        "量比加权的价格变化与长期收益排名",
+        ("close", "volume"),
+        "−R(diff_lag(C)×(1−R(D_volume_decay(V/mean_volume_mean(V)))))×(1+R(sum_return_sum(RET)))",
+        (("lag", 7), ("volume_mean", 20), ("volume_decay", 9), ("return_sum", 250)),
+        ((1, ("lag",)), (-1, ("volume_mean", "volume_decay")), (1, ("return_sum",))),
+    ),
+    (
+        33,
+        "低点迁移与长短收益量排名",
+        ("close", "low", "volume"),
+        "(delay_lag(min_trough(L))−min_trough(L))×R((sum_long(RET)−sum_short(RET))/(long−short))×T_volume_rank(V)；long必须大于short",
+        (("trough", 5), ("lag", 5), ("long", 240), ("short", 20), ("volume_rank", 5)),
+        ((0, ("trough", "lag")), (1, ("long",)), (0, ("volume_rank",))),
+    ),
+    (
+        39,
+        "价格变化与累计量价相关加权排名差",
+        ("open", "close", "volume", "vwap"),
+        "R(D_corr_decay(corr_corr(0.3W+0.7O,sum_volume_sum(mean_volume_mean(V)))))−R(D_price_decay(diff_lag(C)))",
+        (
+            ("lag", 2),
+            ("price_decay", 8),
+            ("volume_mean", 180),
+            ("volume_sum", 37),
+            ("corr", 14),
+            ("corr_decay", 12),
+        ),
+        ((0, ("lag", "price_decay")), (-3, ("volume_mean", "volume_sum", "corr", "corr_decay"))),
+    ),
+    (
+        44,
+        "低价量相关与均价变化时序排名",
+        ("low", "volume", "vwap"),
+        "T_corr_rank(D_corr_decay(corr_corr(L,mean_volume_mean(V))))+T_price_rank(D_price_decay(diff_lag(W)))；全部为本股时序算子，无截面排名",
+        (
+            ("volume_mean", 10),
+            ("corr", 7),
+            ("corr_decay", 6),
+            ("corr_rank", 4),
+            ("lag", 3),
+            ("price_decay", 10),
+            ("price_rank", 15),
+        ),
+        (
+            (-3, ("volume_mean", "corr", "corr_decay", "corr_rank")),
+            (-1, ("lag", "price_decay", "price_rank")),
+        ),
+    ),
+    (
+        56,
+        "开盘低点与累计量价相关排名比较",
+        ("open", "high", "low", "volume"),
+        "R(O−min_trough_open(O))<R(R(corr_corr(sum_price_sum((H+L)/2),sum_volume_sum(mean_volume_mean(V))))^5)；双方有限才输出0/1",
+        (
+            ("trough_open", 12),
+            ("price_sum", 19),
+            ("volume_mean", 40),
+            ("volume_sum", 19),
+            ("corr", 13),
+        ),
+        (
+            (0, ("trough_open",)),
+            (-1, ("price_sum", "corr")),
+            (-2, ("volume_mean", "volume_sum", "corr")),
+        ),
+    ),
+    (
+        73,
+        "双层加权量价相关排名差",
+        ("close", "volume", "vwap"),
+        "R(D_corr_decay(corr_second_corr(W,mean_volume_mean(V))))−T_corr_rank(D_outer_decay(D_inner_decay(corr_corr(C,V))))",
+        (
+            ("corr", 10),
+            ("inner_decay", 16),
+            ("outer_decay", 4),
+            ("corr_rank", 5),
+            ("volume_mean", 30),
+            ("second_corr", 4),
+            ("corr_decay", 3),
+        ),
+        (
+            (-3, ("corr", "inner_decay", "outer_decay", "corr_rank")),
+            (-2, ("volume_mean", "second_corr", "corr_decay")),
+        ),
+    ),
+    (
+        74,
+        "累计混合低价与量价排名相关",
+        ("low", "volume", "vwap"),
+        "R(corr_corr(sum_price_sum(0.35L+0.65W),sum_volume_sum(mean_volume_mean(V))))+R(corr_rank_corr(R(W),R(V)))",
+        (("price_sum", 20), ("volume_mean", 40), ("volume_sum", 20), ("corr", 7), ("rank_corr", 6)),
+        (
+            (-1, ("price_sum", "corr")),
+            (-2, ("volume_mean", "volume_sum", "corr")),
+            (0, ("rank_corr",)),
+        ),
+    ),
+    (
+        77,
+        "中价均价偏离与量价相关较小排名",
+        ("high", "low", "volume", "vwap"),
+        "min(R(D_price_decay((H+L)/2−W)),R(D_corr_decay(corr_corr((H+L)/2,mean_volume_mean(V)))))；原式两侧+H相消",
+        (("price_decay", 20), ("volume_mean", 40), ("corr", 3), ("corr_decay", 6)),
+        ((0, ("price_decay",)), (-2, ("volume_mean", "corr", "corr_decay"))),
+    ),
+    (
+        101,
+        "累计均量相关与排名相关比较",
+        ("close", "high", "volume", "vwap"),
+        "−(R(corr_corr(C,sum_volume_sum(mean_volume_mean(V))))<R(corr_rank_corr(R(0.1H+0.9W),R(V))))；双方有限才输出0/−1",
+        (("volume_mean", 30), ("volume_sum", 37), ("corr", 15), ("rank_corr", 11)),
+        ((-2, ("volume_mean", "volume_sum", "corr")), (0, ("rank_corr",))),
+    ),
+    (
+        123,
+        "累计中价量相关与低价量相关比较",
+        ("high", "low", "volume"),
+        "−(R(corr_corr(sum_price_sum((H+L)/2),sum_volume_sum(mean_volume_mean(V))))<R(corr_second_corr(L,V)))；双方有限才输出0/−1",
+        (
+            ("price_sum", 20),
+            ("volume_mean", 60),
+            ("volume_sum", 20),
+            ("corr", 9),
+            ("second_corr", 6),
+        ),
+        (
+            (-1, ("price_sum", "corr")),
+            (-2, ("volume_mean", "volume_sum", "corr")),
+            (0, ("second_corr",)),
+        ),
+    ),
+    (
+        125,
+        "量均价相关与混合价格变化排名比",
+        ("close", "volume", "vwap"),
+        "R(D_corr_decay(corr_corr(W,mean_volume_mean(V))))/R(D_price_decay(diff_lag(0.5C+0.5W)))",
+        (("volume_mean", 80), ("corr", 17), ("corr_decay", 20), ("lag", 3), ("price_decay", 16)),
+        ((-2, ("volume_mean", "corr", "corr_decay")), (0, ("lag", "price_decay"))),
+    ),
+    (
+        130,
+        "中价均量相关与排名相关加权比",
+        ("high", "low", "volume", "vwap"),
+        "R(D_corr_decay(corr_corr((H+L)/2,mean_volume_mean(V))))/R(D_rank_decay(corr_rank_corr(R(W),R(V))))",
+        (("volume_mean", 40), ("corr", 9), ("corr_decay", 10), ("rank_corr", 7), ("rank_decay", 3)),
+        ((-2, ("volume_mean", "corr", "corr_decay")), (-1, ("rank_corr", "rank_decay"))),
+    ),
+    (
+        141,
+        "高价均量排名相关反向排名",
+        ("high", "volume"),
+        "−R(corr_rank_corr(R(H),R(mean_volume_mean(V))))",
+        (("volume_mean", 15), ("rank_corr", 9)),
+        ((-1, ("volume_mean", "rank_corr")),),
+    ),
+):
+    _compound(
+        _n,
+        _title,
+        _inputs,
+        _formula,
+        tuple(
+            Window(
+                k, v, _MULTISTAGE_LABELS[k], 2 if k in {"corr", "rank_corr", "second_corr"} else 1
+            )
+            for k, v in _multi_windows
+        ),
+        _multi_paths,
+        panel=_n != 44,
+    )
+
+
+_NESTED_LABELS = {
+    "corr": "第一相关窗口",
+    "rank_corr": "排名相关窗口",
+    "price_decay": "第一线性加权窗口",
+    "corr_decay": "第二线性加权窗口",
+    "volume_mean": "均量窗口",
+    "volume_sum": "均量累计窗口",
+    "peak": "相关高点窗口",
+    "trough": "相关低点窗口",
+    "rank": "中间时序排名窗口",
+    "rank_decay": "排名线性加权窗口",
+    "price_trough": "均价低点窗口",
+    "price_rank": "价格时序排名窗口",
+    "volume_rank": "均量时序排名窗口",
+    "corr_rank": "相关时序排名窗口",
+    "outer_rank": "外层时序排名窗口",
+    "lag": "价格差分间隔",
+    "inner_min": "内层排名低点窗口",
+    "sum": "排名累计窗口",
+    "product": "排名乘积窗口",
+    "outer_min": "外层排名低点窗口",
+    "return_lag": "收益滞后间隔",
+    "return_rank": "收益时序排名窗口",
+    "short": "短累计窗口",
+    "middle": "中累计窗口",
+    "long": "长累计窗口",
+    "rank_volume_mean": "第二均量窗口",
+}
+for _n, _title, _nested_inputs, _formula, _nested_windows, _nested_paths in (
+    (
+        64,
+        "两路排名相关加权较大值",
+        ("close", "volume", "vwap"),
+        "−max(R(D_price_decay(corr_corr(R(W),R(V)))),R(D_corr_decay(max_peak(corr_rank_corr(R(C),R(mean_volume_mean(V)))))))",
+        (
+            ("corr", 4),
+            ("price_decay", 4),
+            ("volume_mean", 60),
+            ("rank_corr", 4),
+            ("peak", 13),
+            ("corr_decay", 14),
+        ),
+        ((-1, ("corr", "price_decay")), (-3, ("volume_mean", "rank_corr", "peak", "corr_decay"))),
+    ),
+    (
+        119,
+        "均价累计量相关与开盘排名低点差",
+        ("open", "volume", "vwap"),
+        "R(D_price_decay(corr_corr(W,sum_volume_sum(mean_volume_mean(V)))))−R(D_rank_decay(T_rank(min_trough(corr_rank_corr(R(O),R(mean_rank_volume_mean(V)))))))",
+        (
+            ("volume_mean", 5),
+            ("volume_sum", 26),
+            ("corr", 5),
+            ("price_decay", 7),
+            ("rank_volume_mean", 15),
+            ("rank_corr", 21),
+            ("trough", 9),
+            ("rank", 7),
+            ("rank_decay", 8),
+        ),
+        (
+            (-3, ("volume_mean", "volume_sum", "corr", "price_decay")),
+            (-4, ("rank_volume_mean", "rank_corr", "trough", "rank", "rank_decay")),
+        ),
+    ),
+    (
+        121,
+        "均价低点排名的量价时序相关幂",
+        ("volume", "vwap"),
+        "−R(W−min_price_trough(W))^T_corr_rank(corr_corr(T_price_rank(W),T_volume_rank(mean_volume_mean(V))))；底数和指数均有限才计算",
+        (
+            ("price_trough", 12),
+            ("price_rank", 20),
+            ("volume_mean", 60),
+            ("volume_rank", 2),
+            ("corr", 18),
+            ("corr_rank", 3),
+        ),
+        (
+            (0, ("price_trough",)),
+            (-2, ("price_rank", "corr", "corr_rank")),
+            (-3, ("volume_mean", "volume_rank", "corr", "corr_rank")),
+        ),
+    ),
+    (
+        138,
+        "混合低价变化与多层量价排名差",
+        ("low", "volume", "vwap"),
+        "T_outer_rank(D_rank_decay(T_corr_rank(corr_corr(T_price_rank(L),T_volume_rank(mean_volume_mean(V))))))−R(D_price_decay(diff_lag(0.7L+0.3W)))",
+        (
+            ("lag", 3),
+            ("price_decay", 20),
+            ("price_rank", 8),
+            ("volume_mean", 60),
+            ("volume_rank", 17),
+            ("corr", 5),
+            ("corr_rank", 19),
+            ("rank_decay", 16),
+            ("outer_rank", 7),
+        ),
+        (
+            (0, ("lag", "price_decay")),
+            (-4, ("price_rank", "corr", "corr_rank", "rank_decay", "outer_rank")),
+            (-5, ("volume_mean", "volume_rank", "corr", "corr_rank", "rank_decay", "outer_rank")),
+        ),
+    ),
+    (
+        140,
+        "四价截面排名差与量价相关较小值",
+        ("open", "close", "high", "low", "volume"),
+        "min(R(D_price_decay(R(O)+R(L)−R(H)−R(C))),T_corr_rank(D_corr_decay(corr_corr(T_price_rank(C),T_volume_rank(mean_volume_mean(V))))))",
+        (
+            ("price_decay", 8),
+            ("price_rank", 8),
+            ("volume_mean", 60),
+            ("volume_rank", 20),
+            ("corr", 8),
+            ("corr_decay", 7),
+            ("corr_rank", 3),
+        ),
+        (
+            (0, ("price_decay",)),
+            (-3, ("price_rank", "corr", "corr_decay", "corr_rank")),
+            (-4, ("volume_mean", "volume_rank", "corr", "corr_decay", "corr_rank")),
+        ),
+    ),
+    (
+        157,
+        "价格变化嵌套排名与滞后收益排名",
+        ("close",),
+        "min_outer_min(prod_product(R(R(log(sum_sum(min_inner_min(R(R(−R(diff_lag(C)))))))))))+T_return_rank(delay_return_lag(−RET))；diff(C−1)=diff(C)，默认sum与product窗口均为1",
+        (
+            ("lag", 5),
+            ("inner_min", 2),
+            ("sum", 1),
+            ("product", 1),
+            ("outer_min", 5),
+            ("return_lag", 6),
+            ("return_rank", 5),
+        ),
+        (
+            (-3, ("lag", "inner_min", "sum", "product", "outer_min")),
+            (1, ("return_lag", "return_rank")),
+        ),
+    ),
+    (
+        159,
+        "三窗口累计低价与真实波幅比",
+        ("close", "high", "low"),
+        "L*=min(L,C前)，TR=max(H,C前)−L*；Q_w=(C−sum_w(L*))/sum_w(TR)；100×(Q_short×middle×long+Q_middle×short×long+Q_long×short×long)/(short×middle+short×long+middle×long)",
+        (("short", 6), ("middle", 12), ("long", 24)),
+        ((1, ("long",)),),
+    ),
+):
+    _compound(
+        _n,
+        _title,
+        _nested_inputs,
+        _formula,
+        tuple(
+            Window(k, v, _NESTED_LABELS[k], 2 if k in {"corr", "rank_corr"} else 1)
+            for k, v in _nested_windows
+        ),
+        _nested_paths,
+        panel=_n != 159,
+    )
+
+
+_compound(
+    28,
+    "双低价区间递归差（原表口径）",
+    ("close", "high", "low"),
+    "U=100(C−min_range(L))/(max_range(H)−min_range(L))；"
+    "V=100(C−min_range(L))/(max_range(H)−max_range(L))；"
+    "3SMA(U,smooth,1)−2SMA(SMA(V,smooth,1),smooth,1)",
+    (Window("range", 9, "高低价区间窗口"), Window("smooth", 3, "递归平滑窗口")),
+    ((-2, ("range", "smooth", "smooth")),),
+    recursive=True,
+)
+_compound(
+    54,
+    "实体离散与开收相关反向排名",
+    ("open", "close"),
+    "−R(std_body_std(|C−O|)+(C−O)+corr_corr(C,O))；原表STD未写窗口，本App默认10根，可独立配置",
+    (
+        Window("body_std", 10, "实体标准差窗口（原文省略）", 2),
+        Window("corr", 10, "开收相关窗口", 2),
+    ),
+    ((0, ("body_std",)), (0, ("corr",))),
+    panel=True,
+)
+_compound(
+    190,
+    "收益上下阈值对数比（原表口径）",
+    ("close",),
+    "R=C/前C−1，G=(C/delay_lag(C))^(1/root)−1；"
+    "U=count_window(R>G)，D=count_window(R<G)；"
+    "log((U−1)sum_window(R<G?(R−G−2)^2:0)/(D sum_window(R>G?(R−G)^2:0)))；"
+    "仅正分子分母有定义，不将原表两侧平方项改成对称",
+    (
+        Window("lag", 19, "几何阈值回看间隔"),
+        Window("root", 20, "几何阈值根指数", unit="dimensionless"),
+        Window("window", 20, "上下阈值统计窗口"),
+    ),
+    ((0, ("lag", "window")),),
+)
+
+
+_add(
+    {143: None},
+    "self_up_product",
+    "上涨收益递乘（初始值1）",
+    ("close",),
+    "C>前C时 F=前F×(C−前C)/前C，否则F=前F；"
+    "连续行情首根以1初始化且不发布，第二根开始输出；缺失后重新初始化",
+    offset=1,
+)
+
+
+_add(
+    {75: 50},
+    "benchmark_resilience",
+    "基准下跌时上涨占比",
+    ("open", "close", "benchmark_open", "benchmark_close"),
+    "w根中个股C>O且指数C<O的次数 / 同窗口指数C<O的次数；分母为0时缺失",
+)
+_add(
+    {182: 20},
+    "benchmark_agreement",
+    "与基准同向占比",
+    ("open", "close", "benchmark_open", "benchmark_close"),
+    "w根中个股与指数同为C>O或同为C<O的次数 / w；任一平盘不计同向",
+)
+_add(
+    {149: 252},
+    "benchmark_filtered_beta",
+    "基准下跌样本回归系数",
+    ("close", "benchmark_close"),
+    "先筛选指数B<前B的成对收益(C/前C−1,B/前B−1)，取最近w个下跌样本，"
+    "带截距回归个股收益对指数收益的斜率；不是最近w根内的部分样本回归",
+    offset=1,
+)
+_add(
+    {181: 20},
+    "benchmark_price_moment",
+    "收益偏离与指数价格矩比（原表口径）",
+    ("close", "benchmark_close"),
+    "R=C/前C−1，D=B−mean_w(B)；sum_w((R−mean_w(R))−D²)/sum_w(D³)；"
+    "B为指数价格不是收益，原表分母省略窗口，本App明确采用w（默认20）",
+    multiplier=2,
+)
+
+
+SPECS[30] = Spec(
+    30,
+    "risk_residual_energy",
+    "风险三因子残差能量",
+    ("close", "risk_mkt", "risk_smb", "risk_hml"),
+    None,
+    "R=C/前C−1；每个完整regression窗口带截距回归R对MKT/SMB/HML，取当根残差e；"
+    "对最近smoothing根e²按距当前0、1…根的0.9^i归一加权",
+    windows=(Window("regression", 60, "风险回归窗口", 5), Window("smoothing", 20, "残差平滑窗口")),
+    warmup_terms=((0, ("regression", "smoothing")),),
+)
+
+SPECS[146] = Spec(
+    146,
+    "interpreted_return_deviation",
+    "递归收益偏离（省略权重明确为1）",
+    ("close",),
+    None,
+    "R=C/前C−1；B=SMA(R,smooth,2)；mean_mean(R−B)×(R−B)/SMA(B²,denominator,1)",
+    windows=(
+        Window("smooth", 61, "收益递归窗口", 2),
+        Window("mean", 20, "偏离均值窗口"),
+        Window("denominator", 60, "分母递归窗口"),
+    ),
+    warmup_terms=((0, ("smooth", "mean")), (0, ("smooth", "denominator"))),
+    recursive=True,
+)
+_add(
+    {165: 48, 183: 24},
+    "interpreted_cumulative_extrema",
+    "累计偏离极值（窗口与括号明示）",
+    ("close",),
+    "D=C−mean_w(C)；S为最近w根D从窗口起点逐根累加的w个前缀；max(S)−min(S)/std_w(C)",
+    multiplier=2,
+    offset=-1,
+)
+_add(
+    {166: 20},
+    "interpreted_centered_return",
+    "收益偏离矩比（残缺项均值解释）",
+    ("close",),
+    "Q=C/前C；U=Q−mean_w(Q)；−w×(w−1)^1.5×sum_w(U)/((w−1)×(w−2)×sum_w(mean_w(Q)²)^1.5)",
+    multiplier=2,
+)
+
+
+def _self_up_product(close: pd.Series) -> pd.Series:
+    """Keep the recursive state even when its float64 display is unrepresentable.
+
+    Decimal round-trip prices avoid cancellation of tiny upward returns. Decimal
+    state (80 significant digits, wide exponent range) prevents a float underflow
+    or overflow from permanently destroying subsequent valid outputs. Missing
+    prices reset the history; numerical display limits alone must not reset it.
+    """
+    output = np.full(len(close), np.nan)
+    previous: Decimal | None = None
+    state = Decimal(1)
+    with localcontext() as context:
+        context.prec = 80
+        context.Emin = -999999999
+        context.Emax = 999999999
+        for i, price in enumerate(close.to_numpy(float)):
+            if i % 64 == 0:
+                computation_checkpoint()
+            if not np.isfinite(price) or price <= 0:
+                previous, state = None, Decimal(1)
+                continue
+            current = Decimal(str(price))
+            if previous is not None:
+                if current > previous:
+                    state *= (current - previous) / previous
+                value = float(state)
+                if np.isfinite(value) and value > 0:
+                    output[i] = value
+            previous = current
+    return pd.Series(output, index=close.index)
+
+
 def _minimum_window(spec: Spec) -> int:
+    if spec.number == 166:
+        return 3
     return (
         2
         if spec.family
         in {
             "volume_std",
+            "interpreted_cumulative_extrema",
+            "benchmark_filtered_beta",
             "volume_scaled_return_cv",
             "mean_slope",
             "price_slope",
@@ -1424,6 +1958,65 @@ def _compute_compound(data: pd.DataFrame, valid: pd.Series, spec: Spec) -> pd.Se
     p = spec.resolved_parameters
     c, h, l, v = (data.get(k) for k in ("close", "high", "low", "volume"))  # noqa: E741
     n = spec.number
+    if n == 28:
+        lower = l.rolling(p["range"]).min()
+        upper = h.rolling(p["range"]).max()
+        high_low = l.rolling(p["range"]).max()
+        first = (100 * (c - lower) / (upper - lower)).replace([np.inf, -np.inf], np.nan)
+        second = (100 * (c - lower) / (upper - high_low)).replace([np.inf, -np.inf], np.nan)
+        return 3 * _sma(first, p["smooth"], 1) - 2 * _sma(
+            _sma(second, p["smooth"], 1), p["smooth"], 1
+        )
+    if n == 190:
+        ret = c / c.shift(1) - 1
+        growth = np.expm1(np.log(c / c.shift(p["lag"])) / p["root"])
+        complete = valid.rolling(p["lag"] + 1).sum().eq(p["lag"] + 1)
+        up = pd.Series(np.nan, index=c.index)
+        down = up.copy()
+        # Integer powers of exact decimal price ratios decide discontinuous
+        # threshold comparisons without a spurious float difference at equality.
+        for i in np.flatnonzero(complete.to_numpy()):
+            computation_checkpoint()
+            price, previous, old = (Fraction(str(c.iloc[j])) for j in (i, i - 1, i - p["lag"]))
+            ratio = (price / previous) ** p["root"]
+            boundary = price / old
+            up.iloc[i], down.iloc[i] = float(ratio > boundary), float(ratio < boundary)
+        above = ((ret - growth) ** 2).where(up.eq(1), 0).where(up.notna())
+        below = ((ret - growth - 2) ** 2).where(down.eq(1), 0).where(down.notna())
+        count_up = up.rolling(p["window"]).sum() - 1
+        count_down = down.rolling(p["window"]).sum()
+        sum_up = above.rolling(p["window"]).sum()
+        sum_down = below.rolling(p["window"]).sum()
+        return (
+            np.log(count_up.where(count_up.gt(0)))
+            + np.log(sum_down.where(sum_down.gt(0)))
+            - np.log(count_down.where(count_down.gt(0)))
+            - np.log(sum_up.where(sum_up.gt(0)))
+        )
+    if n == 159:
+        lower = pd.concat([l, c.shift(1)], axis=1).min(axis=1, skipna=False)
+        upper = pd.concat([h, c.shift(1)], axis=1).max(axis=1, skipna=False)
+        ranges = upper - lower
+        ratios = [
+            (c - lower.rolling(p[k]).sum()) / ranges.rolling(p[k]).sum()
+            for k in ("short", "middle", "long")
+        ]
+        short, middle, long = p["short"], p["middle"], p["long"]
+        return (
+            100
+            * (ratios[0] * middle * long + ratios[1] * short * long + ratios[2] * short * long)
+            / (short * middle + short * long + middle * long)
+        )
+    if n == 44:
+        low_corr = _rolling_corr(data.low, data.volume.rolling(p["volume_mean"]).mean(), p["corr"])
+        left = _ts_rank(
+            _linear_decay(low_corr.to_frame(), p["corr_decay"]).iloc[:, 0], p["corr_rank"]
+        )
+        change = data.vwap.diff(p["lag"]).where(valid.rolling(p["lag"] + 1).sum().eq(p["lag"] + 1))
+        right = _ts_rank(
+            _linear_decay(change.to_frame(), p["price_decay"]).iloc[:, 0], p["price_rank"]
+        )
+        return left + right
     if n == 13:
         return np.sqrt(h) * np.sqrt(l) - data.vwap
     if n == 26:
@@ -1694,9 +2287,9 @@ def _clean(frame: pd.DataFrame, spec: Spec) -> tuple[pd.DataFrame, pd.Series]:
     for field in spec.inputs:
         if reason := frame.attrs.get("factor_input_errors", {}).get(field):
             raise ValueError(reason)
-        valid &= np.isfinite(values[field]) & (
-            values[field].ge(0) if field in {"volume", "amount"} else values[field].gt(0)
-        )
+        valid &= np.isfinite(values[field])
+        if field not in {"risk_mkt", "risk_smb", "risk_hml"}:
+            valid &= values[field].ge(0) if field in {"volume", "amount"} else values[field].gt(0)
     if "high" in values and "low" in values:
         valid &= values.high.ge(values.low)
     for price in ("open", "close"):
@@ -1704,19 +2297,69 @@ def _clean(frame: pd.DataFrame, spec: Spec) -> tuple[pd.DataFrame, pd.Series]:
             valid &= values[price].le(values.high)
         if price in values and "low" in values:
             valid &= values[price].ge(values.low)
+    if spec.number == 30:
+        # Missing risk data must not erase the known previous price needed by
+        # the next return. The regression kernel enforces its dependency spans.
+        return values.replace([np.inf, -np.inf], np.nan), valid
     return values.where(valid, axis=0), valid
 
 
 def compute_gtja(frame: pd.DataFrame, spec: Spec) -> pd.Series:
     if spec.panel:
         raise ValueError("此 GTJA191 因子必须使用明确股票池的截面计算")
+    if spec.number == 30:
+        from easy_tdx.factor.risk_inputs import validate_risk_inputs
+
+        if "factor_risk_inputs" not in frame.attrs:
+            raise ValueError("GTJA030需要有来源和历史可得时间的MKT、SMB、HML数据包，不能用指数代理")
+        validate_risk_inputs(frame)
     data, valid = _clean(frame, spec)
     w = spec.window or 1
     c, h, l, o, v = (data.get(key) for key in ("close", "high", "low", "open", "volume"))  # noqa: E741
     # Only declared inputs are used in each branch; no proxy field substitution.
     f = spec.family
     with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
-        if f.startswith("compound_"):
+        if f == "risk_residual_energy":
+            from easy_tdx.factor.builtin.risk_residuals import residual_energy
+
+            return residual_energy(data, **spec.resolved_parameters).rename("gtja191_030")
+        elif f == "self_up_product":
+            result = _self_up_product(c)
+        elif f.startswith("benchmark_"):
+            from easy_tdx.factor.builtin.benchmark_statistics import (
+                filtered_beta,
+                price_moment_ratio,
+            )
+
+            if f == "benchmark_filtered_beta":
+                result = filtered_beta(c, data.benchmark_close, w)
+            elif f == "benchmark_price_moment":
+                result = price_moment_ratio(c, data.benchmark_close, w)
+            elif f == "benchmark_resilience":
+                down = data.benchmark_close.lt(data.benchmark_open)
+                numerator = (c.gt(o) & down).astype(float).where(valid).rolling(w).sum()
+                denominator = down.astype(float).where(valid).rolling(w).sum()
+                result = numerator / denominator.replace(0, np.nan)
+            else:
+                up = data.benchmark_close.gt(data.benchmark_open)
+                down = data.benchmark_close.lt(data.benchmark_open)
+                same = (c.gt(o) & up) | (c.lt(o) & down)
+                result = same.astype(float).where(valid).rolling(w).sum() / w
+        elif f.startswith("interpreted_"):
+            from easy_tdx.factor.builtin.window_interpretations import (
+                centered_return_ratio,
+                cumulative_extrema,
+                return_deviation,
+            )
+
+            if spec.number == 146:
+                p = spec.resolved_parameters
+                result = return_deviation(c, p["smooth"], p["mean"], p["denominator"])
+            elif spec.number == 166:
+                result = centered_return_ratio(c, w)
+            else:
+                result = cumulative_extrema(c, w)
+        elif f.startswith("compound_"):
             result = _compute_compound(data, valid, spec)
             computation_checkpoint()
         elif f.startswith("sma_"):
@@ -1909,6 +2552,8 @@ class GTJAFactor(Factor):
             values = self.spec.resolved_parameters
             if "short" in values and values["short"] >= values["long"]:
                 raise ValueError("GTJA191 短窗口必须小于长窗口")
+            if self.spec.number == 159 and not values["short"] < values["middle"] < values["long"]:
+                raise ValueError("三个累计窗口必须满足短 < 中 < 长")
             if self.spec.warmup > 600:
                 raise ValueError("GTJA191 复合依赖窗口不能超过600根；未静默缩小参数")
             return
@@ -1926,6 +2571,10 @@ class GTJAFactor(Factor):
             self.spec = replace(self.spec, window=window)
 
     def compute(self, df: pd.DataFrame) -> pd.Series:
+        if self.spec.family.startswith("benchmark_"):
+            from easy_tdx.factor.benchmark import validate_benchmark
+
+            validate_benchmark(df)
         return compute_gtja(df, self.spec)
 
 
@@ -2061,13 +2710,15 @@ def _linear_mean(a: pd.DataFrame, window: int) -> pd.DataFrame:
     return a.replace([np.inf, -np.inf], np.nan).rolling(window).apply(weighted, raw=True)
 
 
-def _linear_rank_mean(a: pd.DataFrame, window: int) -> pd.DataFrame:
+def _linear_rank_mean(
+    a: pd.DataFrame, window: int, *, denominator_bound: int | None = None
+) -> pd.DataFrame:
     """Only for percentile ranks: preserve exact weighted ties before ranking again.
 
     Average-tie percentile ranks have a denominator at most twice pool size,
     including changing valid membership. Never rationalize raw prices.
     """
-    bound = 2 * len(a.columns)
+    bound = denominator_bound or 2 * len(a.columns)
     denominator = window * (window + 1) // 2
 
     def weighted(values: NDArray[np.float64]) -> float:
@@ -2078,6 +2729,38 @@ def _linear_rank_mean(a: pd.DataFrame, window: int) -> pd.DataFrame:
         )
 
     return a.rolling(window).apply(weighted, raw=True)
+
+
+def _rank_price_contrast(
+    o: pd.DataFrame, low: pd.DataFrame, h: pd.DataFrame, c: pd.DataFrame
+) -> pd.DataFrame:
+    """Exact O+L-H-C for known ranks sharing one observed membership mask."""
+    bound = 2 * len(o.columns)
+    out = np.full(o.shape, np.nan)
+    arrays = [a.to_numpy() for a in (o, low, h, c)]
+    for i in range(len(o)):
+        computation_checkpoint()
+        for j in range(len(o.columns)):
+            values = [a[i, j] for a in arrays]
+            if all(np.isfinite(values)):
+                out[i, j] = float(
+                    sum(
+                        sign * Fraction(float(v)).limit_denominator(bound)
+                        for sign, v in zip((1, 1, -1, -1), values)
+                    )
+                )
+    return pd.DataFrame(out, index=o.index, columns=o.columns)
+
+
+def _rank_window_sum(a: pd.DataFrame, window: int) -> pd.DataFrame:
+    """Sum known percentile ranks without splitting equal rational totals."""
+    bound = 2 * len(a.columns)
+
+    def total(values: NDArray[np.float64]) -> float:
+        computation_checkpoint()
+        return float(sum(Fraction(float(v)).limit_denominator(bound) for v in values))
+
+    return a.rolling(window).apply(total, raw=True)
 
 
 def _linear_decay(a: pd.DataFrame, window: int) -> pd.DataFrame:
@@ -2098,6 +2781,35 @@ def _linear_decay(a: pd.DataFrame, window: int) -> pd.DataFrame:
         )
 
     return a.replace([np.inf, -np.inf], np.nan).rolling(window).apply(weighted, raw=True)
+
+
+def _panel_ratio_rank(numerator: pd.DataFrame, denominator: pd.DataFrame) -> pd.DataFrame:
+    """Rank exact decimal-input ratios before any float rounding or log subtraction.
+
+    For positive inputs log(a)-log(b), a/b and a/b-1 have identical order.
+    Ratios are never materialized as floats, so proportional volumes stay tied.
+    """
+    out = np.full(numerator.shape, np.nan)
+    for i, (top, bottom) in enumerate(zip(numerator.to_numpy(), denominator.to_numpy())):
+        computation_checkpoint()
+        ratios = {
+            j: Fraction(str(a)) / Fraction(str(b))
+            for j, (a, b) in enumerate(zip(top, bottom))
+            if np.isfinite(a) and np.isfinite(b) and a > 0 and b > 0
+        }
+        if len(ratios) < 2:
+            continue
+        ordered = sorted(ratios.values())
+        positions: dict[Fraction, list[int]] = {}
+        for pos, value in enumerate(ordered, 1):
+            positions.setdefault(value, []).append(pos)
+        ranked = {
+            value: (indices[0] + indices[-1]) / (2 * len(ordered))
+            for value, indices in positions.items()
+        }
+        for j, value in ratios.items():
+            out[i, j] = ranked[value]
+    return pd.DataFrame(out, index=numerator.index, columns=numerator.columns)
 
 
 def _compute_panel_compound(panel: FactorPanel, spec: Spec) -> pd.DataFrame:
@@ -2129,18 +2841,201 @@ def _compute_panel_compound(panel: FactorPanel, spec: Spec) -> pd.DataFrame:
     with np.errstate(divide="ignore", invalid="ignore", over="ignore"):
         ret = c / c.shift(1) - 1
         if n == 1:
-            volume_change = np.log(v.where(v.gt(0))).diff(p["lag"])
             # Even a skipped intermediate zero cannot be a valid log-volume input.
-            volume_change = volume_change.where(
-                v.gt(0).rolling(p["lag"] + 1).sum().eq(p["lag"] + 1)
+            volume_change_rank = _panel_ratio_rank(
+                v.where(v.gt(0).rolling(p["lag"] + 1).sum().eq(p["lag"] + 1)),
+                v.shift(p["lag"]),
             )
-            result = -_panel_rank_moment(rank(volume_change), rank((c - o) / o), p["corr"])
+            result = -_panel_rank_moment(volume_change_rank, _panel_ratio_rank(c, o), p["corr"])
         elif n == 7:
             result = (
                 rank((w - c).rolling(p["range"]).max()) + rank((w - c).rolling(p["range"]).min())
             ) * rank(span(v.diff(p["lag"]), p["lag"] + 1))
         elif n == 8:
             result = rank(span(-(0.2 * (h + l) / 2 + 0.8 * w).diff(p["lag"]), p["lag"] + 1))
+        elif n == 54:
+            result = -rank(
+                (c - o).abs().rolling(p["body_std"]).std(ddof=1) + (c - o) + corr(c, o, p["corr"])
+            )
+        elif n == 25:
+            volume_rank = rank(decay(v / v.rolling(p["volume_mean"]).mean(), p["volume_decay"]))
+            change = span(c.diff(p["lag"]), p["lag"] + 1)
+            result = -rank(change * (1 - volume_rank)) * (
+                1 + rank(ret.rolling(p["return_sum"]).apply(fsum, raw=True))
+            )
+        elif n == 33:
+            low = l.rolling(p["trough"]).min()
+            # Algebraically cancel the shared recent returns, avoiding two
+            # large almost-equal totals. Still require the entire long history.
+            older = span(
+                ret.shift(p["short"]).rolling(p["long"] - p["short"]).mean(), p["long"] + 1
+            )
+            result = (low.shift(p["lag"]) - low) * rank(older) * trank(v, p["volume_rank"])
+        elif n == 39:
+            left = rank(decay(span(c.diff(p["lag"]), p["lag"] + 1), p["price_decay"]))
+            right = rank(
+                decay(
+                    corr(
+                        0.3 * w + 0.7 * o,
+                        v.rolling(p["volume_mean"]).mean().rolling(p["volume_sum"]).sum(),
+                        p["corr"],
+                    ),
+                    p["corr_decay"],
+                )
+            )
+            result = right - left
+        elif n == 56:
+            left = rank(o - o.rolling(p["trough_open"]).min())
+            right = rank(
+                rank(
+                    corr(
+                        (h / 2 + l / 2).rolling(p["price_sum"]).sum(),
+                        v.rolling(p["volume_mean"]).mean().rolling(p["volume_sum"]).sum(),
+                        p["corr"],
+                    )
+                ).pow(5)
+            )
+            result = left.lt(right).astype(float).where(left.notna() & right.notna())
+        elif n == 73:
+            left = trank(
+                decay(decay(corr(c, v, p["corr"]), p["inner_decay"]), p["outer_decay"]),
+                p["corr_rank"],
+            )
+            right = rank(
+                decay(
+                    corr(w, v.rolling(p["volume_mean"]).mean(), p["second_corr"]), p["corr_decay"]
+                )
+            )
+            result = right - left
+        elif n == 74:
+            left = rank(
+                corr(
+                    (0.35 * l + 0.65 * w).rolling(p["price_sum"]).sum(),
+                    v.rolling(p["volume_mean"]).mean().rolling(p["volume_sum"]).sum(),
+                    p["corr"],
+                )
+            )
+            result = left + rank(_panel_rank_moment(rank(w), rank(v), p["rank_corr"]))
+        elif n == 77:
+            mid = h / 2 + l / 2
+            result = np.minimum(
+                rank(decay(mid - w, p["price_decay"])),
+                rank(
+                    decay(corr(mid, v.rolling(p["volume_mean"]).mean(), p["corr"]), p["corr_decay"])
+                ),
+            )
+        elif n == 101:
+            left = rank(
+                corr(
+                    c, v.rolling(p["volume_mean"]).mean().rolling(p["volume_sum"]).sum(), p["corr"]
+                )
+            )
+            right = rank(_panel_rank_moment(rank(0.1 * h + 0.9 * w), rank(v), p["rank_corr"]))
+            result = -left.lt(right).astype(float).where(left.notna() & right.notna())
+        elif n == 123:
+            left = rank(
+                corr(
+                    (h / 2 + l / 2).rolling(p["price_sum"]).sum(),
+                    v.rolling(p["volume_mean"]).mean().rolling(p["volume_sum"]).sum(),
+                    p["corr"],
+                )
+            )
+            right = rank(corr(l, v, p["second_corr"]))
+            result = -left.lt(right).astype(float).where(left.notna() & right.notna())
+        elif n == 125:
+            left = rank(
+                decay(corr(w, v.rolling(p["volume_mean"]).mean(), p["corr"]), p["corr_decay"])
+            )
+            right = rank(
+                decay(span((c / 2 + w / 2).diff(p["lag"]), p["lag"] + 1), p["price_decay"])
+            )
+            result = left / right
+        elif n == 130:
+            left = rank(
+                decay(
+                    corr(h / 2 + l / 2, v.rolling(p["volume_mean"]).mean(), p["corr"]),
+                    p["corr_decay"],
+                )
+            )
+            right = rank(
+                decay(_panel_rank_moment(rank(w), rank(v), p["rank_corr"]), p["rank_decay"])
+            )
+            result = left / right
+        elif n == 141:
+            result = -rank(
+                _panel_rank_moment(
+                    rank(h), rank(v.rolling(p["volume_mean"]).mean()), p["rank_corr"]
+                )
+            )
+        elif n == 64:
+            first = _panel_rank_moment(rank(w), rank(v), p["corr"])
+            second = _panel_rank_moment(
+                rank(c), rank(v.rolling(p["volume_mean"]).mean()), p["rank_corr"]
+            )
+            result = -np.maximum(
+                rank(decay(first, p["price_decay"])),
+                rank(decay(second.rolling(p["peak"]).max(), p["corr_decay"])),
+            )
+        elif n == 119:
+            first = corr(
+                w, v.rolling(p["volume_mean"]).mean().rolling(p["volume_sum"]).sum(), p["corr"]
+            )
+            second = _panel_rank_moment(
+                rank(o), rank(v.rolling(p["rank_volume_mean"]).mean()), p["rank_corr"]
+            )
+            intermediate = trank(second.rolling(p["trough"]).min(), p["rank"])
+            result = rank(decay(first, p["price_decay"])) - rank(
+                _linear_rank_mean(intermediate, p["rank_decay"], denominator_bound=2 * p["rank"])
+            )
+        elif n == 121:
+            base = rank(w - w.rolling(p["price_trough"]).min())
+            moment = _panel_rank_moment(
+                trank(w, p["price_rank"]),
+                trank(v.rolling(p["volume_mean"]).mean(), p["volume_rank"]),
+                p["corr"],
+                denominators=(2 * p["price_rank"], 2 * p["volume_rank"]),
+            )
+            power = trank(moment, p["corr_rank"])
+            result = -base.pow(power).where(base.notna() & power.notna())
+        elif n == 138:
+            first = rank(
+                decay(span((0.7 * l + 0.3 * w).diff(p["lag"]), p["lag"] + 1), p["price_decay"])
+            )
+            moment = _panel_rank_moment(
+                trank(l, p["price_rank"]),
+                trank(v.rolling(p["volume_mean"]).mean(), p["volume_rank"]),
+                p["corr"],
+                denominators=(2 * p["price_rank"], 2 * p["volume_rank"]),
+            )
+            second = trank(
+                _linear_rank_mean(
+                    trank(moment, p["corr_rank"]),
+                    p["rank_decay"],
+                    denominator_bound=2 * p["corr_rank"],
+                ),
+                p["outer_rank"],
+            )
+            result = second - first
+        elif n == 140:
+            contrast = _rank_price_contrast(rank(o), rank(l), rank(h), rank(c))
+            first = rank(_linear_rank_mean(contrast, p["price_decay"]))
+            moment = _panel_rank_moment(
+                trank(c, p["price_rank"]),
+                trank(v.rolling(p["volume_mean"]).mean(), p["volume_rank"]),
+                p["corr"],
+                denominators=(2 * p["price_rank"], 2 * p["volume_rank"]),
+            )
+            second = trank(decay(moment, p["corr_decay"]), p["corr_rank"])
+            result = np.minimum(first, second)
+        elif n == 157:
+            inner = rank(rank(-rank(span(c.diff(p["lag"]), p["lag"] + 1))))
+            accumulated = _rank_window_sum(inner.rolling(p["inner_min"]).min(), p["sum"])
+            ranked = rank(rank(np.log(accumulated.where(accumulated.gt(0)))))
+            first = (
+                ranked.rolling(p["product"]).apply(np.prod, raw=True).rolling(p["outer_min"]).min()
+            )
+            second = trank((-ret).shift(p["return_lag"]), p["return_rank"])
+            result = first + second
         elif n == 35:
             left = rank(decay(span(o.diff(p["lag"]), p["lag"] + 1), p["price_decay"]))
             right = rank(decay(corr(v, o, p["corr"]), p["corr_decay"]))
@@ -2331,7 +3226,17 @@ def definition_metadata(
         "warmup_multiplier": spec.multiplier,
         "warmup_offset": spec.offset,
         "warmup_note": (
-            "最少连续输入，不代表递归收敛；每层首个有限值作种子，满w根才向下一层输出，断档重置。"
+            "warmup_bars仅为理论最少根数；须积累w个有效基准下跌样本。非下跌日保持最近样本估计，缺失重置，不自动扩展历史。"
+            if spec.number == 149
+            else (
+                "至少2根连续有效收盘价；首根种子1不发布，断档重置。"
+                "此后依赖完整输入起点，不是2根滚动因子。"
+            )
+            if spec.number == 143
+            else (
+                "最少连续输入，不代表递归收敛；每层首个有限值作种子，"
+                "满w根才向下一层输出，断档重置。"
+            )
             if spec.recursive or spec.family.startswith("sma_")
             else "完整依赖窗口；缺失、非法价格、零分母不填零。"
         ),
@@ -2343,8 +3248,12 @@ def definition_metadata(
                 "editable": True,
                 "min": _minimum_window(spec),
                 "max": 600 // spec.multiplier,
-                "unit": "bars",
-                "label": "基础窗口" if spec.multiplier == 8 else "窗口",
+                "unit": "selected_observations" if spec.number == 149 else "bars",
+                "label": "基准下跌样本数"
+                if spec.number == 149
+                else "基础窗口"
+                if spec.multiplier == 8
+                else "窗口",
             }
         }
         if spec.window is not None
@@ -2371,6 +3280,55 @@ def definition_metadata(
             "049—051 与128的价格和方向使用往返十进制比较；相等不计为上涨或下跌。",
             "成交量 V 为已核验的实际股数，不随价格复权逆向缩放；三价均值乘量不等于实际成交额。",
             *(
+                {
+                    146: [
+                        "原表分母SMA省略权重m；本App明确采用m=1，保留分子当期偏离乘数。参考模块省略该乘数并用有限均值作分母的差异未沿用，不宣称唯一原文解释。",
+                        "两层SMA各自首值初始化、完整预热、断档重置；递归结果依赖输入起点。",
+                    ],
+                    165: [
+                        "原表SUMAC和单参数MAX/MIN省略范围；本App明确采用最近w根偏离的窗口内前缀累加，再求这些前缀的最大最小值，不含初始0，不跨股票。",
+                        "保留原式运算优先级：max−min/std，不是(max−min)/std，不是标准R/S。默认48根；这是公开解释口径，不宣称原文唯一或与参考模块相等。",
+                    ],
+                    183: [
+                        "与165相同的明确解释：最近w根偏离的窗口内前缀累加，不含初始0，不跨股票；max−min/std，不是(max−min)/std。",
+                        "默认24根；原表省略的累计及极值范围均取w，非唯一原文解释，不宣称与参考模块相等。",
+                    ],
+                    166: [
+                        "原表分母价格比后有悬空窗口参数；明确采用参考模块的MEAN(价格比,w)解释。分子保留一次偏离累计，不补三次方，不是常规偏度。",
+                        "默认20根；系数中的20同步替换为w，w至少3；完整两层窗口，缺失重置。不是原文无歧义定义或逐位参考复现。",
+                    ],
+                    75: [
+                        "必须显式选择独立基准指数；完整窗口内按收盘相对开盘判断，不比较前收。平盘不计上涨／下跌，指数下跌次数为0时缺失。"
+                    ],
+                    182: [
+                        "必须显式选择独立基准指数；收盘相对开盘同涨或同跌才计数，双方均平盘也不计同向；分母为完整窗口根数。"
+                    ],
+                    149: [
+                        "按原表FILTER先压缩为下跌样本，最近252个合格样本做带截距回归；参考模块mbeta以固定行情窗口接收空值的实现未沿用，不声称数值一致。",
+                        "理论至少w+1根不代表就绪；实际需要足够下跌观测。非下跌日保持同一组样本的估计；缺失或非法价格清空样本。样本不足或指数收益方差为零时留空，不自动补数或改窗口。",
+                    ],
+                    181: [
+                        "原式使用基准收盘价减自身均值的偏差，不是指数收益；分子是相减，不改成乘积。尺度依赖所选指数，不宜将不同指数数值视为同尺度。",
+                        "原表分母SUM省略窗口；明确采用参考模块的20根，与分子共用可编辑窗口。分母是有符号三次方之和，精确为零或输出无法表示时留空。",
+                    ],
+                    143: [
+                        "原报告仅定义SELF为前一期因子值，未规定种子；本App明确固定初始值1，与参考模块初始尺度一致，但首根不发布。没有可编辑窗口。",
+                        "上涨时乘收益率本身，不是1加收益率；下跌或相等保持前值。非正、缺失或非有限价格重置，恢复后第二根才发布。",
+                        "80位十进制内部状态；低于float64可表示范围或溢出时输出缺失，保留内部状态供后续恢复，不伪造0或截断至上下限。",
+                        "数值通常快速趋近零；依赖完整历史起点，截短历史可改变重叠值。追加未来不改过去；研究比较须核对各股输入起点及断档，不视为收益净值。",
+                    ],
+                    28: [
+                        "028保留原表两条不同分母：第一项减最低LOW，第二项减最高LOW；MAX(HIGH,range)按滚动最高价。不是通用KDJ的J值。参考模块的100位置及统一分母差异未沿用。"
+                    ],
+                    54: [
+                        "054原表STD省略窗口；本App公开采用参考模块的10根默认，并提供独立body_std参数。不是原文唯一可确定的默认定义。"
+                    ],
+                    190: [
+                        "190按原表保留下方平方项R−G−2、上方R−G；不是对称半方差。DELAY(C)解释为1根；严格大于／小于，等于两侧均不计。分母采用完整窗口下侧次数，不沿用参考模块的当根条件；两侧累计只统计满足条件项。"
+                    ],
+                }.get(spec.number, [])
+            ),
+            *(
                 [
                     "007遵循因子表括号：先相加两个排名，再乘量变排名；固定参考模块漏括号的运算优先级未沿用。"
                 ]
@@ -2379,10 +3337,26 @@ def definition_metadata(
             ),
             *(
                 [
+                    "033按原表将长短收益和之差整体除以窗口差；固定参考代码仅除短项的括号差异未沿用。"
+                    "实际等价累计已排除最近short根的较早收益，避免相近大累计值相减；仍要求完整long+1根。"
+                ]
+                if spec.number == 33
+                else []
+            ),
+            *(
+                [
                     "原报告算子表把MIN/MAX定义为两值比较，但本式使用MIN/MAX(序列,整数)，与窗口写法混用。"
                     "本App显式采用滚动窗口解释（TSMIN/TSMAX），不是逐项与常数比较；不声称歧义已有唯一原文结论。"
                 ]
-                if spec.number in {7, 17, 41, 108, 154}
+                if spec.number in {7, 17, 41, 64, 108, 119, 121, 154, 157}
+                else []
+            ),
+            *(
+                [
+                    "159按原表保留C−累计低价（不是逐根差累计），长项系数保留short×long；HGIH解释为HIGH。"
+                    "因此结果不限制0—100，也不是常见ULTOSC；短、中、长窗口必须严格递增。"
+                ]
+                if spec.number == 159
                 else []
             ),
             *(
@@ -2448,6 +3422,14 @@ def definition_metadata(
                 else []
             ),
             "数值正负不代表买卖建议，也不自动将负相关反向交易。",
+            *(
+                [
+                    "001 的对数量变及实体收益排序使用等价的精确十进制输入比值，"
+                    "保留比例相同的并列，避免对数相减噪声制造相关。"
+                ]
+                if spec.number == 1
+                else []
+            ),
             *(
                 [
                     "R是同一观测时刻股票池排名，T/TSRANK是单股完整窗口时序排名，二者不能互换。",
@@ -2550,7 +3532,7 @@ def definition_metadata(
                 "min": w.minimum,
                 "max": 600,
                 "integer": True,
-                "unit": "bars",
+                "unit": w.unit,
                 "label": w.label,
             }
             for w in spec.windows
@@ -2561,6 +3543,30 @@ def definition_metadata(
         metadata["warmup_limit"] = 600
         metadata.pop("warmup_multiplier")
         metadata.pop("warmup_offset")
+    if spec.number == 30:
+        reason = (
+            "需接入有授权、明确构建口径及历史发布时间的A股MKT、SMB、HML；当前网页尚无合格数据源"
+        )
+        metadata.update(
+            {
+                "status": "needs_data",
+                "available": False,
+                "evaluation_available": False,
+                "unavailable_reason": reason,
+                "evaluation_unavailable_reason": reason,
+                "supported_categories": ["DAY"],
+                "period_unit": "daily_observations",
+            }
+        )
+        metadata["limitations"] = [
+            "仅支持日线；当前仅内核及冻结数据契约已实现，网页计算与检验不可用，不增加页面可用数量。",
+            "完整60根收益回归，带截距；每次取当根样本内残差平方，20根归一指数权重0.9^i；最少80根价格。",
+            "原表未明示截距与残差选取方式，此处为明确的工程约定，不宣称唯一解释或逐位复现参考软件。",
+            "回归列先中心化及按列缩放；奇异值比≤1e−12的病态或秩不足窗口留空，不改用岭回归或删列；80位十进制求解。",
+            "风险因子需同日且收盘时已可得；迟发或修订数据不能回填预测历史。缺失、异常、奇异窗口打断平滑；完整重新预热。",
+            "不将未复权／前复权／后复权收益混用；无风险收益只属于MKT输入定义，个股被解释变量沿用原式价格收益。",
+            "数值为残差平方的加权量，不是买卖建议；常数股价配合满秩风险因子可得真实零，数值上下溢留空。",
+        ]
     return metadata
 
 

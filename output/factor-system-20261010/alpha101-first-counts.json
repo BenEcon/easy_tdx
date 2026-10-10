@@ -1,0 +1,20 @@
+{
+  "registered": 377,
+  "canonical": 376,
+  "implemented": 374,
+  "conditional_ui": {
+    "NONE": {
+      "series": 308,
+      "evaluation": 371
+    },
+    "QFQ": {
+      "series": 303,
+      "evaluation": 334
+    },
+    "HFQ": {
+      "series": 303,
+      "evaluation": 334
+    }
+  },
+  "production_deployed_in_goal": 0
+}

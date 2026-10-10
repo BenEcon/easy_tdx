@@ -1,0 +1,20 @@
+{
+  "registered": 402,
+  "canonical": 388,
+  "implemented": 386,
+  "eligible": {
+    "NONE": {
+      "series": 312,
+      "evaluation": 383
+    },
+    "QFQ": {
+      "series": 307,
+      "evaluation": 346
+    },
+    "HFQ": {
+      "series": 307,
+      "evaluation": 346
+    }
+  },
+  "production_deployed_in_goal": 0
+}

@@ -1,0 +1,22 @@
+..................................................F..................... [ 90%]
+........                                                                 [100%]
+=================================== FAILURES ===================================
+_________ test_multistage_invalid_missing_constant_zero_recovery[130] __________
+tests/unit/test_gtja191_multistage.py:314: in test_multistage_invalid_missing_constant_zero_recovery
+    assert out.iloc[55:].notna().any().any()
+E   assert np.False_
+E    +  where np.False_ = any()
+E    +    where any = S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool.any
+E    +      where S0    False\nS1    False\nS2    False\nS3    False\nS4    False\ndtype: bool = any()
+E    +        where any =                S0     S1     S2     S3     S4\n2024-02-25  False  False  False  False  False\n2024-02-26  False  False  ... False  False  False  False\n2024-03-09  False  False  False  False  False\n2024-03-10  False  False  False  False  False.any
+E    +          where                S0     S1     S2     S3     S4\n2024-02-25  False  False  False  False  False\n2024-02-26  False  False  ... False  False  False  False\n2024-03-09  False  False  False  False  False\n2024-03-10  False  False  False  False  False = notna()
+E    +            where notna =             S0  S1  S2  S3  S4\n2024-02-25 NaN NaN NaN NaN NaN\n2024-02-26 NaN NaN NaN NaN NaN\n2024-02-27 NaN NaN NaN Na...-03-07 NaN NaN NaN NaN NaN\n2024-03-08 NaN NaN NaN NaN NaN\n2024-03-09 NaN NaN NaN NaN NaN\n2024-03-10 NaN NaN NaN NaN NaN.notna
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_gtja191_multistage.py::test_multistage_invalid_missing_constant_zero_recovery[130]
+1 failed, 79 passed, 1 warning in 32.85s

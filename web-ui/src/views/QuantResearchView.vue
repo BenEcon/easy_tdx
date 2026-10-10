@@ -21,6 +21,8 @@ import DataGrid from '../components/DataGrid.vue'
 import DataProvenance from '../components/DataProvenance.vue'
 import type { MarketDataMetadata } from '../market-data-contract'
 import AdjustPicker from '../components/AdjustPicker.vue'
+import FactorBenchmarkPicker from '../components/FactorBenchmarkPicker.vue'
+import {needsBenchmark} from '../factor-benchmark'
 import ChartFrame from '../components/ChartFrame.vue'
 import MacSelect from '../components/MacSelect.vue'
 import StockQueryField from '../components/StockQueryField.vue'
@@ -45,6 +47,8 @@ const factorCount=ref('500')
 const factors = ref<Row[]>([])
 const selectedFactors = ref<string[]>(['momentum_20d', 'rsi_14', 'volatility_20d', 'sharpe_20d'])
 const factorParameters=ref<FactorParameters>({})
+const benchmark=ref('SH:000001')
+const benchmarkRequired=computed(()=>needsBenchmark(selectedFactors.value,factors.value))
 const resultDefinitions=ref<Record<string,Row>>({})
 const parameterError=computed(()=>factorParameterError(selectedFactors.value,factors.value,factorParameters.value))
 const warmupWarnings=computed(()=>factorWarmupWarnings(selectedFactors.value,factors.value,factorParameters.value,Number(factorCount.value)))
@@ -104,8 +108,8 @@ function clearFactorResult() {
   resultDefinitions.value={}
   factorResult.value=null
 }
-watch(()=>JSON.stringify([code.value,category.value,factorCount.value,adjustMode.value,selectedFactors.value,factorParameters.value,currentUser.value?.id]),clearFactorResult,{flush:'sync'})
-watch(()=>currentUser.value?.id,()=>{factorParameters.value={}},{flush:'sync'})
+watch(()=>JSON.stringify([code.value,category.value,factorCount.value,adjustMode.value,selectedFactors.value,factorParameters.value,benchmark.value,currentUser.value?.id]),clearFactorResult,{flush:'sync'})
+watch(()=>currentUser.value?.id,()=>{factorParameters.value={};benchmark.value='SH:000001'},{flush:'sync'})
 watch(tab,clearFactorResult,{flush:'sync'})
 onBeforeUnmount(() => { pageActive=false; clearFactorResult() })
 const factorNames = computed(()=>Object.fromEntries(factors.value.map(f=>[String(f.name),factorChineseName(String(f.name))])))
@@ -261,6 +265,7 @@ async function runFactor(manual = false) {
       count: Number(factorCount.value), factors: selectedFactors.value,
       factor_parameters: selectedFactorParameters(selectedFactors.value,factorParameters.value),
       adjust: adjustMode.value,
+      benchmark: benchmarkRequired.value?benchmark.value:null,
     },manual)
     if(stamp!==factorGeneration||!completed)return
     const result=factorTask.result.value
@@ -370,6 +375,7 @@ onMounted(initialize)
       <p v-if="favorites.message.value" role="alert" class="factor-note">{{ favorites.message.value }}</p>
       <div class="selected-factors" aria-label="已选因子"><span>已选</span><button v-for="name in selectedFactors" :key="name" :aria-label="`移除${factorChineseName(name)}`" @click="toggleFactor(name)">{{ factorChineseName(name) }} <span aria-hidden="true">×</span></button></div>
       <FactorParameterEditor v-model="factorParameters" :names="selectedFactors" :definitions="factors" />
+      <FactorBenchmarkPicker v-if="benchmarkRequired" v-model="benchmark" />
       <p v-if="parameterError" class="error-banner" role="alert">{{ parameterError }}</p>
       <p v-for="warning in warmupWarnings" :key="warning" class="factor-note" role="status">{{ warning }}</p>
       <p v-for="warning in availabilityWarnings" :key="warning" class="factor-note" role="status">{{ warning }}</p>
@@ -389,7 +395,7 @@ onMounted(initialize)
       </section>
       <p v-if="!matchingFactors.length" class="factor-note">当前筛选没有结果。可切换到全部因子库或清空搜索。</p>
       <div v-else class="catalog-paging"><span>显示 {{ Math.min(factorLimit, matchingFactors.length) }} / {{ matchingFactors.length }} 项</span><button v-if="matchingFactors.length>factorLimit" @click="factorLimit+=24">再展开 24 项</button><button v-if="factorLimit>24" @click="factorLimit=24">收起列表</button></div>
-      <p class="factor-note">名称中的日数按所选周期的 K 线根数计算。暖机、缺失及不可用值显示为「—」，不是 0。</p>
+      <p class="factor-note">普通窗口按所选周期的 K 线根数计算；条件样本数按参数标注另计。预热、缺失及不可用值显示为「—」，不是 0。</p>
       <p v-for="(message,key) in factorErrors" :key="key" class="error-banner status-banner">{{ factorChineseName(String(key)) }}：{{ message }}</p>
       <section class="factor-output">
         <div class="metric-rail">

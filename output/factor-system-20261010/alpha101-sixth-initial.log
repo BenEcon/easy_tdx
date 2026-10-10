@@ -1,0 +1,21 @@
+..........F..................                                            [100%]
+=================================== FAILURES ===================================
+_______________ test_sixth_invalid_missing_constant_recovery[27] _______________
+tests/unit/test_alpha101_sixth.py:136: in test_sixth_invalid_missing_constant_recovery
+    assert out.isna().all().all()
+E   assert np.False_
+E    +  where np.False_ = all()
+E    +    where all = S0     True\nS1    False\nS2    False\nS3    False\ndtype: bool.all
+E    +      where S0     True\nS1    False\nS2    False\nS3    False\ndtype: bool = all()
+E    +        where all =               S0    S1    S2    S3\n2025-01-01  True  True  True  True\n2025-01-02  True  True  True  True\n2025-01-03  T...28  True  True  True  True\n2025-03-31  True  True  True  True\n2025-04-01  True  True  True  True\n\n[65 rows x 4 columns].all
+E    +          where               S0    S1    S2    S3\n2025-01-01  True  True  True  True\n2025-01-02  True  True  True  True\n2025-01-03  T...28  True  True  True  True\n2025-03-31  True  True  True  True\n2025-04-01  True  True  True  True\n\n[65 rows x 4 columns] = isna()
+E    +            where isna =             S0  S1  S2  S3\n2025-01-01 NaN NaN NaN NaN\n2025-01-02 NaN NaN NaN NaN\n2025-01-03 NaN NaN NaN NaN\n2025-01-06...NaN NaN NaN NaN\n2025-03-28 NaN NaN NaN NaN\n2025-03-31 NaN NaN NaN NaN\n2025-04-01 NaN NaN NaN NaN\n\n[65 rows x 4 columns].isna
+=============================== warnings summary ===============================
+.venv/lib/python3.10/site-packages/starlette/testclient.py:37
+  /Users/bowen/Documents/Python/Google/TDX-work/.venv/lib/python3.10/site-packages/starlette/testclient.py:37: DeprecationWarning: The anyio.abc.BlockingPortal alias is deprecated, use anyio.from_thread.BlockingPortal instead.
+    _PortalFactoryType = typing.Callable[[], typing.ContextManager[anyio.abc.BlockingPortal]]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/unit/test_alpha101_sixth.py::test_sixth_invalid_missing_constant_recovery[27]
+1 failed, 28 passed, 1 warning in 17.89s

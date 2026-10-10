@@ -165,7 +165,7 @@ async function generate() {
     if (!aligned.other.bars.length) throw new Error(`${periodLabel(category)}在共同截止前没有已收盘 K 线。可向后回放或扩大历史窗口后重试。`)
     // Keep the original warm-up start; only remove unavailable suffix candles.
     const replay = (period: Category, bars: Bar[]) => {
-      const req = { code: identity, category: period, bars, visible_count: bars.length }
+      const req = { code: identity, category: period, bars, visible_count: bars.length, structure_settings: originalResult.structure_settings }
       const key = JSON.stringify({ req, adjust, cutoff: aligned.cutoff, rules: { structure: originalResult.structure_metadata,
         base: originalResult.base_decomposition?.rule, macd: [...new Set(originalResult.bcs.map(item => item.evidence?.rule_version))] }, build: 'research-workspace-v1' })
       return replayCache.get(key, () => replayChanlun(req, signal))

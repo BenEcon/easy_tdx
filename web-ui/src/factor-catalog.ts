@@ -4,7 +4,8 @@ export type CatalogEntry = Record<string, unknown>
 export const factorLibraries = [
   { value: 'easy_tdx_builtin', label: '基础因子' },
   { value: 'qlib_alpha158', label: 'Alpha158 · 完整窗口' },
-  { value: 'gtja191', label: 'GTJA191 · 已实现价量' },
+  { value: 'gtja191', label: 'GTJA191 · 因子库' },
+  { value: 'alpha101', label: 'Alpha101 · 本地验证' },
   { value: 'all', label: '全部因子库' },
 ]
 
@@ -43,4 +44,9 @@ export function browseFactors(rows: CatalogEntry[], library: string, query: stri
     (!term || [row.name, row.display_name, row.description, row.family]
       .some(value => factorSearchKey(String(value ?? '')).includes(term))),
   )
+}
+
+// Alias visibility belongs to browseFactors, after the user query is known.
+export function eligibleEvaluationFactors(rows:CatalogEntry[]):CatalogEntry[] {
+  return rows.filter(row=>row.evaluation_available===true)
 }

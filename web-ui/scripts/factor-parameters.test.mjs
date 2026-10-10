@@ -1,9 +1,49 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {editableFactorParameters,selectedFactorParameters,parameterizedFactorName,factorParameterError,factorWarmupWarnings,resetFactorParameter} from '../src/factor-parameters.ts'
+import {editableFactorParameters,selectedFactorParameters,parameterizedFactorName,factorParameterError,factorWarmupWarnings,resetFactorParameter,factorParameterUnit} from '../src/factor-parameters.ts'
+
+test('dimensionless exponents are not presented as bar counts',()=>{
+  assert.equal(factorParameterUnit('selected_observations'),'个下跌样本')
+  assert.equal(factorParameterUnit('dimensionless'),'（无量纲）')
+  assert.equal(factorParameterUnit('bars'),'根')
+  assert.equal(factorParameterUnit('multiple'),'倍')
+  assert.equal(factorParameterUnit(undefined),'根')
+  assert.equal(factorParameterUnit('CNY'),'CNY')
+})
+test('filtered sample windows are never labelled as calendar periods',()=>{
+  const d={name:'gtja191_149',display_name:'GTJA149',parameterized_title:'GTJA149',parameters:{window:{default:252,editable:true,unit:'selected_observations'}}}
+  assert.match(parameterizedFactorName(d,{window:30}),/30个下跌样本/)
+  assert.match(factorWarmupWarnings([d.name],[d],{[d.name]:{window:30}},300)[0],/30 个有效基准下跌样本/)
+})
 
 const factor=(name,window)=>({name,library:'qlib_alpha158',family:'MA',display_name:`均价收盘比 · ${window}周期`,parameters:{window:{default:window,editable:true,min:2,max:600}}})
 const defs=[factor('alpha158_ma5',5),factor('alpha158_ma10',10)]
+test('Alpha101 cross-library aliases normalize parameter keys and order',()=>{
+  const spec=value=>({default:value,editable:true,min:1,max:500})
+  const a={name:'alpha101_003',parameter_family:'gtja191:compound_105',parameter_aliases:{window:'corr'},parameters:{window:spec(10)}}
+  const g={name:'gtja191_105',parameter_family:a.parameter_family,parameters:{corr:spec(10)}}
+  assert.match(factorParameterError([a.name,g.name],[a,g],{}),/重复/)
+  assert.equal(factorParameterError([a.name,g.name],[a,g],{[a.name]:{window:7}}),'')
+  const b={name:'alpha101_002',parameter_family:'gtja191:compound_1',parameters:{lag:spec(2),corr:spec(6)}}
+  const h={name:'gtja191_001',parameter_family:b.parameter_family,parameters:{corr:spec(6),lag:spec(1)}}
+  assert.equal(factorParameterError([b.name,h.name],[b,h],{}),'')
+  assert.match(factorParameterError([b.name,h.name],[b,h],{[b.name]:{lag:1}}),/重复/)
+})
+test('Alpha101 curvature threshold identity and warmup are declared',()=>{
+  const a={name:'alpha101_049',parameter_family:'alpha101_price_curvature_threshold',warmup_limit:600,warmup_terms:[{offset:1,windows:['window','window']}],parameters:{window:{default:10,editable:true,min:1,max:500},threshold:{default:-.1,editable:true,integer:false,min:-10,max:0}}}
+  const b={...a,name:'alpha101_051',parameters:{...a.parameters,threshold:{...a.parameters.threshold,default:-.05}}}
+  assert.equal(factorParameterError([a.name,b.name],[a,b],{}),'')
+  assert.match(factorParameterError([a.name,b.name],[a,b],{[a.name]:{threshold:-.05}}),/重复/)
+  assert.match(factorWarmupWarnings([a.name],[a],{[a.name]:{window:30}},60)[0],/61 根/)
+  assert.match(factorParameterError([a.name],[a],{[a.name]:{window:300}}),/601 根/)
+  assert.equal(factorParameterUnit('价格单位/根'),'价格单位/根')
+})
+test('Alpha101 short custom mean still retains fixed price-lag dependency',()=>{
+  const d={name:'alpha101_023',library:'alpha101',display_name:'Alpha101 023',warmup_bars:20,warmup_terms:[{offset:0,windows:['window']},{offset:3,windows:[]}],parameters:{window:{default:20,editable:true,min:1,max:500}}}
+  assert.match(factorWarmupWarnings([d.name],[d],{[d.name]:{window:1}},2)[0],/3 根/)
+  assert.deepEqual(factorWarmupWarnings([d.name],[d],{[d.name]:{window:1}},3),[])
+  assert.match(factorWarmupWarnings([d.name],[d],{[d.name]:{window:30}},29)[0],/30 根/)
+})
 test('named GTJA dependency paths use maximum chain and all edited windows',()=>{
   const d={name:'gtja191_152',library:'gtja191',display_name:'GTJA 152',parameterized_title:'GTJA 152',warmup_bars:53,warmup_limit:600,warmup_terms:[{offset:0,windows:['lag','smooth','long','signal']}],parameters:Object.fromEntries(Object.entries({lag:9,smooth:9,short:12,long:26,signal:9}).map(([key,value])=>[key,{default:value,editable:true,min:1,max:600,label:key}]))}
   assert.match(factorWarmupWarnings([d.name],[d],{[d.name]:{lag:20,long:50,signal:10}},80)[0],/89 根/)

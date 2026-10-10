@@ -12,7 +12,9 @@ from easy_tdx.web.routers import research
 from tests.unit.test_factor_archive import record
 from tests.unit.test_factor_data import frozen
 
-SERIES = [f"gtja191_{n:03}" for n, spec in sorted(SPECS.items()) if not spec.panel]
+# 030 has no public risk-data source yet; its disabled API and raw-input
+# roundtrip are independently tested, not called a successful web archive flow.
+SERIES = [f"gtja191_{n:03}" for n, spec in sorted(SPECS.items()) if not spec.panel and n != 30]
 
 
 def envelope(result, mode):
@@ -32,6 +34,14 @@ def test_every_gtja_series_freezes_and_recomputes_without_live_data(monkeypatch,
     adjust = "NONE" if need_vwap else "QFQ"
     raw = frozen(f"0-000001-DAILY-{adjust}.json")
     frame = qualify_factor_fields(raw, frozen("0-000001-DAILY-NONE.json"), need_vwap=need_vwap)
+    benchmark = None
+    if name in {"gtja191_075", "gtja191_149", "gtja191_181", "gtja191_182"}:
+        from easy_tdx.factor.benchmark import attach_benchmark
+        from tests.unit.test_gtja191_benchmark import pair
+
+        stock, index = pair(frame)
+        frame = attach_benchmark(stock, index, "SH:000001")
+        benchmark = "SH:000001"
     parameters = {name: {"window": 7} for name in names if SPECS[int(name[-3:])].window}
     for key in names:
         if SPECS[int(key[-3:])].windows:
@@ -40,7 +50,21 @@ def test_every_gtja_series_freezes_and_recomputes_without_live_data(monkeypatch,
             from tests.unit.test_gtja191_conditional import custom as conditional_custom
 
             number = int(key[-3:])
-            if need_vwap:
+            if number == 146:
+                parameters[key] = {"smooth": 3, "mean": 3, "denominator": 3}
+            elif number in {28, 190}:
+                from tests.unit.test_gtja191_literal import custom as literal_custom
+
+                parameters[key] = literal_custom(number)
+            elif number == 159:
+                from tests.unit.test_gtja191_nested_ranks import custom as nested_custom
+
+                parameters[key] = nested_custom(number)
+            elif number == 44:
+                from tests.unit.test_gtja191_multistage import custom as multistage_custom
+
+                parameters[key] = multistage_custom(number)
+            elif need_vwap:
                 from tests.unit.test_gtja191_vwap import custom as vwap_custom
 
                 parameters[key] = vwap_custom(number)
@@ -55,6 +79,7 @@ def test_every_gtja_series_freezes_and_recomputes_without_live_data(monkeypatch,
         adjust=adjust,
         factors=names,
         factor_parameters=parameters,
+        benchmark=benchmark,
     )
     result = research._factor_result(req, frame).data
     assert not result["errors"]

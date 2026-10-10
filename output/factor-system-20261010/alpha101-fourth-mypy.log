@@ -1,0 +1,20 @@
+WARN mypy==2.4.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.1 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.3.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+WARN mypy==2.2.0 needs to be downloaded from a registry
+WARN mypy needs to be downloaded from a registry
+src/easy_tdx/factor/builtin/alpha101_compound.py:56: error: Missing type arguments for generic type "ndarray"  [type-arg]
+src/easy_tdx/factor/builtin/alpha101_compound.py:95: error: Incompatible types in assignment (expression has type "list[None]", variable has type "list[Fraction | None]")  [assignment]
+src/easy_tdx/factor/builtin/alpha101_compound.py:95: note: "list" is invariant -- see https://mypy.readthedocs.io/en/stable/common_issues.html#variance
+src/easy_tdx/factor/builtin/alpha101_compound.py:95: note: Consider using "Sequence" instead, which is covariant
+src/easy_tdx/factor/builtin/alpha101_compound.py:96: error: List comprehension has incompatible type List[Fraction | None]; expected List[None]  [misc]
+src/easy_tdx/factor/builtin/alpha101_compound.py:117: error: Incompatible types in assignment (expression has type "list[None]", variable has type "list[Fraction | None]")  [assignment]
+src/easy_tdx/factor/builtin/alpha101_compound.py:117: note: "list" is invariant -- see https://mypy.readthedocs.io/en/stable/common_issues.html#variance
+src/easy_tdx/factor/builtin/alpha101_compound.py:117: note: Consider using "Sequence" instead, which is covariant
+src/easy_tdx/factor/builtin/alpha101_compound.py:118: error: List comprehension has incompatible type List[Fraction | None]; expected List[None]  [misc]
+src/easy_tdx/factor/builtin/alpha101.py:390: error: Incompatible types in assignment (expression has type "Any | None", variable has type "Window")  [assignment]
+src/easy_tdx/factor/builtin/alpha101.py:395: error: Non-overlapping identity check (left operand type: "type[Window]", right operand type: "type[int]")  [comparison-overlap]
+Found 7 errors in 2 files (checked 334 source files)

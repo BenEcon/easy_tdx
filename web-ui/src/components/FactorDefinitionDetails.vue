@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 const props = defineProps<{ definition: Record<string, unknown> }>()
-const fieldNames:Record<string,string>={open:'开盘价',high:'最高价',low:'最低价',close:'收盘价',vol:'原生成交量',volume:'已核验成交量（股）',vwap:'同复权成交均价',amount:'成交额',financials_point_in_time:'历史时点财务',available_at:'公告可得时间',explicit_universe:'明确的股票池'}
+const fieldNames:Record<string,string>={open:'开盘价',high:'最高价',low:'最低价',close:'收盘价',vol:'原生成交量',volume:'已核验成交量（股）',vwap:'同复权成交均价',amount:'成交额',financials_point_in_time:'历史时点财务',available_at:'公告可得时间',explicit_universe:'明确的股票池',benchmark_open:'基准指数开盘价',benchmark_close:'基准指数收盘价',risk_mkt:'市场超额收益（MKT）',risk_smb:'规模收益差（SMB）',risk_hml:'价值收益差（HML）'}
 const periodNames:Record<string,string>={DAY:'日线',WEEK:'周线',MONTH:'月线',MIN_1:'1 分钟',MIN_5:'5 分钟',MIN_15:'15 分钟',MIN_30:'30 分钟',MIN_60:'60 分钟'}
 const parameters = computed(() => Object.entries((props.definition.parameters ?? {}) as Record<string, {default: unknown; value?:unknown; editable: boolean; label?:string}>))
 const fields = computed(() => Array.isArray(props.definition.data_requirements) ? props.definition.data_requirements.map(key=>`${fieldNames[String(key)]??key}（${key}）`).join('、') : '尚未登记')
@@ -26,7 +26,7 @@ const parameterNames:Record<string,string> = {window:'窗口',short:'短窗口',
       <dt>计算状态</dt><dd>{{ definition.available ? '可计算（仍需本次数据通过校验）' : definition.unavailable_reason }}<small v-if="definition.evaluation_unavailable_reason">截面检验：{{ definition.evaluation_unavailable_reason }}</small></dd>
       <dt>版本 / 来源</dt><dd>{{ definition.implementation_version }}<small>{{ definition.source }}</small></dd>
       <dt>定义指纹</dt><dd><code>{{ definition.formula_sha256 }}</code></dd>
-      <dt v-if="definition.alias_of">兼容别名</dt><dd v-if="definition.alias_of">{{ definition.name }} → {{ definition.alias_of }}；计算结果不变，不重复计数。</dd>
+      <dt v-if="definition.alias_of">同义定义</dt><dd v-if="definition.alias_of">{{ definition.name }} → {{ definition.alias_of }}；保留各自实现版本记录，不重复计数。</dd>
     </dl>
     <ul><li v-for="(limit,index) in limits" :key="index">{{ limit }}</li></ul>
   </details>

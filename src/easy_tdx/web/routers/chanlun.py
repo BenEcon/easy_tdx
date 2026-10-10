@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from easy_tdx.chanlun.input_data import ChanlunInputError
 from easy_tdx.chanlun.ownership_history import OwnershipHistoryMode
+from easy_tdx.chanlun.structure_filter import filter_base_outputs
 from easy_tdx.web.adjusted_bars import fetch_adjusted_bars
 from easy_tdx.web.bar_snapshot import mark_indicator_closed_bars
 from easy_tdx.web.deps import get_client, get_mac_client_optional
@@ -17,6 +18,7 @@ from easy_tdx.web.routers.chanlun_archive import router as archive_router
 from easy_tdx.web.routers.chanlun_observations import router as observations_router
 from easy_tdx.web.routers.chanlun_replay import router as replay_router
 from easy_tdx.web.schemas import ChanlunRequest
+from easy_tdx.web.structure_settings import StructureSettings
 
 router = APIRouter(tags=["chanlun"])
 router.include_router(replay_router)
@@ -51,6 +53,7 @@ async def industry_belong(
 
 
 class IndustryRequest(BaseModel):
+    structure_settings: StructureSettings = Field(default_factory=StructureSettings)
     stock_market: str = Field(pattern=r"^(SZ|SH|BJ)$")
     stock_code: str = Field(pattern=r"^\d{6}$")
     board_code: str = Field(pattern=r"^\d{6}$")
@@ -110,11 +113,16 @@ async def industry_analyze(
     try:
 
         def compute() -> dict[str, Any]:
-            return (
-                ChanlunAnalyser(code=req.board_code, frequency=req.category)
-                .process_klines(mark_indicator_closed_bars(df, req.category, bar_time="end"))
-                .to_dict(ownership_history=ownership_history)
+            analysed = ChanlunAnalyser(
+                code=req.board_code,
+                frequency=req.category,
+                config=req.structure_settings.engine_config(),
+            ).process_klines(mark_indicator_closed_bars(df, req.category, bar_time="end"))
+            output = filter_base_outputs(analysed, req.structure_settings.zs_min_lines).to_dict(
+                ownership_history=ownership_history
             )
+            output["structure_settings"] = req.structure_settings.model_dump()
+            return output
 
         result = await run_compute(compute)
     except ChanlunInputError as exc:

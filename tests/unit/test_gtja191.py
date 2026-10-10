@@ -360,7 +360,7 @@ def test_exact_implemented_set_and_default_parameters():
     # Recursive formulas have a separate closed-geometric-weight oracle suite.
     assert {
         n for n, s in SPECS.items() if not s.family.startswith(("sma_", "compound_", "panel_"))
-    } == set(DEFAULTS)
+    } == set(DEFAULTS) | {30, 75, 143, 146, 149, 165, 166, 181, 182, 183}
     for n, w in DEFAULTS.items():
         assert SPECS[n].window == w
         assert SPECS[n].panel == (n in {6, 185})
